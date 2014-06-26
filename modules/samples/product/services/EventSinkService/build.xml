@@ -1,0 +1,70 @@
+<!--
+  ~  Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~   * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  -->
+
+<project default="build-service">
+
+    <property name="cep.home" value="../../.."/>
+    <property name="temp.dir" value="temp"/>
+    <property name="classes" value="${temp.dir}/classes"/>
+    <property name="src" value="src"/>
+    <property name="services" value="../../../repository/deployment/server/axis2services"/>
+
+    <path id="cep.class.path">
+        <pathelement path="${java.class.path}"/>
+        <fileset dir="${cep.home}">
+            <include name="lib/*.jar"/>
+            <include name="repository/components/plugins/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init" depends="clean">
+        <mkdir dir="${temp.dir}"/>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${services}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${temp.dir}"/>
+    </target>
+
+    <target name="compile-all" depends="init">
+        <javac debug="on" destdir="${classes}">
+            <src path="${src}"/>
+            <classpath refid="cep.class.path"/>
+        </javac>
+    </target>
+
+    <target name="build-service" depends="compile-all">
+        <property name="deploy.dir" value="${temp.dir}/EventSinkService"/>
+        <mkdir dir="${deploy.dir}"/>
+
+        <mkdir dir="${deploy.dir}/META-INF"/>
+        <copy file="conf/services.xml" tofile="${deploy.dir}/META-INF/services.xml"/>
+        <copy toDir="${deploy.dir}">
+            <fileset dir="${classes}">
+                <include name="**/*.class"/>
+            </fileset>
+        </copy>
+
+        <jar destfile="${services}/EventSinkService.aar">
+            <fileset dir="${deploy.dir}"/>
+        </jar>
+    </target>
+
+</project>
