@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -240,7 +240,7 @@
                                 <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>
                             <descriptors>
-                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/dist.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
@@ -255,9 +255,9 @@
                                 <filter>${basedir}/src/main/assembly/filter.properties</filter>
                             </filters>
                             <descriptors>
-                                <descriptor>src/main/assembly/bin.xml</descriptor>
-                                <descriptor>src/main/assembly/src.xml</descriptor>
-                                <descriptor>src/main/assembly/docs.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/bin.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
+                                <descriptor>${basedir}/src/main/assembly/docs.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
@@ -267,6 +267,6 @@
     </build>
 
     <properties>
-        <carbon.version>4.2.0</carbon.version>
+        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
     </properties>
 </project>

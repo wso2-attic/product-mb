@@ -74,7 +74,7 @@
             <dependency>
                 <groupId>org.apache.ws.commons.axiom.wso2</groupId>
                 <artifactId>axiom</artifactId>
-                <version>${axis2.version}</version>
+                <version>${axiom.wso2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.andes.wso2</groupId>
@@ -159,10 +159,10 @@
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
+        <!--pluginRepository>
             <id>wso2-maven2-repository</id>
             <url>http://dist.wso2.org/maven2</url>
-        </pluginRepository>
+        </pluginRepository-->
         <pluginRepository>
             <id>wso2.releases</id>
             <name>WSO2 internal Repository</name>
@@ -270,21 +270,32 @@
 
     <properties>
         <andes.client.version>3.0.0-SNAPSHOT</andes.client.version>
-        <carbon.version>4.2.0</carbon.version>
+	<project.version>3.0.0-SNAPSHOT</project.version>
+        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <log4j.version>1.2.13</log4j.version>
         <commons.logging.version>1.1</commons.logging.version>
         <opencsv.version>1.8</opencsv.version>
         <axis2.wso2.version>1.6.1.wso2v1</axis2.wso2.version>
-        <axiom.wso2.version>1.2.11.wso2v2</axiom.wso2.version>
+        <axiom.wso2.version>1.2.11.wso2v5-SNAPSHOT</axiom.wso2.version>
         <servlet-api.version>2.4</servlet-api.version>
         <stratos.version>2.2.0</stratos.version>
-        <carbon.kernel.version>4.2.0</carbon.kernel.version>
+        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
 	<orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
 	<axis2.version>${orbit.version.axis2}</axis2.version> 
 	<version.log4j>1.2.13</version.log4j>
 	<version.commons.logging>1.1</version.commons.logging>
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 	<slf4j.wso2.version>1.5.10.wso2v1</slf4j.wso2.version>
+        <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
+	<!-- Rampart -->
+        <rampart.version>1.6.1-wso2v10</rampart.version>
+        <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
+        <rampart.osgi.version>1.6.1.wso2v10</rampart.osgi.version>
+        <orbit.version.rampart>1.6.1.wso2v10</orbit.version.rampart>
+        <!--Apache Derby-->
+        <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
+        <emma.version>2.1.5320</emma.version>
     </properties>
 
 </project>

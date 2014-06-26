@@ -20,7 +20,7 @@
     <parent>
     	<groupId>org.wso2.mb</groupId>
     	<artifactId>mb-parent</artifactId>
-    	<version>3.0.0</version>
+    	<version>3.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -111,6 +111,7 @@
         <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
+	            <version>${axiom.wso2.version}</version>	
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

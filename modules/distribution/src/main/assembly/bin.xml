@@ -177,6 +177,15 @@
                 <include>**/**.png</include>
             </includes>
         </fileSet>
+	 <fileSet>
+            <directory>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
+            </directory>
+            <outputDirectory>wso2brs-${pom.version}/repository/conf</outputDirectory>
+            <includes>
+                <include>**/identity.xml</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>
@@ -287,10 +296,13 @@
             <source>../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/etc/logging-config.xml</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/etc/</outputDirectory>
         </file>
-        <file>
+	
+
+
+        <!--file>
              <source>../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/identity.xml</source>
 	     <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
-        </file>
+        </file-->
 
 	 <file>
              <source>../../modules/samples/product/services/EventSinkService/EventSinkService.aar</source>

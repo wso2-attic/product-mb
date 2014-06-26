@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-            <version>${orbit.version.axiom}</version>
+            <version>${axiom.wso2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
-            <version>0.13.wso2v11</version>
+            <version>3.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -242,4 +242,7 @@
         </plugins>
     </build>
 
+<properties>
+        <carbon.version>4.2.0</carbon.version>
+</properties>
 </project>
