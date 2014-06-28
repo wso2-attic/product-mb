@@ -31,7 +31,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../../..</directory>
+            <directory>../..</directory>
             <outputDirectory>wso2mb-${pom.version}-src</outputDirectory>
             <includes>
                 <include>modules/**/*</include>
