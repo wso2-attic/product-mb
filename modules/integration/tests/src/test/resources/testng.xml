@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="mb-features-test-suite">
+    <parameter name="useDefaultListeners" value="false"/>
+    <test name="Test - MB" preserve-order="true" parallel="false">
+        <packages>           
+            <!--<package name="org.wso2.carbon.integration.test.webapp.*"/>-->
+        </packages>
+
+        <classes>
+            <!--<class name="org.wso2.carbon.integration.test.jndi.JNDITestCase"/>-->
+            <!--<class name="org.wso2.carbon.integration.test.qualityofservice.throtllingservice.ThrottlingTestCase"/>-->
+            <!--<class name="org.wso2.carbon.integration.test.webapp.mgt.WebApplicationFaultyDeploymentTestCase"/>-->
+            <!--<class name="org.wso2.carbon.integration.test.poxsecurity.POXSecurityByAdminTestCase"/>-->
+            <!--<class name="org.wso2.carbon.integration.test.poxsecurity.POXSecurityVerifyPostMethod"/>-->
+            <!--<class name="org.wso2.carbon.integration.test.poxsecurity.POXSecurityWithInvalidGroupTestCase"/>-->
+        </classes>
+    </test>
+</suite>
