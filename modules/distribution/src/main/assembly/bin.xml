@@ -33,22 +33,10 @@
                 <exclude>**/repository/services/version/**</exclude>
                 <exclude>**/version.txt</exclude>
                 <exclude>**/LICENSE.txt</exclude>
-                <exclude>**/wso2server.bat</exclude>
                 <exclude>**/launch.ini</exclude>
                 <exclude>**/README.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
                 <exclude>**/release-notes.html</exclude>
-                <exclude>**/carbon.xml</exclude>
-                <exclude>**/bin/ciphertool.bat</exclude>
-                <exclude>**/cipher-tool.properties</exclude>
-                <exclude>**/authenticators.xml</exclude>
-                <exclude>**/lib/org.wso2.carbon.server-4.2.0.jar</exclude>
-                <exclude>**/lib/org.wso2.ciphertool-1.0.0-wso2v2.jar</exclude>
-                <exclude>**/axis2.xml</exclude>
-                <exclude>**/client-truststore.jks</exclude>
-                <exclude>**/dbscripts/mysql.sql</exclude>
-                <exclude>**/dbscripts/db2.sql</exclude>
-                <exclude>**/dbscripts/mysql_cluster.sql</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -387,12 +375,3 @@
         </file>
     </files>
 </assembly>
->
-            </includes>
-        </fileSet>
-         <!--MQTT related configurations-->
-        <fileSet>
-            <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/advanced/
-            </directory>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/advanced/mqtt</outputDirectory

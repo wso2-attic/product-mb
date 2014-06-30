@@ -271,7 +271,7 @@
     <properties>
 	<jline.version>1.0</jline.version>
         <andes.client.version>0.13.wso2v10</andes.client.version>
-        <carbon.version>4.2.0</carbon.version>
+        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <log4j.version>1.2.13</log4j.version>
         <commons.logging.version>1.1</commons.logging.version>
         <opencsv.version>1.8</opencsv.version>
