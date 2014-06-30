@@ -156,7 +156,7 @@
           and 192.168.0.103 node.
       </p>
       <p>
-         Modify qpid-config.xml file which is located at : /repository/conf/advanced directory as bellow
+         Modify andes-config.xml file which is located at : /repository/conf/advanced directory as bellow
       </p>
       <ul>
 
@@ -183,7 +183,7 @@
             and 192.168.0.103 node.
       </p>
 
-        <p>Modify qpid-virtualhosts.xml file which is located at :/repository/conf/advanced directory as bellow</p>
+        <p>Modify andes-virtualhosts.xml file which is located at :/repository/conf/advanced directory as bellow</p>
        <ul>
           <li>Change the connection string by pointing to the cassandra server</li>
       </ul>

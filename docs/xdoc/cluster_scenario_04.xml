@@ -129,7 +129,7 @@
           Then you need to do the following configuration changes in each Message broker nodes
       </p>
       <p>
-         Modify qpid-config.xml file which is located at : /repository/conf/advanced directory as bellow
+         Modify andes-config.xml file which is located at : /repository/conf/advanced directory as bellow
       </p>
       <ul>
 

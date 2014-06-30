@@ -30,31 +30,30 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mb-integration-tests</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <name>WSO2 MB - Integration Tests</name>
     <url>http://wso2.org/projects/mb/java</url>
     <description>WSO2 Message Broker Server Parent</description>
+    <modules>
+        <module>tests</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-            <version>${axiom.wso2.version}</version>
+            <version>${orbit.version.axiom}</version>
         </dependency>
-        <dependency>
+  <!--      <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.framework</artifactId>
-            <version>${carbon.version}</version>
-        </dependency>
+            <version>4.2.6</version>
+        </dependency>-->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.automation</groupId>
-            <artifactId>org.wso2.carbon.automation.core</artifactId>
-            <version>${carbon.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rampart-core</artifactId>
@@ -70,7 +69,7 @@
             <artifactId>rampart-trust</artifactId>
             <version>${rampart.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.core</artifactId>
             <version>${carbon.version}</version>
@@ -82,7 +81,7 @@
                     <artifactId>servlet-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.messagebox.stub</artifactId>
@@ -242,7 +241,4 @@
         </plugins>
     </build>
 
-<properties>
-        <carbon.version>4.2.0</carbon.version>
-</properties>
 </project>

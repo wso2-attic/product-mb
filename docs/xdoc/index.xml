@@ -21,23 +21,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-  <title>Welcome to WSO2 MB v2.1.0</title>
+  <title>Welcome to WSO2 MB v2.2.0</title>
   <link href="css/mb-docs.css" rel="stylesheet" />
   <link href="styles/dist-docs.css" rel="stylesheet" type="text/css"
   media="all" />
 </head>
 
 <body xml:lang="en" lang="en">
-<h1>Welcome to WSO2 Message Broker v2.1.0</h1>
+<h1>Welcome to WSO2 Message Broker v2.2.0</h1>
 
 <p>WSO2 Message Broker (WSO2 MB) is to be your Message Broker System.
  Our ultimate goal is to provide you with the suitable message brokering 
  service. </p>
 
-<p>MB 2.1.0 supports publishing and receiving messages both online
+<p>MB 2.2.0 supports publishing and receiving messages both online
 and on demand with the features Pub/Sub and Queues. Message broker compatible with
 JMS API and it implements AMQP 0.91 protocol.
-<p>WSO2 MB 2.1.0 is developed on top of the revolutionary <a
+<p>WSO2 MB 2.2.0 is developed on top of the revolutionary <a
 href="http://wso2.org/projects/carbon">Carbon platform</a>
 , and is based on the OSGi framework to achieve the better modularity for
 your Service Oriented Architecture (SOA). This also contains a lots of new
@@ -56,7 +56,7 @@ try. </p>
 fairly simple.</p>
 <ol>
   <li><a href="http://wso2.org/downloads/message-broker">Download</a> the WSO2 MB
-  2.1.0</li>
+  2.2.0</li>
   <li>Read through the <a href="docs_index.html">Documentation Index</a></li>
   <li>Visit our <a href="http://wso2.com/products/message-broker/">Official Web
     site</a></li>
