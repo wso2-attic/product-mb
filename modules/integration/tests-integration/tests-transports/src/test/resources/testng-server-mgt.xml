@@ -10,8 +10,8 @@
         <listener class-name="org.wso2.carbon.automation.engine.testlisteners.TestTransformerListener"/>
     </listeners>
     <test name="InitializedAndSetupServer" preserve-order="true" parallel="false">
-        <classes>
+        <!--classes>
             <class name="org.wso2.carbon.mb.transport.amqp.Queue"/>
-        </classes>
+        </classes-->
     </test>
 </suite>
