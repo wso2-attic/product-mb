@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="transport-test-suite">
+    <parameter name="useDefaultListeners" value="false"/>
+    <test name="tests-transports" preserve-order="true" parallel="false">
+
+        <packages>
+            <package name="org.wso2.carbon.mb.transport.amqp.*"/>
+        </packages>
+
+        <classes>
+            <!--<class name="org.wso2.carbon.mb.tests-transports.test.amqp.Queue"/>-->
+            <!--<class name="org.wso2.carbon.registry.metadata.test.schema.SchemaRetentionVerificationTestCase"/>-->
+            <!--<class name="org.wso2.carbon.registry.metadata.test.policy.PolicyRetentionVerificationTestCase"/>-->
+            <!--<class name="org.wso2.carbon.registry.metadata.test.policy.PolicyMetaDataTestCase"/>-->
+            <!--<class name="org.wso2.carbon.registry.metadata.test.wsdl.EncodedUrlWsdlAdditionTestCase"/>-->
+        </classes>
+    </test>
+</suite>
