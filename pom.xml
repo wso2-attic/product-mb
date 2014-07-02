@@ -340,7 +340,7 @@
 
     <properties>
 	    <jline.version>1.0</jline.version>
-        <andes.client.version>0.13.wso2v10</andes.client.version>
+        <andes.client.version>3.0.0-SNAPSHOT</andes.client.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <log4j.version>1.2.13</log4j.version>
         <commons.logging.version>1.1</commons.logging.version>
