@@ -1,3 +1,0 @@
-org.wso2.carbon.andes
-org.wso2.carbon.cassandra.server
-org.wso2.carbon.event
