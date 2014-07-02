@@ -35,7 +35,6 @@ public class MBIntegrationBaseTest {
     protected void init(TestUserMode userMode) throws Exception {
         automationContext = new AutomationContext("MB", userMode);
         backendURL = automationContext.getContextUrls().getBackEndUrl();
-        log.info("================================Back end URL:" + backendURL);
     }
 
 }
