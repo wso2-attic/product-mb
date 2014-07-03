@@ -1,4 +1,4 @@
-Installing  WSO2 Message Broker Server (MB) 2.1.0
+Installing  WSO2 Message Broker Server (MB) 3.0.0-SNAPSHOT
 ===================================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be
@@ -72,7 +72,7 @@ System Requirements
 
 
 For more details see
-    http://docs.wso2.org/wiki/display/Carbon410/Installation+Prerequisites
+    https://docs.wso2.com/display/Carbon420/Installation+Prerequisites
 
 
 
