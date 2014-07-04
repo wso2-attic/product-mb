@@ -16,3 +16,9 @@ hs_err_pid*
 
 target/
 modules/distribution/src/site/
+
+# Resources generated in tests-server
+/modules/integration/tests-integration/tests-server/src/test/resources/axis2config/
+/modules/integration/tests-integration/tests-server/src/test/resources/client/
+/modules/integration/tests-integration/tests-server/src/test/resources/keystores/
+

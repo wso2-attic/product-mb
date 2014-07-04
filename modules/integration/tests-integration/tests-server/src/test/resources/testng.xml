@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="other-test-suite">
+    <parameter name="useDefaultListeners" value="false"/>
+    <test name="tests-other" preserve-order="true" parallel="false">
+
+        <!--<packages>-->
+            <!--<package name="org.wso2.carbon.mb.server.test.*"/>-->
+        <!--</packages>-->
+
+        <!--<classes>-->
+            <!--<class name="org.wso2.carbon.mb.server.test.ShutdownTestCase"/>-->
+        <!--</classes>-->
+    </test>
+</suite>
