@@ -16,14 +16,13 @@
 *under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.home;
+package org.wso2.mb.integration.common.utils.ui.Pages;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
-import org.wso2.mb.integration.common.utils.ui.login.LoginPage;
 
 
 import java.io.IOException;

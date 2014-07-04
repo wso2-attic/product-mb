@@ -1,13 +1,11 @@
 package org.wso2.carbon.mb.ui.test.login;
 
 import org.junit.AfterClass;
-import org.openqa.selenium.By;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
-import org.wso2.mb.integration.common.utils.ui.home.HomePage;
-import org.wso2.mb.integration.common.utils.ui.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.HomePage;
+import org.wso2.mb.integration.common.utils.ui.Pages.LoginPage;
 
 public class LoginTestCase extends MBIntegrationUiBaseTest {
 
@@ -22,7 +20,11 @@ public class LoginTestCase extends MBIntegrationUiBaseTest {
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
                 mbServer.getContextTenant().getContextUser().getPassword());
-        homePage.logout();
+        try {
+
+        } finally {
+//            homePage.logout();
+        }
 
 //        UIElementMapper mapper = UIElementMapper.getInstance();
 //        driver.findElement(By.linkText(mapper.getElement("search.page.link"))).click();
