@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils;
+package org.wso2.mb.integration.common.utils.backend;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

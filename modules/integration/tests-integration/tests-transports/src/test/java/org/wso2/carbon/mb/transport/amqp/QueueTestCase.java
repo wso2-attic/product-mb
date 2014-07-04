@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.utils.MBIntegrationBaseTest;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import static org.testng.Assert.assertEquals;
 

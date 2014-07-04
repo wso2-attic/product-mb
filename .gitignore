@@ -10,6 +10,7 @@
 *.iml
 *.iws
 *.ipr
+.idea/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -17,8 +18,11 @@ hs_err_pid*
 target/
 modules/distribution/src/site/
 
-# Resources generated in tests-server
-/modules/integration/tests-integration/tests-server/src/test/resources/axis2config/
-/modules/integration/tests-integration/tests-server/src/test/resources/client/
-/modules/integration/tests-integration/tests-server/src/test/resources/keystores/
+# Resources generated in tests
+/modules/integration/tests-integration/*/src/test/resources/axis2config/
+/modules/integration/tests-integration/*/src/test/resources/client/
+/modules/integration/tests-integration/*/src/test/resources/keystores/
 
+/modules/integration/tests-ui-integration/src/test/resources/axis2config/
+/modules/integration/tests-ui-integration/src/test/resources/client/
+/modules/integration/tests-ui-integration/src/test/resources/keystores/
