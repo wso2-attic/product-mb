@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
+import org.wso2.mb.integration.common.utils.ui.Pages.DLCPage;
 import org.wso2.mb.integration.common.utils.ui.Pages.HomePage;
 import org.wso2.mb.integration.common.utils.ui.Pages.LoginPage;
 
@@ -20,15 +21,7 @@ public class LoginTestCase extends MBIntegrationUiBaseTest {
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
                 mbServer.getContextTenant().getContextUser().getPassword());
-        try {
-
-        } finally {
-//            homePage.logout();
-        }
-
-//        UIElementMapper mapper = UIElementMapper.getInstance();
-//        driver.findElement(By.linkText(mapper.getElement("search.page.link"))).click();
-
+        homePage.logout();
     }
 
     @AfterClass()

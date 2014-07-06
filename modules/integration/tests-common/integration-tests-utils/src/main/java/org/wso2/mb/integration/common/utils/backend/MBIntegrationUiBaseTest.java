@@ -25,7 +25,7 @@ public class MBIntegrationUiBaseTest {
     }
 
     protected void init(TestUserMode testUserMode) throws Exception {
-        mbServer = new AutomationContext("AS", testUserMode);
+        mbServer = new AutomationContext("MB", testUserMode);
         loginLogoutClient = new LoginLogoutClient(mbServer);
         sessionCookie = loginLogoutClient.login();
         backendURL = mbServer.getContextUrls().getBackEndUrl();

@@ -22,14 +22,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Home page class holds the information of product page you got once login
- * It also contain sign-out method as well.
+ * NOTE: To navigate to a page Don't use direct links to pages. To ensure there is a UI element to navigate to
+ * that page.
  */
 public class HomePage {
 
@@ -47,7 +54,12 @@ public class HomePage {
     }
 
     public LoginPage logout() throws IOException {
-        driver.findElement(By.xpath(uiElementMapper.getElement("home.greg.sign.out.xpath"))).click();
+        driver.findElement(By.xpath(uiElementMapper.getElement("home.mb.sign.out.xpath"))).click();
         return new LoginPage(driver);
+    }
+
+    public DLCPage getDLCBrowsePage() throws Exception {
+        driver.findElement(By.xpath(uiElementMapper.getElement("home.mb.dlc.browse.xpath"))).click();
+        return new DLCPage(driver);
     }
 }
