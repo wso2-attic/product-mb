@@ -17,6 +17,6 @@
 
     <modules>
         <module>tests-transports</module>
+        <module>tests-server</module>
     </modules>
-
 </project>
