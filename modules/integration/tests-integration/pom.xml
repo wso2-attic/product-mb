@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>tests-transports</module>
+        <module>tests-amqp</module>
         <module>tests-server</module>
     </modules>
 </project>

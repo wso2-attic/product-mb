@@ -10,8 +10,8 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <name>MB tests-transports based Test Module</name>
-    <artifactId>org.wso2.carbon.mb.transports.test</artifactId>
+    <name>MB AMQP based Test Module</name>
+    <artifactId>org.wso2.carbon.mb.amqp.test</artifactId>
     <packaging>jar</packaging>
 
     <build>
@@ -131,7 +131,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <outputDirectory>${basedir}/target/report</outputDirectory>
-                    <outputName>transport-test</outputName>
+                    <outputName>amqp-test</outputName>
                 </configuration>
                 <executions>
                     <execution>

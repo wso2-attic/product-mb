@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.mb.transport.amqp;
+package org.wso2.mb.integration.tests.amqp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
