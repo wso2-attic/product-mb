@@ -79,7 +79,7 @@
             <dependency>
                 <groupId>org.wso2.andes.wso2</groupId>
                 <artifactId>andes-client</artifactId>
-                <version>${andes.client.version}</version>
+                <version>${product.mb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs.wso2</groupId>
@@ -130,6 +130,22 @@
                 <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
                 <version>${test.framework.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.automation</groupId>
+                <artifactId>org.wso2.carbon.automation.extensions</artifactId>
+                <version>${test.framework.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.ftpserver</groupId>
+                        <artifactId>ftpserver-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activemq-all</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
@@ -340,7 +356,6 @@
 
     <properties>
 	    <jline.version>1.0</jline.version>
-        <andes.client.version>3.0.0-SNAPSHOT</andes.client.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <log4j.version>1.2.13</log4j.version>
         <commons.logging.version>1.1</commons.logging.version>

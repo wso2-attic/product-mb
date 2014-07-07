@@ -222,6 +222,16 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.automation</groupId>
+            <artifactId>org.wso2.carbon.automation.extensions</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ftpserver</groupId>
+                    <artifactId>:ftpserver-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.automation</groupId>
             <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
         </dependency>
         <dependency>
@@ -243,6 +253,10 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.integration.common.tests</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>slf4j.wso2</groupId>
+            <artifactId>slf4j</artifactId>
         </dependency>
     </dependencies>
 </project>
