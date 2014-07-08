@@ -11,6 +11,7 @@
     </listeners>
     <test name="InitializedAndSetupServer" preserve-order="true" parallel="false">
         <classes>
+            <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.login.LoginTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCPaginationTestCase"/>
         </classes>
