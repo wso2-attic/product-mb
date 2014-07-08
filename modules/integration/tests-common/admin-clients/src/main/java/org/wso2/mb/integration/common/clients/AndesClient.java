@@ -56,12 +56,26 @@ public class AndesClient {
     private String analyticOperation = "";
     private String numberOfMessagesExpectedForAnalysis = "";
 
+    private String username = "admin";
+    private String password = "admin";
+
     private List<QueueMessageReceiver> queueListeners = new ArrayList<QueueMessageReceiver>();
     private List<TopicMessageReceiver> topicListeners = new ArrayList<TopicMessageReceiver>();
     private List<QueueMessageSender> queueMessageSenders = new ArrayList<QueueMessageSender>();
     private List<TopicMessagePublisher> topicMessagePublishers = new ArrayList<TopicMessagePublisher>();
 
-    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString, String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString, String numberOfThreadsAsString, String parameters, String connectionString) {
+    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
+                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
+                       String numberOfThreadsAsString, String parameters, String connectionString, String username,
+                       String password) {
+        this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
+        this.username = username;
+        this.password = password;
+    }
+
+    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
+                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
+                       String numberOfThreadsAsString, String parameters, String connectionString) {
         this.mode = mode;
         this.hostInformation = hostInformation;
         this.destinations = destinations;
@@ -94,10 +108,6 @@ public class AndesClient {
         //numOfThreads 5;
         //params listener=true,durable=false,subscriptionID=sub1,file="",ackMode=AUTO,delayBetweenMsg=200,stopAfter=12,ackAfterEach=300,commitAfterEach=300,rollbackAfterEach=400,unsubscribeAfter=500 (all parameters are optional)
         //connectionString (optional)
-
-        //hardCode username and password
-        String userName = "admin";
-        String passWord = "admin";
 
         //String mode = "receive";
 
@@ -250,7 +260,7 @@ public class AndesClient {
                         String queue = queues[queueIndex];
 
                         //start a queue sender
-                        QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, userName, passWord,
+                        QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
                                 queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
                         queueMessageSenders.add(queueMessageSender);
                         new Thread(queueMessageSender).start();
@@ -261,7 +271,7 @@ public class AndesClient {
                         String topic = topics[topicIndex];
 
                         //start a topic sender
-                        TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, userName, passWord,
+                        TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
                                 topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
                         topicMessagePublishers.add(topicMessagePublisher);
                         new Thread(topicMessagePublisher).start();
@@ -295,7 +305,7 @@ public class AndesClient {
 
                         //start a queue receiver
                         QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
-                                (connectionString, host, port, userName, passWord, queue, ackMode, isToUseListerner, queueMessageCounter, delayBetWeenMessages,
+                                (connectionString, host, port, this.username, this.password, queue, ackMode, isToUseListerner, queueMessageCounter, delayBetWeenMessages,
                                         printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
                         queueListeners.add(queueMessageReceiver);
                         new Thread(queueMessageReceiver).start();
@@ -305,7 +315,7 @@ public class AndesClient {
                         String topic = topics[topicIndex];
 
                         //start a topic receiver
-                        TopicMessageReceiver topicMessageReceiver = new TopicMessageReceiver(connectionString, host, port, userName, passWord, topic, isDurable,
+                        TopicMessageReceiver topicMessageReceiver = new TopicMessageReceiver(connectionString, host, port, this.username, this.password, topic, isDurable,
                                 subscriptionID, ackMode, isToUseListerner, topicMessageCounter, delayBetWeenMessages, printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
                         topicListeners.add(topicMessageReceiver);
                         new Thread(topicMessageReceiver).start();
@@ -356,7 +366,7 @@ public class AndesClient {
                 isToPrintEachMessage = Boolean.parseBoolean(isToPrintEachMessageAsString);
             }
 
-            int messageCount = browseQueue(hostName, port, userName, passWord, destinations, printNumberOfMessagesPer, isToPrintEachMessage);
+            int messageCount = browseQueue(hostName, port, this.username, this.password, destinations, printNumberOfMessagesPer, isToPrintEachMessage);
 
             log.info("Browser Message Count: " + messageCount);
 
@@ -378,12 +388,12 @@ public class AndesClient {
             String port = hostInformation.split(":")[1];
 
             //browse and get the message count
-            int messageCount = browseQueue(hostName, port, userName, passWord, destinations, Integer.MAX_VALUE, false);
+            int messageCount = browseQueue(hostName, port, this.username, this.password, destinations, Integer.MAX_VALUE, false);
 
             //activate receiver for the queue(if specified more first one/ if specified more than one host get the first one)
             //start a queue receiver
             QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
-                    ("", hostName, port, userName, passWord, destinations, 1, true, queueMessageCounter, 0,
+                    ("", hostName, port, this.username, this.password, destinations, 1, true, queueMessageCounter, 0,
                             Integer.MAX_VALUE, false, "", messageCount, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
             queueListeners.add(queueMessageReceiver);
             new Thread(queueMessageReceiver).start();

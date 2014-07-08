@@ -160,6 +160,34 @@
                     </user>
                 </users>
             </tenant>
+            <tenant domain="testtenant1.com" key="tenant1">
+                <admin>
+                    <user key="admin">
+                        <userName>admin</userName>
+                        <password>admin</password>
+                    </user>
+                </admin>
+                <users>
+                    <user key="tenant1user1">
+                        <userName>tenant1user1</userName>
+                        <password>tenant1user1</password>
+                    </user>
+                </users>
+            </tenant>
+            <tenant domain="testtenant2.com" key="tenant2">
+                <admin>
+                    <user key="admin">
+                        <userName>admin</userName>
+                        <password>admin</password>
+                    </user>
+                </admin>
+                <users>
+                    <user key="tenant2user1">
+                        <userName>tenant2user1</userName>
+                        <password>tenant2user1</password>
+                    </user>
+                </users>
+            </tenant>
         </tenants>
     </userManagement>
     <!--
