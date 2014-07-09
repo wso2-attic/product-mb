@@ -67,4 +67,61 @@ public class QueueTestCase extends MBIntegrationBaseTest{
         }
         assertEquals((receiveSuccess && sendSuccess), true);
     }
+
+
+    @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name as queue")
+    public void performSubTopicPubQueueTestCase() {
+
+        Integer sendCount = 1000;
+        Integer runTime = 20;
+        Integer expectedCount = 1000;
+
+        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topic1",
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+
+        receivingClient.startWorking();
+
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:topic1", "100", "false",
+                runTime.toString(), sendCount.toString(), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+
+        sendingClient.startWorking();
+
+        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+
+        assertEquals((receiveSuccess && sendSuccess), false);
+    }
+
+
+    @Test(groups = "wso2.mb", description = "send large number of messages to a queue which has two consumers")
+    public void performManyConsumersTestCase() {
+
+        Integer sendCount = 3000;
+        Integer runTime = 20;
+        Integer expectedCount = 3000;
+
+        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+
+        receivingClient1.startWorking();
+        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        receivingClient2.startWorking();
+
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:queue1", "100", "false",
+                runTime.toString(), sendCount.toString(), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+
+        sendingClient.startWorking();
+        int msgCountFromClient1 = AndesClientUtils.getNoOfMessagesReceived(receivingClient1, expectedCount, runTime);
+        int msgCountFromClient2 = AndesClientUtils.getNoOfMessagesReceived(receivingClient2, expectedCount, runTime);
+
+        assertEquals(msgCountFromClient1+msgCountFromClient2,expectedCount.intValue());
+    }
+
 }
