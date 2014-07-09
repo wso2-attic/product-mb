@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.mb.ui.test.configuretab;
+package org.wso2.carbon.mb.ui.test.configure;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
