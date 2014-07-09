@@ -28,6 +28,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class TopicTestCase extends MBIntegrationBaseTest{
     private static final Log log = LogFactory.getLog(TopicTestCase.class);
@@ -38,8 +39,8 @@ public class TopicTestCase extends MBIntegrationBaseTest{
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue send-receive test case")
-    public void performSingleQueueSendReceiveTestCase() {
+    @Test(groups = "wso2.mb", description = "Single topic send-receive test case")
+    public void performSingleTopicSendReceiveTestCase() {
         Integer sendCount = 1000;
         Integer runTime = 20;
         Integer expectedCount = 1000;
@@ -61,10 +62,69 @@ public class TopicTestCase extends MBIntegrationBaseTest{
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
 
         if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
+            log.info("TEST PASSED");
         }  else {
-            System.out.println("TEST FAILED");
+            log.info("TEST FAILED");
         }
         assertEquals((receiveSuccess && sendSuccess), true);
+    }
+
+    @Test(groups = "wso2.mb", description = "")
+    public void perform(){
+        int sendMessageCount = 100;
+        int runTime = 20;
+        int expectedMessageCount = 100;
+
+        // Start receiving clients (tenant1, tenant2 and admin)
+        AndesClient tenant1ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime),Integer.toString(expectedMessageCount),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedMessageCount, "",
+                "tenant1user1!testtenant1.com", "tenant1user1");
+        tenant1ReceivingClient.startWorking();
+
+        AndesClient tenant2ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime),Integer.toString(expectedMessageCount),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedMessageCount, "",
+                "tenant2user1!testtenant2.com", "tenant2user1");
+        tenant2ReceivingClient.startWorking();
+
+        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedMessageCount, "");
+        adminReceivingClient.startWorking();
+
+        // Start sending clients (tenant1, tenant2 and admin)
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendMessageCount, "",
+                "tenant1user1!testtenant1.com", "tenant1user1");
+
+        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendMessageCount, "",
+                "tenant2user1!testtenant2.com", "tenant2user1");
+
+        AndesClient adminSendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:commontopic",
+                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendMessageCount, "");
+
+        tenant1SendingClient.startWorking();
+        tenant2SendingClient.startWorking();
+        adminSendingClient.startWorking();
+
+        boolean tenet1ReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient, expectedMessageCount, runTime);
+        boolean tenet2ReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(tenant2ReceivingClient, expectedMessageCount, runTime);
+        boolean adminReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(adminReceivingClient, expectedMessageCount, runTime);
+
+        boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient,sendMessageCount);
+        boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient,sendMessageCount);
+        boolean adminSendSuccess = AndesClientUtils.getIfSenderIsSuccess(adminSendingClient,sendMessageCount);
+
+        assertTrue(tenant1SendSuccess , "TENANT 1 SENT SUCCESSFULLY");
+        assertTrue(tenant2SendSuccess , "TENANT 2 SENT SUCCESSFULLY");
+        assertTrue(adminSendSuccess , "ADMIN SENT SUCCESSFULLY");
+        assertTrue(tenet1ReceiveSuccess, "TENANT 1 RECEIVED SUCCESSFULLY");
+        assertTrue(tenet2ReceiveSuccess, "TENANT 2 RECEIVED SUCCESSFULLY");
+        assertTrue(adminReceiveSuccess, "ADMIN RECEIVED SUCCESSFULLY");
     }
 }

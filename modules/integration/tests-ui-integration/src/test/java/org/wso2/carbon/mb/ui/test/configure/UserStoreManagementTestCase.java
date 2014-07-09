@@ -16,35 +16,33 @@
 * under the License.
 */
 
-package org.wso2.carbon.mb.ui.test.dlc;
+package org.wso2.carbon.mb.ui.test.configure;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.Pages.DLCPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.HomePage;
-import org.wso2.mb.integration.common.utils.ui.Pages.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.*;
 
-public class DLCPaginationTestCase extends MBIntegrationUiBaseTest {
-
+public class UserStoreManagementTestCase extends MBIntegrationUiBaseTest {
     @BeforeClass()
     public void init() throws Exception {
-       super.init();
+        super.init();
     }
 
-    @Test()
+    @Test(groups = "wso2.mb", description = "")
     public void paginationTest() throws Exception{
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
                 mbServer.getContextTenant().getContextUser().getPassword());
-        DLCPage dlcPage = homePage.getDLCBrowsePage();
+        ConfigurePage configurePage= homePage.getConfigurePage();
+        UserStoreManagementPage userStoreManagementPage=  configurePage.getUserStoreManagementPage();
+        AddSecondaryUserStorePage addSecondaryUserStorePage = userStoreManagementPage.addSecondaryUserStore();
     }
 
     @AfterClass()
     public void tearDown() {
         driver.quit();
     }
-
 }
