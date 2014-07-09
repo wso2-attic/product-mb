@@ -22,16 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
-
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Home page class holds the information of product page you got once login
@@ -61,5 +54,10 @@ public class HomePage {
     public DLCPage getDLCBrowsePage() throws Exception {
         driver.findElement(By.xpath(uiElementMapper.getElement("home.mb.dlc.browse.xpath"))).click();
         return new DLCPage(driver);
+    }
+
+    public ConfigurePage getConfigurePage() throws Exception {
+        driver.findElement(By.xpath(uiElementMapper.getElement("configure.tab.id"))).click();
+        return new ConfigurePage(driver);
     }
 }
