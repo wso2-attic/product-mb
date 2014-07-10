@@ -49,7 +49,7 @@ public class QueueAddPage {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page.add.button.xpath"))).click();
         String dialog = driver.getWindowHandle();
         driver.switchTo().window(dialog);
-        if(driver.findElement(By.tagName("p")).getText().contains("Queue added successfully")) {
+        if(driver.findElement(By.id(UIElementMapper.getInstance().getElement("mb.popup.dialog.id"))).getText().contains("Queue added successfully")) {
             isSuccessful =true;
         }
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page.onqueueadd.okbutton.xpath"))).click();

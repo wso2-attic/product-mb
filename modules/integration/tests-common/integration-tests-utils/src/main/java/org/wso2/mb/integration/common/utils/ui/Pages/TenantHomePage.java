@@ -26,25 +26,22 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class ConfigurePage {
-    private static final Log log = LogFactory.getLog(ConfigurePage.class);
+public class TenantHomePage {
+
+    private static final Log log = LogFactory.getLog(TenantHomePage.class);
     private WebDriver driver;
 
-    public ConfigurePage(WebDriver driver) throws IOException {
+    public TenantHomePage(WebDriver driver){
         this.driver = driver;
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.tab.menu.header.id"))).getText().contains("Configure")) {
-            throw new IllegalStateException("This is not the Configure page");
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tenant.home.page.menu.header.xpath"))).getText().contains("Home")) {
+            throw new IllegalStateException("This is not the tenant home page");
         }
     }
 
-    public UserStoreManagementPage getUserStoreManagementPage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.user.store.management.id"))).click();
-        return new UserStoreManagementPage(driver);
-    }
-
-    public AddNewTenantPage getAddNewTenantPage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.multitenancy.add.new.tenant.xpath"))).click();
-        return new AddNewTenantPage(driver);
+    public LoginPage logout() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.tenant.sign.out.xpath"))).click();
+        return new LoginPage(driver);
     }
 }

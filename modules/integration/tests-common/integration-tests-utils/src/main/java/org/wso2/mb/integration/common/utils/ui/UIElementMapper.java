@@ -49,7 +49,7 @@ public class UIElementMapper {
         return instance;
     }
 
-    public static Properties setStream() throws IOException {
+    private static Properties setStream() throws IOException {
         InputStream inputStream = UIElementMapper.class.getResourceAsStream("/mapper.properties");
         if (inputStream.available() > 0) {
             uiProperties.load(inputStream);
