@@ -35,29 +35,38 @@ public class HomePage {
 
     private static final Log log = LogFactory.getLog(HomePage.class);
     private WebDriver driver;
-    private UIElementMapper uiElementMapper;
 
     public HomePage(WebDriver driver) throws IOException {
         this.driver = driver;
-        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(uiElementMapper.getElement("home.dashboard.middle.text"))).getText().contains("Home")) {
+        if (!driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("home.dashboard.middle.text"))).getText().contains("Home")) {
             throw new IllegalStateException("This is not the home page");
         }
     }
 
     public LoginPage logout() throws IOException {
-        driver.findElement(By.xpath(uiElementMapper.getElement("home.mb.sign.out.xpath"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.sign.out.xpath"))).click();
         return new LoginPage(driver);
     }
 
-    public DLCPage getDLCBrowsePage() throws Exception {
-        driver.findElement(By.xpath(uiElementMapper.getElement("home.mb.dlc.browse.xpath"))).click();
-        return new DLCPage(driver);
+    public DLCBrowsePage getDLCBrowsePage() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.dlc.browse.xpath"))).click();
+        return new DLCBrowsePage(driver);
+    }
+
+    public QueuesBrowsePage getQueuesBrowsePage() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.queues.browse.xpath"))).click();
+        return new QueuesBrowsePage(driver);
+    }
+
+    public QueueAddPage getQueueAddPage() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.queues.add.xpath"))).click();
+        return new QueueAddPage(driver);
     }
 
     public ConfigurePage getConfigurePage() throws Exception {
-        driver.findElement(By.xpath(uiElementMapper.getElement("configure.tab.id"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.tab.id"))).click();
         return new ConfigurePage(driver);
     }
 }

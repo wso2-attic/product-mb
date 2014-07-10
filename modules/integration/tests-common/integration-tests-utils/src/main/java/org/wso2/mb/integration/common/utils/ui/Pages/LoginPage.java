@@ -33,11 +33,9 @@ import java.io.IOException;
 public class LoginPage {
     private static final Log log = LogFactory.getLog(LoginPage.class);
     private WebDriver driver;
-    private UIElementMapper uiElementMapper;
 
     public LoginPage(WebDriver driver) throws IOException {
         this.driver = driver;
-        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
         if (!(driver.getCurrentUrl().contains("login.jsp"))) {
             // Alternatively, we could navigate to the login page, perhaps logging out first
@@ -55,13 +53,13 @@ public class LoginPage {
      */
     public HomePage loginAs(String userName, String password) throws IOException {
         log.info("Login as " + userName);
-        WebElement userNameField = driver.findElement(By.id(uiElementMapper.getElement("login" +
+        WebElement userNameField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login" +
                 ".username.id")));
-        WebElement passwordField = driver.findElement(By.id(uiElementMapper.getElement("login" +
+        WebElement passwordField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login" +
                 ".password.id")));
         userNameField.sendKeys(userName);
         passwordField.sendKeys(password);
-        driver.findElement(By.className(uiElementMapper.getElement("login.sign.in.button"))).click();
+        driver.findElement(By.className(UIElementMapper.getInstance().getElement("login.sign.in.button"))).click();
         return new HomePage(driver);
     }
 

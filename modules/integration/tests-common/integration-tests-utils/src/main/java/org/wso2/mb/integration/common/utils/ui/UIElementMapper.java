@@ -33,14 +33,19 @@ public class UIElementMapper {
     private static final Log log = LogFactory.getLog(UIElementMapper.class);
     private static UIElementMapper instance;
 
+    static {
+        try {
+            setStream();
+            instance = new UIElementMapper();
+        } catch (IOException ioe){
+            throw new ExceptionInInitializerError("mapper stream not set. Failed to read file");
+        }
+    }
+
     private UIElementMapper() {
     }
 
-    public static synchronized UIElementMapper getInstance() throws IOException {
-        if (instance == null) {
-            setStream();
-            instance = new UIElementMapper();
-        }
+    public static UIElementMapper getInstance() {
         return instance;
     }
 

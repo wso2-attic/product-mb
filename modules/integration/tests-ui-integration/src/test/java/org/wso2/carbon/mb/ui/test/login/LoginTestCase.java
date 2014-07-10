@@ -4,7 +4,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.Pages.DLCPage;
 import org.wso2.mb.integration.common.utils.ui.Pages.HomePage;
 import org.wso2.mb.integration.common.utils.ui.Pages.LoginPage;
 

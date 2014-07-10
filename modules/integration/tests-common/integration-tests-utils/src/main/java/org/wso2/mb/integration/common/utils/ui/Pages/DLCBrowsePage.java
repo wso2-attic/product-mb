@@ -26,16 +26,15 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class DLCPage {
-    private static final Log log = LogFactory.getLog(DLCPage.class);
+public class DLCBrowsePage {
+    private static final Log log = LogFactory.getLog(DLCBrowsePage.class);
     private WebDriver driver;
-    private UIElementMapper uiElementMapper;
 
-    public DLCPage(WebDriver driver) throws IOException {
+    public DLCBrowsePage(WebDriver driver) throws IOException {
         this.driver = driver;
-        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(uiElementMapper.getElement("home.dlc.header.xpath"))).getText().contains("Dead Letter Channel")) {
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("home.dlc.header.xpath"))).getText().contains("Dead Letter Channel")) {
             throw new IllegalStateException("This is not the DLC page");
         }
     }

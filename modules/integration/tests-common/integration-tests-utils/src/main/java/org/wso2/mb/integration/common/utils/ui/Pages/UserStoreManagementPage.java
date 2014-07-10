@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import java.io.IOException;
 
 public class UserStoreManagementPage {
-    private static final Log log = LogFactory.getLog(DLCPage.class);
+    private static final Log log = LogFactory.getLog(UserStoreManagementPage.class);
     private WebDriver driver;
     private UIElementMapper uiElementMapper;
 
