@@ -11,6 +11,7 @@
         <classes>
             <class name="org.wso2.mb.integration.tests.amqp.QueueTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.TopicTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.TenantCreateQueueTestCase" />
         </classes>
     </test>
 </suite>
