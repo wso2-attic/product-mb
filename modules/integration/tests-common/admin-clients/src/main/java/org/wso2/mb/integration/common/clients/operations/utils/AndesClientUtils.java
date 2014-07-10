@@ -18,6 +18,8 @@
 
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.AndesClient;
 
 import java.io.*;
@@ -25,6 +27,7 @@ import java.io.*;
 public class AndesClientUtils {
 
     private  static PrintWriter printWriterGlobal;
+    private static final Log log = LogFactory.getLog(AndesClient.class);
     public static void writeToFile(String whatToWrite, String filePath) {
         try {
             if(printWriterGlobal == null) {
@@ -87,6 +90,36 @@ public class AndesClientUtils {
         client.shutDownClient();
         return success;
     }
+
+
+    public static int getNoOfMessagesReceived(AndesClient client, int messageCountExpected,int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+        int noOfMessagesReceived = 0;
+        for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            try {
+                Thread.sleep(1000 * 10);
+            } catch (InterruptedException e) {
+                //silently ignore
+            }
+            if (client.getReceivedqueueMessagecount() == messageCountExpected){
+                //wait for a small time to until clients does their work (eg: onMessage)
+                AndesClientUtils.sleepForInterval(500);
+                flushPrintWriter();
+                client.shutDownClient();
+                return client.getReceivedqueueMessagecount() ;
+            }
+
+        }
+        noOfMessagesReceived = client.getReceivedqueueMessagecount();
+        log.info("Number of messages received "+ noOfMessagesReceived);
+        flushPrintWriter();
+        client.shutDownClient();
+        return noOfMessagesReceived;
+    }
+
+
+
+
 
     public static boolean getIfSenderIsSuccess(AndesClient sendingClient, int expectedMsgCount) {
         boolean sendingSuccess = false;
