@@ -39,7 +39,7 @@ public class ConfigurePage {
     }
 
     public UserStoreManagementPage getUserStoreManagementPage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.user.store.management.id"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.user.store.management.xpath"))).click();
         return new UserStoreManagementPage(driver);
     }
 

@@ -34,7 +34,7 @@ public class UserStoreManagementPage {
         this.driver = driver;
         this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.xpath"))).getText().contains("User Store Management")) {
+        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id"))).getText().contains("User Store Management")) {
             throw new IllegalStateException("This is not the User Store Management page");
         }
     }

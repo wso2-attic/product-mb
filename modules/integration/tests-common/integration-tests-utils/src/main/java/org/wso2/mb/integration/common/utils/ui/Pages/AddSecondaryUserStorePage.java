@@ -34,7 +34,7 @@ public class AddSecondaryUserStorePage {
         this.driver = driver;
         this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.add.secondary.userstore"))).getText().contains("Add Secondary User Store")) {
+        if (!driver.getCurrentUrl().contains("/userstore_config/userstore-config.jsp")) {
             throw new IllegalStateException("This is not the \"Add Secondary User Store\" page");
         }
     }

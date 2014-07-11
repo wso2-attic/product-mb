@@ -15,6 +15,7 @@
             <class name="org.wso2.carbon.mb.ui.test.login.LoginTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCPaginationTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.AddNewTenantTestCase"/>
+            <class name="org.wso2.carbon.mb.ui.test.configure.UserStoreManagementTestCase"/>
         </classes>
     </test>
 </suite>
