@@ -15,6 +15,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
+
 package org.wso2.mb.integration.common.utils.ui.Pages;
 
 import org.apache.commons.logging.Log;
@@ -25,22 +26,22 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class UserStoreManagementPage {
-    private static final Log log = LogFactory.getLog(UserStoreManagementPage.class);
-    private WebDriver driver;
-    private UIElementMapper uiElementMapper;
+public class TenantHomePage {
 
-    public UserStoreManagementPage(WebDriver driver) throws IOException {
+    private static final Log log = LogFactory.getLog(TenantHomePage.class);
+    private WebDriver driver;
+
+    public TenantHomePage(WebDriver driver){
         this.driver = driver;
-        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id"))).getText().contains("User Store Management")) {
-            throw new IllegalStateException("This is not the User Store Management page");
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tenant.home.page.menu.header.xpath"))).getText().contains("Home")) {
+            throw new IllegalStateException("This is not the tenant home page");
         }
     }
 
-    public AddSecondaryUserStorePage addSecondaryUserStore() throws IOException {
-        driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.add.secondary.userstore"))).click();
-        return new AddSecondaryUserStorePage(driver);
+    public LoginPage logout() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.tenant.sign.out.xpath"))).click();
+        return new LoginPage(driver);
     }
 }

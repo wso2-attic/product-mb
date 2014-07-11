@@ -66,7 +66,7 @@ public class HomePage {
     }
 
     public ConfigurePage getConfigurePage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.tab.id"))).click();
+        driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.tab.id"))).click();
         return new ConfigurePage(driver);
     }
 }

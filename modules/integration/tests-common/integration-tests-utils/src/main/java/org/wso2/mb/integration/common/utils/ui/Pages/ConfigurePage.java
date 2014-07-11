@@ -29,19 +29,22 @@ import java.io.IOException;
 public class ConfigurePage {
     private static final Log log = LogFactory.getLog(ConfigurePage.class);
     private WebDriver driver;
-    private UIElementMapper uiElementMapper;
 
     public ConfigurePage(WebDriver driver) throws IOException {
         this.driver = driver;
-        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(uiElementMapper.getElement("configure.tab.id"))).getText().contains("Configure")) {
+        if (!driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.tab.menu.header.id"))).getText().contains("Configure")) {
             throw new IllegalStateException("This is not the Configure page");
         }
     }
 
     public UserStoreManagementPage getUserStoreManagementPage() throws Exception {
-        driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.id"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.user.store.management.xpath"))).click();
         return new UserStoreManagementPage(driver);
+    }
+
+    public AddNewTenantPage getAddNewTenantPage() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.multitenancy.add.new.tenant.xpath"))).click();
+        return new AddNewTenantPage(driver);
     }
 }
