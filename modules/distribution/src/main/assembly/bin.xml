@@ -36,6 +36,7 @@
                 <exclude>**/launch.ini</exclude>
                 <exclude>**/README.txt</exclude>
                 <exclude>**/INSTALL.txt</exclude>
+                <exclude>**/carbon.xml</exclude>
                 <exclude>**/release-notes.html</exclude>
             </excludes>
         </fileSet>
@@ -69,6 +70,7 @@
             <directory>../../modules/samples/product/jms_queue_client</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/jms_queue_client</outputDirectory>
         </fileSet>
+
         <fileSet>
             <directory>../../modules/samples/product/jms_topic_client</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/jms_topic_client</outputDirectory>
@@ -223,6 +225,13 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
+
+        <file>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml</source>
+            <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+
         <file>
             <source>src/main/conf/event-broker.xml</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
