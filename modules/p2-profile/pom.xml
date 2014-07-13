@@ -59,81 +59,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                    <!--<execution>
-                        <id>2-unpack-kernel-patch</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0001</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0002</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0003</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0004</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0005</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0006</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0007</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.wso2.carbon</groupId>
-                                    <artifactId>WSO2-CARBON-PATCH-4.2.0</artifactId>
-                                    <version>0008</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>-->
+
                 </executions>
             </plugin>
             <plugin>
@@ -171,12 +97,7 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.message.flows.feature:${carbon.platform.version}
                                 </featureArtifactDef>
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.xfer.feature:4.2.0-->
-                                <!--</featureArtifactDef>-->
-                                <!--<featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.mex.feature:4.2.0
-                                </featureArtifactDef>-->
+
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.tryit.feature:${carbon.platform.version}
                                 </featureArtifactDef>
@@ -225,9 +146,7 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.tenant.deployment.feature:${carbon.platform.version}
                                 </featureArtifactDef>
-                                <!--<featureArtifactDef>-->
-                                    <!--org.wso2.carbon:org.wso2.carbon.load.balance.agent.server.feature:${stratos.version}-->
-                                <!--</featureArtifactDef>-->
+
 
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.cassandra.server.feature:${carbon.platform.version}
@@ -260,15 +179,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.cassandra.dataaccess.feature:${carbon.platform.version}
                                 </featureArtifactDef>
-
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.deployment.synchronizer.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-
-                                <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.deployment.synchronizer.git.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -367,14 +277,6 @@
                                     <id>org.wso2.carbon.cassandra.common.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.git.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -452,14 +354,7 @@
                                     <id>org.wso2.carbon.coordination.server.feature.group</id>
                                     <version>4.2.0</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.git.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
+
                             </features>
                         </configuration>
                     </execution>
@@ -507,14 +402,7 @@
                                     <id>org.wso2.carbon.message.flows.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.xfer.feature.group</id>-->
-                                    <!--<version>4.2.0</version>-->
-                                <!--</feature>-->
-                                <!--<feature>
-                                    <id>org.wso2.carbon.mex.feature.group</id>
-                                    <version>4.2.0</version>
-                                </feature>-->
+
                                 <feature>
                                     <id>org.wso2.carbon.tryit.feature.group</id>
                                     <version>${carbon.platform.version}</version>
@@ -572,10 +460,7 @@
                                     <id>org.wso2.carbon.identity.authenticator.saml2.sso.server.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.load.balance.agent.server.feature.group</id>-->
-                                    <!--<version>${stratos.version}</version>-->
-                                <!--</feature>-->
+
                                 <feature>
                                     <id>org.wso2.carbon.tenant.usage.agent.feature.group</id>
                                     <version>${carbon.platform.version}</version>
@@ -604,14 +489,7 @@
                                     <id>org.wso2.carbon.user.mgt.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.synchronizer.git.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
+
                             </features>
                         </configuration>
                     </execution>
@@ -640,13 +518,5 @@
             </plugin>
         </plugins>
     </build>
-    <!--<properties>
-        <carbon.version>4.2.0</carbon.version>
-        <carbon.421.version>4.2.1</carbon.421.version>
-        <stratos.version>2.2.0</stratos.version>
-        <carbon.patchrelease.version.421>4.2.1</carbon.patchrelease.version.421>
-        <carbon.patchrelease.version.422>4.2.2</carbon.patchrelease.version.422>
-        <carbon.patchrelease.version.424>4.2.4</carbon.patchrelease.version.424>
-    </properties>-->
 
 </project>
