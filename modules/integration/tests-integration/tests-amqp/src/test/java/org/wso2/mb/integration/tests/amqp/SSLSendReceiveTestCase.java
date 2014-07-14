@@ -18,13 +18,14 @@
 
 package org.wso2.mb.integration.tests.amqp;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
 import java.io.File;
+
+import static org.testng.Assert.assertTrue;
 
 
 /**
@@ -34,7 +35,6 @@ public class SSLSendReceiveTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -43,13 +43,15 @@ public class SSLSendReceiveTestCase {
         Integer sendCount = 100;
         Integer runTime = 20;
         Integer expectedCount = 100;
-        String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator +
-                "resources" + File.separator +"security" + File.separator +"wso2carbon.jks";
-        String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator +
-                "resources" + File.separator +"security" + File.separator +"client-truststore.jks";
+        String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
+                + "resources" + File.separator +"security" + File.separator +"wso2carbon.jks";
+        String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
+                + "resources" + File.separator +"security" + File.separator +"client-truststore.jks";
         String keyStorePassword = "wso2carbon";
         String trustStorePassword = "wso2carbon";
-        String sslConnectionURL = "amqp://admin:admin@carbon/carbon?brokerlist='tcp://localhost:8672?ssl='true'&ssl_cert_alias='RootCA'&trust_store='"+trustStorePath+"'&trust_store_password='"+trustStorePassword+"'&key_store='"+keyStorePath+"'&key_store_password='"+keyStorePassword+"''";
+        String sslConnectionURL = "amqp://admin:admin@carbon/carbon?brokerlist='tcp://localhost:8672?ssl='true'" +
+                "&ssl_cert_alias='RootCA'&trust_store='"+trustStorePath+"'&trust_store_password='"+trustStorePassword
+                +"'&key_store='"+keyStorePath+"'&key_store_password='"+keyStorePassword+"''";
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:8672", "queue:SSLSingleQueue",
                 "100", "false", runTime.toString(), expectedCount.toString(),
@@ -64,15 +66,9 @@ public class SSLSendReceiveTestCase {
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
 
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals((receiveSuccess && sendSuccess), true);
+        assertTrue(sendSuccess, "SENT MESSAGES SUCCESSFULLY");
+        assertTrue(receiveSuccess, "RECEIVED MESSAGES SUCCESSFULLY");
     }
 }
