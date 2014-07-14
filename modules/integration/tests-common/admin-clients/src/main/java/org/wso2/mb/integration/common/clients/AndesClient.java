@@ -52,6 +52,7 @@ public class AndesClient {
     private String numberOfThreadsAsString = "1";
     private String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
     private String connectionString = "";
+    private String expirationAsString = "0"; // in milliseconds
 
     private String analyticOperation = "";
     private String numberOfMessagesExpectedForAnalysis = "";
@@ -71,6 +72,15 @@ public class AndesClient {
         this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
         this.username = username;
         this.password = password;
+    }
+
+    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
+                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
+                       String numberOfThreadsAsString, String parameters, String connectionString,String expirationAsString) {
+        this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString,
+                messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
+        this.expirationAsString = expirationAsString;
+
     }
 
     public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
@@ -198,6 +208,10 @@ public class AndesClient {
                 isToPrintEachMessage = Boolean.parseBoolean(isToPrintEachMessageAsString);
             }
 
+            Long jmsExpiration = 0l;
+            if (expirationAsString != null && !expirationAsString.equals("")) {
+                jmsExpiration = Long.parseLong(expirationAsString);
+            }
 
             //decode parameters
             boolean isToUseListerner = true;
@@ -261,8 +275,10 @@ public class AndesClient {
 
                         //start a queue sender
                         QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
-                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
+                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+
                         queueMessageSenders.add(queueMessageSender);
+
                         new Thread(queueMessageSender).start();
 
                     }
@@ -272,8 +288,9 @@ public class AndesClient {
 
                         //start a topic sender
                         TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
+                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
                         topicMessagePublishers.add(topicMessagePublisher);
+
                         new Thread(topicMessagePublisher).start();
 
                     }
