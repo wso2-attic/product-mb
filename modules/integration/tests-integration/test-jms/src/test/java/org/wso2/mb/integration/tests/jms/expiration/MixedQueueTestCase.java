@@ -40,20 +40,20 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue",
                 "100", "false", receiverRunTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg="+delayBetweenMsg+",stopAfter="+expectedCount, "","");
+                "1", "listener=true,ackMode=1,delayBetweenMsg="+delayBetweenMsg+",stopAfter="+expectedCount, "");
 
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
                 runTime.toString(), sendNormalCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendNormalCount, "", "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendNormalCount, "");
 
         sendingClient.startWorking();
 
         AndesClient sendingWithExpirationClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
                 runTime.toString(), sendExpiredCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendExpiredCount, "", expiration);
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendExpiredCount+",jmsExpiration="+expiration, "");
 
         sendingWithExpirationClient.startWorking();
 
@@ -110,24 +110,24 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
 
         AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "","");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient1.startWorking();
 
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "","");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
         receivingClient2.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:queue1", "100", "false",
                 runTime.toString(), sendNormalCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendNormalCount, "","");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendNormalCount, "");
 
         sendingClient.startWorking();
 
         AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "queue:queue1", "100", "false",
                 runTime.toString(), sendExpiredCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendExpiredCount, "",expiration);
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendExpiredCount+",jmsExpiration="+expiration, "");
 
         sendingClient2.startWorking();
 

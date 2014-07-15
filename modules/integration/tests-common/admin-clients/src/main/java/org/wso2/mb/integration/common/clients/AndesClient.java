@@ -52,7 +52,6 @@ public class AndesClient {
     private String numberOfThreadsAsString = "1";
     private String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
     private String connectionString = "";
-    private String expirationAsString = "0"; // in milliseconds
 
     private String analyticOperation = "";
     private String numberOfMessagesExpectedForAnalysis = "";
@@ -72,15 +71,6 @@ public class AndesClient {
         this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
         this.username = username;
         this.password = password;
-    }
-
-    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
-                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
-                       String numberOfThreadsAsString, String parameters, String connectionString,String expirationAsString) {
-        this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString,
-                messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
-        this.expirationAsString = expirationAsString;
-
     }
 
     public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
@@ -208,10 +198,8 @@ public class AndesClient {
                 isToPrintEachMessage = Boolean.parseBoolean(isToPrintEachMessageAsString);
             }
 
-            Long jmsExpiration = 0l;
-            if (expirationAsString != null && !expirationAsString.equals("")) {
-                jmsExpiration = Long.parseLong(expirationAsString);
-            }
+
+
 
             //decode parameters
             boolean isToUseListerner = true;
@@ -226,6 +214,7 @@ public class AndesClient {
             int commitAfterEach = Integer.MAX_VALUE;
             int rollbackAfterEach = Integer.MAX_VALUE;
             int unsubscribeAfter = Integer.MAX_VALUE;
+            Long jmsExpiration = 0l;
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
@@ -256,6 +245,10 @@ public class AndesClient {
                     rollbackAfterEach = Integer.parseInt(value);
                 } else if (key.equals("unsubscribeAfter")) {
                     unsubscribeAfter = Integer.parseInt(value);
+                } else if (key.equals("jmsExpiration")) {
+                    if (!value.equals("")) {
+                        jmsExpiration = Long.parseLong(value);
+                    }
                 }
             }
 

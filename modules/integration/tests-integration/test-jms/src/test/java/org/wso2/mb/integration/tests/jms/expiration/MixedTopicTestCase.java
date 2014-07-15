@@ -36,7 +36,7 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         Integer sendExpiredcount = 400;
         Integer runTime = 20;
         Integer expectedCount = 600;
-        String expiration = "100";
+        String expiration = "50";
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
@@ -52,15 +52,17 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
 
         AndesClient sendingExpiredClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleTopic", "100", "false",
                 runTime.toString(), sendExpiredcount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendExpiredcount, "",expiration);
+                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendExpiredcount+",jmsExpiration="+expiration, "");
 
         sendingExpiredClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,expectedCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendNormalCount);
 
-        if(receiveSuccess && sendSuccess) {
+        boolean sendExpiredSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingExpiredClient,sendExpiredcount);
+
+        if(receiveSuccess && sendSuccess && sendExpiredSuccess) {
             log.info("TEST PASSED");
         }  else {
             log.info("TEST FAILED");
