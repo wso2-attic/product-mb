@@ -51,11 +51,13 @@ public class QueueMessageSender implements Runnable{
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
 
+    private Long jmsExpiration = 0l;
+
 
     //private static final Logger log = Logger.getLogger(queue.QueueMessageSender.class);
 
     public QueueMessageSender(String connectionString, String hostName, String port, String userName, String password, String queueName,
-                              AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage) {
+                              AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage, Long jmsExpiration) {
 
         this.hostName = hostName;
         this.port = port;
@@ -70,6 +72,7 @@ public class QueueMessageSender implements Runnable{
         }
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
         this.isToPrintEachMessage = isToPrintEachMessage;
+        this.jmsExpiration = jmsExpiration;
 
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, QPID_ICF);
@@ -143,7 +146,7 @@ public class QueueMessageSender implements Runnable{
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
 
-                queueSender.send(textMessage);
+                queueSender.send(textMessage,DeliveryMode.PERSISTENT,0,jmsExpiration);
                 messageCounter.incrementAndGet();
                 localMessageCount ++;
                 if(messageCounter.get() % printNumberOfMessagesPer == 0) {

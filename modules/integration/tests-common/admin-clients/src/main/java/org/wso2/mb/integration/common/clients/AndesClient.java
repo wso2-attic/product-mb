@@ -199,6 +199,8 @@ public class AndesClient {
             }
 
 
+
+
             //decode parameters
             boolean isToUseListerner = true;
             boolean isDurable = false;
@@ -212,6 +214,7 @@ public class AndesClient {
             int commitAfterEach = Integer.MAX_VALUE;
             int rollbackAfterEach = Integer.MAX_VALUE;
             int unsubscribeAfter = Integer.MAX_VALUE;
+            Long jmsExpiration = 0l;
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
@@ -242,6 +245,10 @@ public class AndesClient {
                     rollbackAfterEach = Integer.parseInt(value);
                 } else if (key.equals("unsubscribeAfter")) {
                     unsubscribeAfter = Integer.parseInt(value);
+                } else if (key.equals("jmsExpiration")) {
+                    if (!value.equals("")) {
+                        jmsExpiration = Long.parseLong(value);
+                    }
                 }
             }
 
@@ -261,8 +268,10 @@ public class AndesClient {
 
                         //start a queue sender
                         QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
-                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
+                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+
                         queueMessageSenders.add(queueMessageSender);
+
                         new Thread(queueMessageSender).start();
 
                     }
@@ -272,8 +281,9 @@ public class AndesClient {
 
                         //start a topic sender
                         TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage);
+                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
                         topicMessagePublishers.add(topicMessagePublisher);
+
                         new Thread(topicMessagePublisher).start();
 
                     }

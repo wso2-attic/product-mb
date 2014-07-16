@@ -52,11 +52,12 @@ public class TopicMessagePublisher implements Runnable{
     private String topicName= null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
+    private Long jmsExpiration = 0l;
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
     public TopicMessagePublisher(String connectionString, String hostName, String port, String userName, String password, String topicName,
-                                 AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage) {
+                                 AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage, long jmsExpiration) {
 
         this.hostName = hostName;
         this.port = port;
@@ -71,6 +72,8 @@ public class TopicMessagePublisher implements Runnable{
         }
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
         this.isToPrintEachMessage = isToPrintEachMessage;
+
+        this.jmsExpiration = jmsExpiration;
 
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, QPID_ICF);
@@ -141,7 +144,7 @@ public class TopicMessagePublisher implements Runnable{
                     textMessage = topicSession.createTextMessage("sending Message:-" + messageCounter.get() +"- ThreadID:"+threadID +"  " + everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
-                topicPublisher.send(textMessage);
+                topicPublisher.send(textMessage,DeliveryMode.PERSISTENT,0,jmsExpiration);
                 messageCounter.incrementAndGet();
                 localMessageCount ++;
                 if(messageCounter.get() % printNumberOfMessagesPer == 0) {
