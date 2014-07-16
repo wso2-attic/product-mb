@@ -11,11 +11,11 @@
     </listeners>
     <test name="InitializedAndSetupServer" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.login.LoginTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCPaginationTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.AddNewTenantTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.UserStoreManagementTestCase"/>
+            <!--<class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteTestCase"/>-->
         </classes>
     </test>
 </suite>
