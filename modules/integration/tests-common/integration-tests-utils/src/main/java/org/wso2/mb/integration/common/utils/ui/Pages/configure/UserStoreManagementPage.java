@@ -15,35 +15,33 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
-package org.wso2.mb.integration.common.utils.ui.Pages;
+package org.wso2.mb.integration.common.utils.ui.Pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.wso2.mb.integration.common.utils.ui.Pages.configure.AddSecondaryUserStorePage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class DLCBrowsePage {
-    private static final Log log = LogFactory.getLog(DLCBrowsePage.class);
+public class UserStoreManagementPage {
+    private static final Log log = LogFactory.getLog(UserStoreManagementPage.class);
     private WebDriver driver;
+    private UIElementMapper uiElementMapper;
 
-    public DLCBrowsePage(WebDriver driver) throws IOException {
+    public UserStoreManagementPage(WebDriver driver) throws IOException {
         this.driver = driver;
+        this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("home.dlc.header.xpath"))).getText().contains("Dead Letter Channel")) {
-            throw new IllegalStateException("This is not the DLC page");
+        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id"))).getText().contains("User Store Management")) {
+            throw new IllegalStateException("This is not the User Store Management page");
         }
     }
 
-    public boolean isTablePaginated(){
-        boolean isPaginated = true;
-
-
-        return isPaginated;
-
+    public AddSecondaryUserStorePage addSecondaryUserStore() throws IOException {
+        driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.add.secondary.userstore"))).click();
+        return new AddSecondaryUserStorePage(driver);
     }
 }

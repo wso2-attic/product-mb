@@ -2,11 +2,14 @@ package org.wso2.mb.integration.common.utils.backend;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.extensions.selenium.BrowserManager;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 public class MBIntegrationUiBaseTest {
     private static final Log log = LogFactory.getLog(MBIntegrationUiBaseTest.class);
@@ -34,5 +37,10 @@ public class MBIntegrationUiBaseTest {
 
     protected String getLoginURL() throws Exception{
         return "https://localhost:9443/carbon/";
+    }
+
+    protected LoginPage logout() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.sign.out.xpath"))).click();
+        return new LoginPage(driver);
     }
 }

@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.Pages;
+package org.wso2.mb.integration.common.utils.ui.Pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +33,9 @@ public class ConfigurePage {
     public ConfigurePage(WebDriver driver) throws IOException {
         this.driver = driver;
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.tab.menu.header.id"))).getText().contains("Configure")) {
+        String attr = driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.panel.button.id"))).getAttribute("class");
+
+        if (attr.compareTo("menu-panel-buttons selected") != 0) {
             throw new IllegalStateException("This is not the Configure page");
         }
     }
@@ -46,5 +48,10 @@ public class ConfigurePage {
     public AddNewTenantPage getAddNewTenantPage() throws Exception {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.multitenancy.add.new.tenant.xpath"))).click();
         return new AddNewTenantPage(driver);
+    }
+
+    public UserManagementPage getUserManagementPage() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.users.and.roles.button.xpath"))).click();
+        return new UserManagementPage(driver);
     }
 }
