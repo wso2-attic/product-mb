@@ -22,7 +22,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.Pages.*;
+import org.wso2.mb.integration.common.utils.ui.Pages.configure.AddSecondaryUserStorePage;
+import org.wso2.mb.integration.common.utils.ui.Pages.configure.ConfigurePage;
+import org.wso2.mb.integration.common.utils.ui.Pages.configure.UserStoreManagementPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.main.HomePage;
 
 public class UserStoreManagementTestCase extends MBIntegrationUiBaseTest {
     @BeforeClass()

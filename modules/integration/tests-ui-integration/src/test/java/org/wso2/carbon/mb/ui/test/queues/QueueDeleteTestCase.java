@@ -23,10 +23,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.Pages.HomePage;
-import org.wso2.mb.integration.common.utils.ui.Pages.LoginPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.QueueAddPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.QueuesBrowsePage;
+import org.wso2.mb.integration.common.utils.ui.Pages.main.HomePage;
+import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.main.QueueAddPage;
+import org.wso2.mb.integration.common.utils.ui.Pages.main.QueuesBrowsePage;
 
 public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
 

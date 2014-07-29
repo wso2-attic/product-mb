@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.Pages;
+package org.wso2.mb.integration.common.utils.ui.Pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,24 +24,27 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
-import java.io.IOException;
-
-public class TenantHomePage {
-
+public class UserManagementPage {
     private static final Log log = LogFactory.getLog(TenantHomePage.class);
     private WebDriver driver;
 
-    public TenantHomePage(WebDriver driver){
+    public UserManagementPage(WebDriver driver) {
         this.driver = driver;
-        // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("mb.tenant.home.page.menu.header.xpath"))).getText().contains("Home")) {
-            throw new IllegalStateException("This is not the tenant home page");
+
+        if(!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                        .getElement("configure.user.mgt.header.xpath"))).getText().contains("User Management")){
+
+            throw new IllegalStateException("This is not the User Management page");
         }
     }
 
-    public LoginPage logout() throws IOException {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.tenant.sign.out.xpath"))).click();
-        return new LoginPage(driver);
+    public RolesPage getRolesPage() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.roles.link.xpath"))).click();
+        return new RolesPage(driver);
+    }
+
+    public UsersPage getUsersPage() throws Exception {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.users.link.xpath"))).click();
+        return new UsersPage(driver);
     }
 }

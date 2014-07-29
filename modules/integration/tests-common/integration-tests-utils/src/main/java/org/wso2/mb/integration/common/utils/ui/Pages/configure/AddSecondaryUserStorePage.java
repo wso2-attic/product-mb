@@ -15,7 +15,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.mb.integration.common.utils.ui.Pages;
+package org.wso2.mb.integration.common.utils.ui.Pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

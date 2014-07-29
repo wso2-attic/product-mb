@@ -15,7 +15,8 @@
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCPaginationTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.AddNewTenantTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.UserStoreManagementTestCase"/>
-            <!--<class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteTestCase"/>-->
+            <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteTestCase"/>
+            <class name="org.wso2.carbon.mb.ui.test.configure.NewUserPermissionTest"/>
         </classes>
     </test>
 </suite>
