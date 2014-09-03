@@ -136,6 +136,7 @@ if [ -e "$CARBON_HOME/wso2carbon.pid" ]; then
 fi
 
 # ----- Process the input command ----------------------------------------------
+args=""
 for c in $*
 do
     if [ "$c" = "--debug" ] || [ "$c" = "-debug" ] || [ "$c" = "debug" ]; then
@@ -155,6 +156,8 @@ do
           CMD="restart"
     elif [ "$c" = "--test" ] || [ "$c" = "-test" ] || [ "$c" = "test" ]; then
           CMD="test"
+    else
+        args="$args $c"
     fi
 # ----- check profile is cassandra or zookeeper ----------------------------------------------
     if [ "$c" = "-Dprofile=cassandra" ] ; then
@@ -200,7 +203,7 @@ elif [ "$CMD" = "start" ]; then
   fi
   export CARBON_HOME=$CARBON_HOME
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/wso2server.sh > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/wso2server.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
@@ -219,7 +222,7 @@ elif [ "$CMD" = "restart" ]; then
   done
 
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/wso2server.sh > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/wso2server.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
