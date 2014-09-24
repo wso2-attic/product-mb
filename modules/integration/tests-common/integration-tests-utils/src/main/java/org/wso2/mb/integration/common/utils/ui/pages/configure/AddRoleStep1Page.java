@@ -17,7 +17,7 @@
  *  under the License.
  *
  */
-package org.wso2.mb.integration.common.utils.ui.Pages.configure;
+package org.wso2.mb.integration.common.utils.ui.pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,28 +25,25 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
-import java.util.List;
+public class AddRoleStep1Page {
 
-public class AddRoleStep2Page {
-
-    private static final Log log = LogFactory.getLog(AddRoleStep2Page.class);
+    private static final Log log = LogFactory.getLog(AddRoleStep1Page.class);
     private WebDriver driver;
 
-    public AddRoleStep2Page(WebDriver driver){
+    public AddRoleStep1Page(WebDriver driver){
         this.driver = driver;
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step2.sub.header.xpath")))
-                .getText().contains("Step 2 : Select permissions to add to Role")) {
-            throw new IllegalStateException("This is not the Add Role step2 page");
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.sub.header.xpath")))
+                                                                            .getText().contains("Step 1 : Enter role details")) {
+            throw new IllegalStateException("This is not the Add Role step1 page");
         }
     }
 
-    public void selectPermission(String permissionXpath) {
-           driver.findElement(By.xpath(UIElementMapper.getInstance().getElement(permissionXpath))).click();
+    public void setDetails(final String roleName) {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.name.field.xpath"))).sendKeys(roleName);
     }
 
-    public AddRoleStep3Page next() {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step2.next.button.xpath"))).click();
-        return new AddRoleStep3Page(driver);
+    public AddRoleStep2Page next() {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.next.button.xpath"))).click();
+        return new AddRoleStep2Page(driver);
     }
-
 }

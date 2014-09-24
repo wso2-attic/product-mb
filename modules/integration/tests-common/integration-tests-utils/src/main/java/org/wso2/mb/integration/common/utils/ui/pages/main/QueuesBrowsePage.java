@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.Pages.main;
+package org.wso2.mb.integration.common.utils.ui.pages.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +28,12 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This page represents 'Queues-> Browse' page in MB management console.
+ *
+ */
 public class QueuesBrowsePage {
+
     private static final Log log = LogFactory.getLog(QueuesBrowsePage.class);
     private WebDriver driver;
 
@@ -74,6 +79,26 @@ public class QueuesBrowsePage {
         return isSuccessful;
     }
 
+    /***
+     * Navigates the browser to 'Queue Content' page where user can see messages it contains etc.
+     *
+     * @param qName name of the Queue to browse
+     * @return true if the navigate operation is successful, false otherwise
+     */
+    public QueueContentPage browseQueue(final String qName) throws IOException {
+
+        WebElement row = getTableRowByQueueName(qName);
+        if (row == null){
+            return null;    // can't find the queue.
+        }
+
+        List<WebElement> columnList = row.findElements(By.tagName("td"));
+        WebElement browseButton = columnList.get(2).findElement(By.tagName("a"));
+        if (browseButton != null){
+            browseButton.click();
+        }
+        return new QueueContentPage(this.driver);
+    }
 
     private WebElement getTableRowByQueueName(final String qName) {
 
