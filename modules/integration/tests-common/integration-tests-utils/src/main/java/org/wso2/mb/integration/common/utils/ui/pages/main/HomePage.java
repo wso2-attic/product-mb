@@ -16,13 +16,13 @@
  * under the License. and limitations under the License.
  */
 
-package org.wso2.mb.integration.common.utils.ui.Pages.main;
+package org.wso2.mb.integration.common.utils.ui.pages.main;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.wso2.mb.integration.common.utils.ui.Pages.monitor.MonitorPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.configure.ConfigurePage;
+import org.wso2.mb.integration.common.utils.ui.pages.configure.ConfigurePage;
+import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.pages.monitor.MonitorPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;

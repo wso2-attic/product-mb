@@ -16,7 +16,9 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.Pages.configure;
+package org.wso2.mb.integration.common.utils.ui.pages.main;
+
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,27 +26,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
-public class UserManagementPage {
-    private static final Log log = LogFactory.getLog(TenantHomePage.class);
+/**
+ * This page represents 'Queues-> Browse' page in MB management console.
+ *
+ */
+public class QueueContentPage {
+
+    private static final Log log = LogFactory.getLog(QueueContentPage.class);
     private WebDriver driver;
 
-    public UserManagementPage(WebDriver driver) {
+    public QueueContentPage(WebDriver driver) throws IOException {
         this.driver = driver;
-
-        if(!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                        .getElement("configure.user.mgt.header.xpath"))).getText().contains("User Management")){
-
-            throw new IllegalStateException("This is not the User Management page");
+        // Check that we're on the right page.
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.queue.content.page.header.xpath"))).getText().contains("Queue Content")) {
+            throw new IllegalStateException("This is not the Queue Content page");
         }
     }
 
-    public RolesPage getRolesPage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.roles.link.xpath"))).click();
-        return new RolesPage(driver);
-    }
-
-    public UsersPage getUsersPage() throws Exception {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.users.link.xpath"))).click();
-        return new UsersPage(driver);
-    }
 }

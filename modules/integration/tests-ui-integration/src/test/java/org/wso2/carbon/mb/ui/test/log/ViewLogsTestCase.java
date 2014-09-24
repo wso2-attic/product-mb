@@ -22,10 +22,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
-import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.main.HomePage;
-import org.wso2.mb.integration.common.utils.ui.Pages.monitor.ApplicationLogsPage;
-import org.wso2.mb.integration.common.utils.ui.Pages.monitor.MonitorPage;
+import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
+import org.wso2.mb.integration.common.utils.ui.pages.monitor.ApplicationLogsPage;
+import org.wso2.mb.integration.common.utils.ui.pages.monitor.MonitorPage;
 
 public class ViewLogsTestCase extends MBIntegrationUiBaseTest {
     @BeforeClass()

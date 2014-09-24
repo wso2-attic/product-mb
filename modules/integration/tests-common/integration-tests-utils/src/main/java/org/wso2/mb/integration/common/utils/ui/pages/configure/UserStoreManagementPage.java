@@ -15,27 +15,33 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.mb.integration.common.utils.ui.Pages.configure;
+package org.wso2.mb.integration.common.utils.ui.pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.wso2.mb.integration.common.utils.ui.pages.configure.AddSecondaryUserStorePage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class AddSecondaryUserStorePage {
-    private static final Log log = LogFactory.getLog(AddSecondaryUserStorePage.class);
+public class UserStoreManagementPage {
+    private static final Log log = LogFactory.getLog(UserStoreManagementPage.class);
     private WebDriver driver;
     private UIElementMapper uiElementMapper;
 
-    public AddSecondaryUserStorePage(WebDriver driver) throws IOException {
+    public UserStoreManagementPage(WebDriver driver) throws IOException {
         this.driver = driver;
         this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.getCurrentUrl().contains("/userstore_config/userstore-config.jsp")) {
-            throw new IllegalStateException("This is not the \"Add Secondary User Store\" page");
+        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id"))).getText().contains("User Store Management")) {
+            throw new IllegalStateException("This is not the User Store Management page");
         }
+    }
+
+    public AddSecondaryUserStorePage addSecondaryUserStore() throws IOException {
+        driver.findElement(By.xpath(uiElementMapper.getElement("configure.user.store.management.add.secondary.userstore"))).click();
+        return new AddSecondaryUserStorePage(driver);
     }
 }

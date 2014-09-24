@@ -8,7 +8,7 @@ import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.extensions.selenium.BrowserManager;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
-import org.wso2.mb.integration.common.utils.ui.Pages.login.LoginPage;
+import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 public class MBIntegrationUiBaseTest {

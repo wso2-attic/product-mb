@@ -17,7 +17,7 @@
  *  under the License.
  *
  */
-package org.wso2.mb.integration.common.utils.ui.Pages.configure;
+package org.wso2.mb.integration.common.utils.ui.pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,25 +25,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
-public class AddRoleStep1Page {
+public class UsersPage {
 
-    private static final Log log = LogFactory.getLog(AddRoleStep1Page.class);
+    private static final Log log = LogFactory.getLog(UsersPage.class);
     private WebDriver driver;
 
-    public AddRoleStep1Page(WebDriver driver){
+    public UsersPage(WebDriver driver){
         this.driver = driver;
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.sub.header.xpath")))
-                                                                            .getText().contains("Step 1 : Enter role details")) {
-            throw new IllegalStateException("This is not the Add Role step1 page");
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("configure.usr.mgt.users.header.xpath"))).getText().contains("Users")) {
+            throw new IllegalStateException("This is not the Users page");
         }
     }
 
-    public void setDetails(final String roleName) {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.name.field.xpath"))).sendKeys(roleName);
-    }
-
-    public AddRoleStep2Page next() {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step1.next.button.xpath"))).click();
-        return new AddRoleStep2Page(driver);
+    public AddUserStep1Page getAddNewUserPage() {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.new.usr.button.xpath"))).click();
+        return new AddUserStep1Page(driver);
     }
 }

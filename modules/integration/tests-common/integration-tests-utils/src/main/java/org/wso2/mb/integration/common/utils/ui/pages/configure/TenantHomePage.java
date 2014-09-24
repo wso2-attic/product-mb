@@ -16,34 +16,33 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.ui.Pages.main;
+package org.wso2.mb.integration.common.utils.ui.pages.configure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
-public class DLCBrowsePage {
-    private static final Log log = LogFactory.getLog(DLCBrowsePage.class);
+public class TenantHomePage {
+
+    private static final Log log = LogFactory.getLog(TenantHomePage.class);
     private WebDriver driver;
 
-    public DLCBrowsePage(WebDriver driver) throws IOException {
+    public TenantHomePage(WebDriver driver){
         this.driver = driver;
         // Check that we're on the right page.
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("home.dlc.header.xpath"))).getText().contains("Dead Letter Channel")) {
-            throw new IllegalStateException("This is not the DLC page");
+                .getElement("mb.tenant.home.page.menu.header.xpath"))).getText().contains("Home")) {
+            throw new IllegalStateException("This is not the tenant home page");
         }
     }
 
-    public boolean isTablePaginated(){
-        boolean isPaginated = true;
-
-
-        return isPaginated;
-
+    public LoginPage logout() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.tenant.sign.out.xpath"))).click();
+        return new LoginPage(driver);
     }
 }
