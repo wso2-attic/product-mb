@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.tests.amqp;
+package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

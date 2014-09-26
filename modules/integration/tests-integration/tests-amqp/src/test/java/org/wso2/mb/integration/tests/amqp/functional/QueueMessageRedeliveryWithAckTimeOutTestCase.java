@@ -1,4 +1,4 @@
-package org.wso2.mb.integration.tests.amqp;
+package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
