@@ -16,7 +16,11 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.tests.amqp;
+
+/**
+ * Send large messages (1MB and 10MB) to message broker and check if they are received
+ */
+package org.wso2.mb.integration.tests.amqp.load;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -24,13 +28,10 @@ import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
-import java.io.File;
+import java.io.*;
 
+public class QueueLargeMessageSendReceiveTestCase {
 
-/**
- * Send large messages (1MB and 10MB) to message broker and check if they are received
- */
-public class TopicLargeMessagePublishConsumeTestCase {
 
     @BeforeClass
     public void prepare() {
@@ -41,8 +42,8 @@ public class TopicLargeMessagePublishConsumeTestCase {
     /**
      * check with 1MB messages
      */
-    @Test(groups = {"wso2.mb", "topic"})
-    public void performTopicOneMBSizeMessageSendReceiveTestCase() {
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueueOneMBSizeMessageSendReceiveTestCase() {
         Integer sendCount = 10;
         Integer runTime = 120;
         Integer expectedCount = 10;
@@ -50,15 +51,15 @@ public class TopicLargeMessagePublishConsumeTestCase {
         String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator +"pom1mb.xml";
         AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent,pathOfFileToReadContent,1024);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic1MB",
+        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleLargeQueue1MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic1MB", "1", "false",
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleLargeQueue1MB", "1", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file="+pathOfFileToReadContent+",delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,file="+ pathOfFileToReadContent +",delayBetweenMsg=0,stopAfter="+sendCount, "");
 
         sendingClient.startWorking();
 
@@ -78,8 +79,8 @@ public class TopicLargeMessagePublishConsumeTestCase {
     /**
      * check with 10MB messages
      */
-    @Test(groups = {"wso2.mb", "topic"})
-    public void performTopicTenMBSizeMessageSendReceiveTestCase() {
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueueTenMBSizeMessageSendReceiveTestCase() {
         Integer sendCount = 10;
         Integer runTime = 120;
         Integer expectedCount = 10;
@@ -87,15 +88,15 @@ public class TopicLargeMessagePublishConsumeTestCase {
         String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator +"pom10mb.xml";
         AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent,pathOfFileToReadContent,10*1024);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic10MB",
+        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleLargeQueue10MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic10MB", "1", "false",
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleLargeQueue10MB", "1", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file="+pathOfFileToReadContent+",delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter="+sendCount, "");
 
         sendingClient.startWorking();
 
@@ -111,4 +112,6 @@ public class TopicLargeMessagePublishConsumeTestCase {
 
         Assert.assertEquals((receiveSuccess && sendSuccess), true);
     }
+
+
 }
