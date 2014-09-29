@@ -361,6 +361,7 @@
     </build>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <jline.version>1.0</jline.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
         <log4j.version>1.2.13</log4j.version>

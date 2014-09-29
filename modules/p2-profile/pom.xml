@@ -146,7 +146,9 @@
                                     org.wso2.carbon:org.wso2.carbon.tenant.deployment.feature:${carbon.platform.version}
                                 </featureArtifactDef>
 
-
+                                <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.cassandra.datareader.feature:${carbon.platform.version}
+                                </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.cassandra.server.feature:${carbon.platform.version}
                                 </featureArtifactDef>
@@ -265,6 +267,7 @@
                                     <id>org.wso2.carbon.registry.resource.properties.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
+
                                 <feature>
                                     <id>org.wso2.carbon.cassandra.server.feature.group</id>
                                     <version>${carbon.platform.version}</version>
@@ -403,7 +406,10 @@
                                     <id>org.wso2.carbon.user.mgt.feature.group</id>
                                     <version>${carbon.platform.version}</version>
                                 </feature>
-
+                                <feature>
+                                    <id>org.wso2.carbon.cassandra.datareader.feature.group</id>
+                                    <version>${carbon.platform.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>

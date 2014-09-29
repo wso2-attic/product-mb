@@ -239,8 +239,7 @@
         </file>
 
         <file>
-            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml
-            </source>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/repository/conf/carbon.xml</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
         </file>
@@ -260,11 +259,13 @@
         </file>
         <!--copying master-datasources.xml  -->
         <file>
-            <source>
-                src/main/conf/master-datasources.xml
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/datasources/
-            </outputDirectory>
+            <source>src/main/conf/master-datasources.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/datasources/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/resources/WSO2MB_DB.h2.db</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/database/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
         <file>
