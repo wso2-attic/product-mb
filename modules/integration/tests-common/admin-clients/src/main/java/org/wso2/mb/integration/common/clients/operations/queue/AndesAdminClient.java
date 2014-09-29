@@ -47,6 +47,18 @@ public class AndesAdminClient {
         return stub.getAllQueues();
     }
 
+    public Queue getQueueByName(String name) throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
+        Queue[] queues = stub.getAllQueues();
+
+        for (Queue queue : queues) {
+            if (queue.getQueueName().equalsIgnoreCase(name)) {
+                return queue;
+            }
+        }
+
+        return null;
+    }
+
     private void configureCookie(ServiceClient client) throws AxisFault {
         if(SessionCookie != null){
             Options option = client.getOptions();
