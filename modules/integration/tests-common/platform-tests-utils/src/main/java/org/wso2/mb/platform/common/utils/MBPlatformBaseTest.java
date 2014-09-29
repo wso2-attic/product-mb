@@ -44,12 +44,6 @@ public class MBPlatformBaseTest {
     protected String backendURL;
     protected Map<String, AutomationContext> contextMap;
 
-
-    protected void init(TestUserMode userMode) throws Exception {
-        automationContext = new AutomationContext("MB_Cluster", "mb001", userMode);
-        backendURL = automationContext.getContextUrls().getBackEndUrl();
-    }
-
     protected void initCluster(TestUserMode userMode) throws XPathExpressionException {
         contextMap = new HashMap<String, AutomationContext>();
 
