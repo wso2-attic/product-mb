@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.mb.integration.common.utils.backend;
+package org.wso2.mb.platform.common.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class MBPlatformBaseTest {
 
-    protected Log log = LogFactory.getLog(MBIntegrationBaseTest.class);
+    protected Log log = LogFactory.getLog(MBPlatformBaseTest.class);
     protected AutomationContext automationContext;
     protected String backendURL;
     protected Map<String, AutomationContext> contextMap;
