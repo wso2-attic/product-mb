@@ -34,6 +34,7 @@ public class TopicAdminClient {
     String backendUrl = null;
     String SessionCookie = null;
     ConfigurationContext configurationContext = null;
+    TopicManagerAdminServiceStub stub = null;
 
     public TopicAdminClient(String backendUrl, String sessionCookie,
                             ConfigurationContext configurationContext) {
@@ -43,28 +44,22 @@ public class TopicAdminClient {
         this.SessionCookie = sessionCookie;
         this.configurationContext = configurationContext;
 
+        stub = new TopicManagerAdminServiceStub(configurationContext,
+                backendUrl);
+
+        configureCookie(stub._getServiceClient());
+
     }
 
     public void addTopic(String topic) throws Exception {
-
-        TopicManagerAdminServiceStub stub = new TopicManagerAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         stub.addTopic(topic);
     }
 
     public TopicNode getAllTopics() throws Exception {
-        TopicManagerAdminServiceStub stub = new TopicManagerAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         return stub.getAllTopics();
     }
 
     public void removeTopic(String topic) throws Exception {
-
-        TopicManagerAdminServiceStub stub = new TopicManagerAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         stub.removeTopic(topic);
     }
 

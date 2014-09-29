@@ -20,6 +20,7 @@ public class AndesAdminClient {
     String backendUrl = null;
     String SessionCookie = null;
     ConfigurationContext configurationContext = null;
+    AndesAdminServiceStub stub = null;
 
     public AndesAdminClient(String backendUrl, String sessionCookie,
                             ConfigurationContext configurationContext) {
@@ -28,27 +29,21 @@ public class AndesAdminClient {
                 + "AndesAdminService";
         this.SessionCookie = sessionCookie;
         this.configurationContext = configurationContext;
+        stub = new AndesAdminServiceStub(configurationContext,
+                backendUrl);
+        configureCookie(stub._getServiceClient());
 
     }
 
     public void createQueue(String queue) throws Exception {
-        AndesAdminServiceStub stub = new AndesAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         stub.createQueue(queue);
     }
 
     public void deleteQueue(String queue) throws Exception {
-        AndesAdminServiceStub stub = new AndesAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         stub.deleteQueue(queue);
     }
 
     public Queue[] getAllQueues() throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
-        AndesAdminServiceStub stub = new AndesAdminServiceStub(configurationContext,
-                backendUrl);
-        configureCookie(stub._getServiceClient());
         return stub.getAllQueues();
     }
 
