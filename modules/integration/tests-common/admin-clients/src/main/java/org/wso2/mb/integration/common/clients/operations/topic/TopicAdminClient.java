@@ -37,7 +37,7 @@ public class TopicAdminClient {
     TopicManagerAdminServiceStub stub = null;
 
     public TopicAdminClient(String backendUrl, String sessionCookie,
-                            ConfigurationContext configurationContext) {
+                            ConfigurationContext configurationContext) throws AxisFault {
 
         this.backendUrl = backendUrl
                 + "TopicManagerAdminService.TopicManagerAdminServiceHttpsSoap12Endpoint";
@@ -71,7 +71,4 @@ public class TopicAdminClient {
                     SessionCookie);
         }
     }
-
-
-
 }

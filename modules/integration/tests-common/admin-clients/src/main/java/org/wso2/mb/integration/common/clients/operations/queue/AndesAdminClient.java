@@ -23,7 +23,7 @@ public class AndesAdminClient {
     AndesAdminServiceStub stub = null;
 
     public AndesAdminClient(String backendUrl, String sessionCookie,
-                            ConfigurationContext configurationContext) {
+                            ConfigurationContext configurationContext) throws AxisFault {
 
         this.backendUrl = backendUrl
                 + "AndesAdminService";
