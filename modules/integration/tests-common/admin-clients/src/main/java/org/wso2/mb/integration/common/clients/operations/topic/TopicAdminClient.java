@@ -45,7 +45,7 @@ public class TopicAdminClient {
         this.configurationContext = configurationContext;
 
         stub = new TopicManagerAdminServiceStub(configurationContext,
-                backendUrl);
+                this.backendUrl);
 
         configureCookie(stub._getServiceClient());
 
@@ -61,6 +61,19 @@ public class TopicAdminClient {
 
     public void removeTopic(String topic) throws Exception {
         stub.removeTopic(topic);
+    }
+
+    public TopicNode getTopicByName(String topic) throws Exception {
+        TopicNode[] topicNodes = stub.getAllTopics().getChildren();
+        if (topicNodes != null && topicNodes.length > 0) {
+            for (TopicNode topicNode : topicNodes) {
+                if (topicNode.getTopicName().equalsIgnoreCase(topic)) {
+                    return topicNode;
+                }
+            }
+        }
+
+        return null;
     }
 
     private void configureCookie(ServiceClient client) throws AxisFault {

@@ -30,7 +30,7 @@ public class AndesAdminClient {
         this.SessionCookie = sessionCookie;
         this.configurationContext = configurationContext;
         stub = new AndesAdminServiceStub(configurationContext,
-                backendUrl);
+                this.backendUrl);
         configureCookie(stub._getServiceClient());
 
     }
@@ -50,9 +50,12 @@ public class AndesAdminClient {
     public Queue getQueueByName(String name) throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
         Queue[] queues = stub.getAllQueues();
 
-        for (Queue queue : queues) {
-            if (queue.getQueueName().equalsIgnoreCase(name)) {
-                return queue;
+        if (queues != null && queues.length > 0) {
+            for (Queue queue : queues) {
+                if (queue.getQueueName().equalsIgnoreCase(name)) {
+                    return queue;
+
+                }
             }
         }
 
