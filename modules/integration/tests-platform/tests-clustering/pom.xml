@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>org.wso2.mb</groupId>
-        <artifactId>mb-integration-tests</artifactId>
+        <artifactId>org.wso2.mb.platform.tests</artifactId>
         <version>3.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -217,6 +217,17 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.event.stub</artifactId>
+            <version>${carbon.platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.andes.stub</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.wso2.carbon.automation</groupId>
             <artifactId>org.wso2.carbon.automation.engine</artifactId>

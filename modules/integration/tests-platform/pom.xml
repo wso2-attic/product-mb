@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <!--<module>tests-amqp</module>-->
+        <module>tests-clustering</module>
         <!--<module>tests-server</module>-->
     </modules>
 </project>
