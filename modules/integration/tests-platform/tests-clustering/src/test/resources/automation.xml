@@ -199,7 +199,6 @@
         cluster instance details to be used to platform test execution
         -->
         <productGroup name="MB_Cluster" clusteringEnabled="false" default="true">
-
             <instance name="mb002" type="standalone" nonBlockingTransportEnabled="false">
                 <hosts>
                     <host type="default">204.13.85.3</host>
@@ -239,11 +238,11 @@
 		<!--<parameter name="-DportOffset" value="0" />-->
 		<!--<parameter name="cmdArg" value="debug 5005" />-->
 	</class>
-	<class>
+	<!--<class>
 		<name>org.wso2.carbon.integration.common.extensions.usermgt.UserPopulateExtension</name>
-		<!--<parameter name="-DportOffset" value="0" />-->
-		<!--<parameter name="cmdArg" value="debug 5005" />-->
-	</class>
+		&lt;!&ndash;<parameter name="-DportOffset" value="0" />&ndash;&gt;
+		&lt;!&ndash;<parameter name="cmdArg" value="debug 5005" />&ndash;&gt;
+	</class>-->
             </extentionClasses>
         </platformExecutionManager>
 

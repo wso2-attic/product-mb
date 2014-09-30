@@ -9,7 +9,6 @@ import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
@@ -30,12 +29,14 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     private AndesAdminClient andesAdminClient2;
 
 
+
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
 
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
+        super.initAndesAdminClients();
 
-        automationContext1 = getAutomationContextWithKey("mb002");
+        /*automationContext1 = getAutomationContextWithKey("mb002");
         automationContext2 = getAutomationContextWithKey("mb003");
 
         andesAdminClient1 = new AndesAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
@@ -43,6 +44,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         andesAdminClient2 = new AndesAdminClient(automationContext2.getContextUrls().getBackEndUrl(),
                 super.login(automationContext2), ConfigurationContextProvider.getInstance().getConfigurationContext());
+*/
 
     }
 
@@ -53,8 +55,12 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         Integer runTime = 20;
         Integer expectedCount = 1000;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("qpid");
+        String randomInstanceKey = getRandomInstance(null);
+
+        AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
+
+        String hostinfo = tempContext.getInstance().getHosts().get("default") + ":" +
+                tempContext.getInstance().getPorts().get("qpid");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo
                 , "queue:singleQueue1",
@@ -63,8 +69,9 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         receivingClient.startWorking();
 
+        randomInstanceKey = getRandomInstance(randomInstanceKey);
         boolean bQueueReplicated = false;
-        Queue queue = andesAdminClient1.getQueueByName("singleQueue1");
+        Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("singleQueue1");
 
         assertTrue(queue.getQueueName().equalsIgnoreCase("singleQueue1"), "Queue created in MB node 1 not exist");
 
@@ -88,35 +95,51 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     }
 
 
-    @Test(groups = "wso2.mb", description = "Single queue replication", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single queue replication", enabled = true)
     public void testSingleQueueReplication() throws Exception {
 
         String queueName = "singleQueue2";
         boolean bQueueReplicated = false;
 
-        andesAdminClient1.createQueue(queueName);
-        Queue queue = andesAdminClient2.getQueueByName(queueName);
+        String randomInstanceKey = getRandomInstance(null);
+
+        AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+
+        if (tempAndesAdminClient.getQueueByName(queueName) != null) {
+            tempAndesAdminClient.deleteQueue(queueName);
+        }
+
+        tempAndesAdminClient.createQueue(queueName);
+
+        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+        Queue queue = tempAndesAdminClient.getQueueByName(queueName);
 
         assertTrue(queue != null && queue.getQueueName().equalsIgnoreCase(queueName) ,
-                "Queue created in MB node 1 not replicated in MB node 2");
+                "Queue created in MB node instance not replicated in other MB node instance");
 
-        andesAdminClient2.deleteQueue(queueName);
-        queue = andesAdminClient1.getQueueByName(queueName);
+        tempAndesAdminClient.deleteQueue(queueName);
+        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+        queue = tempAndesAdminClient.getQueueByName(queueName);
 
         assertTrue(queue == null,
-                "Queue deleted in MB node 2 not deleted in MB node 1");
+                "Queue created in MB node instance not replicated in other MB node instance");
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case", enabled = true)
+    @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case", enabled = false)
     public void testSingleQueueMultiNodeSendReceive() throws XPathExpressionException,
             AndesAdminServiceBrokerManagerAdminException, RemoteException {
         Integer sendCount = 1000;
         Integer runTime = 20;
         Integer expectedCount = 1000;
 
-        String hostinfo1 = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("qpid");
+        String randomInstanceKey = getRandomInstance(null);
+        AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
+
+        String hostinfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
+                tempContext.getInstance().getPorts().get("qpid");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo1
                 , "queue:singleQueue3",
@@ -125,10 +148,11 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         receivingClient.startWorking();
 
-        Queue queue = andesAdminClient2.getQueueByName("singleQueue3");
+        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        String hostinfo2 = automationContext2.getInstance().getHosts().get("default") + ":" +
-                automationContext2.getInstance().getPorts().get("qpid");
+        String hostinfo2 = tempContext.getInstance().getHosts().get("default") + ":" +
+                tempContext.getInstance().getPorts().get("qpid");
 
         AndesClient sendingClient = new AndesClient("send", hostinfo2
                 , "queue:singleQueue3", "100", "false",
@@ -154,10 +178,21 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy() throws Exception {
 
-        andesAdminClient1.deleteQueue("singleQueue1");
-        andesAdminClient1.deleteQueue("singleQueue2");
-        andesAdminClient1.deleteQueue("singleQueue3");
+        String randomInstanceKey = getRandomInstance(null);
 
+        AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+
+        if (tempAndesAdminClient.getQueueByName("singleQueue1") != null) {
+            tempAndesAdminClient.deleteQueue("singleQueue1");
+        }
+
+        if (tempAndesAdminClient.getQueueByName("singleQueue2") != null) {
+            tempAndesAdminClient.deleteQueue("singleQueue2");
+        }
+
+        if (tempAndesAdminClient.getQueueByName("singleQueue3") != null) {
+            tempAndesAdminClient.deleteQueue("singleQueue3");
+        }
     }
 
 }
