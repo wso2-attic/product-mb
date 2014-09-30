@@ -35,17 +35,6 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
-
-        /*automationContext1 = getAutomationContextWithKey("mb002");
-        automationContext2 = getAutomationContextWithKey("mb003");
-
-        andesAdminClient1 = new AndesAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
-                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
-
-        andesAdminClient2 = new AndesAdminClient(automationContext2.getContextUrls().getBackEndUrl(),
-                super.login(automationContext2), ConfigurationContextProvider.getInstance().getConfigurationContext());
-*/
-
     }
 
     @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case", enabled = false)
@@ -55,7 +44,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         Integer runTime = 20;
         Integer expectedCount = 1000;
 
-        String randomInstanceKey = getRandomInstance(null);
+        String randomInstanceKey = getRandomMBInstance();
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
@@ -69,7 +58,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         receivingClient.startWorking();
 
-        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        randomInstanceKey = getRandomMBInstance();
         boolean bQueueReplicated = false;
         Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("singleQueue1");
 
@@ -83,14 +72,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
 
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
         assertEquals((receiveSuccess && sendSuccess), true);
     }
 
@@ -101,7 +84,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         String queueName = "singleQueue2";
         boolean bQueueReplicated = false;
 
-        String randomInstanceKey = getRandomInstance(null);
+        String randomInstanceKey = getRandomMBInstance();
 
         AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
 
@@ -111,7 +94,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         tempAndesAdminClient.createQueue(queueName);
 
-        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        randomInstanceKey = getRandomMBInstance();
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
         Queue queue = tempAndesAdminClient.getQueueByName(queueName);
 
@@ -119,7 +102,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                 "Queue created in MB node instance not replicated in other MB node instance");
 
         tempAndesAdminClient.deleteQueue(queueName);
-        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        randomInstanceKey = getRandomMBInstance();
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
         queue = tempAndesAdminClient.getQueueByName(queueName);
 
@@ -135,7 +118,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         Integer runTime = 20;
         Integer expectedCount = 1000;
 
-        String randomInstanceKey = getRandomInstance(null);
+        String randomInstanceKey = getRandomMBInstance();
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         String hostinfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
@@ -148,13 +131,13 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         receivingClient.startWorking();
 
-        randomInstanceKey = getRandomInstance(randomInstanceKey);
+        randomInstanceKey = getRandomMBInstance();
         tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        String hostinfo2 = tempContext.getInstance().getHosts().get("default") + ":" +
+        String hostInfo2 = tempContext.getInstance().getHosts().get("default") + ":" +
                 tempContext.getInstance().getPorts().get("qpid");
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo2
+        AndesClient sendingClient = new AndesClient("send", hostInfo2
                 , "queue:singleQueue3", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
@@ -162,14 +145,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
-
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
 
         assertEquals((receiveSuccess && sendSuccess), true);
     }
@@ -178,7 +154,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy() throws Exception {
 
-        String randomInstanceKey = getRandomInstance(null);
+        String randomInstanceKey = getRandomMBInstance();
 
         AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
 
