@@ -5,29 +5,25 @@ import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
-import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
-
-import javax.xml.xpath.XPathExpressionException;
-import java.rmi.RemoteException;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class QueueClusterTestCase extends MBPlatformBaseTest {
+public class TopicClusterTestCase extends MBPlatformBaseTest {
 
-    private static final Log log = LogFactory.getLog(QueueClusterTestCase.class);
-    AutomationContext automationContext1;
-    AutomationContext automationContext2;
-    private AndesAdminClient andesAdminClient1;
-    private AndesAdminClient andesAdminClient2;
+    private static final Log log = LogFactory.getLog(TopicClusterTestCase.class);
+    private AutomationContext automationContext1;
+    private AutomationContext automationContext2;
+    private TopicAdminClient topicAdminClient1;
+    private TopicAdminClient topicAdminClient2;
 
 
     @BeforeClass(alwaysRun = true)
@@ -38,17 +34,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         automationContext1 = getAutomationContextWithKey("mb002");
         automationContext2 = getAutomationContextWithKey("mb003");
 
-        andesAdminClient1 = new AndesAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
+        topicAdminClient1 = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
                 super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
-        andesAdminClient2 = new AndesAdminClient(automationContext2.getContextUrls().getBackEndUrl(),
+        topicAdminClient2 = new TopicAdminClient(automationContext2.getContextUrls().getBackEndUrl(),
                 super.login(automationContext2), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case", enabled = false)
-    public void testSingleQueueSingleNodeSendReceive() throws XPathExpressionException,
-            AndesAdminServiceBrokerManagerAdminException, RemoteException {
+    @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case", enabled = false)
+    public void testSingleTopicSingleNodeSendReceive() throws Exception {
         Integer sendCount = 1000;
         Integer runTime = 20;
         Integer expectedCount = 1000;
@@ -57,19 +52,19 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                 automationContext1.getInstance().getPorts().get("qpid");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "queue:singleQueue1",
+                , "topic:singleTopic1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
 
         receivingClient.startWorking();
 
         boolean bQueueReplicated = false;
-        Queue queue = andesAdminClient1.getQueueByName("singleQueue1");
+        TopicNode topic = topicAdminClient1.getTopicByName("singleTopic1");
 
-        assertTrue(queue.getQueueName().equalsIgnoreCase("singleQueue1"), "Queue created in MB node 1 not exist");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("singleTopic1"), "Topic created in MB node 1 not exist");
 
         AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "queue:singleQueue1", "100", "false",
+                , "topic:singleTopic1", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
 
@@ -77,7 +72,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         if(receiveSuccess && sendSuccess) {
             System.out.println("TEST PASSED");
@@ -88,29 +83,28 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     }
 
 
-    @Test(groups = "wso2.mb", description = "Single queue replication", enabled = false)
-    public void testSingleQueueReplication() throws Exception {
+    @Test(groups = "wso2.mb", description = "Single topic replication", enabled = false)
+    public void testSingleTopicReplication() throws Exception {
 
-        String queueName = "singleQueue2";
+        String topic = "singleTopic2";
         boolean bQueueReplicated = false;
 
-        andesAdminClient1.createQueue(queueName);
-        Queue queue = andesAdminClient2.getQueueByName(queueName);
+        topicAdminClient1.addTopic(topic);
+        TopicNode topicNode = topicAdminClient2.getTopicByName(topic);
 
-        assertTrue(queue != null && queue.getQueueName().equalsIgnoreCase(queueName) ,
-                "Queue created in MB node 1 not replicated in MB node 2");
+        assertTrue(topicNode != null && topicNode.getTopicName().equalsIgnoreCase(topic),
+                "Topic created in MB node 1 not replicated in MB node 2");
 
-        andesAdminClient2.deleteQueue(queueName);
-        queue = andesAdminClient1.getQueueByName(queueName);
+        topicAdminClient2.removeTopic(topic);
+        topicNode = topicAdminClient2.getTopicByName(topic);
 
-        assertTrue(queue == null,
-                "Queue deleted in MB node 2 not deleted in MB node 1");
+        assertTrue(topicNode == null,
+                "Topic deleted in MB node 2 not deleted in MB node 1");
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case", enabled = true)
-    public void testSingleQueueMultiNodeSendReceive() throws XPathExpressionException,
-            AndesAdminServiceBrokerManagerAdminException, RemoteException {
+    @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case", enabled = false)
+    public void testSingleTopicMultiNodeSendReceive() throws Exception {
         Integer sendCount = 1000;
         Integer runTime = 20;
         Integer expectedCount = 1000;
@@ -119,19 +113,19 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                 automationContext1.getInstance().getPorts().get("qpid");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo1
-                , "queue:singleQueue3",
+                , "topic:singleTopic3",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
 
         receivingClient.startWorking();
 
-        Queue queue = andesAdminClient2.getQueueByName("singleQueue3");
+        TopicNode topicNode = topicAdminClient2.getTopicByName("singleTopic3");
 
         String hostinfo2 = automationContext2.getInstance().getHosts().get("default") + ":" +
                 automationContext2.getInstance().getPorts().get("qpid");
 
         AndesClient sendingClient = new AndesClient("send", hostinfo2
-                , "queue:singleQueue3", "100", "false",
+                , "topic:singleTopic3", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
 
@@ -139,7 +133,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         if(receiveSuccess && sendSuccess) {
             System.out.println("TEST PASSED");
@@ -154,10 +148,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy() throws Exception {
 
-        andesAdminClient1.deleteQueue("singleQueue1");
-        andesAdminClient1.deleteQueue("singleQueue2");
-        andesAdminClient1.deleteQueue("singleQueue3");
-
+        topicAdminClient1.removeTopic("singleTopic1");
+        topicAdminClient1.removeTopic("singleTopic2");
+        topicAdminClient1.removeTopic("singleTopic3");
     }
-
 }
