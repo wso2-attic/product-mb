@@ -7,7 +7,7 @@
         <classes>
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedQueueTestCase" />-->
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedDurableTopicTestCase" />-->
-            <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
         </classes>
     </test>
 </suite>
