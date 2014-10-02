@@ -102,7 +102,7 @@ public class MBPlatformBaseTest {
 
         if (andesAdminClients != null && andesAdminClients.size() > 0) {
             for (Map.Entry<String, AndesAdminClient> entry : andesAdminClients.entrySet()) {
-                if (entry.getKey().toString().equalsIgnoreCase(key)) {
+                if (entry.getKey().equalsIgnoreCase(key)) {
                     return entry.getValue();
                 }
             }
@@ -121,7 +121,7 @@ public class MBPlatformBaseTest {
 
         if (topicAdminClients != null && topicAdminClients.size() > 0) {
             for (Map.Entry<String, TopicAdminClient> entry : topicAdminClients.entrySet()) {
-                if (entry.getKey().toString().equalsIgnoreCase(key)) {
+                if (entry.getKey().equalsIgnoreCase(key)) {
                     return entry.getValue();
                 }
             }
@@ -246,7 +246,7 @@ public class MBPlatformBaseTest {
             }
         }
 
-        return true;
+        return bDeleted;
     }
 
     /**
@@ -270,7 +270,7 @@ public class MBPlatformBaseTest {
             }
         }
 
-        return true;
+        return bExist;
     }
 
 }

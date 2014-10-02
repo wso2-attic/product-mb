@@ -1,3 +1,21 @@
+/*
+*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 package org.wso2.mb.platform.tests.clustering;
 
 import org.apache.commons.logging.Log;
@@ -23,12 +41,6 @@ import static org.testng.Assert.assertTrue;
 public class QueueClusterTestCase extends MBPlatformBaseTest {
 
     private static final Log log = LogFactory.getLog(QueueClusterTestCase.class);
-    AutomationContext automationContext1;
-    AutomationContext automationContext2;
-    private AndesAdminClient andesAdminClient1;
-    private AndesAdminClient andesAdminClient2;
-
-
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
@@ -37,7 +49,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         super.initAndesAdminClients();
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case")
     public void testSingleQueueSingleNodeSendReceive() throws XPathExpressionException,
             AndesAdminServiceBrokerManagerAdminException, RemoteException {
         Integer sendCount = 1000;
@@ -48,10 +60,10 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        String hostinfo = tempContext.getInstance().getHosts().get("default") + ":" +
+        String hostInfo = tempContext.getInstance().getHosts().get("default") + ":" +
                 tempContext.getInstance().getPorts().get("qpid");
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
+        AndesClient receivingClient = new AndesClient("receive", hostInfo
                 , "queue:singleQueue1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
@@ -59,12 +71,12 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         receivingClient.startWorking();
 
         randomInstanceKey = getRandomMBInstance();
-        boolean bQueueReplicated = false;
+
         Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("singleQueue1");
 
         assertTrue(queue.getQueueName().equalsIgnoreCase("singleQueue1"), "Queue created in MB node 1 not exist");
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
+        AndesClient sendingClient = new AndesClient("send", hostInfo
                 , "queue:singleQueue1", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
@@ -78,11 +90,10 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     }
 
 
-    @Test(groups = "wso2.mb", description = "Single queue replication", enabled = true)
+    @Test(groups = "wso2.mb", description = "Single queue replication")
     public void testSingleQueueReplication() throws Exception {
 
         String queueName = "singleQueue2";
-        boolean bQueueReplicated = false;
 
         String randomInstanceKey = getRandomMBInstance();
 
@@ -111,7 +122,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case")
     public void testSingleQueueMultiNodeSendReceive() throws XPathExpressionException,
             AndesAdminServiceBrokerManagerAdminException, RemoteException {
         Integer sendCount = 1000;
@@ -121,10 +132,10 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         String randomInstanceKey = getRandomMBInstance();
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        String hostinfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
+        String hostInfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
                 tempContext.getInstance().getPorts().get("qpid");
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo1
+        AndesClient receivingClient = new AndesClient("receive", hostInfo1
                 , "queue:singleQueue3",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");

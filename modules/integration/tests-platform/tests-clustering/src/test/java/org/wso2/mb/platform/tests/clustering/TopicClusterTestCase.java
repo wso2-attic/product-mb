@@ -42,7 +42,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case")
     public void testSingleTopicSingleNodeSendReceive() throws Exception {
         Integer sendCount = 1000;
         Integer runTime = 20;
@@ -83,7 +83,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     }
 
 
-    @Test(groups = "wso2.mb", description = "Single topic replication", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single topic replication")
     public void testSingleTopicReplication() throws Exception {
 
         String topic = "singleTopic2";
@@ -103,7 +103,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
 
     }
 
-    @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case", enabled = false)
+    @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case")
     public void testSingleTopicMultiNodeSendReceive() throws Exception {
         Integer sendCount = 1000;
         Integer runTime = 20;
