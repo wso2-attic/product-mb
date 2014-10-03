@@ -8,6 +8,10 @@
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedQueueTestCase" />-->
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedDurableTopicTestCase" />-->
             <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>
         </classes>
     </test>
 </suite>

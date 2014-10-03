@@ -273,4 +273,18 @@ public class MBPlatformBaseTest {
         return bExist;
     }
 
+    /**
+     * Give a random AMQP broker URL.
+     *
+     * @return Broker URL in host:port format (E.g "127.0.0.1:5672")
+     * @throws XPathExpressionException
+     */
+    protected String getRandomAMQPBrokerUrl() throws XPathExpressionException {
+        String randomInstanceKey = getRandomMBInstance();
+        AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
+
+        return tempContext.getInstance().getHosts().get("default") + ":" +
+               tempContext.getInstance().getPorts().get("qpid");
+    }
+
 }
