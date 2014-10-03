@@ -53,9 +53,7 @@ public class QueueMessageSequencialAndDuplicateTestCase {
         }
 
         boolean isMessagesAreInOrder = receivingClient.checkIfMessagesAreInOrder();
-        if(isMessagesAreInOrder) {
-            System.out.println("***Messages Are In Order");
-        }
+        Assert.assertTrue(isMessagesAreInOrder, "Messages are not in order");
 
         Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
         if(duplicateMessages.keySet().size() == 0) {
