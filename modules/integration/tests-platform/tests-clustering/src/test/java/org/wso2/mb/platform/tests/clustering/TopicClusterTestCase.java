@@ -49,7 +49,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         Integer expectedCount = 1000;
 
         String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("qpid");
+                automationContext1.getInstance().getPorts().get("amqp");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo
                 , "topic:singleTopic1",
@@ -110,7 +110,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         Integer expectedCount = 1000;
 
         String hostinfo1 = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("qpid");
+                automationContext1.getInstance().getPorts().get("amqp");
 
         AndesClient receivingClient = new AndesClient("receive", hostinfo1
                 , "topic:singleTopic3",
@@ -122,7 +122,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         TopicNode topicNode = topicAdminClient2.getTopicByName("singleTopic3");
 
         String hostinfo2 = automationContext2.getInstance().getHosts().get("default") + ":" +
-                automationContext2.getInstance().getPorts().get("qpid");
+                automationContext2.getInstance().getPorts().get("amqp");
 
         AndesClient sendingClient = new AndesClient("send", hostinfo2
                 , "topic:singleTopic3", "100", "false",

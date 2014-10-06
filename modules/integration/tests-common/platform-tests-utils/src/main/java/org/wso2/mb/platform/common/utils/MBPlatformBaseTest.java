@@ -284,7 +284,7 @@ public class MBPlatformBaseTest {
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         return tempContext.getInstance().getHosts().get("default") + ":" +
-               tempContext.getInstance().getPorts().get("qpid");
+               tempContext.getInstance().getPorts().get("amqp");
     }
 
 }
