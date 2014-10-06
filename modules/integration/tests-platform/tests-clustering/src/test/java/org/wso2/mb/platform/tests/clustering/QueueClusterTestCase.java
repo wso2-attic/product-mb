@@ -61,7 +61,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         String hostInfo = tempContext.getInstance().getHosts().get("default") + ":" +
-                tempContext.getInstance().getPorts().get("qpid");
+                tempContext.getInstance().getPorts().get("amqp");
 
         AndesClient receivingClient = new AndesClient("receive", hostInfo
                 , "queue:singleQueue1",
@@ -133,7 +133,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         String hostInfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
-                tempContext.getInstance().getPorts().get("qpid");
+                tempContext.getInstance().getPorts().get("amqp");
 
         AndesClient receivingClient = new AndesClient("receive", hostInfo1
                 , "queue:singleQueue3",
@@ -146,7 +146,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         String hostInfo2 = tempContext.getInstance().getHosts().get("default") + ":" +
-                tempContext.getInstance().getPorts().get("qpid");
+                tempContext.getInstance().getPorts().get("amqp");
 
         AndesClient sendingClient = new AndesClient("send", hostInfo2
                 , "queue:singleQueue3", "100", "false",

@@ -206,7 +206,7 @@
                 <ports>
                     <port type="http">9783</port>
                     <port type="https">9463</port>
-                    <port type="qpid">5692</port>
+                    <port type="amqp">5692</port>
                 </ports>
                 <properties>
 
@@ -219,7 +219,7 @@
                 <ports>
                     <port type="http">9783</port>
                     <port type="https">9463</port>
-                    <port type="qpid">5692</port>
+                    <port type="amqp">5692</port>
                 </ports>
                 <properties>
 
