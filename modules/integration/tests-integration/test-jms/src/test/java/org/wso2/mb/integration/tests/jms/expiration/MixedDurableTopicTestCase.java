@@ -17,8 +17,6 @@
 */
 package org.wso2.mb.integration.tests.jms.expiration;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
