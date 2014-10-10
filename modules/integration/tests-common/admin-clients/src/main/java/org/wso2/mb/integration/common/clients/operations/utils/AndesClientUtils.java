@@ -36,7 +36,7 @@ public class AndesClientUtils {
                 printWriterGlobal =  printWriter;
             }
 
-            printWriterGlobal.println(whatToWrite);
+            printWriterGlobal.print(whatToWrite);
 
         } catch (IOException e) {
             System.out.println("Error. File to print received messages is not provided" + e);

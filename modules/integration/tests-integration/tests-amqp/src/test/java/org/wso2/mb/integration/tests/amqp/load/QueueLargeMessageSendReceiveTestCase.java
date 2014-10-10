@@ -1,20 +1,20 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *   WSO2 Inc. licenses this file to you under the Apache License,
+ *   Version 2.0 (the "License"); you may not use this file except
+ *   in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing,
+ *   software distributed under the License is distributed on an
+ *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *   KIND, either express or implied.  See the License for the
+ *   specific language governing permissions and limitations
+ *   under the License.
+ */
 
 
 /**
@@ -25,17 +25,32 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.io.*;
 
-public class QueueLargeMessageSendReceiveTestCase {
+import static org.testng.Assert.assertEquals;
 
+public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest {
 
-    @BeforeClass
-    public void prepare() {
-        System.out.println("=========================================================================");
+    // Input file to read a 1MB message content.
+    String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
+            "MessageContentInput.txt";
+
+    // 1MB size.
+    public static final int SIZE_TO_READ = 1024 * 1024;
+
+    /**
+     * Initialize the test as super tenant user.
+     *
+     * @throws Exception
+     */
+    @BeforeClass(alwaysRun = true)
+    public void init() throws Exception {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -44,42 +59,49 @@ public class QueueLargeMessageSendReceiveTestCase {
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueueOneMBSizeMessageSendReceiveTestCase() {
-        Integer sendCount = 10;
-        Integer runTime = 120;
-        Integer expectedCount = 10;
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator +"sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator +"pom1mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent,pathOfFileToReadContent,1024);
+        Integer sendCount = 1000;
+        Integer runTime = 20;
+        Integer expectedCount = sendCount;
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleLargeQueue1MB",
-                "1", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+        String queueNameArg = "queue:Queue1MBSendReceive";
+
+        char[] inputContent = new char[SIZE_TO_READ];
+
+        try {
+            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
+            inputFileReader.read(inputContent);
+        } catch (FileNotFoundException e) {
+            log.warn("Error locating input content from file : " + messageContentInputFilePath);
+        } catch (IOException e) {
+            log.warn("Error reading input content from file : " + messageContentInputFilePath);
+        }
+
+        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleLargeQueue1MB", "1", "false",
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "true",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file="+ pathOfFileToReadContent +",delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, sendCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
+        Integer actualReceiveCount = receivingClient.getReceivedqueueMessagecount();
 
-        Assert.assertEquals((receiveSuccess && sendSuccess), true);
+        assertEquals((receiveSuccess && sendSuccess), true);
+        assertEquals(actualReceiveCount,sendCount);
     }
 
     /**
      * check with 10MB messages
      */
-    @Test(groups = {"wso2.mb", "queue"})
+    @Test(groups = {"wso2.mb", "queue"}, enabled = false)
     public void performQueueTenMBSizeMessageSendReceiveTestCase() {
         Integer sendCount = 10;
         Integer runTime = 120;
