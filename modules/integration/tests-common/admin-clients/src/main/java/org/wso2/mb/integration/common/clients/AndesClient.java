@@ -39,7 +39,7 @@ public class AndesClient {
 
     private AtomicInteger queueMessageCounter = new AtomicInteger(0);
     private AtomicInteger topicMessageCounter = new AtomicInteger(0);
-    public String filePathToWriteReceivedMessages = System.getProperty("resources.dir") + File.separator +"receivedMessages.txt";
+    public String filePathToWriteReceivedMessages = System.getProperty("framework.resource.location") + File.separator +"receivedMessages.txt";
 
     private String mode = "";
 
@@ -300,6 +300,7 @@ public class AndesClient {
                         if (fileToWriteReceivedMessages.exists()) {
                             fileToWriteReceivedMessages.delete();
                         }
+                        fileToWriteReceivedMessages.getParentFile().mkdirs();
                         fileToWriteReceivedMessages.createNewFile();
                     } catch (IOException e) {
                         log.info("Cannot create a file to append receive messages" + e);

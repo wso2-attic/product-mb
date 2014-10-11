@@ -68,8 +68,8 @@ public class QueueTestCase extends MBIntegrationBaseTest{
         assertEquals((receiveSuccess && sendSuccess), true);
     }
 
-
-    @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name as queue")
+    // Disabled until topic workflow is implemented
+    @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name as queue", enabled = false)
     public void performSubTopicPubQueueTestCase() {
 
         Integer sendCount = 1000;

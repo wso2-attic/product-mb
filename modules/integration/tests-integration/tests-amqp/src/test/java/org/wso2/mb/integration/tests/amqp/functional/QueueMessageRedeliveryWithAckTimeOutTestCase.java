@@ -30,7 +30,7 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase {
         Integer sendCount = 2;
 
         //wait until messages go to DLC and some more time to verify no more messages are coming
-        Integer expectedCount = defaultMaxRedeliveryAttempts * sendCount + 100;
+        Integer expectedCount = defaultMaxRedeliveryAttempts * sendCount;
 
         //wait until messages go to DLC and some more time to verify no more messages are coming
         Integer runTime = defaultAckWaitTimeout*defaultMaxRedeliveryAttempts + 200;

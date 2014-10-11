@@ -128,6 +128,10 @@ public class QueueMessageSender implements Runnable{
                         sb.append('\n');
                         line = br.readLine();
                     }
+
+                    // Remove the last appended next line since there is no next line.
+                    sb.replace(sb.length() - 1, sb.length() + 1, "");
+
                     everything = sb.toString();
                 } finally {
 
@@ -142,12 +146,17 @@ public class QueueMessageSender implements Runnable{
                 if(!readFromFile) {
                     textMessage = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- ThreadID:"+threadID);
                 }else {
-                    textMessage = queueSession.createTextMessage("sending Message:-" + messageCounter.get() +"- ThreadID:"+threadID +"  " + everything);
+                    textMessage = queueSession.createTextMessage(everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
 
-                queueSender.send(textMessage,DeliveryMode.PERSISTENT,0,jmsExpiration);
-                messageCounter.incrementAndGet();
+                synchronized (messageCounter.getClass()) {
+                    if (messageCounter.get() >= numOfMessagesToSend) {
+                        break;
+                    }
+                    queueSender.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
+                    messageCounter.incrementAndGet();
+                }
                 localMessageCount ++;
                 if(messageCounter.get() % printNumberOfMessagesPer == 0) {
 
