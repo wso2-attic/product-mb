@@ -18,9 +18,6 @@
 
 package org.wso2.mb.integration.common.utils.ui;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -30,7 +27,6 @@ import java.util.Properties;
  */
 public class UIElementMapper {
     public static final Properties uiProperties = new Properties();
-    private static final Log log = LogFactory.getLog(UIElementMapper.class);
     private static UIElementMapper instance;
 
     static {
@@ -60,9 +56,6 @@ public class UIElementMapper {
     }
 
     public String getElement(String key) {
-        if (uiProperties != null) {
-            return uiProperties.getProperty(key);
-        }
-        return null;
+        return uiProperties.getProperty(key);
     }
 }

@@ -55,22 +55,28 @@ public class LoginPage {
      */
     public HomePage loginAs(final String userName, final String password) throws IOException {
         log.info("Login as " + userName);
-        WebElement userNameField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login.username.id")));
-        WebElement passwordField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login.password.id")));
+        WebElement userNameField = driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("login.username.id")));
+        WebElement passwordField = driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("login.password.id")));
         userNameField.sendKeys(userName);
         passwordField.sendKeys(password);
-        driver.findElement(By.className(UIElementMapper.getInstance().getElement("login.sign.in.button"))).click();
+        driver.findElement(By.className(UIElementMapper.getInstance().getElement("login.sign" +
+                ".in.button"))).click();
         driver.findElement(By.id(UIElementMapper.getInstance().getElement("main.tab.id"))).click();
         return new HomePage(driver);
     }
 
     public TenantHomePage loginAsTenant(final String userName, final String domain, final String password){
         log.info("Login as " + userName);
-        WebElement userNameField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login.username.id")));
-        WebElement passwordField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("login.password.id")));
+        WebElement userNameField = driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("login.username.id")));
+        WebElement passwordField = driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("login.password.id")));
         userNameField.sendKeys(userName + "@" + domain);
         passwordField.sendKeys(password);
-        driver.findElement(By.className(UIElementMapper.getInstance().getElement("login.sign.in.button"))).click();
+        driver.findElement(By.className(UIElementMapper.getInstance().getElement("login.sign.in" +
+                ".button"))).click();
         driver.findElement(By.id(UIElementMapper.getInstance().getElement("main.tab.id"))).click();
         return new TenantHomePage(driver);
 

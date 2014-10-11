@@ -28,12 +28,20 @@ import org.wso2.mb.integration.common.utils.ui.pages.configure.TenantHomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 
+/**
+ * Login as an admin user and creates a new tenant and logs out then login as the new tenant and
+ * logout
+ */
 public class AddNewTenantTestCase extends MBIntegrationUiBaseTest{
     @BeforeClass()
     public void init() throws Exception {
         super.init();
     }
 
+    /**
+     * Test to create the new tenant account and login to the newly created tenant account
+     * @throws Exception
+     */
     @Test()
     public void addNewTenantTest() throws Exception {
         driver.get(getLoginURL());
@@ -53,7 +61,8 @@ public class AddNewTenantTestCase extends MBIntegrationUiBaseTest{
         String adminPasswordRepeat = "password";
         String adminEmail = "bob.dilon@gmail.com";
 
-        addNewTenantPage.add(domain, usagePlanName, firstName, lastName, adminUserName, adminPassword, adminPasswordRepeat, adminEmail);
+        addNewTenantPage.add(domain, usagePlanName, firstName, lastName, adminUserName,
+                adminPassword, adminPasswordRepeat, adminEmail);
         homePage.logout();
 
         driver.get(getLoginURL());

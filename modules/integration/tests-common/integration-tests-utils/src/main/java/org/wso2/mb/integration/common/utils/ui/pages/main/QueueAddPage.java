@@ -18,8 +18,6 @@
 
 package org.wso2.mb.integration.common.utils.ui.pages.main;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,13 +27,13 @@ import java.io.IOException;
 
 public class QueueAddPage {
 
-    private static final Log log = LogFactory.getLog(QueuesBrowsePage.class);
     private WebDriver driver;
 
     public QueueAddPage(WebDriver driver) throws IOException{
         this.driver = driver;
 
-        if(!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page.header.xpath"))).getText().contains("Add Queue")){
+        if(!driver.findElement(By.xpath(UIElementMapper.getInstance().
+                getElement("mb.add.queue.page.header.xpath"))).getText().contains("Add Queue")){
             throw new IllegalStateException("This is not the Add Queue page");
         }
     }
@@ -43,16 +41,20 @@ public class QueueAddPage {
     public boolean addQueue(final String qName) throws IOException{
         boolean isSuccessful = false;
 
-        WebElement qNameField = driver.findElement(By.id(UIElementMapper.getInstance().getElement("mb.add.queue.page.qname.field.id")));
+        WebElement qNameField = driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("mb.add.queue.page.qname.field.id")));
         qNameField.sendKeys(qName);
-        String parentWindow = driver.getWindowHandle();
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page.add.button.xpath"))).click();
+        driver.getWindowHandle();
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.add.queue.page.add.button.xpath"))).click();
         String dialog = driver.getWindowHandle();
         driver.switchTo().window(dialog);
-        if(driver.findElement(By.id(UIElementMapper.getInstance().getElement("mb.popup.dialog.id"))).getText().contains("Queue added successfully")) {
+        if(driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("mb.popup.dialog.id"))).getText().contains("Queue added successfully")) {
             isSuccessful =true;
         }
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page.onqueueadd.okbutton.xpath"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.add.queue.page" +
+                ".onqueueadd.okbutton.xpath"))).click();
 
         return isSuccessful;
     }

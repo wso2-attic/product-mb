@@ -18,8 +18,6 @@
 
 package org.wso2.mb.integration.common.utils.ui.pages.main;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,34 +28,41 @@ import java.util.List;
 
 /**
  * This page represents 'Queues-> Browse' page in MB management console.
- *
  */
 public class QueuesBrowsePage {
 
-    private static final Log log = LogFactory.getLog(QueuesBrowsePage.class);
     private WebDriver driver;
 
     public QueuesBrowsePage(WebDriver driver) throws IOException {
         this.driver = driver;
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.queue.list.page.header.xpath"))).getText().contains("Queue List")) {
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.queue.list.page.header.xpath"))).getText().contains("Queue List")) {
             throw new IllegalStateException("This is not the Queue List page");
         }
     }
 
-    public boolean isQueuePresent(final String qName) {
-        if (getTableRowByQueueName(qName) == null) {
-            return false;
-        }
-        return true;
+    /**
+     * Check whether the queue with the given queue name is present in the UI
+     * @param queueName queue name
+     * @return true if the queue is present, false otherwise
+     */
+    public boolean isQueuePresent(final String queueName) {
+        return getTableRowByQueueName(queueName) != null;
     }
 
-    public boolean deleteQueue(final String qName) {
+    /**
+     * Delete queue from the UI delete option
+     * @param queueName queue name
+     * @return true if delete successful, false otherwise
+     */
+    public boolean deleteQueue(final String queueName) {
 
         boolean isSuccessful = false;
-        WebElement row = getTableRowByQueueName(qName);
-        if (row == null) // nothing to delete
-            return isSuccessful;    // return false
+        WebElement row = getTableRowByQueueName(queueName);
+        if (row == null) {
+            return false;
+        }
 
         List<WebElement> columnList = row.findElements(By.tagName("td"));
         WebElement deleteButton = columnList.get(5).findElement(By.tagName("a"));
@@ -72,14 +77,14 @@ public class QueuesBrowsePage {
         for (WebElement okButton : buttonList) {
             if (okButton.getText().compareToIgnoreCase("ok") == 0) {
                 okButton.click();
-                isSuccessful = !isQueuePresent(qName);  // if Queue present failure
+                isSuccessful = !isQueuePresent(queueName);  // if Queue present failure
                 break;
             }
         }
         return isSuccessful;
     }
 
-    /***
+    /**
      * Navigates the browser to 'Queue Content' page where user can see messages it contains etc.
      *
      * @param qName name of the Queue to browse
@@ -88,35 +93,42 @@ public class QueuesBrowsePage {
     public QueueContentPage browseQueue(final String qName) throws IOException {
 
         WebElement row = getTableRowByQueueName(qName);
-        if (row == null){
+        if (row == null) {
             return null;    // can't find the queue.
         }
 
         List<WebElement> columnList = row.findElements(By.tagName("td"));
         WebElement browseButton = columnList.get(2).findElement(By.tagName("a"));
-        if (browseButton != null){
+        if (browseButton != null) {
             browseButton.click();
         }
         return new QueueContentPage(this.driver);
     }
 
-    private WebElement getTableRowByQueueName(final String qName) {
+    /**
+     * Retrieve the Web Element of the given queue name from available queues table in UI
+     * @param queueName queue name
+     * @return Web Element row of the given queue name item in UI, null returned if not found
+     */
+    private WebElement getTableRowByQueueName(final String queueName) {
 
         // if no queues available return null
         if (driver.findElement(By.id(UIElementMapper.getInstance()
-                .getElement("mb.queue.list.page.workarea.id"))).getText().contains("No queues are created")) {
+                .getElement("mb.queue.list.page.workarea.id"))).getText()
+                .contains("No queues are created")) {
 
             return null;
         }
 
-        WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.queue.list.table.body.xpath")));
+        WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.queue.list.table.body.xpath")));
         List<WebElement> rowElementList = queueTable.findElements(By.tagName("tr"));
 
         // go through table rows and find the queue
         for (WebElement row : rowElementList) {
             List<WebElement> columnList = row.findElements(By.tagName("td"));
             // Assumption: there are six columns. Delete buttons are in the sixth column
-            if ((columnList.size() == 6) && columnList.get(0).getText().equals(qName)) {
+            if ((columnList.size() == 6) && columnList.get(0).getText().equals(queueName)) {
                 return row;
             }
         }
