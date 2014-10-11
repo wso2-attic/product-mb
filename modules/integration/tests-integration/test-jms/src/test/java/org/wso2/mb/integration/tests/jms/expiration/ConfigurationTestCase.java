@@ -16,9 +16,8 @@
  * under the License.
  */
 
-package org.wso2.mb.integration.tests.server.mgt;
+package org.wso2.mb.integration.tests.jms.expiration;
 
-import org.wso2.carbon.integration.common.tests.ServerStartupBaseTest;
+public class ConfigurationTestCase {
 
-public class MBServerStartupTestCase extends ServerStartupBaseTest{
 }
