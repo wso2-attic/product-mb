@@ -32,9 +32,9 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 
 /**
- * This class contains tests for sending and receiving one million messages.
+ * Load test in standalone MB.
  */
-public class MillionMessagesTestCase extends MBIntegrationBaseTest {
+public class StandaloneLoadTestCase extends MBIntegrationBaseTest {
 
     private Integer sendCount = 100000;
     private Integer runTime = 30 * 15; // 15 minutes
