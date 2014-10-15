@@ -70,7 +70,7 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
 
-        System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
+        log.info("Number of Subscriber ["+queueListeners.size()+"]");
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
@@ -84,7 +84,7 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
@@ -116,8 +116,8 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         List<QueueMessageReceiver> autoAckListeners = receivingClient.getQueueListeners();
         List<QueueMessageReceiver> clientAckListeners = receivingReturnClient.getQueueListeners();
-        System.out.println("#######################Number of AUTO ACK Subscriber ["+autoAckListeners.size()+"]#######################");
-        System.out.println("#######################Number of CLIENT ACK Subscriber ["+clientAckListeners.size()+"]#######################");
+        log.info("Number of AUTO ACK Subscriber ["+autoAckListeners.size()+"]");
+        log.info("Number of CLIENT ACK Subscriber ["+clientAckListeners.size()+"]");
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
@@ -133,7 +133,7 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
@@ -169,8 +169,8 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
         List<QueueMessageReceiver> queueClosingListeners = receivingClosingClient.getQueueListeners();
 
-        System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
-        System.out.println("#######################Number of Closing Subscriber ["+queueClosingListeners.size()+"]#######################");
+        log.info("Number of Subscriber ["+queueListeners.size()+"]");
+        log.info("Number of Closing Subscriber ["+queueClosingListeners.size()+"]");
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
@@ -189,9 +189,9 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
                 .getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]#######################");
-        System.out.println("#######################Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]#######################");
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]");
+        log.info("Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
