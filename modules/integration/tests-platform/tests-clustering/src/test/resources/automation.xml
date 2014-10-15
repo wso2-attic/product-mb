@@ -201,12 +201,12 @@
         <productGroup name="MB_Cluster" clusteringEnabled="false" default="true">
             <instance name="mb002" type="standalone" nonBlockingTransportEnabled="false">
                 <hosts>
-                    <host type="default">204.13.85.3</host>
+                    <host type="default">127.0.0.1</host>
                 </hosts>
                 <ports>
-                    <port type="http">9783</port>
-                    <port type="https">9463</port>
-                    <port type="amqp">5692</port>
+                    <port type="http">9764</port>
+                    <port type="https">9444</port>
+                    <port type="amqp">5673</port>
                 </ports>
                 <properties>
 
@@ -214,12 +214,12 @@
             </instance>
             <instance name="mb003" type="standalone" nonBlockingTransportEnabled="false">
                 <hosts>
-                    <host type="default">204.13.85.5</host>
+                    <host type="default">127.0.0.1</host>
                 </hosts>
                 <ports>
-                    <port type="http">9783</port>
-                    <port type="https">9463</port>
-                    <port type="amqp">5692</port>
+                    <port type="http">9765</port>
+                    <port type="https">9445</port>
+                    <port type="amqp">5674</port>
                 </ports>
                 <properties>
 

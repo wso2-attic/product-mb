@@ -21,6 +21,7 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 
 import java.io.*;
 
@@ -91,6 +92,70 @@ public class AndesClientUtils {
         return success;
     }
 
+    /**
+     * Wait specified time and count number of messages of all subscribers
+     * @param client
+     * @param queueName
+     * @param messageCountExpected
+     * @param numberOfSecondsToWaitForMessages
+     * @return true if total message count equal to expected message count
+     */
+    public static void waitUntilAllMessagesReceived(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+        for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            try {
+                Thread.sleep(1000 * 10);
+            } catch (InterruptedException ignore) {
+            }
+            System.out.println("Total messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+        }
+        flushPrintWriter();
+        client.shutDownClient();
+    }
+
+    /**
+     * Wait specified time and count number of messages of all subscribers
+     * @param client
+     * @param queueName
+     * @param messageCountExpected
+     * @param numberOfSecondsToWaitForMessages
+     * @return
+     */
+    public static void waitUntilAllMessagesReturn(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+        for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            try {
+                Thread.sleep(1000 * 10);
+            } catch (InterruptedException ignore) {
+            }
+            System.out.println("Total reject messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+        }
+        flushPrintWriter();
+        client.shutDownClient();
+    }
+
+    /**
+     * Wait specified time and count number of exact messages received by subscribers
+     * @param client
+     * @param queueName
+     * @param messageCountExpected
+     * @param numberOfSecondsToWaitForMessages
+     * @return
+     */
+    public static void waitUntilExactNumberOfMessagesReceived(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+        for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            try {
+                Thread.sleep(1000 * 10);
+            } catch (InterruptedException ignore) {
+            }
+            if (client.getReceivedqueueMessagecount() == messageCountExpected){
+                flushPrintWriter();
+                client.shutDownClient();
+                System.out.println("Total exact messages received to " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+            }
+        }
+    }
 
     public static int getNoOfMessagesReceived(AndesClient client, int messageCountExpected,int numberOfSecondsToWaitForMessages) {
         int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;

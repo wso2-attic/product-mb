@@ -264,7 +264,7 @@
     </dependencies>
 
     <properties>
-            <skipPlatformTests>true</skipPlatformTests>
+            <skipPlatformTests>false</skipPlatformTests>
     </properties>
 </project>
 
