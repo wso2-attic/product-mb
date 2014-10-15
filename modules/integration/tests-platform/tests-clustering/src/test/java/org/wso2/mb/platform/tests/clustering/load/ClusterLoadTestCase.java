@@ -81,7 +81,7 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
 
-        System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
+        log.info("Number of Subscriber ["+queueListeners.size()+"]");
 
         String randomInstanceKeyForSender = getRandomMBInstance();
 
@@ -102,7 +102,7 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
@@ -141,8 +141,8 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
         List<QueueMessageReceiver> autoAckListeners = receivingClient.getQueueListeners();
         List<QueueMessageReceiver> clientAckListeners = receivingReturnClient.getQueueListeners();
-        System.out.println("#######################Number of AUTO ACK Subscriber ["+autoAckListeners.size()+"]#######################");
-        System.out.println("#######################Number of CLIENT ACK Subscriber ["+clientAckListeners.size()+"]#######################");
+        log.info("Number of AUTO ACK Subscriber ["+autoAckListeners.size()+"]");
+        log.info("Number of CLIENT ACK Subscriber ["+clientAckListeners.size()+"]");
 
         String randomInstanceKeyForSender = getRandomMBInstance();
 
@@ -165,7 +165,7 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
@@ -208,8 +208,8 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
         List<QueueMessageReceiver> queueClosingListeners = receivingClosingClient.getQueueListeners();
 
-        System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
-        System.out.println("#######################Number of Closing Subscriber ["+queueClosingListeners.size()+"]#######################");
+        log.info("Number of Subscriber ["+queueListeners.size()+"]");
+        log.info("Number of Closing Subscriber ["+queueClosingListeners.size()+"]");
 
         String randomInstanceKeyForSender = getRandomMBInstance();
 
@@ -237,9 +237,9 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
                 .getReceivedqueueMessagecount();
 
-        System.out.println("#######################Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]#######################");
-        System.out.println("#######################Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]#######################");
-        System.out.println("#######################Total Received Messages ["+actualReceivedCount+"]#######################");
+        log.info("Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]");
+        log.info("Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]");
+        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
         assertEquals(actualReceivedCount, sendCount);
         assertEquals(actualReceivedCount, expectedCount);
