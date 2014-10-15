@@ -12,6 +12,8 @@
             <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>
+            <!--load test-->
+            <class name="org.wso2.mb.platform.tests.clustering.load.ClusterLoadTestCase"/>
         </classes>
     </test>
 </suite>

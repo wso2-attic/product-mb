@@ -511,4 +511,8 @@ public class AndesClient {
         AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
         return andesClientOutputParser.checkIfMessagesAreInOrder();
     }
+
+    public List<QueueMessageReceiver> getQueueListeners() {
+        return queueListeners;
+    }
 }

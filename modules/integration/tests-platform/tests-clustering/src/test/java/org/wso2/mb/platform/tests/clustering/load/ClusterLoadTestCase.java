@@ -16,17 +16,20 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.tests.amqp.load;
+package org.wso2.mb.platform.tests.clustering.load;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
 import javax.jms.QueueSession;
+import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -34,9 +37,10 @@ import static org.testng.Assert.assertEquals;
 /**
  * This class contains tests for sending and receiving one million messages.
  */
-public class MillionMessagesTestCase extends MBIntegrationBaseTest {
+public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
     private Integer sendCount = 100000;
+//    private Integer sendCount = 50000;
     private Integer runTime = 30 * 15; // 15 minutes
     private Integer noOfSubscribers = 50;
     private Integer noOfPublishers = 50;
@@ -51,18 +55,25 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
      */
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
-        super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
+        super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
+        super.initAndesAdminClients();
     }
 
     /**
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
      */
     @Test(groups = "wso2.mb", description = "Million messages with 50 publishers and 50 subscribers test case", enabled = true)
-    public void performMillionMessageTestCase() {
-        String queueNameArg = "queue:MillionQueue";
+    public void performMillionMessageTestCase() throws XPathExpressionException {
+        String queueNameArg = "queue:LoadTestQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        String randomInstanceKeyForReceiver = getRandomMBInstance();
+
+        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
+
+        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
+                tempContextForReceiver.getInstance().getPorts().get("amqp");
+
+        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 noOfSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
@@ -72,7 +83,14 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        String randomInstanceKeyForSender = getRandomMBInstance();
+
+        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+
+        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
+                tempContextForSender.getInstance().getPorts().get("amqp");
+
+        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
@@ -96,18 +114,25 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
      * receive all the messages.
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case", enabled = false)
-    public void performMillionMessageTenPercentReturnTestCase() {
+    public void performMillionMessageTenPercentReturnTestCase() throws XPathExpressionException {
         Integer noOfReturnMessages = sendCount / 10;
         Integer noOfClientAckSubscribers = noOfSubscribers / 10;
         Integer noOfAutoAckSubscribers = noOfSubscribers - noOfClientAckSubscribers;
 
-        String queueNameArg = "queue:MillionTenPercentReturnQueue";
+        String queueNameArg = "queue:TenPercentReturnQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        String randomInstanceKeyForReceiver = getRandomMBInstance();
+
+        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
+
+        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
+                tempContextForReceiver.getInstance().getPorts().get("amqp");
+
+        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 noOfAutoAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.AUTO_ACKNOWLEDGE + ",delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
-        AndesClient receivingReturnClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClient receivingReturnClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
                 "100", "false", runTime.toString(), noOfReturnMessages.toString(),
                 noOfClientAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.CLIENT_ACKNOWLEDGE + ",delayBetweenMsg=0,stopAfter=" + noOfReturnMessages, "");
 
@@ -119,7 +144,14 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
         System.out.println("#######################Number of AUTO ACK Subscriber ["+autoAckListeners.size()+"]#######################");
         System.out.println("#######################Number of CLIENT ACK Subscriber ["+clientAckListeners.size()+"]#######################");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        String randomInstanceKeyForSender = getRandomMBInstance();
+
+        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+
+        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
+                tempContextForSender.getInstance().getPorts().get("amqp");
+
+        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
@@ -144,21 +176,28 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
      * messages are retrieving and check if all the messages are received by other subscribers.
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case", enabled = true)
-    public void performMillionMessageTenPercentSubscriberCloseTestCase() {
+    public void performMillionMessageTenPercentSubscriberCloseTestCase() throws XPathExpressionException {
         Integer noOfMessagesToReceiveByClosingSubscribers = 10;
         Integer noOfSubscribersToClose = noOfSubscribers / 10;
         Integer noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
         Integer noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
         Integer runTimeForClosingSubscribers = 10; // 10 seconds
 
-        String queueNameArg = "queue:MillionTenPercentSubscriberCloseQueue";
+        String queueNameArg = "queue:TenPercentSubscriberCloseQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        String randomInstanceKeyForReceiver = getRandomMBInstance();
+
+        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
+
+        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
+                tempContextForReceiver.getInstance().getPorts().get("amqp");
+
+        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
                 "100", "false", runTime.toString(), noOfMessagesToExpect.toString(),
                 noOfNonClosingSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
 
-        AndesClient receivingClosingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClient receivingClosingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
                 "100", "false", runTime.toString(), noOfMessagesToReceiveByClosingSubscribers.toString(),
                 noOfSubscribersToClose.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
@@ -172,7 +211,14 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
         System.out.println("#######################Number of Subscriber ["+queueListeners.size()+"]#######################");
         System.out.println("#######################Number of Closing Subscriber ["+queueClosingListeners.size()+"]#######################");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        String randomInstanceKeyForSender = getRandomMBInstance();
+
+        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+
+        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
+                tempContextForSender.getInstance().getPorts().get("amqp");
+
+        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
@@ -185,6 +231,8 @@ public class MillionMessagesTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient, "MillionTenPercentSubscriberCloseQueue",
                 noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);
+
+        receivingClosingClient.shutDownClient();
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
                 .getReceivedqueueMessagecount();

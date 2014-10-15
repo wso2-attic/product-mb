@@ -79,7 +79,7 @@ public class QueueMessageReceiver implements Runnable {
         properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
         properties.put("queue." + queueName, queueName);
 
-        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
+//        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
 
         try {
             InitialContext ctx = new InitialContext(properties);
