@@ -35,12 +35,11 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 
 /**
- * This class contains tests for sending and receiving one million messages.
+ * Load test in MB clustering.
  */
 public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
     private Integer sendCount = 100000;
-//    private Integer sendCount = 50000;
     private Integer runTime = 30 * 15; // 15 minutes
     private Integer noOfSubscribers = 50;
     private Integer noOfPublishers = 50;

@@ -31,7 +31,7 @@
 
             <class name="org.wso2.mb.integration.tests.amqp.load.QueueLargeMessageSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedQueueTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.load.MillionMessagesTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.load.StandaloneLoadTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.TopicLargeMessagePublishConsumeTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveTopicSubscriptionTestCase"/>-->
