@@ -61,7 +61,7 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
     /**
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
      */
-    @Test(groups = "wso2.mb", description = "Million messages with 50 publishers and 50 subscribers test case", enabled = true)
+    @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
     public void performMillionMessageTestCase() throws XPathExpressionException {
         String queueNameArg = "queue:LoadTestQueue";
 
@@ -112,7 +112,8 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
      * CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages and check if AUTO_ACKNOWLEDGE subscribers
      * receive all the messages.
      */
-    @Test(groups = "wso2.mb", description = "Message content validation test case", enabled = false)
+    @Test(groups = "wso2.mb", description = "50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10 " +
+            "CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase() throws XPathExpressionException {
         Integer noOfReturnMessages = sendCount / 10;
         Integer noOfClientAckSubscribers = noOfSubscribers / 10;
@@ -158,7 +159,7 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentReturnQueue", expectedCount, runTime);
 
-        AndesClientUtils.waitUntilAllMessagesReturn(receivingReturnClient, "MillionTenPercentReturnQueue", noOfReturnMessages, (runTime / 10));
+        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingReturnClient, "MillionTenPercentReturnQueue", noOfReturnMessages, (runTime / 10));
 
         AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
@@ -174,7 +175,8 @@ public class ClusterLoadTestCase extends MBPlatformBaseTest {
      * Create 50 subscriptions for a queue and publish one million messages. Then close 10% of the subscribers while
      * messages are retrieving and check if all the messages are received by other subscribers.
      */
-    @Test(groups = "wso2.mb", description = "Message content validation test case", enabled = true)
+    @Test(groups = "wso2.mb", description = "50 subscriptions for a queue and 50 publishers. Then close " +
+            "10% of the subscribers ", enabled = true)
     public void performMillionMessageTenPercentSubscriberCloseTestCase() throws XPathExpressionException {
         Integer noOfMessagesToReceiveByClosingSubscribers = 10;
         Integer noOfSubscribersToClose = noOfSubscribers / 10;
