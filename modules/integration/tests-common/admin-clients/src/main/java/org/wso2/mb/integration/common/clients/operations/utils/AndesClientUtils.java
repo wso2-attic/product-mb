@@ -107,28 +107,7 @@ public class AndesClientUtils {
                 Thread.sleep(1000 * 10);
             } catch (InterruptedException ignore) {
             }
-            System.out.println("Total messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
-        }
-        flushPrintWriter();
-        client.shutDownClient();
-    }
-
-    /**
-     * Wait specified time and count number of messages of all subscribers
-     * @param client
-     * @param queueName
-     * @param messageCountExpected
-     * @param numberOfSecondsToWaitForMessages
-     * @return
-     */
-    public static void waitUntilAllMessagesReturn(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
-        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
-        for (int count = 0; count < tenSecondIterationsToWait; count++) {
-            try {
-                Thread.sleep(1000 * 10);
-            } catch (InterruptedException ignore) {
-            }
-            System.out.println("Total reject messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+            log.info("Total messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
         }
         flushPrintWriter();
         client.shutDownClient();
@@ -152,7 +131,7 @@ public class AndesClientUtils {
             if (client.getReceivedqueueMessagecount() == messageCountExpected){
                 flushPrintWriter();
                 client.shutDownClient();
-                System.out.println("Total exact messages received to " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+                log.info("Total exact messages received to " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
             }
         }
     }
