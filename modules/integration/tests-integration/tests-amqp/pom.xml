@@ -27,6 +27,7 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng-server-mgt.xml</suiteXmlFile>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>src/test/resources/testing-H2-mem.xml</suiteXmlFile>
                     </suiteXmlFiles>
 
                     <systemProperties>
