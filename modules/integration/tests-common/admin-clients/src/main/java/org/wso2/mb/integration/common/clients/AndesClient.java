@@ -25,7 +25,8 @@ import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageRecei
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageSender;
 import org.wso2.mb.integration.common.clients.operations.topic.TopicMessagePublisher;
 import org.wso2.mb.integration.common.clients.operations.topic.TopicMessageReceiver;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
+import org.wso2.mb.integration.common.clients.operations.utils.*;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,7 @@ public class AndesClient {
         this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
         this.username = username;
         this.password = password;
+        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
     public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
@@ -86,12 +88,14 @@ public class AndesClient {
         this.numberOfThreadsAsString = numberOfThreadsAsString;
         this.parameters = parameters;
         this.connectionString = connectionString;
+        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
     public AndesClient(String mode, String analiticOperation, String numberOfMessagesExpeactedForAnalysis) {
         this.mode = mode;
         this.analyticOperation = analiticOperation;
         this.numberOfMessagesExpectedForAnalysis = numberOfMessagesExpeactedForAnalysis;
+        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
     public void startWorking() {
@@ -503,6 +507,7 @@ public class AndesClient {
     }
 
     public Map<Long, Integer> checkIfMessagesAreDuplicated() {
+        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
         AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
         return andesClientOutputParser.checkIfMessagesAreDuplicated();
     }

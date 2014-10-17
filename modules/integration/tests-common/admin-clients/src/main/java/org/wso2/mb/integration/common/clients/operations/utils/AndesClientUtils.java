@@ -27,22 +27,30 @@ import java.io.*;
 
 public class AndesClientUtils {
 
-    private  static PrintWriter printWriterGlobal;
+    private static PrintWriter printWriterGlobal;
     private static final Log log = LogFactory.getLog(AndesClient.class);
+
     public static void writeToFile(String whatToWrite, String filePath) {
-        try {
-            if(printWriterGlobal == null) {
-                BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(filePath));
-                PrintWriter printWriter=new PrintWriter(bufferedWriter);
-                printWriterGlobal =  printWriter;
-            }
-
-            printWriterGlobal.print(whatToWrite);
-
-        } catch (IOException e) {
-            System.out.println("Error. File to print received messages is not provided" + e);
+        if (printWriterGlobal == null) {
+            initializePrintWriter(filePath);
         }
 
+        printWriterGlobal.println(whatToWrite);
+
+    }
+
+    /**
+     * Initialize the print writer. This needs to be invoked before each test case.
+     * @param filePath The file path to write to.
+     */
+    public static void initializePrintWriter(String filePath) {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+            printWriterGlobal = printWriter;
+        } catch (IOException e) {
+            log.error("Error initializing Print Writer.", e);
+        }
     }
 
     public static void flushPrintWriter() {
