@@ -65,6 +65,16 @@
                 <include>**/**.sql</include>
             </includes>
         </fileSet>
+        <!-- MB SQL scripts -->
+        <fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/mb-store
+            </directory>
+            <outputDirectory>wso2mb-${pom.version}/dbscripts/mb-store</outputDirectory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+        </fileSet>
+        <!-- End - MB SQL scripts -->
 
         <!--samples set of product-->
         <fileSet>
