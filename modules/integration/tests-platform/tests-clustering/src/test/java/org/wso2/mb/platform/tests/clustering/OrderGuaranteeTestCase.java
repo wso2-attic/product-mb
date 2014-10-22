@@ -24,7 +24,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
@@ -101,8 +100,8 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
 
         Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
                           "Messages did not receive in order.");
-        Assert.assertTrue(receivingClient.checkIfMessagesAreDuplicated().size() > 0,
-                          "Messages duplicated.");
+        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+                "Messages are not duplicated.");
     }
 
     /**
@@ -154,8 +153,8 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
 
         Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
                           "Messages did not receive in order.");
-        Assert.assertTrue(receivingClient.checkIfMessagesAreDuplicated().size() > 0,
-                          "Messages duplicated.");
+        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+                "Messages are not duplicated.");
     }
 
     /**
