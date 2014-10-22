@@ -34,7 +34,6 @@ public class TopicLargeMessagePublishConsumeTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -46,31 +45,25 @@ public class TopicLargeMessagePublishConsumeTestCase {
         Integer sendCount = 10;
         Integer runTime = 120;
         Integer expectedCount = 10;
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator +"sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator +"pom1mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent,pathOfFileToReadContent,1024);
+        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
+        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom1mb.xml";
+        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 1024);
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic1MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic1MB", "1", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file="+pathOfFileToReadContent+",delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
-
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertEquals((receiveSuccess && sendSuccess), true);
     }
@@ -83,31 +76,26 @@ public class TopicLargeMessagePublishConsumeTestCase {
         Integer sendCount = 10;
         Integer runTime = 120;
         Integer expectedCount = 10;
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator +"sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator +"pom10mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent,pathOfFileToReadContent,10*1024);
+        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
+        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom10mb.xml";
+        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 10 * 1024);
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic10MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic10MB", "1", "false",
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic10MB", "1",
+                "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file="+pathOfFileToReadContent+",delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
-
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertEquals((receiveSuccess && sendSuccess), true);
     }

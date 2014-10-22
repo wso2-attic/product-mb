@@ -19,6 +19,7 @@
 package org.wso2.mb.integration.tests.amqp.load;
 
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -26,20 +27,19 @@ import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageRecei
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import javax.jms.QueueSession;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
 /**
- * Load test in standalone MB.
+ * Load test for standalone MB.
  */
 public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
 
     private Integer sendCount = 100000;
     private Integer runTime = 30 * 15; // 15 minutes
-    private Integer noOfSubscribers = 50;
-    private Integer noOfPublishers = 50;
+    private Integer noOfSubscribers = 7;
+    private Integer noOfPublishers = 7;
 
     // Greater than send count to see if more than the sent amount is received
     private Integer expectedCount = sendCount;
@@ -70,7 +70,7 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
 
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
 
-        log.info("Number of Subscriber ["+queueListeners.size()+"]");
+        log.info("Number of Subscriber [" + queueListeners.size() + "]");
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
@@ -84,9 +84,8 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        log.info("Total Received Messages ["+actualReceivedCount+"]");
+        log.info("Total Received Messages [" + actualReceivedCount + "]");
 
         assertEquals(actualReceivedCount, sendCount);
-        assertEquals(actualReceivedCount, expectedCount);
     }
 }

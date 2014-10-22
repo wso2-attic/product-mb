@@ -33,7 +33,6 @@ public class MultipleTopicPublishSubscribeTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -49,13 +48,15 @@ public class MultipleTopicPublishSubscribeTestCase {
         Integer expectedCount2 = 4000 + additional;
         Integer expectedCount1 = 1000 + additional;
 
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic2,", "100", "false",
+        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic2,", "100",
+                "false",
                 runTime.toString(), expectedCount2.toString(), "2",
-                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount2, "");
+                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount2, "");
 
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic1,", "100", "false",
+        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic1,", "100",
+                "false",
                 runTime.toString(), expectedCount1.toString(), "1",
-                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount1, "");
+                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount1, "");
 
         receivingClient1.startWorking();
         receivingClient2.startWorking();
@@ -63,11 +64,11 @@ public class MultipleTopicPublishSubscribeTestCase {
 
         AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:multipleTopic2", "100",
                 "false", runTime.toString(), sendCount2.toString(), "2",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount2, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount2, "");
 
         AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "topic:multipleTopic1", "100",
                 "false", runTime.toString(), sendCount1.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount1, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount1, "");
 
         sendingClient1.startWorking();
         sendingClient2.startWorking();
@@ -76,18 +77,12 @@ public class MultipleTopicPublishSubscribeTestCase {
         boolean success2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount2, runTime);
 
         boolean receiveSuccess1 = false;
-        if((expectedCount1 - additional) == receivingClient1.getReceivedTopicMessagecount()) {
+        if ((expectedCount1 - additional) == receivingClient1.getReceivedTopicMessagecount()) {
             receiveSuccess1 = true;
         }
-        boolean receiveSuccess2 =false;
-        if((expectedCount2 - additional) == receivingClient2.getReceivedTopicMessagecount()) {
+        boolean receiveSuccess2 = false;
+        if ((expectedCount2 - additional) == receivingClient2.getReceivedTopicMessagecount()) {
             receiveSuccess2 = true;
-        }
-
-        if(receiveSuccess1 && receiveSuccess2) {
-            System.out.println("TEST PASSED");
-        } else  {
-            System.out.println("TEST FAILED");
         }
 
         Assert.assertEquals(receiveSuccess1 && receiveSuccess2, true);

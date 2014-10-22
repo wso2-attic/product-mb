@@ -72,11 +72,6 @@ public class MultiThreadedTopicTestCase {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if (receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
         assertEquals((receiveSuccess && sendSuccess), true);
     }
 }

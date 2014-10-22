@@ -38,19 +38,10 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
-    private static final Log log = LogFactory.getLog(TenantCreateQueueTestCase.class);
-
-    private static final String ERROR_STRING = "ERROR {org.wso2.carbon.context.internal.CarbonContextDataHolder} - Trying to set the domain from testtenant1.com to carbon.super";
-    private static final String INFO_STRING = "INFO {org.wso2.andes.messageStore.CQLBasedMessageStoreImpl}";
-
-    private LogViewerClient logViewerClient;
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(automationContext);
-        String sessionCookie = loginLogoutClient.login();
-        logViewerClient =  new LogViewerClient(automationContext.getContextUrls().getBackEndUrl(),sessionCookie);
     }
 
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case")
@@ -75,19 +66,12 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
         tenant1SendingClient.startWorking();
         AndesClientUtils.sleepForInterval(10000);
 
-        boolean tenet1ReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient, expectedMessageCount, runTime);
+        boolean tenet1ReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient,
+                expectedMessageCount, runTime);
 
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
 
         assertTrue(tenant1SendSuccess, "TENANT 1 send failed");
         assertTrue(tenet1ReceiveSuccess, "TENANT 1 receive failed");
-
-        LogEvent[] logEvents = logViewerClient.getAllSystemLogs();
-
-        for (LogEvent event : logEvents) {
-            if (event.isPrioritySpecified()) {
-                assertFalse(event.getPriority().contains("ERROR"), "ERROR occured in sever" + event.getMessage());
-            }
-        }
     }
 }

@@ -21,8 +21,10 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 /**
  * 1. define 15 queues
@@ -30,12 +32,10 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
  * 3. receive messages from 15 queues by 45 threads
  * 4. verify that all messages are received and no more messages are received
  */
-public class MultiThreadedMultipleQueueTestCase {
+public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
 
     @BeforeClass
-    public void prepare() {
-        System.out.println(
-                "=========================================================================");
+    public void prepare() throws Exception {
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -52,23 +52,23 @@ public class MultiThreadedMultipleQueueTestCase {
         Integer expectedCount = sendCount + additional;
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                                                      "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                                                      "false",
-                                                      runTime.toString(), expectedCount.toString(),
-                                                      numOfReceivingThreads.toString(),
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
+                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
+                "false",
+                runTime.toString(), expectedCount.toString(),
+                numOfReceivingThreads.toString(),
+                "listener=true,ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + expectedCount,
+                "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
-                                                    "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                                                    "false", runTime.toString(),
-                                                    sendCount.toString(), numOfSendingThreads.toString(),
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
+                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
+                "false", runTime.toString(),
+                sendCount.toString(), numOfSendingThreads.toString(),
+                "ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + sendCount,
+                "");
 
         sendingClient.startWorking();
 
@@ -78,12 +78,6 @@ public class MultiThreadedMultipleQueueTestCase {
         boolean receiveSuccess = false;
         if ((expectedCount - additional) == receivingClient.getReceivedqueueMessagecount()) {
             receiveSuccess = true;
-        }
-
-        if (receiveSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
         }
 
         Assert.assertEquals(receiveSuccess, true);

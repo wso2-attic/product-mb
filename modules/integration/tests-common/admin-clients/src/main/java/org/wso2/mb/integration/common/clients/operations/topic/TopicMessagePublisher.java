@@ -19,6 +19,9 @@
 package org.wso2.mb.integration.common.clients.operations.topic;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -29,7 +32,9 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TopicMessagePublisher implements Runnable{
+public class TopicMessagePublisher implements Runnable {
+
+    private static Log log = LogFactory.getLog(TopicMessagePublisher.class);
 
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     private static final String CF_NAME_PREFIX = "connectionfactory.";
@@ -43,21 +48,24 @@ public class TopicMessagePublisher implements Runnable{
     private AtomicInteger messageCounter;
     private int numOfMessagesToSend;
     private int delay;
-    private boolean readFromFile =false;
+    private boolean readFromFile = false;
     private String filePath = "";
 
     private TopicConnection topicConnection = null;
     private TopicSession topicSession = null;
     private TopicPublisher topicPublisher = null;
-    private String topicName= null;
+    private String topicName = null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
     private Long jmsExpiration = 0l;
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
-    public TopicMessagePublisher(String connectionString, String hostName, String port, String userName, String password, String topicName,
-                                 AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage, long jmsExpiration) {
+    public TopicMessagePublisher(String connectionString, String hostName, String port, String userName,
+                                 String password, String topicName,
+                                 AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
+                                 String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
+                                 long jmsExpiration) {
 
         this.hostName = hostName;
         this.port = port;
@@ -67,7 +75,7 @@ public class TopicMessagePublisher implements Runnable{
         this.numOfMessagesToSend = numOfMessagesToSend;
         this.delay = delayBetweenMessages;
         this.filePath = filePath;
-        if(filePath!= null && !filePath.equals("")){
+        if (filePath != null && !filePath.equals("")) {
             readFromFile = true;
         }
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
@@ -93,15 +101,15 @@ public class TopicMessagePublisher implements Runnable{
             topicPublisher = topicSession.createPublisher(topic);
 
         } catch (NamingException e) {
-            System.out.println("Error while looking up for topic" + e);
-        } catch (JMSException ex) {
-            System.out.println("Error while initializing topic connection" + ex);
+            log.error("Error while looking up for topic", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing topic connection", e);
         }
 
     }
 
     private String getTCPConnectionURL(String username, String password) {
-        if(connectionString != null && !connectionString.equals("")) {
+        if (connectionString != null && !connectionString.equals("")) {
             return connectionString;
         } else {
             return new StringBuffer()
@@ -117,7 +125,7 @@ public class TopicMessagePublisher implements Runnable{
         try {
             TextMessage textMessage = null;
             String everything = "";
-            if(readFromFile) {
+            if (readFromFile) {
                 BufferedReader br = new BufferedReader(new FileReader(filePath));
                 try {
                     StringBuilder sb = new StringBuilder();
@@ -136,25 +144,29 @@ public class TopicMessagePublisher implements Runnable{
                 }
             }
             long threadID = Thread.currentThread().getId();
-            int localMessageCount =0;
+            int localMessageCount = 0;
             while (messageCounter.get() < numOfMessagesToSend) {
-                if(!readFromFile) {
-                    textMessage = topicSession.createTextMessage("sending Message:-" + messageCounter.get() + "- ThreadID:"+threadID);
-                }else {
-                    textMessage = topicSession.createTextMessage("sending Message:-" + messageCounter.get() +"- ThreadID:"+threadID +"  " + everything);
+                if (!readFromFile) {
+                    textMessage = topicSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
+                            "ThreadID:" + threadID);
+                } else {
+                    textMessage = topicSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
+                            "ThreadID:" + threadID + "  " + everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
-                topicPublisher.send(textMessage,DeliveryMode.PERSISTENT,0,jmsExpiration);
+                topicPublisher.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
                 messageCounter.incrementAndGet();
-                localMessageCount ++;
-                if(messageCounter.get() % printNumberOfMessagesPer == 0) {
+                localMessageCount++;
+                if (messageCounter.get() % printNumberOfMessagesPer == 0) {
 
-                    System.out.println((readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[TOPIC SEND] ThreadID:"+threadID+" topicName:"+
-                            topicName+" localMessageCount:"+localMessageCount+" totalMessageCount:" + messageCounter.get() + " count to send:" +
-                            numOfMessagesToSend );
+                    log.info((readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[TOPIC SEND] ThreadID:" +
+                            threadID + " topicName:" +
+                            topicName + " localMessageCount:" + localMessageCount + " totalMessageCount:" +
+                            messageCounter.get() + " count to send:" +
+                            numOfMessagesToSend);
                 }
-                if(isToPrintEachMessage) {
-                    System.out.println("(count:"+messageCounter.get()+"/threadID:"+threadID+") "+textMessage);
+                if (isToPrintEachMessage) {
+                    log.info("(count:" + messageCounter.get() + "/threadID:" + threadID + ") " + textMessage);
                 }
                 if (delay != 0) {
                     try {
@@ -167,28 +179,28 @@ public class TopicMessagePublisher implements Runnable{
             stopPublishing();
 
         } catch (JMSException e) {
-            System.out.println("Error while publishing messages" + e);
+            log.error("Error while publishing messages", e);
         } catch (IOException e) {
-            System.out.println("Error while reading from file" + e);
+            log.error("Error while reading from file", e);
         }
     }
 
     public synchronized void stopPublishing() {
         try {
-            if(topicPublisher != null) {
+            if (topicPublisher != null) {
                 topicPublisher.close();
                 topicPublisher = null;
             }
-            if(topicSession != null) {
+            if (topicSession != null) {
                 topicSession.close();
                 topicSession = null;
             }
-            if(topicConnection != null) {
+            if (topicConnection != null) {
                 topicConnection.close();
                 topicConnection = null;
             }
-        }   catch (JMSException e) {
-            System.out.println("Error while stopping the sender " + e);
+        } catch (JMSException e) {
+            log.error("Error while stopping the sender", e);
         }
     }
 }

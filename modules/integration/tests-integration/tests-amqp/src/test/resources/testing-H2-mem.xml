@@ -27,6 +27,9 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.StartH2MemMode"/>
 
             <!-- functional test cases -->
+
+            <!-- Queue -->
+
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
@@ -38,25 +41,32 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
 
 
+            <!-- Topic -->
+
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>-->
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>
+            <!--class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/-->
 
 
             <!-- load test cases-->
 
-            <class name="org.wso2.mb.integration.tests.amqp.load.QueueLargeMessageSendReceiveTestCase"/>
+            <!-- Queue -->
+
+            <!--class name="org.wso2.mb.integration.tests.amqp.load.QueueLargeMessageSendReceiveTestCase"/-->
             <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.load.QueueAckMixTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckSubscriberCloseTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.load.TopicLargeMessagePublishConsumeTestCase"/>-->
+            <!--class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTestCase"/-->
             <class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>
+
+
+            <!-- Topic -->
+
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.TopicLargeMessagePublishConsumeTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveTopicSubscriptionTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedTopicTestCase"/>-->
-            <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTestCase"/>
-
             <!-- <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTopicTestCase"/>-->
         </classes>

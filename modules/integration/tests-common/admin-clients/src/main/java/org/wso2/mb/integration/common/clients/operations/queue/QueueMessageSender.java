@@ -18,6 +18,9 @@
 
 package org.wso2.mb.integration.common.clients.operations.queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -28,7 +31,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QueueMessageSender implements Runnable{
+public class QueueMessageSender implements Runnable {
+
+    private static Log log = LogFactory.getLog(QueueMessageSender.class);
+
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     private static final String CF_NAME_PREFIX = "connectionfactory.";
     private static final String CF_NAME = "andesConnectionfactory";
@@ -41,7 +47,7 @@ public class QueueMessageSender implements Runnable{
     private AtomicInteger messageCounter;
     private int numOfMessagesToSend;
     private int delay;
-    private boolean readFromFile =false;
+    private boolean readFromFile = false;
     private String filePath = "";
 
     private QueueConnection queueConnection = null;
@@ -53,11 +59,11 @@ public class QueueMessageSender implements Runnable{
 
     private Long jmsExpiration = 0l;
 
-
-    //private static final Logger log = Logger.getLogger(queue.QueueMessageSender.class);
-
-    public QueueMessageSender(String connectionString, String hostName, String port, String userName, String password, String queueName,
-                              AtomicInteger messageCounter, int numOfMessagesToSend, int  delayBetweenMessages, String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage, Long jmsExpiration) {
+    public QueueMessageSender(String connectionString, String hostName, String port, String userName,
+                              String password, String queueName,
+                              AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
+                              String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
+                              Long jmsExpiration) {
 
         this.hostName = hostName;
         this.port = port;
@@ -67,7 +73,7 @@ public class QueueMessageSender implements Runnable{
         this.numOfMessagesToSend = numOfMessagesToSend;
         this.delay = delayBetweenMessages;
         this.filePath = filePath;
-        if(filePath!= null && !filePath.equals("")){
+        if (filePath != null && !filePath.equals("")) {
             readFromFile = true;
         }
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
@@ -79,7 +85,7 @@ public class QueueMessageSender implements Runnable{
         properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
         properties.put("queue." + queueName, queueName);
 
-        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
+        log.info("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
 
         try {
             InitialContext ctx = new InitialContext(properties);
@@ -94,15 +100,15 @@ public class QueueMessageSender implements Runnable{
             queueSender = queueSession.createSender(queue);
 
         } catch (NamingException e) {
-            System.out.println("Error while looking up for queue" + e);
-        } catch (JMSException ex) {
-            System.out.println("Error while initializing queue connection" + ex);
+            log.error("Error while looking up for queue", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing queue connection", e);
         }
 
     }
 
     private String getTCPConnectionURL(String username, String password) {
-        if(connectionString != null && !connectionString.equals("")) {
+        if (connectionString != null && !connectionString.equals("")) {
             return connectionString;
         } else {
             return new StringBuffer()
@@ -113,11 +119,12 @@ public class QueueMessageSender implements Runnable{
                     .toString();
         }
     }
+
     public void run() {
         try {
             TextMessage textMessage = null;
             String everything = "";
-            if(readFromFile) {
+            if (readFromFile) {
                 BufferedReader br = new BufferedReader(new FileReader(filePath));
                 try {
                     StringBuilder sb = new StringBuilder();
@@ -141,11 +148,12 @@ public class QueueMessageSender implements Runnable{
             }
 
             long threadID = Thread.currentThread().getId();
-            int localMessageCount =0;
+            int localMessageCount = 0;
             while (messageCounter.get() < numOfMessagesToSend) {
-                if(!readFromFile) {
-                    textMessage = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- ThreadID:"+threadID);
-                }else {
+                if (!readFromFile) {
+                    textMessage = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
+                            "ThreadID:" + threadID);
+                } else {
                     textMessage = queueSession.createTextMessage(everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
@@ -157,15 +165,17 @@ public class QueueMessageSender implements Runnable{
                     queueSender.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
                     messageCounter.incrementAndGet();
                 }
-                localMessageCount ++;
-                if(messageCounter.get() % printNumberOfMessagesPer == 0) {
+                localMessageCount++;
+                if (messageCounter.get() % printNumberOfMessagesPer == 0) {
 
-                    System.out.println((readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[QUEUE SEND] ThreadID:"+threadID+" queueName:"+
-                            queueName+" localMessageCount:"+localMessageCount+" totalMessageCount:-" + messageCounter.get() + "- count to send:" +
-                            numOfMessagesToSend );
+                    log.info((readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[QUEUE SEND] ThreadID:" +
+                            threadID + " queueName:" +
+                            queueName + " localMessageCount:" + localMessageCount + " totalMessageCount:-" +
+                            messageCounter.get() + "- count to send:" +
+                            numOfMessagesToSend);
                 }
-                if(isToPrintEachMessage) {
-                    System.out.println("(count:"+messageCounter.get()+"/threadID:"+threadID+") "+textMessage);
+                if (isToPrintEachMessage) {
+                    log.info("(count:" + messageCounter.get() + "/threadID:" + threadID + ") " + textMessage);
                 }
                 if (delay != 0) {
                     try {
@@ -179,28 +189,28 @@ public class QueueMessageSender implements Runnable{
             stopSending();
 
         } catch (JMSException e) {
-            System.out.println("Error while publishing messages" + e);
+            log.error("Error while publishing messages", e);
         } catch (IOException e) {
-            System.out.println("Error while reading file" + e);
+            log.error("Error while reading file", e);
         }
     }
 
     public synchronized void stopSending() {
         try {
-            if(queueSender != null) {
+            if (queueSender != null) {
                 queueSender.close();
                 queueSender = null;
             }
-            if(queueSession != null) {
+            if (queueSession != null) {
                 queueSession.close();
                 queueSession = null;
             }
-            if(queueConnection != null) {
+            if (queueConnection != null) {
                 queueConnection.close();
                 queueConnection = null;
             }
-        }   catch (JMSException e) {
-            System.out.println("Error while stopping the sender " + e);
+        } catch (JMSException e) {
+            log.error("Error while stopping the sender.", e);
         }
     }
 }

@@ -25,7 +25,7 @@ public class CreateRemoveTopicSubscriptionTestCase {
     @Test
     public void testCreateRemoveSubscription() throws Exception {
         AndesQueueSubscriber queueClient = new AndesQueueSubscriber.Builder("admin", "admin",
-                                                                            "TestTopic").build();
+                "TestTopic").build();
         queueClient.connect();
 
         // TODO Check the number of subscribers in broker

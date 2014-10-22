@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import static org.testng.Assert.assertEquals;
 
-public class QueueTestCase extends MBIntegrationBaseTest{
+public class QueueTestCase extends MBIntegrationBaseTest {
     private static final Log log = LogFactory.getLog(QueueTestCase.class);
 
     @BeforeClass(alwaysRun = true)
@@ -46,30 +46,26 @@ public class QueueTestCase extends MBIntegrationBaseTest{
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
         assertEquals((receiveSuccess && sendSuccess), true);
     }
 
     // Disabled until topic workflow is implemented
-    @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name as queue", enabled = false)
+    @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name" +
+            " as queue", enabled = false)
     public void performSubTopicPubQueueTestCase() {
 
         Integer sendCount = 1000;
@@ -121,7 +117,7 @@ public class QueueTestCase extends MBIntegrationBaseTest{
         int msgCountFromClient1 = AndesClientUtils.getNoOfMessagesReceived(receivingClient1, expectedCount, runTime);
         int msgCountFromClient2 = AndesClientUtils.getNoOfMessagesReceived(receivingClient2, expectedCount, runTime);
 
-        assertEquals(msgCountFromClient1+msgCountFromClient2,expectedCount.intValue());
+        assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount.intValue());
     }
 
 }
