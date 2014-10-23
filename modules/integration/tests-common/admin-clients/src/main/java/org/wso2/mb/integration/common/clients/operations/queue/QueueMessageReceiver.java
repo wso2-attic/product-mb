@@ -133,7 +133,7 @@ public class QueueMessageReceiver implements Runnable {
             log.info("done closing Subscriber");
 
         } catch (JMSException e) {
-//            e.printStackTrace();
+            log.error("Error in stop listening.", e);
         }
     }
 

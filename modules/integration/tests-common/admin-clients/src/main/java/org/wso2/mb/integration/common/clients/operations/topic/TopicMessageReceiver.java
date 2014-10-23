@@ -152,7 +152,7 @@ public class TopicMessageReceiver implements Runnable {
             log.info("done unSubscribing Subscriber");
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.error("Error in removing subscription.", e);
         }
     }
 
@@ -166,7 +166,7 @@ public class TopicMessageReceiver implements Runnable {
             log.info("done closing Subscriber");
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.error("Error stop listening.", e);
         }
     }
 
