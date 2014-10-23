@@ -94,8 +94,7 @@ public class AndesClientOutputParser {
     }
 
     public void printMissingMessages(int numberOfSentMessages) {
-
-        log.info("===================Missing Messages=====================");
+        log.info("Printing Missing Messages");
         for (long count = 0; count < numberOfSentMessages; count++) {
             if (mapOfReceivedMessages.get(count) == null) {
                 log.info("missing message id:" + count + 1 + "\n");
@@ -104,12 +103,12 @@ public class AndesClientOutputParser {
     }
 
     public void printDuplicateMessages() {
-        log.info("Duplicated Messages");
+        log.info("Printing Duplicated Messages");
         printMap(checkIfMessagesAreDuplicated());
     }
 
     public void printMessagesMap() {
-        log.info("====================Received Messages======================");
+        log.info("Printing Received Messages");
         printMap(mapOfReceivedMessages);
     }
 
@@ -138,7 +137,7 @@ public class AndesClientOutputParser {
     }
 
     public void printMessagesSorted() {
-        log.info("===================Sorted Messages=====================");
+        log.info("Printing Sorted Messages");
         List<Long> cloneOfMessages = new ArrayList<Long>();
         cloneOfMessages.addAll(messages);
         Collections.sort(cloneOfMessages);

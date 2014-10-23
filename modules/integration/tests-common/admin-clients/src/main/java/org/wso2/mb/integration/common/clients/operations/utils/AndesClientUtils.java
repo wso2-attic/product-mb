@@ -74,7 +74,7 @@ public class AndesClientUtils {
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignore) {
                 //silently ignore
             }
             log.info(">>>>total q count=" + client.getReceivedqueueMessagecount() + " total t count=" + client
@@ -166,7 +166,7 @@ public class AndesClientUtils {
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignore) {
                 //silently ignore
             }
             if (client.getReceivedqueueMessagecount() >= messageCountExpected) {
@@ -189,11 +189,7 @@ public class AndesClientUtils {
     public static boolean getIfSenderIsSuccess(AndesClient sendingClient, int expectedMsgCount) {
         boolean sendingSuccess = false;
         if (expectedMsgCount == sendingClient.getReceivedqueueMessagecount()) {
-            log.info("SENDING: SUCCESS");
             sendingSuccess = true;
-        } else {
-            log.warn("SENDING: FAILED");
-            sendingSuccess = false;
         }
         return sendingSuccess;
     }
@@ -201,7 +197,7 @@ public class AndesClientUtils {
     public static void sleepForInterval(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignore) {
             //ignore
         }
     }

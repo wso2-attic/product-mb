@@ -20,15 +20,13 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class TopicTestCase extends MBIntegrationBaseTest {
     private static final Log log = LogFactory.getLog(TopicTestCase.class);
@@ -61,12 +59,8 @@ public class TopicTestCase extends MBIntegrationBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if (receiveSuccess && sendSuccess) {
-            log.info("TEST PASSED");
-        } else {
-            log.info("TEST FAILED");
-        }
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
     @Test(groups = "wso2.mb", description = "")
@@ -123,11 +117,11 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient, sendMessageCount);
         boolean adminSendSuccess = AndesClientUtils.getIfSenderIsSuccess(adminSendingClient, sendMessageCount);
 
-        assertTrue(tenant1SendSuccess, "Sending failed for tenant 1.");
-        assertTrue(tenant2SendSuccess, "Sending failed for tenant 2.");
-        assertTrue(adminSendSuccess, "Sending failed for admin.");
-        assertTrue(tenet1ReceiveSuccess, "Message receiving failed for tenant 1.");
-        assertTrue(tenet2ReceiveSuccess, "Message receiving failed for tenant 2.");
-        assertTrue(adminReceiveSuccess, "Message receiving failed for admin.");
+        Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1.");
+        Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2.");
+        Assert.assertTrue(adminSendSuccess, "Sending failed for admin.");
+        Assert.assertTrue(tenet1ReceiveSuccess, "Message receiving failed for tenant 1.");
+        Assert.assertTrue(tenet2ReceiveSuccess, "Message receiving failed for tenant 2.");
+        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin.");
     }
 }
