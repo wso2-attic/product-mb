@@ -72,7 +72,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         AndesClient receivingClient = new AndesClient("receive", hostinfo
                 , "topic:singleTopic1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
@@ -84,7 +84,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         AndesClient sendingClient = new AndesClient("send", hostinfo
                 , "topic:singleTopic1", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
@@ -92,11 +92,6 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
         assertEquals((receiveSuccess && sendSuccess), true);
     }
 
@@ -133,7 +128,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         AndesClient receivingClient = new AndesClient("receive", hostinfo1
                 , "topic:singleTopic3",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
@@ -145,19 +140,13 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         AndesClient sendingClient = new AndesClient("send", hostinfo2
                 , "topic:singleTopic3", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        if(receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
 
         assertEquals((receiveSuccess && sendSuccess), true);
     }

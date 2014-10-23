@@ -18,7 +18,10 @@
 
 package org.wso2.mb.integration.common.clients.operations.queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -27,6 +30,8 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class QueueMessageReceiver implements Runnable {
+
+    private static Log log = LogFactory.getLog(QueueMessageReceiver.class);
 
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     private static final String CF_NAME_PREFIX = "connectionfactory.";
@@ -50,14 +55,18 @@ public class QueueMessageReceiver implements Runnable {
     private int commitAfterEach = Integer.MAX_VALUE;
     private int rollbackAfterEach = Integer.MAX_VALUE;
     private String queueName;
-    private  int printNumberOfMessagesPer = 1;
-    private  boolean isToPrintEachMessage = false;
+    private int printNumberOfMessagesPer = 1;
+    private boolean isToPrintEachMessage = false;
     private String fileToWriteReceivedMessages = "";
 
     //private static final Logger log = Logger.getLogger(queue.QueueMessageReceiver.class);
 
-    public QueueMessageReceiver(String connectionString, String hostName, String port, String userName, String password, String queueName, int ackMode,
-                                boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages, int printNumberOfMessagesPer, boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter, int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
+    public QueueMessageReceiver(String connectionString, String hostName, String port, String userName,
+                                String password, String queueName, int ackMode,
+                                boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages,
+                                int printNumberOfMessagesPer, boolean isToPrintEachMessage,
+                                String fileToWriteReceivedMessages, int stopAfter, int ackAfterEach,
+                                int commitAfterEach, int rollbackAfterEach) {
 
         this.hostName = hostName;
         this.port = port;
@@ -79,8 +88,6 @@ public class QueueMessageReceiver implements Runnable {
         properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
         properties.put("queue." + queueName, queueName);
 
-//        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
-
         try {
             InitialContext ctx = new InitialContext(properties);
             // Lookup connection factory
@@ -96,15 +103,15 @@ public class QueueMessageReceiver implements Runnable {
             queueReceiver = queueSession.createReceiver(queue);
 
         } catch (NamingException e) {
-            System.out.println("Error while looking up for queue" + e);
-        } catch (JMSException ex) {
-            System.out.println("Error while initializing queue connection" + ex);
+            log.error("Error while looking up for queue", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing queue connection", e);
         }
 
     }
 
     private String getTCPConnectionURL(String username, String password) {
-        if(connectionString != null && !connectionString.equals("")) {
+        if (connectionString != null && !connectionString.equals("")) {
             return connectionString;
         } else {
             return new StringBuffer()
@@ -119,14 +126,14 @@ public class QueueMessageReceiver implements Runnable {
     public void stopListening() {
         try {
 
-            System.out.println("closing Subscriber");
+            log.info("closing Subscriber");
             queueReceiver.close();
             queueSession.close();
             queueConnection.close();
-            System.out.println("done closing Subscriber");
+            log.info("done closing Subscriber");
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.error("Error in stop listening.", e);
         }
     }
 
@@ -137,16 +144,18 @@ public class QueueMessageReceiver implements Runnable {
     public void run() {
         try {
             if (useMessageListener) {
-                QueueMessageListener messageListener = new QueueMessageListener(queueConnection, queueSession, queueReceiver, queueName, messageCounter,
-                        delayBetweenMessages, printNumberOfMessagesPer, isToPrintEachMessage, fileToWriteReceivedMessages,
+                QueueMessageListener messageListener = new QueueMessageListener(queueConnection, queueSession,
+                        queueReceiver, queueName, messageCounter,
+                        delayBetweenMessages, printNumberOfMessagesPer, isToPrintEachMessage,
+                        fileToWriteReceivedMessages,
                         stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
 
                 queueReceiver.setMessageListener(messageListener);
             } else {
-                int localMessageCount =0;
+                int localMessageCount = 0;
                 while (true) {
                     Message message = queueReceiver.receive();
-                    if (message!= null && message instanceof TextMessage) {
+                    if (message != null && message instanceof TextMessage) {
                         messageCounter.incrementAndGet();
                         localMessageCount++;
 
@@ -157,21 +166,22 @@ public class QueueMessageReceiver implements Runnable {
                         } else {
                             redelivery = "ORIGINAL";
                         }
-                        if(messageCounter.get() % printNumberOfMessagesPer == 0) {
-                            System.out.println("[QUEUE RECEIVE] ThreadID:"+Thread.currentThread().getId()+" queue:"+queueName+" localMessageCount:"+localMessageCount+
-                                    " totalMessageCount:" + messageCounter.get() + " max count:" + stopAfter );
+                        if (messageCounter.get() % printNumberOfMessagesPer == 0) {
+                            log.info("[QUEUE RECEIVE] ThreadID:" + Thread.currentThread().getId() + " queue:" +
+                                    queueName + " localMessageCount:" + localMessageCount +
+                                    " totalMessageCount:" + messageCounter.get() + " max count:" + stopAfter);
                         }
-                        if(isToPrintEachMessage) {
-                            System.out.println("(count:"+messageCounter.get()+"/threadID:"+Thread.currentThread().getId()+"/queue:"+queueName+") "+ redelivery + " >> " + textMessage.getText());
+                        if (isToPrintEachMessage) {
+                            log.info("(count:" + messageCounter.get() + "/threadID:" + Thread.currentThread().getId()
+                                    + "/queue:" + queueName + ") " + redelivery + " >> " + textMessage.getText());
                             AndesClientUtils.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
                         }
                     }
 
-                    if(messageCounter.get() % ackAfterEach == 0) {
-                        if(queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
-                            if(message != null) {
+                    if (messageCounter.get() % ackAfterEach == 0) {
+                        if (queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
+                            if (message != null) {
                                 message.acknowledge();
-                                System.out.println("****Acked message***");
                             }
                         }
                     }
@@ -179,10 +189,10 @@ public class QueueMessageReceiver implements Runnable {
                     //commit get priority
                     if (messageCounter.get() % commitAfterEach == 0) {
                         queueSession.commit();
-                        System.out.println("Committed Queue Session");
+                        log.info("Committed Queue Session");
                     } else if (messageCounter.get() % rollbackAfterEach == 0) {
                         queueSession.rollback();
-                        System.out.println("Rollbacked Queue Session");
+                        log.info("Rollbacked Queue Session");
                     }
 
                     if (messageCounter.get() == stopAfter) {
@@ -199,7 +209,7 @@ public class QueueMessageReceiver implements Runnable {
                 }
             }
         } catch (JMSException e) {
-            System.out.println("Error while listening for messages" + e);
+            log.error("Error while listening for messages", e);
         }
 
     }

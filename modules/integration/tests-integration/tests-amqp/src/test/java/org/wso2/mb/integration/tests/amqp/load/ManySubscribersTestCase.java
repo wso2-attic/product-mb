@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.load;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -74,7 +75,8 @@ public class ManySubscribersTestCase extends MBIntegrationBaseTest {
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        assertEquals((receiveSuccess && sendSuccess), true);
-        assertEquals(actualReceivedCount, sendCount);
+        Assert.assertEquals(sendSuccess,"Message sending failed.");
+        Assert.assertEquals(receiveSuccess,"Message receiving failed.");
+        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
     }
 }

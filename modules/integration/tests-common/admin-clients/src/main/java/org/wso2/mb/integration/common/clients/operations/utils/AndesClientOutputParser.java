@@ -18,12 +18,17 @@
 
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
 public class AndesClientOutputParser {
+
+    private static Log log = LogFactory.getLog(AndesClientOutputParser.class);
 
     private Map<Long, Integer> mapOfReceivedMessages = new HashMap<Long, Integer>();
     private List<Long> messages = new ArrayList<Long>();
@@ -56,89 +61,88 @@ public class AndesClientOutputParser {
                 br.close();
             }
         } catch (Exception e) {
-            System.out.println("Error while parsing the file containing received messages" + e);
+            log.error("Error while parsing the file containing received messages", e);
         }
     }
 
     /**
      * Check whether messages are duplicated.
      * Returns duplicated ids
+     *
      * @return
      */
     public Map<Long, Integer> checkIfMessagesAreDuplicated() {
-         Map<Long, Integer> messagesDuplicated = new HashMap<Long, Integer>();
-         for(Long messageIdentifier : mapOfReceivedMessages.keySet()) {
-             if(mapOfReceivedMessages.get(messageIdentifier) > 1) {
+        Map<Long, Integer> messagesDuplicated = new HashMap<Long, Integer>();
+        for (Long messageIdentifier : mapOfReceivedMessages.keySet()) {
+            if (mapOfReceivedMessages.get(messageIdentifier) > 1) {
                 messagesDuplicated.put(messageIdentifier, mapOfReceivedMessages.get(messageIdentifier));
-             }
-         }
+            }
+        }
         return messagesDuplicated;
     }
 
     public boolean checkIfMessagesAreInOrder() {
         boolean result = true;
-        for(int count = 0 ; count < messages.size(); count++) {
-            if(messages.get(count) != (count)) {
-                result =  false;
-                System.out.println("Message order is broken at message " + messages.get(count));
+        for (int count = 0; count < messages.size(); count++) {
+            if (messages.get(count) != (count)) {
+                result = false;
+                log.warn("Message order is broken at message " + messages.get(count));
                 break;
             }
         }
-        return  result;
+        return result;
     }
 
     public void printMissingMessages(int numberOfSentMessages) {
-
-        System.out.println("===================Missing Messages=====================");
+        log.info("Printing Missing Messages");
         for (long count = 0; count < numberOfSentMessages; count++) {
             if (mapOfReceivedMessages.get(count) == null) {
-                System.out.println("missing message id:" + count+1 + "\n");
+                log.info("missing message id:" + count + 1 + "\n");
             }
         }
     }
 
     public void printDuplicateMessages() {
-        System.out.println("===================Duplicated Messages=====================");
+        log.info("Printing Duplicated Messages");
         printMap(checkIfMessagesAreDuplicated());
     }
 
     public void printMessagesMap() {
-
-        System.out.println("====================Received Messages======================");
+        log.info("Printing Received Messages");
         printMap(mapOfReceivedMessages);
     }
 
     public void clearFile() {
         File file = new File(filePath);
-        if(file.delete()) {
-            System.out.println("File at " + filePath + " is removed...");
+        if (file.delete()) {
+            log.info("File at " + filePath + " is removed...");
         }
     }
 
     private void addMessage(Long messageIdentifier) {
-         if(mapOfReceivedMessages.get(messageIdentifier) == null) {
-              mapOfReceivedMessages.put(messageIdentifier, 1);
-         }  else {
-             int currentCount = mapOfReceivedMessages.get(messageIdentifier);
-             mapOfReceivedMessages.put(messageIdentifier, currentCount + 1);
-         }
+        if (mapOfReceivedMessages.get(messageIdentifier) == null) {
+            mapOfReceivedMessages.put(messageIdentifier, 1);
+        } else {
+            int currentCount = mapOfReceivedMessages.get(messageIdentifier);
+            mapOfReceivedMessages.put(messageIdentifier, currentCount + 1);
+        }
 
-         messages.add(messageIdentifier);
+        messages.add(messageIdentifier);
     }
 
-    private void printMap(Map<Long,Integer> messageMap) {
-        for(Long messageIdentifier : messageMap.keySet()) {
-            System.out.println(messageIdentifier + "-----" + messageMap.get(messageIdentifier));
+    private void printMap(Map<Long, Integer> messageMap) {
+        for (Long messageIdentifier : messageMap.keySet()) {
+            log.info(messageIdentifier + "-----" + messageMap.get(messageIdentifier));
         }
     }
 
     public void printMessagesSorted() {
-        System.out.println("===================Sorted Messages=====================");
+        log.info("Printing Sorted Messages");
         List<Long> cloneOfMessages = new ArrayList<Long>();
         cloneOfMessages.addAll(messages);
         Collections.sort(cloneOfMessages);
-        for(int count=0; count < cloneOfMessages.size(); count++) {
-            System.out.println(cloneOfMessages.get(count) + "\n");
+        for (int count = 0; count < cloneOfMessages.size(); count++) {
+            log.info(cloneOfMessages.get(count) + "\n");
         }
     }
 }

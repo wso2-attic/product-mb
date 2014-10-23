@@ -18,11 +18,17 @@
 
 package org.wso2.mb.integration.common.clients.operations.topic;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
+
 import javax.jms.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TopicMessageListener implements MessageListener {
+
+    private static Log log = LogFactory.getLog(TopicMessageListener.class);
+
     private TopicConnection topicConnection;
     private TopicSession topicSession;
     private MessageConsumer topicReceiver;
@@ -43,7 +49,11 @@ public class TopicMessageListener implements MessageListener {
     //private static final Logger log = Logger.getLogger(topic.TopicMessageListener.class);
 
     public TopicMessageListener(TopicConnection topicConnection, TopicSession topicSession,
-                                MessageConsumer topicReceiver, String topicName, String subscriptionId, AtomicInteger messageCounter, int delayBetweenMessages, int printNumberOfMessagesPer, boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter, int unsubscribeAfter, int ackAfterEach, int rollbackPerMessageCount, int commitPerMessageCount) {
+                                MessageConsumer topicReceiver, String topicName, String subscriptionId,
+                                AtomicInteger messageCounter, int delayBetweenMessages, int printNumberOfMessagesPer,
+                                boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter,
+                                int unsubscribeAfter, int ackAfterEach, int rollbackPerMessageCount,
+                                int commitPerMessageCount) {
         this.topicConnection = topicConnection;
         this.topicSession = topicSession;
         this.topicReceiver = topicReceiver;
@@ -54,7 +64,7 @@ public class TopicMessageListener implements MessageListener {
         this.fileToWriteReceivedMessages = fileToWriteReceivedMessages;
         this.messageCount = messageCounter;
         this.topicName = topicName;
-        this.localMessageCount =0;
+        this.localMessageCount = 0;
         this.stopMessageCount = stopAfter;
         this.unsubscribeMessageCount = unsubscribeAfter;
         this.ackAfterEach = ackAfterEach;
@@ -69,45 +79,47 @@ public class TopicMessageListener implements MessageListener {
         TextMessage receivedMessage = (TextMessage) message;
         try {
             String redelivery = "";
-            if(message.getJMSRedelivered()) {
+            if (message.getJMSRedelivered()) {
                 redelivery = "REDELIVERED";
-            }  else {
+            } else {
                 redelivery = "ORIGINAL";
             }
 
-            if(messageCount.get() % printNumberOfMessagesPer == 0) {
-                System.out.println("[TOPIC RECEIVE] ThreadID:"+Thread.currentThread().getId()+" topic:"+topicName+" localMessageCount:"+localMessageCount+" totalMessageCount:" + messageCount.get() + " max count:" + stopMessageCount );
+            if (messageCount.get() % printNumberOfMessagesPer == 0) {
+                log.info("[TOPIC RECEIVE] ThreadID:" + Thread.currentThread().getId() + " topic:" + topicName + " " +
+                        "localMessageCount:" + localMessageCount + " totalMessageCount:" + messageCount.get() + " max" +
+                        " count:" + stopMessageCount);
             }
-            if(isToPrintEachMessage) {
-                System.out.println("(count:"+messageCount.get()+"/threadID:"+Thread.currentThread().getId()+"/topic:"+topicName+") " + redelivery + " >> " + receivedMessage.getText());
+            if (isToPrintEachMessage) {
+                log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/topic:" +
+                        topicName + ") " + redelivery + " >> " + receivedMessage.getText());
                 AndesClientUtils.writeToFile(receivedMessage.getText(), fileToWriteReceivedMessages);
             }
 
-            if(messageCount.get() % ackAfterEach == 0) {
-                if(topicSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
+            if (messageCount.get() % ackAfterEach == 0) {
+                if (topicSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
                     receivedMessage.acknowledge();
-                    System.out.println("****Acked message***");
                 }
             }
 
             //commit get priority
-            if(messageCount.get() % commitPerMessageCount == 0) {
+            if (messageCount.get() % commitPerMessageCount == 0) {
                 topicSession.commit();
-                System.out.println("Committed Topic Session");
-            } else if(messageCount.get() % rollbackPerMessagecount == 0) {
+                log.info("Committed Topic Session");
+            } else if (messageCount.get() % rollbackPerMessagecount == 0) {
                 topicSession.rollback();
-                System.out.println("Rollbacked Topic Session");
+                log.info("Rollbacked Topic Session");
             }
 
-            if(messageCount.get() >= unsubscribeMessageCount) {
+            if (messageCount.get() >= unsubscribeMessageCount) {
                 unsubscribeConsumer();
                 AndesClientUtils.sleepForInterval(200);
-            } else if(messageCount.get() >= stopMessageCount) {
+            } else if (messageCount.get() >= stopMessageCount) {
                 stopMessageListener();
                 AndesClientUtils.sleepForInterval(200);
             }
 
-            if(delayBetweenMessages != 0) {
+            if (delayBetweenMessages != 0) {
                 try {
                     Thread.sleep(delayBetweenMessages);
                 } catch (InterruptedException e) {
@@ -115,9 +127,9 @@ public class TopicMessageListener implements MessageListener {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("Wrong inputs." + e);
+            log.error("Wrong inputs.", e);
         } catch (JMSException e) {
-            System.out.println("JMS Exception" + e);
+            log.error("JMS Exception", e);
         }
     }
 
@@ -150,13 +162,13 @@ public class TopicMessageListener implements MessageListener {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    System.out.println("Closing subscriber");
+                    log.info("Closing subscriber");
                     topicReceiver.close();
                     topicSession.close();
                     topicConnection.stop();
                     topicConnection.close();
                 } catch (JMSException e) {
-                    System.out.println("Error in closing the queue subscriber" + e);
+                    log.error("Error in closing the queue subscriber", e);
                 }
             }
         }).start();
@@ -169,7 +181,7 @@ public class TopicMessageListener implements MessageListener {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    System.out.println("unSubscribing Subscriber");
+                    log.info("unSubscribing Subscriber");
                     topicSession.unsubscribe(subscriptionId);
                     topicReceiver.close();
                     topicSession.close();

@@ -21,7 +21,6 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 
 import java.io.*;
 
@@ -41,6 +40,7 @@ public class AndesClientUtils {
 
     /**
      * Initialize the print writer. This needs to be invoked before each test case.
+     *
      * @param filePath The file path to write to.
      */
     public static void initializePrintWriter(String filePath) {
@@ -54,47 +54,55 @@ public class AndesClientUtils {
     }
 
     public static void flushPrintWriter() {
-        if(printWriterGlobal != null) {
+        if (printWriterGlobal != null) {
             printWriterGlobal.flush();
         }
     }
 
     /**
      * Wait until messages are received. When expected count is received (within numberOfSecondsToWaitForMessages)
-     * @param client client to evaluate message count from
-     * @param messageCountExpected expected message count
-     * @param numberOfSecondsToWaitForMessages  number of seconds to wait for messages
+     *
+     * @param client                           client to evaluate message count from
+     * @param messageCountExpected             expected message count
+     * @param numberOfSecondsToWaitForMessages number of seconds to wait for messages
      * @return success of the receive
      */
-    public static boolean waitUntilMessagesAreReceived(AndesClient client, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
-        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+    public static boolean waitUntilMessagesAreReceived(AndesClient client, int messageCountExpected,
+                                                       int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         boolean success = false;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignore) {
                 //silently ignore
             }
-            System.out.println(">>>>total q count=" + client.getReceivedqueueMessagecount() + " total t count=" + client.getReceivedTopicMessagecount());
-            if (client.getReceivedqueueMessagecount() == messageCountExpected && client.getReceivedTopicMessagecount() == messageCountExpected) {
+            log.info(">>>>total q count=" + client.getReceivedqueueMessagecount() + " total t count=" + client
+                    .getReceivedTopicMessagecount());
+            if (client.getReceivedqueueMessagecount() == messageCountExpected && client.getReceivedTopicMessagecount
+                    () == messageCountExpected) {
 
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtils.sleepForInterval(500);
-                System.out.println("SUCCESS: Received expected "+ messageCountExpected+". Received q=" + client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
+                log.info("SUCCESS: Received expected " + messageCountExpected + ". Received q=" + client
+                        .getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
                 client.shutDownClient();
                 return true;
-            }  else if(client.getReceivedqueueMessagecount() > messageCountExpected || client.getReceivedTopicMessagecount() > messageCountExpected) {
+            } else if (client.getReceivedqueueMessagecount() > messageCountExpected || client
+                    .getReceivedTopicMessagecount() > messageCountExpected) {
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtils.sleepForInterval(500);
-                System.out.println("FAILED: Received more messages than expected "+ messageCountExpected+". Received q=" + client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
+                log.info("FAILED: Received more messages than expected " + messageCountExpected + ". Received q=" +
+                        client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
                 client.shutDownClient();
                 return false;
             }
         }
 
-        System.out.println("FAILED. Did not receive messages expected "+ messageCountExpected+". Received q=" + client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
+        log.info("FAILED. Did not receive messages expected " + messageCountExpected + ". Received q=" + client
+                .getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
         flushPrintWriter();
         client.shutDownClient();
         return success;
@@ -102,20 +110,22 @@ public class AndesClientUtils {
 
     /**
      * Wait specified time and count number of messages of all subscribers
+     *
      * @param client
      * @param queueName
      * @param messageCountExpected
      * @param numberOfSecondsToWaitForMessages
      * @return true if total message count equal to expected message count
      */
-    public static void waitUntilAllMessagesReceived(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
-        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+    public static void waitUntilAllMessagesReceived(AndesClient client, String queueName, int messageCountExpected,
+                                                    int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
             } catch (InterruptedException ignore) {
             }
-            log.info("Total messages in " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+            log.info("Total messages in " + queueName + " [" + client.getReceivedqueueMessagecount() + "] ");
         }
         flushPrintWriter();
         client.shutDownClient();
@@ -123,64 +133,63 @@ public class AndesClientUtils {
 
     /**
      * Wait specified time and count number of exact messages received by subscribers
+     *
      * @param client
      * @param queueName
      * @param messageCountExpected
      * @param numberOfSecondsToWaitForMessages
      * @return
      */
-    public static void waitUntilExactNumberOfMessagesReceived(AndesClient client, String queueName, int messageCountExpected, int numberOfSecondsToWaitForMessages) {
-        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+    public static void waitUntilExactNumberOfMessagesReceived(AndesClient client, String queueName,
+                                                              int messageCountExpected,
+                                                              int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
             } catch (InterruptedException ignore) {
             }
-            if (client.getReceivedqueueMessagecount() == messageCountExpected){
+            if (client.getReceivedqueueMessagecount() >= messageCountExpected) {
                 flushPrintWriter();
                 client.shutDownClient();
-                log.info("Total exact messages received to " + queueName + " ["+client.getReceivedqueueMessagecount()+"] ");
+                log.info("Total exact messages received to " + queueName + " [" + client.getReceivedqueueMessagecount
+                        () + "] ");
+                break;
             }
         }
     }
 
-    public static int getNoOfMessagesReceived(AndesClient client, int messageCountExpected,int numberOfSecondsToWaitForMessages) {
-        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages/10;
+    public static int getNoOfMessagesReceived(AndesClient client, int messageCountExpected,
+                                              int numberOfSecondsToWaitForMessages) {
+        int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         int noOfMessagesReceived = 0;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
             try {
                 Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignore) {
                 //silently ignore
             }
-            if (client.getReceivedqueueMessagecount() == messageCountExpected){
+            if (client.getReceivedqueueMessagecount() >= messageCountExpected) {
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtils.sleepForInterval(500);
                 flushPrintWriter();
                 client.shutDownClient();
-                return client.getReceivedqueueMessagecount() ;
+                return client.getReceivedqueueMessagecount();
             }
 
         }
         noOfMessagesReceived = client.getReceivedqueueMessagecount();
-        log.info("Number of messages received "+ noOfMessagesReceived);
+        log.info("Number of messages received " + noOfMessagesReceived);
         flushPrintWriter();
         client.shutDownClient();
         return noOfMessagesReceived;
     }
 
 
-
-
-
     public static boolean getIfSenderIsSuccess(AndesClient sendingClient, int expectedMsgCount) {
         boolean sendingSuccess = false;
-        if(expectedMsgCount == sendingClient.getReceivedqueueMessagecount()) {
-            System.out.println("SENDING: SUCCESS");
+        if (expectedMsgCount == sendingClient.getReceivedqueueMessagecount()) {
             sendingSuccess = true;
-        } else {
-            System.out.println("SENDING: FAILED");
-            sendingSuccess = false;
         }
         return sendingSuccess;
     }
@@ -188,7 +197,7 @@ public class AndesClientUtils {
     public static void sleepForInterval(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignore) {
             //ignore
         }
     }
@@ -208,46 +217,44 @@ public class AndesClientUtils {
             }
             sampleKB10StringToWrite = sb.toString();
         } catch (FileNotFoundException e) {
-            System.out.println("File to read sample string to create text file to send is not found");
-            e.printStackTrace();
+            log.error("File to read sample string to create text file to send is not found", e);
         } catch (IOException e) {
-            System.out.println("Error in reading sample file to create text file to send");
-            e.printStackTrace();
+            log.error("Error in reading sample file to create text file to send", e);
         } finally {
 
             try {
-                if(br != null) {
+                if (br != null) {
                     br.close();
                 }
             } catch (IOException e) {
-                System.out.println("Error while closing buffered reader" + e);
+                log.error("Error while closing buffered reader", e);
             }
 
         }
         try {
 
-                File fileToCreate = new File(filePathToCreate);
+            File fileToCreate = new File(filePathToCreate);
 
-                //no need to recreate if exists
-                if (fileToCreate.exists()) {
-                    System.out.println("File requested to create already exists. Skipping file creation... " + filePathToCreate);
-                    return;
-                } else {
-                    boolean createFileSuccess = fileToCreate.createNewFile();
-                    if(createFileSuccess) {
-                        System.out.println("Successfully created a file to append content for sending at " + filePathToCreate);
-                    }
+            //no need to recreate if exists
+            if (fileToCreate.exists()) {
+                log.info("File requested to create already exists. Skipping file creation... " + filePathToCreate);
+                return;
+            } else {
+                boolean createFileSuccess = fileToCreate.createNewFile();
+                if (createFileSuccess) {
+                    log.info("Successfully created a file to append content for sending at " + filePathToCreate);
                 }
+            }
 
-            BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(filePathToCreate));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePathToCreate));
             PrintWriter printWriter = new PrintWriter(bufferedWriter);
 
-            for(int count = 0; count < sizeInKB/10 ; count++) {
+            for (int count = 0; count < sizeInKB / 10; count++) {
                 printWriter.append(sampleKB10StringToWrite);
             }
 
         } catch (IOException e) {
-            System.out.println("Error. File to print received messages is not provided" + e);
+            log.error("Error. File to print received messages is not provided", e);
         }
 
     }

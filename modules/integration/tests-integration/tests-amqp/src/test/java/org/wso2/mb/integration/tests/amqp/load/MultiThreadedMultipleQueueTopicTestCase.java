@@ -28,8 +28,6 @@ public class MultiThreadedMultipleQueueTopicTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println(
-                "=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -48,77 +46,62 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         Integer topicNumOfReceivingThreads = 45;
 
         //wait some more time to see if more messages are received
-        Integer queueExpectedCount = 3*2000*15 + additional;
+        Integer queueExpectedCount = 3 * 2000 * 15 + additional;
 
         //wait some more time to see if more messages are received
         Integer topicExpectedCount = topicSendCount + additional;
 
         AndesClient queueReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                                                      "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                                                      "false",
-                                                      queueRunTime.toString(), queueExpectedCount.toString(),
-                                                      queueNumOfReceivingThreads.toString(),
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + queueExpectedCount,
-                                                      "");
+                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
+                "false",
+                queueRunTime.toString(), queueExpectedCount.toString(),
+                queueNumOfReceivingThreads.toString(),
+                "listener=true,ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + queueExpectedCount,
+                "");
 
         queueReceivingClient.startWorking();
 
 
         AndesClient topicReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                                                      "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                                                      "false",
-                                                      topicRunTime.toString(), topicExpectedCount.toString(),
-                                                      topicNumOfReceivingThreads.toString(),
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + topicExpectedCount,
-                                                      "");
+                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
+                "false",
+                topicRunTime.toString(), topicExpectedCount.toString(),
+                topicNumOfReceivingThreads.toString(),
+                "listener=true,ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + topicExpectedCount,
+                "");
 
         topicReceivingClient.startWorking();
 
 
         AndesClient queueSendingClient = new AndesClient("send", "127.0.0.1:5672",
-                                                    "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                                                    "false", queueRunTime.toString(),
-                                                    queueSendCount.toString(), queueNumOfSendingThreads.toString(),
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + queueSendCount,
-                                                    "");
+                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
+                "false", queueRunTime.toString(),
+                queueSendCount.toString(), queueNumOfSendingThreads.toString(),
+                "ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + queueSendCount,
+                "");
 
         queueSendingClient.startWorking();
 
 
         AndesClient topicSendingClient = new AndesClient("send", "127.0.0.1:5672",
-                                                    "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                                                    "false", topicRunTime.toString(),
-                                                    topicSendCount.toString(), topicNumOfSendingThreads.toString(),
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + topicSendCount,
-                                                    "");
+                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
+                "false", topicRunTime.toString(),
+                topicSendCount.toString(), topicNumOfSendingThreads.toString(),
+                "ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + topicSendCount,
+                "");
 
         topicSendingClient.startWorking();
 
         //let us wait topic message receive time which is larger
-        boolean success = AndesClientUtils
-                .waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
 
-        boolean queueReceiveSuccess = false;
-        boolean topicReceiveSuccess = false;
-
-        if ((queueExpectedCount - additional) == queueReceivingClient.getReceivedqueueMessagecount()) {
-            queueReceiveSuccess = true;
-        }
-
-        if ((topicExpectedCount - additional) == topicReceivingClient.getReceivedqueueMessagecount()) {
-            topicReceiveSuccess = true;
-        }
-
-        if (queueReceiveSuccess && topicReceiveSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals((queueReceiveSuccess && topicReceiveSuccess), true);
+        Assert.assertEquals(queueReceivingClient.getReceivedqueueMessagecount(), queueExpectedCount - additional,
+                "Did not receive expected message count for Queues.");
+        Assert.assertEquals(topicReceivingClient.getReceivedqueueMessagecount(), topicExpectedCount - additional,
+                "Did not receive expected message count for Queues.");
     }
 }

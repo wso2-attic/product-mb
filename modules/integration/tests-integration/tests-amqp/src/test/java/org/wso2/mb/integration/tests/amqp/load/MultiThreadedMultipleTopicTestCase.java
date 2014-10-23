@@ -33,8 +33,6 @@ public class MultiThreadedMultipleTopicTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println(
-                "=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -48,43 +46,32 @@ public class MultiThreadedMultipleTopicTestCase {
         int additional = 30;
 
         //wait some more time to see if more messages are received
-        Integer expectedCount = 3*2000*15 + additional;
+        Integer expectedCount = 3 * 2000 * 15 + additional;
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                                                      "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                                                      "false",
-                                                      runTime.toString(), expectedCount.toString(),
-                                                      numOfReceivingThreads.toString(),
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
+                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
+                "false",
+                runTime.toString(), expectedCount.toString(),
+                numOfReceivingThreads.toString(),
+                "listener=true,ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + expectedCount,
+                "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
-                                                    "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                                                    "false", runTime.toString(),
-                                                    sendCount.toString(), numOfSendingThreads.toString(),
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
+                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
+                "false", runTime.toString(),
+                sendCount.toString(), numOfSendingThreads.toString(),
+                "ackMode=1,delayBetweenMsg=0," +
+                        "stopAfter=" + sendCount,
+                "");
 
         sendingClient.startWorking();
 
-        boolean success = AndesClientUtils
-                .waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean receiveSuccess = false;
-        if ((expectedCount - additional) == receivingClient.getReceivedqueueMessagecount()) {
-            receiveSuccess = true;
-        }
-
-        if (receiveSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals(receiveSuccess, true);
+        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), expectedCount - additional,
+                "Did not receive expected message count.");
     }
 }

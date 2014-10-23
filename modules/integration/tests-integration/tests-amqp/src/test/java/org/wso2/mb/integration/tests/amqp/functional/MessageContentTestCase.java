@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -26,8 +27,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.io.*;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * This class contains tests for message content validity.
@@ -101,7 +100,9 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
             log.warn("Error reading output content from file : " + messageContentInputFilePath);
         }
 
-        assertEquals((receiveSuccess && sendSuccess), true);
-        assertEquals(new String(outputContent), new String(inputContent));
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+
+        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
     }
 }

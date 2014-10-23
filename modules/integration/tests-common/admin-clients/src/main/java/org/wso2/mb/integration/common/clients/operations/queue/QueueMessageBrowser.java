@@ -18,6 +18,9 @@
 
 package org.wso2.mb.integration.common.clients.operations.queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,6 +29,8 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 public class QueueMessageBrowser {
+
+    private static Log log = LogFactory.getLog(QueueMessageBrowser.class);
 
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     private static final String CF_NAME_PREFIX = "connectionfactory.";
@@ -42,10 +47,11 @@ public class QueueMessageBrowser {
     private QueueBrowser queueBrowser = null;
 
     private String queueName;
-    private  int printNumberOfMessagesPer = 1;
-    private  boolean isToPrintEachMessage = false;
+    private int printNumberOfMessagesPer = 1;
+    private boolean isToPrintEachMessage = false;
 
-    public QueueMessageBrowser (String host, String port, String userName, String password,String destination, int printNumberOfMessagesPer, boolean isToPrintMessage) {
+    public QueueMessageBrowser(String host, String port, String userName, String password, String destination,
+                               int printNumberOfMessagesPer, boolean isToPrintMessage) {
         this.hostName = host;
         this.port = port;
         this.queueName = destination;
@@ -57,7 +63,7 @@ public class QueueMessageBrowser {
         properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
         properties.put("queue." + queueName, queueName);
 
-        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
+        log.info("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
 
         try {
             InitialContext ctx = new InitialContext(properties);
@@ -70,9 +76,9 @@ public class QueueMessageBrowser {
             queueBrowser = queueSession.createBrowser(queue);
 
         } catch (NamingException e) {
-            System.out.println("Error while looking up for queue" + e);
-        } catch (JMSException ex) {
-            System.out.println("Error while initializing queue connection" + ex);
+            log.error("Error while looking up for queue", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing queue connection", e);
         }
 
     }
@@ -86,19 +92,19 @@ public class QueueMessageBrowser {
                 Message message = (Message) e.nextElement();
                 numMsgs++;
             }
-            System.out.println("closing Queue Browser");
+            log.info("closing Queue Browser");
             queueBrowser.close();
             queueSession.close();
             queueConnection.close();
-            System.out.println("done closing Queue Browser");
-        }  catch (JMSException e) {
-            System.out.println("Error while message browsing"+ e);
+            log.info("done closing Queue Browser");
+        } catch (JMSException e) {
+            log.error("Error while message browsing.", e);
         }
         return numMsgs;
     }
 
     private String getTCPConnectionURL(String username, String password) {
-        if(connectionString != null && !connectionString.equals("")) {
+        if (connectionString != null && !connectionString.equals("")) {
             return connectionString;
         } else {
             return new StringBuffer()

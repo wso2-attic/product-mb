@@ -32,14 +32,14 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Load test in standalone MB.
+ * Load test for standalone MB.
  */
 public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
 
     private Integer sendCount = 100000;
     private Integer runTime = 30 * 15; // 15 minutes
-    private Integer noOfSubscribers = 50;
-    private Integer noOfPublishers = 50;
+    private Integer noOfSubscribers = 7;
+    private Integer noOfPublishers = 7;
 
     // Greater than send count to see if more than the sent amount is received
     private Integer expectedCount = sendCount;
@@ -62,11 +62,10 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "50 subscriptions for a queue and 50 publishers. Then close " +
             "10% of the subscribers ", enabled = true)
     public void performMillionMessageTenPercentSubscriberCloseTestCase() {
-        Integer noOfMessagesToReceiveByClosingSubscribers = 10;
-        Integer noOfSubscribersToClose = noOfSubscribers / 10;
+        Integer noOfMessagesToReceiveByClosingSubscribers = 1000;
+        Integer noOfSubscribersToClose = 1;
         Integer noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
         Integer noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
-        Integer runTimeForClosingSubscribers = 10; // 10 seconds
 
         String queueNameArg = "queue:MillionTenPercentSubscriberCloseQueue";
 
@@ -86,8 +85,8 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
         List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
         List<QueueMessageReceiver> queueClosingListeners = receivingClosingClient.getQueueListeners();
 
-        log.info("Number of Subscriber ["+queueListeners.size()+"]");
-        log.info("Number of Closing Subscriber ["+queueClosingListeners.size()+"]");
+        log.info("Number of Subscriber [" + queueListeners.size() + "]");
+        log.info("Number of Closing Subscriber [" + queueClosingListeners.size() + "]");
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
@@ -95,22 +94,25 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue", noOfMessagesToExpect,
+        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue",
+                noOfMessagesToExpect,
                 runTime);
 
         AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient, "MillionTenPercentSubscriberCloseQueue",
-                noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);
+        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient,
+                "MillionTenPercentSubscriberCloseQueue",
+                noOfMessagesToReceiveByClosingSubscribers, runTime);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
                 .getReceivedqueueMessagecount();
 
-        log.info("Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]");
-        log.info("Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]");
-        log.info("Total Received Messages ["+actualReceivedCount+"]");
+        log.info("Total Non Closing Subscribers Received Messages [" + receivingClient.getReceivedqueueMessagecount()
+                + "]");
+        log.info("Total Closing Subscribers Received Messages [" + receivingClosingClient
+                .getReceivedqueueMessagecount() + "]");
+        log.info("Total Received Messages [" + actualReceivedCount + "]");
 
-        assertEquals(actualReceivedCount, sendCount);
-        assertEquals(actualReceivedCount, expectedCount);
+        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
     }
 }

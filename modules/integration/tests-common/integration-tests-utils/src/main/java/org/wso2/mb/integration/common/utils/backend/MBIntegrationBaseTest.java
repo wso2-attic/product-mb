@@ -20,12 +20,18 @@ package org.wso2.mb.integration.common.utils.backend;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
+import org.xml.sax.SAXException;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Base class of all MB integration tests
@@ -39,6 +45,7 @@ public class MBIntegrationBaseTest {
 
     /**
      * Initialize the base test by initializing the automation context.
+     *
      * @param userMode The testing user mode
      * @throws Exception
      */
@@ -62,6 +69,18 @@ public class MBIntegrationBaseTest {
                 .separator + "andes-virtualhosts-H2-mem.xml"), new File(ServerConfigurationManager.getCarbonHome() +
                 File.separator + "repository" + File.separator + "conf" + File.separator + "advanced" + File
                 .separator + "andes-virtualhosts.xml"), true, true);
+    }
+
+    /**
+     * Gracefully restart the current server which was deployed by the test suit. This can be used when a large
+     * amount or large size of messages are tested to clean up the server before or after the test.
+     *
+     * @throws Exception
+     */
+    protected void restartServer() throws Exception {
+        serverManager = new ServerConfigurationManager(automationContext);
+
+        serverManager.restartGracefully();
     }
 
 }

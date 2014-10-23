@@ -32,7 +32,6 @@ public class SingleTopicPublishSubscribeTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -58,12 +57,7 @@ public class SingleTopicPublishSubscribeTestCase {
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if (sendSuccess && receiveSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals(sendSuccess && receiveSuccess, true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertFalse(receiveSuccess, "Message receiving failed.");
     }
 }

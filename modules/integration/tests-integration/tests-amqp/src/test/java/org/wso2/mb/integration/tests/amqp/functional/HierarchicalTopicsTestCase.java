@@ -23,12 +23,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 
 /**
- * Test with #,* one level two levels
+ * Test topic subscriptions with Topic and Children(#) and Immediate Children(*).
  */
-public class HierarchicalTopicsTestCase {
+public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 
     static Integer sendCount = 1000;
     static Integer runTime = 20;
@@ -37,7 +38,6 @@ public class HierarchicalTopicsTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -48,7 +48,6 @@ public class HierarchicalTopicsTestCase {
          * topic only option. Here we subscribe to games.cricket and verify that only messages
          * specifically published to games.cricket is received
          */
-        System.out.println("*********topic only test*******************");
         boolean topicOnlySuccess = false;
 
         //we should not get any message here
@@ -58,7 +57,8 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient1 = getSendingClientForTopic("games");
         sendingClient1.startWorking();
 
-        boolean receiveSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,expectedCount,runTime);
+        boolean receiveSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount,
+                runTime);
 
         //now we send messages specific to games.cricket topic. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -69,22 +69,12 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient2 = getSendingClientForTopic("games.cricket");
         sendingClient2.startWorking();
 
-        boolean receiveSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,expectedCount,runTime);
+        boolean receiveSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
+                runTime);
 
-        topicOnlySuccess = (!receiveSuccess1 && receiveSuccess2);
+        Assert.assertFalse(receiveSuccess1, "Messages received when subscriber should not receive messages.");
 
-        System.out.println("topicOnlySuccess: " + topicOnlySuccess + " receiveSuccess1:" +
-                receiveSuccess1 + " receiveSuccess2:" + receiveSuccess2);
-
-        if(topicOnlySuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals(topicOnlySuccess, true);
-
-        AndesClientUtils.sleepForInterval(1000);
+        Assert.assertTrue(receiveSuccess2, "Did not receive messages for games.cricket.");
     }
 
 
@@ -95,9 +85,6 @@ public class HierarchicalTopicsTestCase {
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsImmediateChildrenTestCase() {
-
-        System.out.println("*********immediate children test*******************");
-
         boolean immediateChildrenSuccess = false;
 
         //we should not get any message here
@@ -107,7 +94,8 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient3 = getSendingClientForTopic("games");
         sendingClient3.startWorking();
 
-        boolean receiveSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,expectedCount,runTime);
+        boolean receiveSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
+                runTime);
 
         //now we send messages child to games.football. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -118,7 +106,8 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient4 = getSendingClientForTopic("games.football");
         sendingClient4.startWorking();
 
-        boolean receiveSuccess4 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,expectedCount,runTime);
+        boolean receiveSuccess4 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4, expectedCount,
+                runTime);
 
         //now we send messages to a child that is not immediate. We should not receive messages
         AndesClientUtils.sleepForInterval(1000);
@@ -129,35 +118,24 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient5 = getSendingClientForTopic("games.cricket.sriLanka");
         sendingClient5.startWorking();
 
-        boolean receiveSuccess5 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient5,expectedCount,runTime);
+        boolean receiveSuccess5 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient5, expectedCount,
+                runTime);
 
-        immediateChildrenSuccess = (!receiveSuccess3 && receiveSuccess4 && !receiveSuccess5);
+        Assert.assertFalse(receiveSuccess3, "Message received for games.* when subscriber 3 should not receive any.");
 
-        System.out.println("immediateChildrenSuccess: " + immediateChildrenSuccess + " receiveSuccess3:" +
-                receiveSuccess3 + " receiveSuccess4:" + receiveSuccess4 + "receiveSuccess5:" + receiveSuccess5);
+        Assert.assertTrue(receiveSuccess4, "Did not receive messages for games.* for subscriber 4");
 
-        if(immediateChildrenSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals(immediateChildrenSuccess, true);
-
-        AndesClientUtils.sleepForInterval(1000);
+        Assert.assertFalse(receiveSuccess5, "Message received for games.* when subscriber 5 should not receive any.");
 
 
     }
 
     /**
-     *  topic and children option. Here messages published to topic itself and any level
-     *  in the hierarchy should be received
+     * topic and children option. Here messages published to topic itself and any level
+     * in the hierarchy should be received
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsChildrenTestCase() {
-
-        System.out.println("*********topic and children test*******************");
-
         boolean topicAndChildrenSuccess = false;
 
         //we should  get any message here
@@ -167,7 +145,8 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient6 = getSendingClientForTopic("games");
         sendingClient6.startWorking();
 
-        boolean receiveSuccess6 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient6,expectedCount,runTime);
+        boolean receiveSuccess6 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient6, expectedCount,
+                runTime);
 
         //now we send messages to level 2 child. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -178,28 +157,24 @@ public class HierarchicalTopicsTestCase {
         AndesClient sendingClient7 = getSendingClientForTopic("games.football.sriLanka");
         sendingClient7.startWorking();
 
-        boolean receiveSuccess7 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient7,expectedCount,runTime);
+        boolean receiveSuccess7 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient7, expectedCount,
+                runTime);
 
         topicAndChildrenSuccess = (receiveSuccess6 && receiveSuccess7);
 
-        if(topicAndChildrenSuccess) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED");
-        }
-
-        Assert.assertEquals(topicAndChildrenSuccess, true);
+        Assert.assertTrue(receiveSuccess6, "Did not receive messages for games for subscriber 6.");
+        Assert.assertTrue(receiveSuccess7, "Did not receive messages for games.# for subscriber 7.");
     }
 
-    private  AndesClient getReceivingClientforTopic(String topicName) {
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topicName,
-                "100", "false", runTime.toString() , expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+    private AndesClient getReceivingClientforTopic(String topicName) {
+        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topicName,
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
         return receivingClient;
     }
 
-    private  AndesClient getSendingClientForTopic(String topicName) {
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:"+topicName, "100", "false",
+    private AndesClient getSendingClientForTopic(String topicName) {
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:" + topicName, "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=1000", "");
         return sendingClient;

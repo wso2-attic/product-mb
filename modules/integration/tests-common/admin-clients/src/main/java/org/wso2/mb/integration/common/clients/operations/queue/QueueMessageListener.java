@@ -18,11 +18,17 @@
 
 package org.wso2.mb.integration.common.clients.operations.queue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
+
 import javax.jms.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class QueueMessageListener implements MessageListener {
+
+    private static Log log = LogFactory.getLog(QueueMessageListener.class);
+
     private QueueConnection queueConnection;
     private QueueSession queueSession;
     private MessageConsumer queueReceiver;
@@ -41,8 +47,10 @@ public class QueueMessageListener implements MessageListener {
     //private static final Logger log = Logger.getLogger(queue.QueueMessageListener.class);
 
     public QueueMessageListener(QueueConnection queueConnection, QueueSession queueSession,
-                                MessageConsumer queueReceiver, String queue, AtomicInteger messageCounter, int delayBetweenMessages, int printNumberOfMessagesPer,
-                                boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter, int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
+                                MessageConsumer queueReceiver, String queue, AtomicInteger messageCounter,
+                                int delayBetweenMessages, int printNumberOfMessagesPer,
+                                boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter,
+                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
         this.queueConnection = queueConnection;
         this.queueSession = queueSession;
         this.queueReceiver = queueReceiver;
@@ -56,7 +64,7 @@ public class QueueMessageListener implements MessageListener {
         this.rollbackPerMessagecount = rollbackAfterEach;
         this.delayBetweenMessages = delayBetweenMessages;
         this.messageCount = messageCounter;
-        this.localMessageCount =0;
+        this.localMessageCount = 0;
     }
 
     public void onMessage(Message message) {
@@ -66,41 +74,44 @@ public class QueueMessageListener implements MessageListener {
         try {
 
             String redelivery = "";
-            if(message.getJMSRedelivered()) {
+            if (message.getJMSRedelivered()) {
                 redelivery = "REDELIVERED";
-            }  else {
+            } else {
                 redelivery = "ORIGINAL";
             }
-            if(messageCount.get() % printNumberOfMessagesPer == 0) {
-                System.out.println("[QUEUE RECEIVE] ThreadID:"+Thread.currentThread().getId()+" queue:"+queueName+" localMessageCount:"+localMessageCount+" totalMessageCount:" + messageCount.get() + " max count:" + stopMessageCount );
+            if (messageCount.get() % printNumberOfMessagesPer == 0) {
+                log.info("[QUEUE RECEIVE] ThreadID:" + Thread.currentThread().getId() + " queue:" + queueName + " " +
+                        "localMessageCount:" + localMessageCount + " totalMessageCount:" + messageCount.get() + " max" +
+                        " count:" + stopMessageCount);
             }
-            if(isToPrintEachMessage) {
-                System.out.println("(count:"+messageCount.get()+"/threadID:"+Thread.currentThread().getId()+"/queue:"+queueName+") " + redelivery + " >> " + receivedMessage.getText());
+            if (isToPrintEachMessage) {
+                log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/queue:" +
+                        queueName + ") " + redelivery + " >> " + receivedMessage.getText());
                 AndesClientUtils.writeToFile(receivedMessage.getText(), fileToWriteReceivedMessages);
             }
 
-            if(messageCount.get() % ackAfterEach == 0) {
-                if(queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
+            if (messageCount.get() % ackAfterEach == 0) {
+                if (queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
                     receivedMessage.acknowledge();
-                    System.out.println("****Acked message***");
+                    log.info("Acked message : " + receivedMessage.getJMSMessageID());
                 }
             }
 
             //commit get priority
-            if(messageCount.get() % commitPerMessageCount == 0) {
+            if (messageCount.get() % commitPerMessageCount == 0) {
                 queueSession.commit();
-                System.out.println("Committed Queue Session");
-            } else if(messageCount.get() % rollbackPerMessagecount == 0) {
+                log.info("Committed Queue Session");
+            } else if (messageCount.get() % rollbackPerMessagecount == 0) {
                 queueSession.rollback();
-                System.out.println("Rollbacked Queue Session");
+                log.info("Rollbacked Queue Session");
             }
 
-            if(messageCount.get() >= stopMessageCount) {
+            if (messageCount.get() >= stopMessageCount) {
                 stopMessageListener();
                 AndesClientUtils.sleepForInterval(200);
             }
 
-            if(delayBetweenMessages != 0) {
+            if (delayBetweenMessages != 0) {
                 try {
                     Thread.sleep(delayBetweenMessages);
                 } catch (InterruptedException e) {
@@ -108,9 +119,9 @@ public class QueueMessageListener implements MessageListener {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("Wrong inputs." + e);
+            log.error("Wrong inputs.", e);
         } catch (JMSException e) {
-            System.out.println("JMS Exception" + e);
+            log.error("JMS Exception", e);
         }
     }
 
@@ -139,14 +150,14 @@ public class QueueMessageListener implements MessageListener {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    System.out.println("Closing subscriber");
+                    log.info("Closing subscriber");
                     queueReceiver.close();
                     queueSession.close();
                     queueConnection.stop();
                     queueConnection.close();
-                    System.out.println("Done Closing subscriber");
+                    log.info("Done Closing subscriber");
                 } catch (JMSException e) {
-                    System.out.println("Error in closing the queue subscriber" + e);
+                    log.error("Error in closing the queue subscriber", e);
                 }
             }
         }).start();

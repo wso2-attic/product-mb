@@ -21,8 +21,10 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.util.Map;
 
@@ -34,12 +36,12 @@ import java.util.Map;
  * 5. analyse and see if each message is duplicated five times
  * 6. do another subscription to verify no more messages are received
  */
-public class JMSSubscriberTransactionsSessionCommitRollbackTestCase {
+public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIntegrationBaseTest {
 
 
     @BeforeClass
-    public void prepare() {
-        System.out.println("=========================================================================");
+    public void prepare() throws Exception {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -53,29 +55,30 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase {
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:transactionQueue",
                 "10", "true", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=0,delayBetweenMsg=0,rollbackAfterEach="+sendCount+",commitAfterEach="+expectedCount+",stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=0,delayBetweenMsg=0,rollbackAfterEach=" + sendCount + "," +
+                "commitAfterEach=" + expectedCount + ",stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:transactionQueue", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,expectedCount, runTime);
+        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         AndesClientUtils.sleepForInterval(1000);
 
         Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
 
         boolean expectedCountDelivered = false;
-        if(duplicateMessages != null) {
-            for(Long messaggeIdentifier : duplicateMessages.keySet()) {
+        if (duplicateMessages != null) {
+            for (Long messaggeIdentifier : duplicateMessages.keySet()) {
                 int numberOfTimesDelivered = duplicateMessages.get(messaggeIdentifier);
-                if(numberOfRollbackIterations == numberOfTimesDelivered) {
+                if (numberOfRollbackIterations == numberOfTimesDelivered) {
                     expectedCountDelivered = true;
                 } else {
                     expectedCountDelivered = false;
@@ -93,13 +96,12 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase {
         boolean areMessagesReceivedAfterwars = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
                 expectedCount, 20);
 
-        if(sendSuccess && receiveSuccess && expectedCountDelivered && !areMessagesReceivedAfterwars) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED :" + sendSuccess + receiveSuccess + expectedCountDelivered + !areMessagesReceivedAfterwars);
-        }
-
         Assert.assertEquals(sendSuccess && receiveSuccess && expectedCountDelivered && !areMessagesReceivedAfterwars, true);
+
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
+        Assert.assertFalse(areMessagesReceivedAfterwars, "Messages received after the test.");
     }
 
 }

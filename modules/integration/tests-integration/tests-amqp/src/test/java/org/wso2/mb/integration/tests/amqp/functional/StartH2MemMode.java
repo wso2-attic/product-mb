@@ -38,7 +38,7 @@ public class StartH2MemMode extends MBIntegrationBaseTest {
     }
 
     @Test(groups = "wso2.mb", description = "Restart the deployed MB server with H2 In-Memory mode.")
-    public void testStartH2MemServer () throws Exception {
+    public void testStartH2MemServer() throws Exception {
         super.restartServerWithH2MemMode();
     }
 }

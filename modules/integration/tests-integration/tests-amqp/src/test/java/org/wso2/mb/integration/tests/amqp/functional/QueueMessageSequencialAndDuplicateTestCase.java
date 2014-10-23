@@ -21,8 +21,10 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.util.Map;
 
@@ -31,11 +33,12 @@ import java.util.Map;
  * 2. check if messages were received in order
  * 3. check if there are any duplicates
  */
-public class QueueMessageSequencialAndDuplicateTestCase {
+public class QueueMessageSequencialAndDuplicateTestCase extends MBIntegrationBaseTest {
 
     @BeforeClass
-    public void prepare() {
-        System.out.println("=========================================================================");
+    public void prepare() throws Exception {
+        super.init(TestUserMode.SUPER_TENANT_USER);
+        restartServer();
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -49,41 +52,27 @@ public class QueueMessageSequencialAndDuplicateTestCase {
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue",
                 "100", "true", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean senderSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean senderSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        boolean receiveSuccess = false;
-        if(receivingClient.getReceivedqueueMessagecount() == sendCount) {
-            receiveSuccess = true;
-        } else {
-            receiveSuccess = false;
-        }
+        Assert.assertTrue(senderSuccess, "Message sending failed.");
 
-        boolean isMessagesAreInOrder = receivingClient.checkIfMessagesAreInOrder();
-        Assert.assertTrue(isMessagesAreInOrder, "Messages are not in order");
+        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount.intValue());
 
-        Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
-        if(duplicateMessages.keySet().size() == 0) {
-            System.out.println("*****Messages Are Not Duplicated");
-        }
+        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order");
 
-        if(senderSuccess && receiveSuccess && isMessagesAreInOrder && duplicateMessages.keySet().size() == 0) {
-            System.out.println("TEST PASSED");
-        }  else {
-            System.out.println("TEST FAILED: " + senderSuccess + receiveSuccess + isMessagesAreInOrder + (duplicateMessages.keySet().size() == 0));
-        }
 
-        Assert.assertEquals((senderSuccess && receiveSuccess && isMessagesAreInOrder && duplicateMessages.keySet().size() == 0) , true);
+        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate message are available.");
     }
 }

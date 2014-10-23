@@ -18,7 +18,10 @@
 
 package org.wso2.mb.integration.common.clients.operations.topic;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,7 +29,9 @@ import javax.naming.NamingException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TopicMessageReceiver  implements Runnable{
+public class TopicMessageReceiver implements Runnable {
+
+    private static Log log = LogFactory.getLog(TopicMessagePublisher.class);
 
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     private static final String CF_NAME_PREFIX = "connectionfactory.";
@@ -58,8 +63,13 @@ public class TopicMessageReceiver  implements Runnable{
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
-    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName, String password, String topicName, boolean isDurable, String subscriptionID, int ackMode,
-                                boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages, int printNumberOfMessagesPer, boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter, int unsubscrbeAfter, int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
+    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName,
+                                String password, String topicName, boolean isDurable, String subscriptionID,
+                                int ackMode,
+                                boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages,
+                                int printNumberOfMessagesPer, boolean isToPrintEachMessage,
+                                String fileToWriteReceivedMessages, int stopAfter, int unsubscrbeAfter,
+                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
 
         this.hostName = hostName;
         this.port = port;
@@ -84,7 +94,7 @@ public class TopicMessageReceiver  implements Runnable{
         properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
         properties.put("topic." + topicName, topicName);
 
-        System.out.println("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
+        log.info("getTCPConnectionURL(userName,password) = " + getTCPConnectionURL(userName, password));
 
         try {
             InitialContext ctx = new InitialContext(properties);
@@ -93,32 +103,32 @@ public class TopicMessageReceiver  implements Runnable{
             topicConnection = connFactory.createTopicConnection();
             topicConnection.setClientID(subscriptionId);
             topicConnection.start();
-            if(ackMode == TopicSession.SESSION_TRANSACTED) {
+            if (ackMode == TopicSession.SESSION_TRANSACTED) {
                 topicSession = topicConnection.createTopicSession(true, QueueSession.SESSION_TRANSACTED);
-            }   else {
+            } else {
                 topicSession = topicConnection.createTopicSession(false, QueueSession.AUTO_ACKNOWLEDGE);
             }
 
             // Send message
             Topic topic = (Topic) ctx.lookup(topicName);
-            System.out.println("Starting listening on topic: " + topic);
+            log.info("Starting listening on topic: " + topic);
 
-            if(isDurable) {
-                topicSubscriber = topicSession.createDurableSubscriber(topic,subscriptionId);
+            if (isDurable) {
+                topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId);
             } else {
                 topicSubscriber = topicSession.createSubscriber(topic);
             }
 
         } catch (NamingException e) {
-            System.out.println("Error while looking up for topic" + e);
-        } catch (JMSException ex) {
-            System.out.println("Error while initializing topic connection" + ex);
+            log.error("Error while looking up for topic", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing topic connection", e);
         }
 
     }
 
     private String getTCPConnectionURL(String username, String password) {
-        if(connectionString != null && !connectionString.equals("")) {
+        if (connectionString != null && !connectionString.equals("")) {
             return connectionString;
         } else {
             return new StringBuffer()
@@ -134,29 +144,29 @@ public class TopicMessageReceiver  implements Runnable{
     public void unsubscribe() {
         try {
 
-            System.out.println("unSubscribing Subscriber");
+            log.info("unSubscribing Subscriber");
             this.topicSession.unsubscribe(subscriptionId);
             topicSubscriber.close();
             topicSession.close();
             topicConnection.close();
-            System.out.println("done unSubscribing Subscriber");
+            log.info("done unSubscribing Subscriber");
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.error("Error in removing subscription.", e);
         }
     }
 
-    public void stopListening(){
+    public void stopListening() {
         try {
 
-            System.out.println("closing Subscriber");
+            log.info("closing Subscriber");
             topicSubscriber.close();
             topicSession.close();
             topicConnection.close();
-            System.out.println("done closing Subscriber");
+            log.info("done closing Subscriber");
 
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.error("Error stop listening.", e);
         }
     }
 
@@ -166,62 +176,66 @@ public class TopicMessageReceiver  implements Runnable{
 
     public void run() {
         try {
-            if(useMessageListener) {
-                TopicMessageListener messageListener = new TopicMessageListener(topicConnection,topicSession,topicSubscriber,topicName,
-                        subscriptionId, messageCounter,delayBetweenMessages,printNumberOfMessagesPer, isToPrintEachMessage, fileToWriteReceivedMessages, stopAfter,unSubscribeAfter, ackAfterEach, rollbackAfterEach, commitAfterEach);
+            if (useMessageListener) {
+                TopicMessageListener messageListener = new TopicMessageListener(topicConnection, topicSession,
+                        topicSubscriber, topicName,
+                        subscriptionId, messageCounter, delayBetweenMessages, printNumberOfMessagesPer,
+                        isToPrintEachMessage, fileToWriteReceivedMessages, stopAfter, unSubscribeAfter, ackAfterEach,
+                        rollbackAfterEach, commitAfterEach);
                 topicSubscriber.setMessageListener(messageListener);
-            }
-            else {
+            } else {
 
                 int localMessageCount = 0;
-                while(true) {
+                while (true) {
                     Message message = topicSubscriber.receive();
-                    if (message!=null && message instanceof TextMessage) {
+                    if (message != null && message instanceof TextMessage) {
                         messageCounter.incrementAndGet();
                         localMessageCount++;
                         String redelivery;
                         TextMessage textMessage = (TextMessage) message;
-                        if(message.getJMSRedelivered()) {
+                        if (message.getJMSRedelivered()) {
                             redelivery = "REDELIVERED";
-                        }  else {
+                        } else {
                             redelivery = "ORIGINAL";
                         }
-                        if(messageCounter.get() % printNumberOfMessagesPer == 0) {
-                            System.out.println("[TOPIC RECEIVE] ThreadID:"+Thread.currentThread().getId()+" topic:"+topicName+" localMessageCount:"+localMessageCount+" totalMessageCount:" + messageCounter.get() + " max count:" + stopAfter );
+                        if (messageCounter.get() % printNumberOfMessagesPer == 0) {
+                            log.info("[TOPIC RECEIVE] ThreadID:" + Thread.currentThread().getId() + " topic:" +
+                                    topicName + " localMessageCount:" + localMessageCount + " totalMessageCount:" +
+                                    messageCounter.get() + " max count:" + stopAfter);
                         }
-                        if(isToPrintEachMessage) {
-                            System.out.println("(count:"+messageCounter.get()+"/threadID:"+Thread.currentThread().getId()+"/topic:"+ topicName+") "+ redelivery + " >> " + textMessage.getText());
+                        if (isToPrintEachMessage) {
+                            log.info("(count:" + messageCounter.get() + "/threadID:" + Thread.currentThread().getId()
+                                    + "/topic:" + topicName + ") " + redelivery + " >> " + textMessage.getText());
                             AndesClientUtils.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
                         }
                     }
 
-                    if(messageCounter.get() % ackAfterEach == 0) {
-                        if(topicSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
-                            if(message != null) {
+                    if (messageCounter.get() % ackAfterEach == 0) {
+                        if (topicSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
+                            if (message != null) {
                                 message.acknowledge();
-                                System.out.println("****Acked message***");
                             }
                         }
                     }
 
                     //commit get priority
-                    if(messageCounter.get() % commitAfterEach == 0) {
+                    if (messageCounter.get() % commitAfterEach == 0) {
                         topicSession.commit();
-                        System.out.println("Committed session");
-                    }else if(messageCounter.get() % rollbackAfterEach == 0) {
+                        log.info("Committed session");
+                    } else if (messageCounter.get() % rollbackAfterEach == 0) {
                         topicSession.rollback();
-                        System.out.println("Rollbacked session");
+                        log.info("Rollbacked session");
                     }
 
-                    if(messageCounter.get() >= unSubscribeAfter) {
+                    if (messageCounter.get() >= unSubscribeAfter) {
                         unsubscribe();
                         break;
-                    } else if(messageCounter.get() >= stopAfter) {
+                    } else if (messageCounter.get() >= stopAfter) {
                         stopListening();
                         break;
                     }
 
-                    if(delayBetweenMessages !=0)    {
+                    if (delayBetweenMessages != 0) {
                         try {
                             Thread.sleep(delayBetweenMessages);
                         } catch (InterruptedException e) {
@@ -231,7 +245,7 @@ public class TopicMessageReceiver  implements Runnable{
                 }
             }
         } catch (JMSException e) {
-            System.out.println("Error while listening for messages" + e);
+            log.error("Error while listening for messages", e);
         }
     }
 }

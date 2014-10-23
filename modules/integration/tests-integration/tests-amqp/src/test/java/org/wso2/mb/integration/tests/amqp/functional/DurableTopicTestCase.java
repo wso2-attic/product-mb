@@ -35,11 +35,10 @@ public class DurableTopicTestCase {
 
     @BeforeClass
     public void prepare() {
-        System.out.println("=========================================================================");
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    @Test(groups={"wso2.mb", "durableTopic"})
+    @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase() {
 
         Integer sendCount = 1500;
@@ -49,19 +48,21 @@ public class DurableTopicTestCase {
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount , runTime);
+        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount,
+                runTime);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         //we just closed the subscription. Rest of messages should be delivered now.
 
@@ -69,10 +70,12 @@ public class DurableTopicTestCase {
 
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedCount+",stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
         receivingClient2.startWorking();
 
-        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount , runTime);
+        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
+                runTime);
 
 
         //now we have unsubscribed the topic subscriber no more messages should be received
@@ -81,18 +84,20 @@ public class DurableTopicTestCase {
 
         AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedCount+",stopAfter="+expectedCount, "");
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
         receivingClient3.startWorking();
 
-        boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount , runTime);
+        boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
+                runTime);
 
-        if(sendingSuccess && receivingSuccess1 && receivingSuccess2 && !receivingSuccess3) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
+        Assert.assertTrue(sendingSuccess, "Message sending failed.");
 
-        Assert.assertEquals((sendingSuccess && receivingSuccess1 && receivingSuccess2 && !receivingSuccess3),true);
+        Assert.assertTrue(receivingSuccess1, "Message receiving failed for client 1.");
+
+        Assert.assertTrue(receivingSuccess2, "Message receiving failed for client 2.");
+
+        Assert.assertFalse(receivingSuccess3, "Message received from client 3 when no more messages should be received.");
 
     }
 }

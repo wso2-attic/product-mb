@@ -18,12 +18,11 @@
 
 package org.wso2.mb.integration.tests.amqp.load;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * 1. send 2000 messages to a topic by 10 threads
@@ -72,11 +71,7 @@ public class MultiThreadedTopicTestCase {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        if (receiveSuccess && sendSuccess) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
-        }
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }
