@@ -44,7 +44,6 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         Integer sendCount = 1000;
         Integer runTime = 20;
         Integer expectedCount = 1000;
-        Integer totalMsgsReceived = 0;
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:clientAckTestQueue",
                 "100", "false", runTime.toString(), expectedCount.toString(),
@@ -61,7 +60,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
+        Integer totalMsgsReceived = receivingClient.getReceivedqueueMessagecount();
 
         AndesClientUtils.sleepForInterval(2000);
 
@@ -70,7 +69,9 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
 
-        Assert.assertEquals(expectedCount, totalMsgsReceived);
+        Assert.assertTrue(success, "Message receiving failed.");
+
+        Assert.assertEquals(totalMsgsReceived, expectedCount, "Expected message count not received.");
     }
 
 }

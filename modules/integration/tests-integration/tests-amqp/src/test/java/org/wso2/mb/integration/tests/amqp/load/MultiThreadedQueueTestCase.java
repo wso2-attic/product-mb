@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.load;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -75,6 +76,7 @@ public class MultiThreadedQueueTestCase extends MBIntegrationBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

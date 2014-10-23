@@ -20,6 +20,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -60,7 +61,8 @@ public class QueueTestCase extends MBIntegrationBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
     // Disabled until topic workflow is implemented
@@ -88,7 +90,8 @@ public class QueueTestCase extends MBIntegrationBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), false);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertFalse(receiveSuccess, "Message sending failed.");
     }
 
 
@@ -117,7 +120,8 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         int msgCountFromClient1 = AndesClientUtils.getNoOfMessagesReceived(receivingClient1, expectedCount, runTime);
         int msgCountFromClient2 = AndesClientUtils.getNoOfMessagesReceived(receivingClient2, expectedCount, runTime);
 
-        assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount.intValue());
+        assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount.intValue(),
+                "Did not received expected message count");
     }
 
 }

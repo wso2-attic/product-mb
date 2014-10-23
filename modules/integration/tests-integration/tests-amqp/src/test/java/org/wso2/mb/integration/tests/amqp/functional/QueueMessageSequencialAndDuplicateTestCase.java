@@ -62,26 +62,17 @@ public class QueueMessageSequencialAndDuplicateTestCase extends MBIntegrationBas
 
         sendingClient.startWorking();
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
         boolean senderSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        boolean receiveSuccess = false;
-        if (receivingClient.getReceivedqueueMessagecount() == sendCount) {
-            receiveSuccess = true;
-        } else {
-            receiveSuccess = false;
-        }
+        Assert.assertTrue(senderSuccess, "Message sending failed.");
 
-        boolean isMessagesAreInOrder = receivingClient.checkIfMessagesAreInOrder();
-        Assert.assertTrue(isMessagesAreInOrder, "Messages are not in order");
+        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount.intValue());
 
-        Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
-        if (duplicateMessages.keySet().size() == 0) {
-            log.info("Messages Are Not Duplicated");
-        }
+        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order");
 
-        Assert.assertEquals((senderSuccess && receiveSuccess && isMessagesAreInOrder && duplicateMessages.keySet()
-                .size() == 0), true);
+
+        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate message are available.");
     }
 }

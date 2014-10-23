@@ -27,7 +27,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 
 /**
- * Test with #,* one level two levels
+ * Test topic subscriptions with Topic and Children(#) and Immediate Children(*).
  */
 public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 
@@ -72,14 +72,9 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         boolean receiveSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
                 runTime);
 
-        topicOnlySuccess = (!receiveSuccess1 && receiveSuccess2);
+        Assert.assertFalse(receiveSuccess1, "Messages received when subscriber should not receive messages.");
 
-        log.info("topicOnlySuccess: " + topicOnlySuccess + " receiveSuccess1:" +
-                receiveSuccess1 + " receiveSuccess2:" + receiveSuccess2);
-
-        Assert.assertEquals(topicOnlySuccess, true);
-
-        AndesClientUtils.sleepForInterval(1000);
+        Assert.assertTrue(receiveSuccess2, "Did not receive messages for games.cricket.");
     }
 
 
@@ -126,14 +121,11 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         boolean receiveSuccess5 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient5, expectedCount,
                 runTime);
 
-        immediateChildrenSuccess = (!receiveSuccess3 && receiveSuccess4 && !receiveSuccess5);
+        Assert.assertFalse(receiveSuccess3, "Message received for games.* when subscriber 3 should not receive any.");
 
-        log.info("immediateChildrenSuccess: " + immediateChildrenSuccess + " receiveSuccess3:" +
-                receiveSuccess3 + " receiveSuccess4:" + receiveSuccess4 + "receiveSuccess5:" + receiveSuccess5);
+        Assert.assertTrue(receiveSuccess4, "Did not receive messages for games.* for subscriber 4");
 
-        Assert.assertEquals(immediateChildrenSuccess, true);
-
-        AndesClientUtils.sleepForInterval(1000);
+        Assert.assertFalse(receiveSuccess5, "Message received for games.* when subscriber 5 should not receive any.");
 
 
     }
@@ -170,7 +162,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 
         topicAndChildrenSuccess = (receiveSuccess6 && receiveSuccess7);
 
-        Assert.assertEquals(topicAndChildrenSuccess, true);
+        Assert.assertTrue(receiveSuccess6, "Did not receive messages for games for subscriber 6.");
+        Assert.assertTrue(receiveSuccess7, "Did not receive messages for games.# for subscriber 7.");
     }
 
     private AndesClient getReceivingClientforTopic(String topicName) {

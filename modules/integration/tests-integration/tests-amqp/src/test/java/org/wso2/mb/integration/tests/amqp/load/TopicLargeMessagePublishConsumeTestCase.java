@@ -65,7 +65,8 @@ public class TopicLargeMessagePublishConsumeTestCase {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        Assert.assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
     /**
@@ -97,6 +98,7 @@ public class TopicLargeMessagePublishConsumeTestCase {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        Assert.assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

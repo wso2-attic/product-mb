@@ -65,24 +65,15 @@ public class TopicMessageSequencialAndDuplicateTestCase extends MBIntegrationBas
 
         boolean senderSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        boolean receiveSuccess = false;
-        if (receivingClient.getReceivedTopicMessagecount() == sendCount) {
-            receiveSuccess = true;
-        } else {
-            receiveSuccess = false;
-        }
+        Assert.assertTrue(senderSuccess, "Message sending failed.");
+        Assert.assertFalse(success, "Message receiving failed.");
 
-        boolean isMessagesAreInOrder = receivingClient.checkIfMessagesAreInOrder();
-        if (isMessagesAreInOrder) {
-            log.info("Messages Are In Order");
-        }
+        Assert.assertEquals(receivingClient.getReceivedTopicMessagecount(), sendCount.intValue(),
+                "Did not receive expected message count.");
 
-        Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
-        if (duplicateMessages.keySet().size() == 0) {
-            log.info("Messages Are Not Duplicated");
-        }
+        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order.");
 
-        Assert.assertEquals((senderSuccess && receiveSuccess && isMessagesAreInOrder && duplicateMessages.keySet()
-                .size() == 0), true);
+        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0,
+                "Duplicate messages received.");
     }
 }

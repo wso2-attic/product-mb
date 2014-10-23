@@ -69,14 +69,9 @@ public class MultiThreadedMultipleTopicTestCase {
 
         sendingClient.startWorking();
 
-        boolean success = AndesClientUtils
-                .waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean receiveSuccess = false;
-        if ((expectedCount - additional) == receivingClient.getReceivedqueueMessagecount()) {
-            receiveSuccess = true;
-        }
-
-        Assert.assertEquals(receiveSuccess, true);
+        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), expectedCount - additional,
+                "Did not receive expected message count.");
     }
 }

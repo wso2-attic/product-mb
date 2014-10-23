@@ -72,7 +72,7 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertTrue(sendSuccess, "SENT MESSAGES SUCCESSFULLY");
-        assertTrue(receiveSuccess, "RECEIVED MESSAGES SUCCESSFULLY");
+        assertTrue(sendSuccess, "Message sending failed.");
+        assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

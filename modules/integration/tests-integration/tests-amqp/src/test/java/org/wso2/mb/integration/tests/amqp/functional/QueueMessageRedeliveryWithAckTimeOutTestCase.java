@@ -74,9 +74,10 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        boolean receiveSuccess = receivingClient.getReceivedqueueMessagecount() == sendCount *
-                defaultMaxRedeliveryAttempts;
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(success, "Message receiving failed.");
 
-        Assert.assertEquals(sendSuccess && receiveSuccess, true);
+        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount * defaultMaxRedeliveryAttempts,
+                "Did not receive expected message count");
     }
 }

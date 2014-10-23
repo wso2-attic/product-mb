@@ -73,18 +73,12 @@ public class MultipleTopicPublishSubscribeTestCase {
         sendingClient1.startWorking();
         sendingClient2.startWorking();
 
-        boolean success1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount1, runTime);
-        boolean success2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount2, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount1, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount2, runTime);
 
-        boolean receiveSuccess1 = false;
-        if ((expectedCount1 - additional) == receivingClient1.getReceivedTopicMessagecount()) {
-            receiveSuccess1 = true;
-        }
-        boolean receiveSuccess2 = false;
-        if ((expectedCount2 - additional) == receivingClient2.getReceivedTopicMessagecount()) {
-            receiveSuccess2 = true;
-        }
-
-        Assert.assertEquals(receiveSuccess1 && receiveSuccess2, true);
+        Assert.assertEquals(receivingClient1.getReceivedTopicMessagecount(), expectedCount1 - additional,
+                "Did not receive expected message count for multipleTopic1.");
+        Assert.assertEquals(receivingClient2.getReceivedTopicMessagecount(), expectedCount2 - additional,
+                "Did not receive expected message count for multipleTopic2.");
     }
 }

@@ -91,7 +91,13 @@ public class DurableTopicTestCase {
         boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
                 runTime);
 
-        Assert.assertEquals((sendingSuccess && receivingSuccess1 && receivingSuccess2 && !receivingSuccess3), true);
+        Assert.assertTrue(sendingSuccess, "Message sending failed.");
+
+        Assert.assertTrue(receivingSuccess1, "Message receiving failed for client 1.");
+
+        Assert.assertTrue(receivingSuccess2, "Message receiving failed for client 2.");
+
+        Assert.assertFalse(receivingSuccess3, "Message received from client 3 when no more messages should be received.");
 
     }
 }

@@ -63,10 +63,9 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
             "10% of the subscribers ", enabled = true)
     public void performMillionMessageTenPercentSubscriberCloseTestCase() {
         Integer noOfMessagesToReceiveByClosingSubscribers = 1000;
-        Integer noOfSubscribersToClose = noOfSubscribers / 10;
+        Integer noOfSubscribersToClose = 1;
         Integer noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
         Integer noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
-        Integer runTimeForClosingSubscribers = 10; // 10 seconds
 
         String queueNameArg = "queue:MillionTenPercentSubscriberCloseQueue";
 
@@ -103,7 +102,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient,
                 "MillionTenPercentSubscriberCloseQueue",
-                noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);
+                noOfMessagesToReceiveByClosingSubscribers, runTime);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
                 .getReceivedqueueMessagecount();
@@ -114,6 +113,6 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
                 .getReceivedqueueMessagecount() + "]");
         log.info("Total Received Messages [" + actualReceivedCount + "]");
 
-        assertEquals(actualReceivedCount, sendCount);
+        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
     }
 }

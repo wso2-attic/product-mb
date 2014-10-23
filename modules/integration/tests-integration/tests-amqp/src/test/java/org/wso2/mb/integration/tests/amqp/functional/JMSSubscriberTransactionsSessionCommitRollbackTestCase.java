@@ -97,6 +97,11 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
                 expectedCount, 20);
 
         Assert.assertEquals(sendSuccess && receiveSuccess && expectedCountDelivered && !areMessagesReceivedAfterwars, true);
+
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
+        Assert.assertFalse(areMessagesReceivedAfterwars, "Messages received after the test.");
     }
 
 }

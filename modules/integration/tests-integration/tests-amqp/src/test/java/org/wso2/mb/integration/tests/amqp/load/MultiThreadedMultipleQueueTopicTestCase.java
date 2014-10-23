@@ -97,20 +97,11 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         topicSendingClient.startWorking();
 
         //let us wait topic message receive time which is larger
-        boolean success = AndesClientUtils
-                .waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
 
-        boolean queueReceiveSuccess = false;
-        boolean topicReceiveSuccess = false;
-
-        if ((queueExpectedCount - additional) == queueReceivingClient.getReceivedqueueMessagecount()) {
-            queueReceiveSuccess = true;
-        }
-
-        if ((topicExpectedCount - additional) == topicReceivingClient.getReceivedqueueMessagecount()) {
-            topicReceiveSuccess = true;
-        }
-
-        Assert.assertEquals((queueReceiveSuccess && topicReceiveSuccess), true);
+        Assert.assertEquals(queueReceivingClient.getReceivedqueueMessagecount(), queueExpectedCount - additional,
+                "Did not receive expected message count for Queues.");
+        Assert.assertEquals(topicReceivingClient.getReceivedqueueMessagecount(), topicExpectedCount - additional,
+                "Did not receive expected message count for Queues.");
     }
 }

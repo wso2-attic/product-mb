@@ -64,13 +64,11 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
 
         sendingClient.startWorking();
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean receiveSuccess = false;
-        if ((expectedCount - additional) == receivingClient.getReceivedqueueMessagecount()) {
-            receiveSuccess = true;
-        }
+        Integer receivedMessageCount = receivingClient.getReceivedqueueMessagecount();
+        Integer messageCountRequired = expectedCount - additional;
 
-        Assert.assertEquals(receiveSuccess, true);
+        Assert.assertEquals(receivedMessageCount, messageCountRequired, "Expected message count was not received.");
     }
 }

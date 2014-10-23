@@ -57,6 +57,7 @@ public class SingleTopicPublishSubscribeTestCase {
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        Assert.assertEquals(sendSuccess && receiveSuccess, true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertFalse(receiveSuccess, "Message receiving failed.");
     }
 }

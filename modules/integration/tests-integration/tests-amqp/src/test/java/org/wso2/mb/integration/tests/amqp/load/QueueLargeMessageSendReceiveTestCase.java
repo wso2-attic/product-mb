@@ -94,8 +94,10 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
 
         Integer actualReceiveCount = receivingClient.getReceivedqueueMessagecount();
 
-        assertEquals((receiveSuccess && sendSuccess), true);
-        assertEquals(actualReceiveCount, sendCount);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+
+        assertEquals(actualReceiveCount, sendCount, "Did not receive expected message count.");
     }
 
     /**
@@ -127,7 +129,8 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        Assert.assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
 

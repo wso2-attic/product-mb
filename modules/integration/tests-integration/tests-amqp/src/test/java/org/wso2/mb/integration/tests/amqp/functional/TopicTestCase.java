@@ -123,11 +123,11 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient, sendMessageCount);
         boolean adminSendSuccess = AndesClientUtils.getIfSenderIsSuccess(adminSendingClient, sendMessageCount);
 
-        assertTrue(tenant1SendSuccess, "TENANT 1 SENT SUCCESSFULLY");
-        assertTrue(tenant2SendSuccess, "TENANT 2 SENT SUCCESSFULLY");
-        assertTrue(adminSendSuccess, "ADMIN SENT SUCCESSFULLY");
-        assertTrue(tenet1ReceiveSuccess, "TENANT 1 RECEIVED SUCCESSFULLY");
-        assertTrue(tenet2ReceiveSuccess, "TENANT 2 RECEIVED SUCCESSFULLY");
-        assertTrue(adminReceiveSuccess, "ADMIN RECEIVED SUCCESSFULLY");
+        assertTrue(tenant1SendSuccess, "Sending failed for tenant 1.");
+        assertTrue(tenant2SendSuccess, "Sending failed for tenant 2.");
+        assertTrue(adminSendSuccess, "Sending failed for admin.");
+        assertTrue(tenet1ReceiveSuccess, "Message receiving failed for tenant 1.");
+        assertTrue(tenet2ReceiveSuccess, "Message receiving failed for tenant 2.");
+        assertTrue(adminReceiveSuccess, "Message receiving failed for admin.");
     }
 }

@@ -56,9 +56,10 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
+     * Test Sending million messages through [noOfPublishers] publishers and receive them through [noOfSubscribers]
+     * subscribers.
      */
-    @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
+    @Test(groups = "wso2.mb", description = "Million message test case", enabled = true)
     public void performMillionMessageTestCase() {
         String queueNameArg = "queue:MillionQueue";
 
@@ -78,14 +79,12 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
-
         AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+
+        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 
-        log.info("Total Received Messages [" + actualReceivedCount + "]");
-
-        assertEquals(actualReceivedCount, sendCount);
+        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
     }
 }

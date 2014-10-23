@@ -45,7 +45,6 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
         Integer runTime = 30;
         int numberOfSubscriptionBreaks = 5;
         Integer expectedCount = sendCount / numberOfSubscriptionBreaks;
-        int totalMsgCountReceived = 0;
 
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:breakSubscriberQueue",
                 "100", "false", runTime.toString(), expectedCount.toString(),
@@ -62,7 +61,9 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
 
         boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        totalMsgCountReceived += receivingClient.getReceivedqueueMessagecount();
+        Assert.assertTrue(success, "Message receiving failed.");
+
+        int totalMsgCountReceived = receivingClient.getReceivedqueueMessagecount();
 
         //anyway wait one more iteration to verify no more messages are delivered
         for (int count = 1; count < numberOfSubscriptionBreaks; count++) {
@@ -73,7 +74,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
             AndesClientUtils.sleepForInterval(1000);
         }
 
-        Assert.assertEquals((totalMsgCountReceived == sendCount), true);
+        Assert.assertEquals(totalMsgCountReceived, sendCount.intValue(), "Expected message count was not received.");
     }
 
 }

@@ -133,7 +133,7 @@ public class AndesClientOutputParser {
 
     private void printMap(Map<Long, Integer> messageMap) {
         for (Long messageIdentifier : messageMap.keySet()) {
-            System.out.println(messageIdentifier + "-----" + messageMap.get(messageIdentifier));
+            log.info(messageIdentifier + "-----" + messageMap.get(messageIdentifier));
         }
     }
 

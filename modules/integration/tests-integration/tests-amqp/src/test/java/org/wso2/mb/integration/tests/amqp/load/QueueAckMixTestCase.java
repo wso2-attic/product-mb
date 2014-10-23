@@ -56,13 +56,11 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Send million messages via 50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10
-     * CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages and check if AUTO_ACKNOWLEDGE subscribers
-     * receive all the messages.
+     * Send million messages and Receive them via AUTO_ACKNOWLEDGE subscribers and CLIENT_ACKNOWLEDGE subscribers and
+     * check if AUTO_ACKNOWLEDGE subscribers receive all the messages.
      */
-    @Test(groups = "wso2.mb", description = "50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and " +
-            "10 " +
-            "CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages", enabled = true)
+    @Test(groups = "wso2.mb", description = "Send million messages and Receive them via AUTO_ACKNOWLEDGE subscribers " +
+            "and CLIENT_ACKNOWLEDGE", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase() {
         Integer noOfReturnMessages = sendCount / 100;
 
@@ -112,6 +110,7 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
                 .getReceivedqueueMessagecount() + "]");
         log.info("Total Received Messages [" + actualReceivedCount + "]");
 
-        assertEquals((Integer) receivingClient.getReceivedqueueMessagecount(), sendCount);
+        assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount.intValue(),
+                "Did not receive expected message count.");
     }
 }
