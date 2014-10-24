@@ -520,4 +520,13 @@ public class AndesClient {
     public List<QueueMessageReceiver> getQueueListeners() {
         return queueListeners;
     }
+    public boolean transactedOperation(long operationOccurredIndex) {
+        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        return andesClientOutputParser.transactedOperations(operationOccurredIndex);
+    }
+
+    public int getTotalNumberOfDuplicates() {
+        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        return andesClientOutputParser.numberDuplicatedMessages();
+    }
 }

@@ -145,4 +145,81 @@ public class AndesClientOutputParser {
             log.info(cloneOfMessages.get(count) + "\n");
         }
     }
+
+    public boolean transactedOperations(long operationOccurredIndex) {
+
+        boolean result = false;
+        int count = 0;
+        long firstMessageIdentifier = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            try {
+                String line = br.readLine();
+
+                while (line != null) {
+                    String[] infoParts = line.split("-");
+                    String messageIdentifierAsString = infoParts[1];
+                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    if (count == 0) {
+                        firstMessageIdentifier = messageIdentifier;
+                    }
+
+                    if (count == (operationOccurredIndex)) {
+                        if (messageIdentifier == firstMessageIdentifier) {
+
+                            result = true;
+                        }
+                    }
+
+                    line = br.readLine();
+                    count++;
+                }
+            } finally {
+                br.close();
+            }
+        } catch (Exception e) {
+            log.error("Error while parsing the file containing received messages" + e);
+        }
+
+        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
+        return result;
+    }
+
+
+    public int numberDuplicatedMessages() {
+        int duplicateCount = 0;
+        List<Long> messagesDuplicated = new ArrayList<Long>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            try {
+                String line = br.readLine();
+
+                while (line != null) {
+                    String[] infoParts = line.split("-");
+                    String messageIdentifierAsString = infoParts[1];
+                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+
+                    if (messagesDuplicated.contains(messageIdentifier)) {
+
+                        duplicateCount++;
+                    } else {
+                        messagesDuplicated.add(messageIdentifier);
+
+                    }
+
+
+                    line = br.readLine();
+
+                }
+            } finally {
+                br.close();
+            }
+        } catch (Exception e) {
+            log.error("Error while parsing the file containing received messages" + e);
+        }
+
+
+        return duplicateCount;
+    }
 }

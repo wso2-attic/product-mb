@@ -50,8 +50,8 @@
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.TopicLargeMessagePublishConsumeTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveTopicSubscriptionTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedTopicTestCase"/>-->
-            <!-- <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTopicTestCase"/>-->
+             <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleTopicTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTopicTestCase"/>
         </classes>
     </test>
 </suite>
