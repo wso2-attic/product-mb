@@ -119,13 +119,19 @@ public class AndesClientUtils {
      */
     public static void waitUntilAllMessagesReceived(AndesClient client, String queueName, int messageCountExpected,
                                                     int numberOfSecondsToWaitForMessages) {
+        int lastCount = 0;
         int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            int thisCount = client.getReceivedqueueMessagecount();
+            if (thisCount == lastCount) {
+                break;
+            }
+            lastCount = thisCount;
             try {
                 Thread.sleep(1000 * 10);
             } catch (InterruptedException ignore) {
             }
-            log.info("Total messages in " + queueName + " [" + client.getReceivedqueueMessagecount() + "] ");
+            log.info("Total messages in " + queueName + " [" + thisCount + "] ");
         }
         flushPrintWriter();
         client.shutDownClient();
@@ -143,18 +149,22 @@ public class AndesClientUtils {
     public static void waitUntilExactNumberOfMessagesReceived(AndesClient client, String queueName,
                                                               int messageCountExpected,
                                                               int numberOfSecondsToWaitForMessages) {
+        int lastCount = 0;
         int tenSecondIterationsToWait = numberOfSecondsToWaitForMessages / 10;
         for (int count = 0; count < tenSecondIterationsToWait; count++) {
+            int thisCount = client.getReceivedqueueMessagecount();
+            if (thisCount >= messageCountExpected || thisCount == lastCount) {
+                flushPrintWriter();
+                client.shutDownClient();
+                log.info("Total exact messages received to " + queueName + " [" + thisCount + "] ");
+                break;
+            }
+
+            lastCount = thisCount;
+
             try {
                 Thread.sleep(1000 * 10);
             } catch (InterruptedException ignore) {
-            }
-            if (client.getReceivedqueueMessagecount() >= messageCountExpected) {
-                flushPrintWriter();
-                client.shutDownClient();
-                log.info("Total exact messages received to " + queueName + " [" + client.getReceivedqueueMessagecount
-                        () + "] ");
-                break;
             }
         }
     }

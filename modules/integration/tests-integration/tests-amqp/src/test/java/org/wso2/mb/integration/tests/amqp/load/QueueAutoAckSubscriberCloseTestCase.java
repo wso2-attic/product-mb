@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.load;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -26,10 +27,7 @@ import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageRecei
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import javax.jms.QueueSession;
 import java.util.List;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * Load test for standalone MB.
@@ -113,6 +111,6 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
                 .getReceivedqueueMessagecount() + "]");
         log.info("Total Received Messages [" + actualReceivedCount + "]");
 
-        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
+        Assert.assertTrue(actualReceivedCount >= sendCount, "Did not receive expected message count.");
     }
 }
