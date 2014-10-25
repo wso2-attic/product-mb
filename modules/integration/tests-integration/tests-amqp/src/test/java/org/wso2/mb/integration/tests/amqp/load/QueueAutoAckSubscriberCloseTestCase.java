@@ -50,6 +50,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
+        restartServer();
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -111,6 +112,6 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
                 .getReceivedqueueMessagecount() + "]");
         log.info("Total Received Messages [" + actualReceivedCount + "]");
 
-        Assert.assertTrue(actualReceivedCount >= sendCount, "Did not receive expected message count.");
+        Assert.assertTrue(actualReceivedCount >= sendCount, "Received only " + actualReceivedCount + " messages.");
     }
 }
