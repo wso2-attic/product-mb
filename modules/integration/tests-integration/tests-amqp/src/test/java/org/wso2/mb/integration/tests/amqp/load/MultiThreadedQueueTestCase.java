@@ -37,7 +37,6 @@ public class MultiThreadedQueueTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void init() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        restartServer();
         AndesClientUtils.sleepForInterval(15000);
     }
 
