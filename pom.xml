@@ -44,7 +44,7 @@
         <module>modules/distribution</module>
         <module>modules/org.wso2.stratos.mb.dashboard.ui</module>
         <module>modules/org.wso2.stratos.mb.login.ui</module>
-        <module>modules/integration</module>
+       <!-- <module>modules/integration</module> -->
     </modules>
 
     <dependencyManagement>
