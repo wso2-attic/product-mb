@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="transport-test-suite">
+    <parameter name="useDefaultListeners" value="false"/>
+    <test name="tests-transports" preserve-order="true" parallel="false">
+
+        <classes>
+            <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedQueueTestCase" />-->
+            <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedDurableTopicTestCase" />-->
+            <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.QueueAckMixTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckSubscriberCloseTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckTestCase"/>
+        </classes>
+    </test>
+</suite>
