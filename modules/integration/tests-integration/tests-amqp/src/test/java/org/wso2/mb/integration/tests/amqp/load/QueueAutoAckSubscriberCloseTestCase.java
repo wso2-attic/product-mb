@@ -50,7 +50,6 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        restartServer();
         AndesClientUtils.sleepForInterval(15000);
     }
 
