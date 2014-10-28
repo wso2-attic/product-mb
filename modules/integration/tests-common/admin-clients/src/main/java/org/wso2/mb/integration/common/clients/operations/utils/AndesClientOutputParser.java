@@ -178,7 +178,7 @@ public class AndesClientOutputParser {
                 br.close();
             }
         } catch (Exception e) {
-            log.error("Error while parsing the file containing received messages" + e);
+            log.error("Error while parsing the file containing received messages" , e);
         }
 
         org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
@@ -216,7 +216,7 @@ public class AndesClientOutputParser {
                 br.close();
             }
         } catch (Exception e) {
-            log.error("Error while parsing the file containing received messages" + e);
+            log.error("Error while parsing the file containing received messages" , e);
         }
 
 
