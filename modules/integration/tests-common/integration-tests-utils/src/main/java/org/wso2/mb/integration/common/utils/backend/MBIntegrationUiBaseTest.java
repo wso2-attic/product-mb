@@ -24,16 +24,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.automation.extensions.selenium.BrowserManager;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
+
+import java.io.File;
 
 public class MBIntegrationUiBaseTest {
     private static final Log log = LogFactory.getLog(MBIntegrationUiBaseTest.class);
     protected AutomationContext mbServer;
     protected String sessionCookie;
     protected String backendURL;
+    protected ServerConfigurationManager serverManager;
     protected LoginLogoutClient loginLogoutClient;
     protected WebDriver driver;
 
@@ -51,6 +56,26 @@ public class MBIntegrationUiBaseTest {
         sessionCookie = loginLogoutClient.login();
         backendURL = mbServer.getContextUrls().getBackEndUrl();
         this.driver = BrowserManager.getWebDriver();
+    }
+
+    /**
+     * Restart the testing MB server with WSO2 domain name set under user management
+     *
+     * @throws Exception
+     */
+    protected void restartServerWithDomainName() throws Exception {
+        serverManager = new ServerConfigurationManager(mbServer);
+
+        // Replace the user-mgt.xml with the new configuration and restarts the server.
+        serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
+                "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator
+                + "user-mgt.xml"), new File(ServerConfigurationManager.getCarbonHome() +
+                File.separator + "repository" + File.separator + "conf" + File.separator +
+                "user-mgt.xml"), true, true);
+    }
+
+    protected void restartInPreviousConfiguration() throws Exception {
+        serverManager.restoreToLastConfiguration(true);
     }
 
     protected String getLoginURL() throws Exception{
