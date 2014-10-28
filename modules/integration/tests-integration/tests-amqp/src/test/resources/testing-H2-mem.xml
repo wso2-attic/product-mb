@@ -56,12 +56,12 @@
             <!-- Queue -->
 
             <!--class name="org.wso2.mb.integration.tests.amqp.load.QueueLargeMessageSendReceiveTestCase"/-->
-            <class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedQueueTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.load.QueueAckMixTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckSubscriberCloseTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedQueueTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.QueueAckMixTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckSubscriberCloseTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.QueueAutoAckTestCase"/>-->
             <!--class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTestCase"/-->
-            <class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>-->
 
 
             <!-- Topic -->

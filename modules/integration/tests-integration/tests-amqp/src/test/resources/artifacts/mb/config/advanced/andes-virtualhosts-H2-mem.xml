@@ -27,6 +27,7 @@
             <store>
                 <!-- JDBC Message Store configurations -->
                 <messageStore class="org.wso2.andes.store.jdbc.h2.H2MemMessageStoreImpl">
+                    <property name="asyncStoring">false</property>
                     <property name="dataSource">jdbc/InMemoryStore</property>
                 </messageStore>
 
