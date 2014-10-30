@@ -37,6 +37,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * This tests if a tenant user can create queues, send and receive messages.
+ */
 public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)
