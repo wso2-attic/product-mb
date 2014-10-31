@@ -125,9 +125,9 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.andes.feature:${carbon.platform.version}
                                 </featureArtifactDef>
-                               <featureArtifactDef>
-                                    org.wso2.carbon:org.wso2.carbon.stat.publisher.feature:${carbon.platform.version}
-                                </featureArtifactDef>
+                               <!-- <featureArtifactDef>
+                                    org.wso2.carbon:org.wso2.carbon.stat.publisher.feature:4.3.0-SNAPSHOT
+                                </featureArtifactDef>-->
                                 <!-- cloud mb features-->
                                 <featureArtifactDef>
                                     org.wso2.mb:org.wso2.stratos.mb.styles.feature:${project.version}
@@ -298,11 +298,6 @@
                             </destination>
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
-                                <feature>
-                                    <id>org.wso2.carbon.stat.publisher.feature.group</id>
-                                    <version>${carbon.platform.version}</version>
-                                </feature>
-
                                 <feature>
                                     <id>org.wso2.carbon.logging.mgt.feature.group</id>
                                     <version>${carbon.platform.version}</version>

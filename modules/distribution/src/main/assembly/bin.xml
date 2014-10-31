@@ -75,7 +75,26 @@
             </includes>
         </fileSet>
         <!-- End - MB SQL scripts -->
-
+        <!-- stat publisher mbStatConfiguration -->
+        <!--<fileSet>
+            <directory>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/conf
+            </directory>
+            <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+        </fileSet>-->
+        <fileSet>
+            <directory>
+                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/
+            </directory>
+            <outputDirectory>wso2mb-${pom.version}/repository/conf
+            </outputDirectory>
+            <includes>
+                <include>**/mbStatConfiguration.xml</include>
+            </includes>
+        </fileSet>
+        <!-- stat publisher mbStatConfiguration-->
         <!--samples set of product-->
         <fileSet>
             <directory>../../modules/samples/product/jms_queue_client</directory>
