@@ -156,32 +156,8 @@ do
           CMD="restart"
     elif [ "$c" = "--test" ] || [ "$c" = "-test" ] || [ "$c" = "test" ]; then
           CMD="test"
-    else
-        args="$args $c"
-    fi
-# ----- check profile is cassandra or zookeeper ----------------------------------------------
-    if [ "$c" = "-Dprofile=cassandra" ] ; then
-        PROF="cassandra"
-    fi
-    if [ "$c" = "-Dprofile=zookeeper" ] ; then
-        PROF="zookeeper"
     fi
 done
-
-if [ "$PROF" = "zookeeper" ]; then
-echo Starting WSO2 MessageBroker - Profile ZooKeeper
-    start_zk_server_false="start_zk_server=false"
-    start_zk_server_true="start_zk_server=true"
-    server_jvm_flags="SERVER_JVMFLAGS=\"-Djava.security.auth.login.config=$CARBON_HOME/repository/conf/etc/jaas.conf\""
-    sed -i "s/${start_zk_server_false}/${start_zk_server_true}/g" "$CARBON_HOME"/repository/conf/etc/zoo.cfg
-    sed -i "s@.*@${server_jvm_flags}@g" "$CARBON_HOME"/repository/conf/etc/java.env
-else
-    start_zk_server_true="start_zk_server=true"
-    start_zk_server_false="start_zk_server=false"
-    client_jvm_flags="CLIENT_JVMFLAGS=\"-Djava.security.auth.login.config=$CARBON_HOME/repository/conf/security/jaas.conf\""
-    sed -i "s/${start_zk_server_true}/${start_zk_server_false}/g" "$CARBON_HOME"/repository/conf/etc/zoo.cfg
-    sed -i "s@.*@${client_jvm_flags}@g" "$CARBON_HOME"/repository/conf/security/java.env
-fi
 
 if [ "$CMD" = "--debug" ]; then
   if [ "$PORT" = "" ]; then
@@ -289,56 +265,13 @@ status=$START_EXIT_STATUS
 
 while [ "$status" = "$START_EXIT_STATUS" ]
 do
-    if [ "$PROF" = "cassandra" ]; then
-        echo Starting WSO2 MessageBroker - Profile Cassandra
-        if [ -f "$CARBON_HOME/bin/cassandra-env.sh" ]; then
-	    . "$CARBON_HOME/bin/cassandra-env.sh"
-	    fi
-        $JAVACMD \
-        -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
-	    -Xms${MAX_HEAP_SIZE} -Xmx${MAX_HEAP_SIZE} -XX:MaxPermSize=256m -Xmn${HEAP_NEWSIZE} \
-	-XX:+UseThreadPriorities -XX:ThreadPriorityPolicy=42 -Xss512k \
-	-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:SurvivorRatio=8 -XX:MaxTenuringThreshold=1 \
-	-XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseTLAB -XX:ParallelGCThreads=8 \
-        -XX:+HeapDumpOnOutOfMemoryError  \
-        -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
-        -javaagent:"$CARBON_HOME/repository/components/plugins/jamm_0.2.5.wso2v2.jar" \
-        $JAVA_OPTS \
-        -DandesConfig=andes-config.xml \
-        -Ddisable.cassandra.server.startup=false \
-        -Dcom.sun.management.jmxremote \
-        -classpath "$CARBON_CLASSPATH" \
-        -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
-        -Djava.io.tmpdir="$CARBON_HOME/tmp" \
-        -Dcatalina.base="$CARBON_HOME/lib/tomcat" \
-        -Dwso2.server.standalone=true \
-        -Dcarbon.registry.root=/ \
-        -Djava.command="$JAVACMD" \
-        -Dcarbon.home="$CARBON_HOME" \
-        -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/log4j.properties" \
-        -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
-        -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
-        -Dconf.location="$CARBON_HOME/repository/conf"\
-        -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
-        -Dcom.atomikos.icatch.hide_init_file_path=true \
-        -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \
-        -Dcom.sun.jndi.ldap.connect.pool.authentication=simple  \
-        -Dcom.sun.jndi.ldap.connect.pool.timeout=3000  \
-        -Dorg.terracotta.quartz.skipUpdateCheck=true \
-        -Djava.security.egd=file:/dev/./urandom \
-        -Dfile.encoding=UTF8 \
-        org.wso2.carbon.bootstrap.Bootstrap $*
-        status=$?
-    else
         $JAVACMD \
         -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
         -Xms256m -Xmx1024m -XX:MaxPermSize=256m \
         -XX:+HeapDumpOnOutOfMemoryError \
         -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
-        -javaagent:"$CARBON_HOME/repository/components/plugins/jamm_0.2.5.wso2v2.jar" \
         $JAVA_OPTS \
         -DandesConfig=andes-config.xml \
-        -Ddisable.cassandra.server.startup=true \
         -Dcom.sun.management.jmxremote \
         -classpath "$CARBON_CLASSPATH" \
         -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
@@ -363,5 +296,4 @@ do
         -Dzookeeper.jmx.log4j.disable=true \
         org.wso2.carbon.bootstrap.Bootstrap $*
         status=$?
-    fi
 done
