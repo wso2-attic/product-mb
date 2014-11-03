@@ -145,9 +145,9 @@
                         <policyName>ConstantReconnectionPolicy</policyName>
                     </reconnectPolicy>
                     <socketOptions>
-                        <connectTimeoutMillis>200</connectTimeoutMillis>
+                        <connectTimeoutMillis>10000</connectTimeoutMillis>
                         <keepAlive>true</keepAlive>
-                        <readTimeoutMillis>200</readTimeoutMillis>
+                        <readTimeoutMillis>15000</readTimeoutMillis>
                         <tcpNoDelay>true</tcpNoDelay>
                     </socketOptions>
 

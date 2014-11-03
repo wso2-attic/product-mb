@@ -141,16 +141,6 @@
                 <include>**/password_file.conf</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/security/
-            </directory>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/security
-            </outputDirectory>
-            <includes>
-                <include>**/jaas.conf</include>
-            </includes>
-        </fileSet>
         <!--Multitenancy related file -->
         <fileSet>
             <directory>
@@ -258,10 +248,6 @@
             <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
         </file>
         <file>
-            <source>src/main/conf/zoo.cfg</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/etc</outputDirectory>
-        </file>
-        <file>
             <source>src/main/resources/wso2server.sh</source>
             <outputDirectory>wso2mb-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
@@ -289,28 +275,6 @@
             <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
-        </file>
-        <!--jaas.conf and java.env for zookeeper server-->
-        <file>
-            <source>src/main/conf/jaas.conf</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/etc</outputDirectory>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>src/main/conf/server/java.env</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/etc</outputDirectory>
-            <fileMode>644</fileMode>
-        </file>
-        <!--jaas.conf and java.env for zookeeper client-->
-        <file>
-            <source>src/main/conf/jaas.conf</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/security</outputDirectory>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>src/main/conf/client/java.env</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/security</outputDirectory>
-            <fileMode>644</fileMode>
         </file>
         <!-- Setting jamm javaagent in bam -->
         <file>

@@ -76,62 +76,6 @@ rem ----- Process the input command -------------------------------------------
 rem Slurp the command line arguments. This loop allows for an unlimited number
 rem of arguments (up to the command line limit, anyway).
 
-rem ----- set default cassandra startup mode ----------------------------------
-set DISABLE_CASSANDRA_STARTUP=true
-
-rem ----- set default setting of zookeeper ------------------------------------
-SETLOCAL EnableExtensions
-SET ZOO_PROPKEY=start_zk_server
-SET ZOO_PROPVAL=false
-SET ZOO_FILE=%CARBON_HOME%\repository\conf\etc\zoo.cfg
-SET JAVAENV_PROPKEY=CLIENT_JVMFLAGS
-SET JAASCONF_PATH=%CARBON_HOME%\repository\conf\security\jaas.conf
-SET JAASCONF_PATH=%JAASCONF_PATH:\=\\%
-SET JAVAENV_PROPVAL="\"-Djava.security.auth.login.config=%JAASCONF_PATH%\""
-SET JAVAENV_FILE=%CARBON_HOME%\repository\conf\security\java.env
-FINDSTR /B %ZOO_PROPKEY% %ZOO_FILE% >nul
-IF %ERRORLEVEL% EQU 1 GOTO noworkzoo
-MOVE /Y "%ZOO_FILE%" "%ZOO_FILE%.bak">nul
-FOR /F "USEBACKQ tokens=*" %%A IN (`TYPE "%ZOO_FILE%.bak" ^|FIND /N /I "%ZOO_PROPKEY%"`) DO (
-  SET LINE=%%A
-)
-FOR /F "tokens=1,2* delims=]" %%S in ("%LINE%") DO SET LINE=%%S
-SET /A LINE=%LINE:~1,6%
-SET /A COUNT=1
-FOR /F "USEBACKQ tokens=*" %%A IN (`FIND /V "" ^<"%ZOO_FILE%.bak"`) DO (
-  IF "!COUNT!" NEQ "%LINE%" (
-      ECHO %%A>>"%ZOO_FILE%"
-  ) ELSE (
-      ECHO %ZOO_PROPKEY%=%ZOO_PROPVAL%>>"%ZOO_FILE%"
-rem      ECHO Updated %ZOO_FILE% with value %ZOO_PROPKEY%=%ZOO_PROPVAL%
-  )
-  SET /A COUNT+=1
-)
-FINDSTR /B %JAVAENV_PROPKEY% %JAVAENV_FILE% >nul
-IF %ERRORLEVEL% EQU 1 GOTO noworkjavaenv
-MOVE /Y "%JAVAENV_FILE%" "%JAVAENV_FILE%.bak">nul
-FOR /F "USEBACKQ tokens=*" %%A IN (`TYPE "%JAVAENV_FILE%.bak" ^|FIND /N /I "%JAVAENV_PROPKEY%"`) DO (
-  SET LINE=%%A
-)
-FOR /F "tokens=1,2* delims=]" %%S in ("%LINE%") DO SET LINE=%%S
-SET /A LINE=%LINE:~1,6%
-SET /A COUNT=1
-FOR /F "USEBACKQ tokens=*" %%A IN (`FIND /V "" ^<"%JAVAENV_FILE%.bak"`) DO (
-  IF "!COUNT!" NEQ "%LINE%" (
-      ECHO %%A>>"%JAVAENV_FILE%"
-  ) ELSE (
-      ECHO %JAVAENV_PROPKEY%=%JAVAENV_PROPVAL%>>"%JAVAENV_FILE%"
-rem      ECHO Updated %JAVAENV_FILE% with value %JAVAENV_PROPKEY%=%JAVAENV_PROPVAL%
-  )
-  SET /A COUNT+=1
-)
-GOTO end
-:noworkzoo
-echo Didn't find matching string %ZOO_PROPKEY% in %ZOO_FILE%. No work to do.
-:noworkjavaenv
-echo Didn't find matching string %JAVAENV_PROPKEY% in %JAVAENV_FILE%. No work to do.
-pause
-:end
 
 :setupArgs
 if ""%1""=="""" goto doneStart
@@ -152,77 +96,8 @@ if ""%1""==""version""   goto commandVersion
 if ""%1""==""-version""  goto commandVersion
 if ""%1""==""--version"" goto commandVersion
 
-if ""%1""==""cassandra"" goto commandCassandraProfile
-
-if ""%1""==""zookeeper"" goto commandZookeeperProfile
-
 shift
 goto setupArgs
-
-rem ----- commandCassandraProfile -------------------------------------------------------
-
-:commandCassandraProfile
-echo Starting WSO2 MessageBroker - Profile Cassandra
-set DISABLE_CASSANDRA_STARTUP=false
-goto findJdk
-
-rem ----- commandZookeeperProfile -------------------------------------------------------
-
-:commandZookeeperProfile
-echo Starting WSO2 MessageBroker - Profile ZooKeeper
-SETLOCAL EnableExtensions
-SET ZOO_PROPKEY=start_zk_server
-SET ZOO_PROPVAL=true
-SET ZOO_FILE=%CARBON_HOME%\repository\conf\etc\zoo.cfg
-SET JAVAENV_PROPKEY=SERVER_JVMFLAGS
-SET JAASCONF_PATH=%CARBON_HOME%\repository\conf\security\jaas.conf
-SET JAASCONF_PATH=%JAASCONF_PATH:\=\\%
-SET JAVAENV_PROPVAL="\"-Djava.security.auth.login.config=%JAASCONF_PATH%\""
-SET JAVAENV_FILE=%CARBON_HOME%\repository\conf\etc\java.env
-FINDSTR /B %ZOO_PROPKEY% %ZOO_FILE% >nul
-IF %ERRORLEVEL% EQU 1 GOTO noworkzoo
-MOVE /Y "%ZOO_FILE%" "%ZOO_FILE%.bak">nul
-FOR /F "USEBACKQ tokens=*" %%A IN (`TYPE "%ZOO_FILE%.bak" ^|FIND /N /I "%ZOO_PROPKEY%"`) DO (
-  SET LINE=%%A
-)
-FOR /F "tokens=1,2* delims=]" %%S in ("%LINE%") DO SET LINE=%%S
-SET /A LINE=%LINE:~1,6%
-SET /A COUNT=1
-FOR /F "USEBACKQ tokens=*" %%A IN (`FIND /V "" ^<"%ZOO_FILE%.bak"`) DO (
-  IF "!COUNT!" NEQ "%LINE%" (
-      ECHO %%A>>"%ZOO_FILE%"
-  ) ELSE (
-      ECHO %ZOO_PROPKEY%=%ZOO_PROPVAL%>>"%ZOO_FILE%"
-rem      ECHO Updated %ZOO_FILE% with value %ZOO_PROPKEY%=%ZOO_PROPVAL%
-  )
-  SET /A COUNT+=1
-)
-FINDSTR /B %JAVAENV_PROPKEY% %JAVAENV_FILE% >nul
-IF %ERRORLEVEL% EQU 1 GOTO noworkjavaenv
-MOVE /Y "%JAVAENV_FILE%" "%JAVAENV_FILE%.bak">nul
-FOR /F "USEBACKQ tokens=*" %%A IN (`TYPE "%JAVAENV_FILE%.bak" ^|FIND /N /I "%JAVAENV_PROPKEY%"`) DO (
-  SET LINE=%%A
-)
-FOR /F "tokens=1,2* delims=]" %%S in ("%LINE%") DO SET LINE=%%S
-SET /A LINE=%LINE:~1,6%
-SET /A COUNT=1
-FOR /F "USEBACKQ tokens=*" %%A IN (`FIND /V "" ^<"%JAVAENV_FILE%.bak"`) DO (
-  IF "!COUNT!" NEQ "%LINE%" (
-      ECHO %%A>>"%JAVAENV_FILE%"
-  ) ELSE (
-      ECHO %JAVAENV_PROPKEY%=%JAVAENV_PROPVAL%>>"%JAVAENV_FILE%"
-rem      ECHO Updated %JAVAENV_FILE% with value %JAVAENV_PROPKEY%=%JAVAENV_PROPVAL%
-  )
-  SET /A COUNT+=1
-)
-GOTO end
-:noworkzoo
-echo Didn't find matching string %ZOO_PROPKEY% in %ZOO_FILE%. No work to do.
-:noworkjavaenv
-echo Didn't find matching string %JAVAENV_PROPKEY% in %JAVAENV_FILE%. No work to do.
-pause
-:end
-goto findJdk
 
 rem ----- commandVersion -------------------------------------------------------
 :commandVersion
@@ -280,7 +155,7 @@ set CARBON_CLASSPATH=.\lib;%CARBON_CLASSPATH%
 
 set JAVA_ENDORSED=".\lib\endorsed";"%JAVA_HOME%\jre\lib\endorsed";"%JAVA_HOME%\lib\endorsed"
 
-set CMD_LINE_ARGS=-Xbootclasspath/a:%CARBON_XBOOTCLASSPATH% -Xms1024m -Xmx1024m -Xmn300m -XX:MaxPermSize=256m -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:SurvivorRatio=8               -XX:MaxTenuringThreshold=1 -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:ParallelGCThreads=8 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="%CARBON_HOME%\repository\logs\heap-dump.hprof"  -Dcom.sun.management.jmxremote -javaagent:%CARBON_HOME%\repository\components\plugins\jamm_0.2.5.wso2v2.jar -classpath %CARBON_CLASSPATH% %JAVA_OPTS% -Djava.endorsed.dirs=%JAVA_ENDORSED% -DandesConfig=andes-config.xml -Ddisable.cassandra.server.startup=%DISABLE_CASSANDRA_STARTUP% -Dcarbon.registry.root=/ -Dcarbon.home="%CARBON_HOME%" -Dwso2.server.standalone=true -Djava.command="%JAVA_HOME%\bin\java" -Djava.opts="%JAVA_OPTS%" -Djava.io.tmpdir="%CARBON_HOME%\tmp" -Dcatalina.base="%CARBON_HOME%\lib\tomcat" -Dwso2.carbon.xml=%CARBON_HOME%\repository\conf\carbon.xml -Dwso2.registry.xml="%CARBON_HOME%\repository\conf\registry.xml" -Dwso2.user.mgt.xml="%CARBON_HOME%\repository\conf\user-mgt.xml" -Dwso2.transports.xml="%CARBON_HOME%\repository\conf\mgt-transports.xml" -Djava.util.logging.config.file="%CARBON_HOME%\repository\conf\log4j.properties" -Dcarbon.config.dir.path="%CARBON_HOME%\repository\conf" -Dcarbon.logs.path="%CARBON_HOME%\repository\logs" -Dcomponents.repo="%CARBON_HOME%\repository\components" -Dconf.location="%CARBON_HOME%\repository\conf" -Dcom.atomikos.icatch.file="%CARBON_HOME%\lib\transactions.properties" -Dcom.atomikos.icatch.hide_init_file_path="true" -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dcom.sun.jndi.ldap.connect.pool.authentication=simple -Dcom.sun.jndi.ldap.connect.pool.timeout=3000 -Dorg.terracotta.quartz.skipUpdateCheck=true -Dcarbon.classpath=%CARBON_CLASSPATH% -Dfile.encoding=UTF8 -Dzookeeper.jmx.log4j.disable=true
+set CMD_LINE_ARGS=-Xbootclasspath/a:%CARBON_XBOOTCLASSPATH% -Xms256m -Xmx1024m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="%CARBON_HOME%\repository\logs\heap-dump.hprof"  -Dcom.sun.management.jmxremote -classpath %CARBON_CLASSPATH% %JAVA_OPTS% -Djava.endorsed.dirs=%JAVA_ENDORSED% -DandesConfig=qpid-config.xml -Ddisable.cassandra.server.startup=true -Dcarbon.registry.root=/ -Dcarbon.home="%CARBON_HOME%" -Dwso2.server.standalone=true -Djava.command="%JAVA_HOME%\bin\java" -Djava.opts="%JAVA_OPTS%" -Djava.io.tmpdir="%CARBON_HOME%\tmp" -Dcatalina.base="%CARBON_HOME%\lib\tomcat" -Dwso2.carbon.xml=%CARBON_HOME%\repository\conf\carbon.xml -Dwso2.registry.xml="%CARBON_HOME%\repository\conf\registry.xml" -Dwso2.user.mgt.xml="%CARBON_HOME%\repository\conf\user-mgt.xml" -Dwso2.transports.xml="%CARBON_HOME%\repository\conf\mgt-transports.xml" -Djava.util.logging.config.file="%CARBON_HOME%\repository\conf\log4j.properties" -Dcarbon.config.dir.path="%CARBON_HOME%\repository\conf" -Dcarbon.logs.path="%CARBON_HOME%\repository\logs" -Dcomponents.repo="%CARBON_HOME%\repository\components" -Dconf.location="%CARBON_HOME%\repository\conf" -Dcom.atomikos.icatch.file="%CARBON_HOME%\lib\transactions.properties" -Dcom.atomikos.icatch.hide_init_file_path="true" -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dcom.sun.jndi.ldap.connect.pool.authentication=simple -Dcom.sun.jndi.ldap.connect.pool.timeout=3000 -Dorg.terracotta.quartz.skipUpdateCheck=true -Dcarbon.classpath=%CARBON_CLASSPATH% -Dfile.encoding=UTF8
 
 :runJava
 echo JAVA_HOME environment variable is set to %JAVA_HOME%
