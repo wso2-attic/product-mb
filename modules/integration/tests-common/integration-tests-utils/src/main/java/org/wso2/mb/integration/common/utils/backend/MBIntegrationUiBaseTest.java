@@ -28,9 +28,10 @@ import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.automation.extensions.selenium.BrowserManager;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
-import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
+import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 
 public class MBIntegrationUiBaseTest {
@@ -57,6 +58,25 @@ public class MBIntegrationUiBaseTest {
         backendURL = mbServer.getContextUrls().getBackEndUrl();
         this.driver = BrowserManager.getWebDriver();
     }
+
+    /**
+     * Get current test user's Username according to the automation context
+     *
+     * @throws XPathExpressionException
+     */
+    protected String getCurrentUserName() throws XPathExpressionException {
+        return mbServer.getContextTenant().getContextUser().getUserName();
+    }
+
+    /**
+     * Get current test user's password according to the automation context
+     *
+     * @throws XPathExpressionException
+     */
+    protected String getCurrentPassword() throws XPathExpressionException {
+        return mbServer.getContextTenant().getContextUser().getPassword();
+    }
+
 
     /**
      * Restart the testing MB server with WSO2 domain name set under user management

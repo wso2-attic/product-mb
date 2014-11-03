@@ -46,8 +46,7 @@ public class AddNewTenantTestCase extends MBIntegrationUiBaseTest{
     public void addNewTenantTest() throws Exception {
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
-                mbServer.getContextTenant().getContextUser().getPassword());
+        HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
 
         ConfigurePage configurePage = homePage.getConfigurePage();
         AddNewTenantPage addNewTenantPage = configurePage.getAddNewTenantPage();
