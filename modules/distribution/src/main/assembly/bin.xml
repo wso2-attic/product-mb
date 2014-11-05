@@ -39,6 +39,7 @@
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/master-datasources.xml</exclude>
                 <exclude>**/release-notes.html</exclude>
+                <exclude>**/repository/conf/axis2/axis2.xml</exclude>
             </excludes>
         </fileSet>
         <fileSet>
