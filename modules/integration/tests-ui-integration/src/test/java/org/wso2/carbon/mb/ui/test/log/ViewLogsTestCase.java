@@ -37,8 +37,7 @@ public class ViewLogsTestCase extends MBIntegrationUiBaseTest {
     public void viewSystemLogsTest() throws Exception {
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
-                mbServer.getContextTenant().getContextUser().getPassword());
+        HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
 
         MonitorPage monitorPage = homePage.getMonitorPage();
         ApplicationLogsPage applicationLogsPage = monitorPage.getApplicationLogsPage();

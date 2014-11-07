@@ -41,9 +41,7 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         String qName = "testQ";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
-                mbServer.getContextTenant().getContextUser().getPassword());
-
+        HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
