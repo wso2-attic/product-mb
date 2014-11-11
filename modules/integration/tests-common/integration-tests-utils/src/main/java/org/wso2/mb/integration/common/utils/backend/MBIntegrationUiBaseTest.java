@@ -42,6 +42,8 @@ public class MBIntegrationUiBaseTest {
     protected ServerConfigurationManager serverManager;
     protected LoginLogoutClient loginLogoutClient;
     protected WebDriver driver;
+    /** custom admin role name set with restartServerWithDifferentAdminRoleName() method */
+    protected static final String CUSTOM_ADMIN_ROLE_NAME = "administrator";
 
     protected void init() throws Exception {
         mbServer = new AutomationContext("MB", TestUserMode.SUPER_TENANT_ADMIN);
@@ -77,6 +79,23 @@ public class MBIntegrationUiBaseTest {
         return mbServer.getContextTenant().getContextUser().getPassword();
     }
 
+    /**
+     * Return the admin user name of current context tenant
+     * @return admin name as a String
+     * @throws XPathExpressionException
+     */
+    protected String getAdminUserName() throws XPathExpressionException {
+        return mbServer.getContextTenant().getTenantAdmin().getUserName();
+    }
+
+    /**
+     * Get the password of admin user of current context tenant
+     * @return password as a String
+     * @throws XPathExpressionException
+     */
+    protected String getAdminPassword() throws XPathExpressionException {
+        return mbServer.getContextTenant().getTenantAdmin().getPassword();
+    }
 
     /**
      * Restart the testing MB server with WSO2 domain name set under user management
@@ -94,6 +113,26 @@ public class MBIntegrationUiBaseTest {
                 "user-mgt.xml"), true, true);
     }
 
+    /**
+     * Restart the server with admin role name set to "administrator" instead of default value admin
+     *
+     * @throws Exception
+     */
+    protected void restartServerWithDifferentAdminRoleName() throws Exception {
+        serverManager = new ServerConfigurationManager(mbServer);
+
+        // Replace the user-mgt.xml with the new configuration and restarts the server.
+        serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
+                "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator
+                + "user-mgt-admin-role-name.xml"), new File(ServerConfigurationManager.getCarbonHome() +
+                File.separator + "repository" + File.separator + "conf" + File.separator +
+                "user-mgt.xml"), true, true);
+    }
+
+    /**
+     * Restart the server with previous configuration.
+     * @throws Exception
+     */
     protected void restartInPreviousConfiguration() throws Exception {
         serverManager.restoreToLastConfiguration(true);
     }

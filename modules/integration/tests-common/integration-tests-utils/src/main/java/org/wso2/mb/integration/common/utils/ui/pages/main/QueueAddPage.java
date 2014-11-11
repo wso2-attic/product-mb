@@ -25,10 +25,20 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 
 import java.io.IOException;
+import java.util.List;
 
+/**
+ * UI test class related to queue add page of Management console.
+ */
 public class QueueAddPage extends MBPage {
 
-    public QueueAddPage(WebDriver driver) throws IOException{
+    /**
+     * Checks whether the current page the WebDriver is in is the correct queue add page. if not
+     * throws a runtime exception (IllegalStateException)
+     *
+     * @param driver WebDriver
+     */
+    public QueueAddPage(WebDriver driver) {
         super(driver);
         if(!driver.findElement(By.xpath(UIElementMapper.getInstance().
                 getElement("mb.add.queue.page.header.xpath"))).getText().contains("Add Queue")){
@@ -36,12 +46,47 @@ public class QueueAddPage extends MBPage {
         }
     }
 
-    public boolean addQueue(final String qName) throws IOException{
+    /**
+     * Adds a queue with all without changing privileges for the queue
+     * @param qName queue name
+     * @return true if successful and false otherwise
+     * @throws IOException
+     */
+    public boolean addQueue(final String qName) throws IOException {
+        return addQueue(qName, true);
+    }
+
+    /**
+     * Adds a queue without privileges to any role or not explicitly specified
+     * @param qName queue name
+     * @param withoutPrivileges without privileges set to roles to consume or publish
+     * @return true if successful and false otherwise
+     * @throws IOException
+     */
+    public boolean addQueue(final String qName, boolean withoutPrivileges) throws IOException{
         boolean isSuccessful = false;
 
         WebElement qNameField = driver.findElement(By.id(UIElementMapper.getInstance()
                 .getElement("mb.add.queue.page.qname.field.id")));
         qNameField.sendKeys(qName);
+
+        if(withoutPrivileges) {
+
+            // get permission table
+            WebElement table = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                    .getElement("mb.add.queue.page.permission.table")));
+
+            // get role name related publish consume checkboxes list for all the roles
+            List<WebElement> checkBoxList = table.findElements(By.tagName("input"));
+
+            // make all the permissions unchecked
+            for (WebElement element: checkBoxList) {
+                if(element.isSelected()) {
+                    element.click(); // uncheck checkbox
+                }
+            }
+        }
+
         driver.getWindowHandle();
         driver.findElement(By.xpath(UIElementMapper.getInstance()
                 .getElement("mb.add.queue.page.add.button.xpath"))).click();

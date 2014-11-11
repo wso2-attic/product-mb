@@ -21,9 +21,6 @@ package org.wso2.mb.integration.common.utils.ui.pages.main;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
-import org.wso2.mb.integration.common.utils.ui.pages.configure.ConfigurePage;
-import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
-import org.wso2.mb.integration.common.utils.ui.pages.monitor.MonitorPage;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
@@ -35,7 +32,11 @@ import java.io.IOException;
  */
 public class HomePage extends MBPage {
 
-    public HomePage(WebDriver driver) throws IOException {
+    /**
+     * Checks whether the current page is the home page. if not throws a runtime exception
+     * @param driver WebDriver
+     */
+    public HomePage(WebDriver driver) {
         super(driver);
         // Check that we're on the right page.
         if (!driver.findElement(By.id(UIElementMapper.getInstance()

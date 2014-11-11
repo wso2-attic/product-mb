@@ -38,6 +38,7 @@
             <class name="org.wso2.carbon.mb.ui.test.configure.NewUserPermissionTest"/>
             <class name="org.wso2.carbon.mb.ui.test.log.ViewLogsTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.BrowseQueueWithUserWithDomainName"/>
+            <class name="org.wso2.carbon.mb.ui.test.configure.AdminWithDifferentAdminRoleName"/>
         </classes>
     </test>
 </suite>
