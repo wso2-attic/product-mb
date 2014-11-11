@@ -4,7 +4,7 @@
         <provider>org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceReader</provider>
 
         <!-- uncomment the following entry to when using an Cassandra data source -->
-        <!--<provider>org.wso2.carbon.cassandra.datareader.datasource.CassandraDataSourceReader</provider>-->
+        <!--<provider>org.wso2.carbon.cassandra.datareader.cql.CassandraDataSourceReader</provider>-->
     </providers>
 
     <datasources>
