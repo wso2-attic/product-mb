@@ -22,16 +22,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
+import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 
 import java.io.IOException;
 
-public class QueueAddPage {
-
-    private WebDriver driver;
+public class QueueAddPage extends MBPage {
 
     public QueueAddPage(WebDriver driver) throws IOException{
-        this.driver = driver;
-
+        super(driver);
         if(!driver.findElement(By.xpath(UIElementMapper.getInstance().
                 getElement("mb.add.queue.page.header.xpath"))).getText().contains("Add Queue")){
             throw new IllegalStateException("This is not the Add Queue page");

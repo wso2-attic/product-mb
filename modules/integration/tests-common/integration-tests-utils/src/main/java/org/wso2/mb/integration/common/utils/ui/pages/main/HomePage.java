@@ -20,6 +20,7 @@ package org.wso2.mb.integration.common.utils.ui.pages.main;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 import org.wso2.mb.integration.common.utils.ui.pages.configure.ConfigurePage;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.monitor.MonitorPage;
@@ -32,21 +33,15 @@ import java.io.IOException;
  * NOTE: To navigate to a page Don't use direct links to pages. To ensure there is a UI element to navigate to
  * that page.
  */
-public class HomePage {
-    private WebDriver driver;
+public class HomePage extends MBPage {
 
     public HomePage(WebDriver driver) throws IOException {
-        this.driver = driver;
+        super(driver);
         // Check that we're on the right page.
         if (!driver.findElement(By.id(UIElementMapper.getInstance()
                 .getElement("home.dashboard.middle.text"))).getText().contains("Home")) {
             throw new IllegalStateException("This is not the home page");
         }
-    }
-
-    public LoginPage logout() throws IOException {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.sign.out.xpath"))).click();
-        return new LoginPage(driver);
     }
 
     public DLCBrowsePage getDLCBrowsePage() throws Exception {
@@ -62,15 +57,5 @@ public class HomePage {
     public QueueAddPage getQueueAddPage() throws IOException {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.queues.add.xpath"))).click();
         return new QueueAddPage(driver);
-    }
-
-    public ConfigurePage getConfigurePage() throws Exception {
-        driver.findElement(By.id(UIElementMapper.getInstance().getElement("configure.tab.id"))).click();
-        return new ConfigurePage(driver);
-    }
-
-    public MonitorPage getMonitorPage() throws Exception {
-        driver.findElement(By.id(UIElementMapper.getInstance().getElement("mb.tab.button.monitor.id"))).click();
-        return new MonitorPage(driver);
     }
 }
