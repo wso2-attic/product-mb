@@ -28,33 +28,49 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
-public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
+/**
+ * Test case to browse the queue with a user with a domain name.
+ * User will have a domain name attached to the user name
+ * eg: WSO2/admin
+ */
+public class BrowseQueueWithUserWithDomainName extends MBIntegrationUiBaseTest{
 
     @BeforeClass()
     public void init() throws Exception {
         super.init();
+        restartServerWithDomainName();  // start with WSO2 domain name
     }
 
+    /**
+     * This test case will add a queue to MB and navigate to browse the queue
+     * content.
+     *
+     * @throws Exception
+     */
     @Test()
-    public void testCase()  throws Exception{
+    public void navigateQueueContentPage() throws Exception {
 
-        String qName = "testQ";
+        String qName = "testQcontent";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
-                mbServer.getContextTenant().getContextUser().getPassword());
-
+        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant()
+                .getContextUser().getUserName(), mbServer.getContextTenant()
+                .getContextUser().getPassword());
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        Assert.assertEquals(queuesBrowsePage.deleteQueue(qName), true);
+        Assert.assertNotNull(queuesBrowsePage.browseQueue(qName),
+                "Unable to browse Queue " + qName);
+        Assert.assertEquals(homePage.getQueuesBrowsePage().deleteQueue(qName),
+                true, "Unable to delete the queue " + qName + " after browsing");
 
     }
 
     @AfterClass()
-    public void tearDown() {
+    public void tearDown() throws Exception{
         driver.quit();
+        restartInPreviousConfiguration();
     }
 
 }
