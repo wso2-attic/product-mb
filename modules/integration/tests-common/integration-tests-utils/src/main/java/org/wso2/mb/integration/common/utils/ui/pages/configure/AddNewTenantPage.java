@@ -53,8 +53,7 @@ public class AddNewTenantPage {
      * @param adminUserName admin users' user name
      * @param adminPassword admin users' password
      * @param adminPasswordRepeat admin users' password (if repeat password doesn't match operation
-     *                            must
-     *                            be unsuccessful)
+     *                            must be unsuccessful)
      * @param adminEmail admin users' email
      * @return true if tenant successfully created. false otherwise
      */

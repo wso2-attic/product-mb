@@ -27,11 +27,18 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
+/**
+ * This page represents Tenant Home page in MB management console.
+ */
 public class TenantHomePage {
 
     private static final Log log = LogFactory.getLog(TenantHomePage.class);
     private WebDriver driver;
 
+    /**
+     * This constructor test whether the web driver is in correct page.
+     * @param driver WebDriver
+     */
     public TenantHomePage(WebDriver driver){
         this.driver = driver;
         // Check that we're on the right page.
@@ -41,6 +48,11 @@ public class TenantHomePage {
         }
     }
 
+    /**
+     * Logout from home page. Login page is returned
+     * @return LoginPage
+     * @throws IOException
+     */
     public LoginPage logout() throws IOException {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.tenant.sign.out.xpath"))).click();
         return new LoginPage(driver);
