@@ -28,6 +28,9 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
+/**
+ * This tests the deletion of a queue from management console
+ */
 public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
 
     @BeforeClass()
@@ -35,6 +38,16 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         super.init();
     }
 
+    /**
+     * Tests the queue deletion from UI
+     *
+     * Test Steps:
+     *  - login to management console
+     *  - create a queue
+     *  - Go to queue browse page
+     *  - Delete console
+     * @throws Exception
+     */
     @Test()
     public void testCase()  throws Exception{
 

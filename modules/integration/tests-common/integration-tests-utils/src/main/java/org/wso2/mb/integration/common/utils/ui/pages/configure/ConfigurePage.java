@@ -26,6 +26,9 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
+/**
+ * Abstraction of the Configuration tab page of the UI.
+ */
 public class ConfigurePage {
     private static final Log log = LogFactory.getLog(ConfigurePage.class);
     private WebDriver driver;
@@ -40,16 +43,35 @@ public class ConfigurePage {
         }
     }
 
+    /**
+     * User store Management store page is selected from UI and returned
+     *
+     * @return UserStoreManagementPage
+     * @throws Exception
+     */
     public UserStoreManagementPage getUserStoreManagementPage() throws Exception {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.user.store.management.xpath"))).click();
         return new UserStoreManagementPage(driver);
     }
 
+    /**
+     * New Tenant creation page link is selected from Configure tab page in UI and AddNewTenantPage
+     * is returned
+     *
+     * @return AddNewTenantPage
+     * @throws Exception
+     */
     public AddNewTenantPage getAddNewTenantPage() throws Exception {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.multitenancy.add.new.tenant.xpath"))).click();
         return new AddNewTenantPage(driver);
     }
 
+    /**
+     * User Management page link is selected from Configure tab page in UI
+     *
+     * @return UserManagementPage
+     * @throws Exception
+     */
     public UserManagementPage getUserManagementPage() throws Exception {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.users.and.roles.button.xpath"))).click();
         return new UserManagementPage(driver);
