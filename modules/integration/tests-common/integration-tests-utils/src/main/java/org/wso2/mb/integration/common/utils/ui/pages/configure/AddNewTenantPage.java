@@ -40,7 +40,7 @@ public class AddNewTenantPage {
         // Check that we're on the right page.
         if (!driver.findElement(By.id(UIElementMapper.getInstance()
                 .getElement("home.dashboard.middle.text"))).getText().contains("Register A New Organization")) {
-            throw new IllegalStateException("This is not the home page");
+            throw new IllegalStateException("Not in add new tenant page.");
         }
     }
 
