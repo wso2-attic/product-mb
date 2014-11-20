@@ -30,10 +30,6 @@
         -->
         <executionEnvironment>standalone</executionEnvironment>
         <!--
-         Change this to user/tenant to execute test with user mode or tenant mode
-        -->
-        <multiTenantMode>false</multiTenantMode>
-        <!--
          Change this to true if you want to generate coverage statistics
         -->
         <coverage>true</coverage>
@@ -219,7 +215,7 @@
         <platformExecutionManager>
             <extentionClasses>
 	<class>
-		<name>org.wso2.carbon.integration.common.extensions.carbonserver.CarbonServerExtension</name>
+		<name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
 		<!--<parameter name="-DportOffset" value="0" />-->
 		<!--<parameter name="cmdArg" value="debug 5005" />-->
 	</class>
