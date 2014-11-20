@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
@@ -16,6 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+
 <automation xmlns="automationXMLSchema.xsd">
     <!--  =================================================  -->
     <!--                   Parameters                        -->
@@ -29,10 +31,6 @@
          Change this to product|platform/cloud to execute test on specific environment
         -->
         <executionEnvironment>standalone</executionEnvironment>
-        <!--
-         Change this to user/tenant to execute test with user mode or tenant mode
-        -->
-        <multiTenantMode>false</multiTenantMode>
         <!--
          Change this to true if you want to generate coverage statistics
         -->
@@ -191,7 +189,7 @@
         <platformExecutionManager>
             <extentionClasses>
 	<class>
-		<name>org.wso2.carbon.integration.common.extensions.carbonserver.CarbonServerExtension</name>
+		<name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
 		<!--<parameter name="-DportOffset" value="0" />-->
 		<!--<parameter name="cmdArg" value="debug 5005" />-->
 	</class>
