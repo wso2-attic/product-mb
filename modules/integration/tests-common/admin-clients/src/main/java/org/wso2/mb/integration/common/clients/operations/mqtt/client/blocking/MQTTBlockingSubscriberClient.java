@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.Ca
 import java.util.List;
 
 /**
- * Handle subscriptions to mqtt.
+ * Synchronous MQTT subscriber client.
  */
 public class MQTTBlockingSubscriberClient extends AndesMQTTBlockingClient {
 
@@ -88,7 +88,7 @@ public class MQTTBlockingSubscriberClient extends AndesMQTTBlockingClient {
     public void shutdown() throws MqttException {
         CallbackHandler callbackHandler = getCallbackHandler();
         if (isConnected()) {
-            if (callbackHandler != null) {
+            if (null != callbackHandler) {
                 log.info("No of messages received for client " + getMqttClientID() + " : " + callbackHandler
                         .getReceivedMessageCount());
             }

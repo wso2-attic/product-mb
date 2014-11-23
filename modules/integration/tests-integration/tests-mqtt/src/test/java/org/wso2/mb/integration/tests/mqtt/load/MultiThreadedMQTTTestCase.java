@@ -35,8 +35,6 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
  */
 public class MultiThreadedMQTTTestCase extends MBIntegrationBaseTest {
 
-    private final ClientMode clientMode = ClientMode.BLOCKING;
-
     /**
      * Initialize super class.
      *
@@ -55,7 +53,6 @@ public class MultiThreadedMQTTTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send a large amount of messages and receive via multiple MQTT " +
             "clients")
     public void performMultiThreadedMQTTTestCase() throws MqttException {
-        QualityOfService qualityOfService = QualityOfService.LEAST_ONCE;
         String topicName = "MultiThreadedTopic";
         int sendCount = 100000;
         int noOfPublishers = 10;
@@ -64,10 +61,11 @@ public class MultiThreadedMQTTTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, false, clientMode);
+        mqttClientEngine.createSubscriberConnection(topicName, QualityOfService.MOST_ONCE, noOfSubscribers, false,
+                ClientMode.BLOCKING);
 
-        mqttClientEngine.createPublisherConnection(topicName, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD,
-                noOfPublishers, sendCount / noOfPublishers, clientMode);
+        mqttClientEngine.createPublisherConnection(topicName, QualityOfService.MOST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

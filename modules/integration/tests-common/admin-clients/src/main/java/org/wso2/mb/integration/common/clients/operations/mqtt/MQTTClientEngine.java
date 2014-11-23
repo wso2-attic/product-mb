@@ -40,10 +40,16 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.blocking.MQ
  */
 public class MQTTClientEngine {
 
+    // Keeps all the publishers created through the engine
     private final List<AndesMQTTClient> publisherList = new ArrayList<AndesMQTTClient>();
+
+    // Keep all the subscribers created through the engine
     private final List<AndesMQTTClient> subscriberList = new ArrayList<AndesMQTTClient>();
 
+    // Subscriber client thread executor, executes runnable subscribers
     private final ExecutorService clientControlSubscriptionThreads = Executors.newFixedThreadPool(10);
+
+    // Publisher client thread executor, executes runnable publishers
     private final ExecutorService clientControlPublisherThreads = Executors.newFixedThreadPool(10);
 
     private final Log log = LogFactory.getLog(MQTTClientEngine.class);
@@ -51,11 +57,20 @@ public class MQTTClientEngine {
     private static final int millisecondsToASecond = 1000;
 
     private final ScheduledExecutorService scheduleExecutor = Executors.newScheduledThreadPool(1);
+
+    // Schedule which publishes send/receive TPS
     private ScheduledFuture tpsPublisherSchedule;
 
+    // The received message count there was when the previous TPS calculation happened
     private int previousReceivedMessageCount;
+
+    // The sent message count there was when the previous TPS calculation happened
     private int previousSentMessageCount;
 
+    /**
+     * Initialises the client engine attaching a shutdown hook to close all the opened connection.
+     * Initialises TPS publishing mechanism.
+     */
     public MQTTClientEngine() {
         startTPSPublisher();
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -101,12 +116,14 @@ public class MQTTClientEngine {
 
         AndesMQTTClient mqttClient = null;
 
-        if (ClientMode.ASYNC.equals(clientMode)) {
+        if (ClientMode.ASYNC == clientMode) {
             mqttClient = new MQTTAsyncSubscriberClient(configuration, generateClientID(), topicName, qos, saveMessages);
-        } else if (ClientMode.BLOCKING.equals(clientMode)) {
+        } else if (ClientMode.BLOCKING == clientMode) {
             mqttClient = new MQTTBlockingSubscriberClient(configuration, generateClientID(), topicName, qos,
                     saveMessages);
         } else {
+            // Using else since only the above two scenarios are handled. If a new client mode is included,
+            // handle it before this
             throw new MqttException(new Throwable("Unidentified clientMode : " + clientMode));
         }
 
@@ -142,6 +159,7 @@ public class MQTTClientEngine {
         for (AndesMQTTClient subscriberClient : subscriberList) {
             if (!subscriberClient.isSubscribed()) {
                 subscribed = false;
+                break;
             }
         }
 
@@ -165,13 +183,15 @@ public class MQTTClientEngine {
 
         AndesMQTTClient mqttClient = null;
 
-        if (ClientMode.ASYNC.equals(clientMode)) {
+        if (ClientMode.ASYNC == clientMode) {
             mqttClient = new MQTTAsyncPublisherClient(configuration, generateClientID(), topicName, qos, payload,
                     noOfMessages);
-        } else if (ClientMode.BLOCKING.equals(clientMode)) {
+        } else if (ClientMode.BLOCKING == clientMode) {
             mqttClient = new MQTTBlockingPublisherClient(configuration, generateClientID(), topicName, qos, payload,
                     noOfMessages);
         } else {
+            // Using else since only the above two scenarios are handled. If a new client mode is included,
+            // handle it before this
             throw new MqttException(new Throwable("Unidentified ClientMode : " + clientMode));
         }
 
@@ -339,7 +359,7 @@ public class MQTTClientEngine {
      * @return Transactions Per Second
      */
     private double calculateTPS(long timeDiffMillis, int messageCount) {
-        return messageCount * 1.0 / (timeDiffMillis * 1.0 / (millisecondsToASecond * 1.0));
+        return ((double) messageCount) / ((double) timeDiffMillis / millisecondsToASecond);
     }
 
     /**

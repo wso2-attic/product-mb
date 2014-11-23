@@ -33,11 +33,9 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import java.util.List;
 
 /**
- * Verify if a long topic hierarchy is working.
+ * Verifies message send/receive functionality within an extended topic hierarchy.
  */
 public class LongTopicTestCase extends MBIntegrationBaseTest {
-
-    private final ClientMode clientMode = ClientMode.BLOCKING;
 
     /**
      * Initialize super class.
@@ -56,15 +54,15 @@ public class LongTopicTestCase extends MBIntegrationBaseTest {
     public void performLongTopicTestCase() throws MqttException {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
-        QualityOfService qualityOfService = QualityOfService.LEAST_ONCE;
-
         String longTopic = "1/2/3/this_is_a_long_topic_that_needs_to/work/4/5/6/7/8";
 
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(longTopic, qualityOfService, 1, true, clientMode);
+        mqttClientEngine.createSubscriberConnection(longTopic, QualityOfService.LEAST_ONCE, 1, true,
+                ClientMode.BLOCKING);
 
-        mqttClientEngine.createPublisherConnection(longTopic, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD, 1, 1,
-                clientMode);
+        mqttClientEngine.createPublisherConnection(longTopic, QualityOfService.LEAST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, 1, 1,
+                ClientMode.BLOCKING);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

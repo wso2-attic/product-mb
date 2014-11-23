@@ -26,14 +26,18 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.QualityOfService;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.CallbackHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handle publishing messages to mqtt.
+ * Asynchronous MQTT publisher client.
  */
 public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
 
+    // The payload to send as the message content
     private byte[] messagePayLoad;
+
+    // The number of messages to send
     private int noOfMessages;
 
     private static final Log log = LogFactory.getLog(MQTTAsyncPublisherClient.class);
@@ -50,7 +54,7 @@ public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
      * @throws MqttException
      */
     public MQTTAsyncPublisherClient(MQTTClientConnectionConfiguration configuration, String clientID, String topic,
-                                       QualityOfService qos, byte[] payload, int noOfMessages) throws MqttException {
+                                    QualityOfService qos, byte[] payload, int noOfMessages) throws MqttException {
         super(configuration, clientID, topic, qos, new CallbackHandler());
         messagePayLoad = payload;
         this.noOfMessages = noOfMessages;
@@ -70,6 +74,7 @@ public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
 
     /**
      * Return subscription status as false since this is the publishing client.
+     *
      * @return False
      */
     @Override
@@ -79,10 +84,11 @@ public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
 
     /**
      * Return empty as this is the publisher client and does not accept any messages.
-     * @return null
+     *
+     * @return empty message list
      */
     @Override
     public List<MqttMessage> getReceivedMessages() {
-        return null;
+        return new ArrayList<MqttMessage>(0);
     }
 }

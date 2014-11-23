@@ -26,14 +26,18 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.QualityOfService;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.CallbackHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handle publishing messages to mqtt.
+ * Synchronous MQTT publishing client.
  */
 public class MQTTBlockingPublisherClient extends AndesMQTTBlockingClient {
 
+    // The payload to send as message content
     private byte[] messagePayLoad;
+
+    // The number of messages to send
     private int noOfMessages;
 
     private static final Log log = LogFactory.getLog(MQTTBlockingPublisherClient.class);
@@ -70,6 +74,7 @@ public class MQTTBlockingPublisherClient extends AndesMQTTBlockingClient {
 
     /**
      * Return subscription status as false since this is the publishing client.
+     *
      * @return False
      */
     @Override
@@ -79,10 +84,11 @@ public class MQTTBlockingPublisherClient extends AndesMQTTBlockingClient {
 
     /**
      * Return empty as this is the publisher client and does not accept any messages.
-     * @return null
+     *
+     * @return empty message list
      */
     @Override
     public List<MqttMessage> getReceivedMessages() {
-        return null;
+        return new ArrayList<MqttMessage>(0);
     }
 }

@@ -36,8 +36,6 @@ import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvi
  */
 public class QOSLoadTestCase extends MBIntegrationBaseTest {
 
-    private final ClientMode clientMode = ClientMode.BLOCKING;
-
     /**
      * Initialize super class.
      *
@@ -49,7 +47,8 @@ public class QOSLoadTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Send and receive large number of message via QOS 0,1 and 2.
+     * Send and receive large number of message via QOS {@link QualityOfService#MOST_ONCE},
+     * {@link QualityOfService#LEAST_ONCE} and {@link QualityOfService#EXACTLY_ONCE}.
      *
      * @param qualityOfService The Quality of service to test
      * @throws MqttException
@@ -65,10 +64,11 @@ public class QOSLoadTestCase extends MBIntegrationBaseTest {
         String topicName = "QOS0LoadTestTopic";
 
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, false, clientMode);
+        mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, false,
+                ClientMode.BLOCKING);
 
         mqttClientEngine.createPublisherConnection(topicName, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD,
-                noOfPublishers, sendCount / noOfPublishers, clientMode);
+                noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

@@ -38,8 +38,6 @@ import java.util.List;
  */
 public class QOSTestCase extends MBIntegrationBaseTest {
 
-    private final ClientMode clientMode = ClientMode.ASYNC;
-
     private static final String topicName = "topic";
 
     /**
@@ -53,7 +51,8 @@ public class QOSTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Send a message and receive in QOS 0,1 and 2.
+     * Send a message and receive in QOS {@link QualityOfService#MOST_ONCE}, {@link QualityOfService#LEAST_ONCE} and
+     * {@link QualityOfService#EXACTLY_ONCE}.
      *
      * @param qualityOfService The Quality of service to test
      * @throws MqttException
@@ -67,10 +66,11 @@ public class QOSTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, true, clientMode);
+        mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, true,
+                ClientMode.ASYNC);
 
         mqttClientEngine.createPublisherConnection(topicName, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD,
-                noOfPublishers, noOfMessages, clientMode);
+                noOfPublishers, noOfMessages, ClientMode.ASYNC);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

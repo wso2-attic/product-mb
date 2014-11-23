@@ -52,7 +52,7 @@ public class CallbackHandler implements MqttCallback {
     /**
      * Set saveMessages while initializing. Use this if you want to specifically want to save/not save receiving
      * messages.
-     *
+     * <p/>
      * Do not set saveMessages to true if you are expecting a large number of messages.
      *
      * @param saveReceivingMessages Save receiving message
@@ -78,21 +78,20 @@ public class CallbackHandler implements MqttCallback {
      */
     @Override
     public void connectionLost(Throwable throwable) {
-        log.info("Connection Lost - Client Disconnected.");
-        log.info("No of messages received : " + getReceivedMessageCount());
+        log.error("Connection Lost - Client Disconnected", throwable);
     }
 
     /**
      * Handle a receiving message from a server.
      * The receiving message count will be updated. If save message flag is up, the received message will be saved.
      *
-     * @param topic Topic message received from
+     * @param topic       Topic message received from
      * @param mqttMessage The mqtt message received
      * @throws Exception
      */
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        if (mqttMessage != null) {
+        if (null != mqttMessage) {
             if (saveMessages) {
                 receivedMessages.add(mqttMessage);
                 log.info("Message arrived on " + topic + " : " + mqttMessage.toString());

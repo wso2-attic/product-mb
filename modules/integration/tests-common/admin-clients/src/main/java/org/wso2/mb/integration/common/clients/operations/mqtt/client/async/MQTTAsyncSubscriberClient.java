@@ -28,12 +28,15 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.Ca
 
 import java.util.List;
 
+/**
+ * Asynchronous MQTT subscriber client.
+ */
 public class MQTTAsyncSubscriberClient extends AndesMQTTAsyncClient {
 
-private static final Log log = LogFactory.getLog(MQTTAsyncSubscriberClient.class);
+    private static final Log log = LogFactory.getLog(MQTTAsyncSubscriberClient.class);
 
-// Listening to the server for message or not
-private boolean subscribed = false;
+    // Listening to the server for message or not
+    private boolean subscribed = false;
 
     /**
      * Initialize subscribing to mqtt.
@@ -46,7 +49,7 @@ private boolean subscribed = false;
      * @throws MqttException
      */
     public MQTTAsyncSubscriberClient(MQTTClientConnectionConfiguration configuration, String clientID, String topic,
-                                        QualityOfService qos, boolean saveMessages) throws MqttException {
+                                     QualityOfService qos, boolean saveMessages) throws MqttException {
         super(configuration, clientID, topic, qos, new CallbackHandler(saveMessages));
     }
 
@@ -84,8 +87,8 @@ private boolean subscribed = false;
     @Override
     public void shutdown() throws MqttException {
         CallbackHandler callbackHandler = getCallbackHandler();
-        if(isConnected()) {
-            if (callbackHandler != null) {
+        if (isConnected()) {
+            if (null != callbackHandler) {
                 log.info("No of messages received for client " + getMqttClientID() + " : " + callbackHandler
                         .getReceivedMessageCount());
             }
@@ -99,6 +102,7 @@ private boolean subscribed = false;
 
     /**
      * Check if the subscriber is subscribed to a topic
+     *
      * @return Is Subscribed
      */
     public boolean isSubscribed() {

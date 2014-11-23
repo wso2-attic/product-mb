@@ -51,6 +51,7 @@ public enum QualityOfService {
 
     /**
      * Initialize with the given Quality of Service.
+     *
      * @param qos The quality of service level
      */
     private QualityOfService(int qos) {

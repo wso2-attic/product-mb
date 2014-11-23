@@ -28,6 +28,11 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.AndesMQTTCl
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.CallbackHandler;
 
+/**
+ * Blocking(synchronous) publish/subscribe MQTT client.
+ * <p/>
+ * Each blocking publisher/subscriber should extend from this.
+ */
 public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
 
     private final static Log log = LogFactory.getLog(AndesMQTTBlockingClient.class);
@@ -61,7 +66,7 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     }
 
     /**
-     * Publish to mqtt.
+     * Publish to mqtt in a synchronous mannger.
      *
      * @param payload      Data to send
      * @param noOfMessages Number of message to send
@@ -70,7 +75,7 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     protected void publish(byte[] payload, int noOfMessages) throws MqttException {
         log.info("Publishing to topic : " + topic + " on qos : " + qos);
 
-        if (payload != null) {
+        if (null != payload) {
 
             // Create and configure message
             MqttMessage message = new MqttMessage(payload);
@@ -85,16 +90,11 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     }
 
     /**
-     * Subscribe to a topic
+     * Subscribe to the requested topic in a synchronous manner.
      *
      * @throws MqttException
      */
     public void subscribe() throws MqttException {
-        // Subscribe to the requested topic
-        // The QoS specified is the maximum level that messages will be sent to the client at.
-        // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
-        // be downgraded to 1 when delivering to the client but messages published at 1 and 0
-        // will be received at the same level they were published at.
         log.info("Subscribing to topic \"" + topic + "\" qos " + qos);
         mqttClient.subscribe(topic, qos.getValue());
 

@@ -40,9 +40,6 @@ import java.util.List;
  */
 public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
 
-    private final QualityOfService qos = QualityOfService.LEAST_ONCE;
-    private final ClientMode clientMode = ClientMode.BLOCKING;
-
     /**
      * Initialize super class.
      *
@@ -66,10 +63,12 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         int noOfMessages = 1;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, qos, noOfSubscribers, true, clientMode);
+        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, true,
+                ClientMode.BLOCKING);
 
-        mqttClientEngine.createPublisherConnection(topic, qos, MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, clientMode);
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
+                noOfMessages, ClientMode.BLOCKING);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 
@@ -95,10 +94,12 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         int noOfMessages = 100;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, qos, noOfSubscribers, false, clientMode);
+        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, false,
+                ClientMode.BLOCKING);
 
-        mqttClientEngine.createPublisherConnection(topic, qos, MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, clientMode);
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
+                noOfMessages, ClientMode.BLOCKING);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

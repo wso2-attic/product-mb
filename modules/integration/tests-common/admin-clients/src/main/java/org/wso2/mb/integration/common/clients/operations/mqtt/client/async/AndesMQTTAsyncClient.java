@@ -27,10 +27,16 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.AndesMQTTCl
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.CallbackHandler;
 
+/**
+ * Asynchronous publish/subscribe MQTT client.
+ * <p/>
+ * Each asynchronous publisher/subscriber should extend from this.
+ */
 public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
 
     private final static Log log = LogFactory.getLog(AndesMQTTBlockingClient.class);
 
+    // Basic asynchronous mqtt client
     protected MqttAsyncClient mqttClient;
 
     /**
@@ -44,7 +50,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
      * @throws MqttException
      */
     public AndesMQTTAsyncClient(MQTTClientConnectionConfiguration configuration, String clientID, String topic,
-                                   QualityOfService qos, CallbackHandler callbackHandler) throws MqttException {
+                                QualityOfService qos, CallbackHandler callbackHandler) throws MqttException {
         super(configuration, clientID, topic, qos, callbackHandler);
 
         // Construct MQTT client
@@ -63,7 +69,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     }
 
     /**
-     * Publish to mqtt.
+     * Publish to mqtt in an asynchronous manner.
      *
      * @param payload      Data to send
      * @param noOfMessages Number of message to send
@@ -72,7 +78,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     protected void publish(byte[] payload, int noOfMessages) throws MqttException {
         log.info("Publishing to topic : " + topic + " on qos : " + qos);
 
-        if (payload != null) {
+        if (null != payload) {
 
             // Create and configure message
             MqttMessage message = new MqttMessage(payload);
@@ -87,16 +93,11 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     }
 
     /**
-     * Subscribe to a topic
+     * Subscribe to a topic in an asynchronous manner.
      *
      * @throws MqttException
      */
     public void subscribe() throws MqttException {
-        // Subscribe to the requested topic
-        // The QoS specified is the maximum level that messages will be sent to the client at.
-        // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
-        // be downgraded to 1 when delivering to the client but messages published at 1 and 0
-        // will be received at the same level they were published at.
         log.info("Subscribing to topic \"" + topic + "\" qos " + qos);
         IMqttToken subscriptionToken = mqttClient.subscribe(topic, qos.getValue());
 

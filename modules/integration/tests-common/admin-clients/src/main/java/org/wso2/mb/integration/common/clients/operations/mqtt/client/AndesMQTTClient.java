@@ -27,16 +27,32 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.Ca
 
 import java.util.List;
 
+/**
+ * Basic MQTT client which handles the operations around MQTT clients.
+ * - Handling fields
+ * - Handling message counts
+ * <p/>
+ * Each MQTT client with different publish/subscribe mechanism should extend from this.
+ */
 public abstract class AndesMQTTClient implements Runnable {
 
+    // The MQTT callback handler which handles message arrival, delivery complete and connection loss requests.
     private final CallbackHandler callbackHandler;
 
-    protected final String mqttClientID; // unique identifier for mqtt client - less than or equal to 23 characters
+    // unique identifier for mqtt client - less than or equal to 23 characters
+    protected final String mqttClientID;
+
+    // Connection options that are required to create a connection to a MQTT server
     protected final MqttConnectOptions connection_options;
+
+    // Message broker MQTT URL
     protected final String broker_url;
 
-    protected final String topic; // destination
-    protected final QualityOfService qos; // at-most-once(0), at least-once(1), exactly-once(2)
+    // The topic the messages needs to send to / received from
+    protected final String topic;
+
+    // The quality of service to send/receive messages
+    protected final QualityOfService qos;
 
     //Store messages until server fetches them
     protected final MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(System.getProperty("java.io" +
@@ -67,10 +83,10 @@ public abstract class AndesMQTTClient implements Runnable {
         connection_options = new MqttConnectOptions();
         connection_options.setCleanSession(configuration.isCleanSession());
 
-        if (password != null) {
+        if (null != password) {
             connection_options.setPassword(password.toCharArray());
         }
-        if (userName != null) {
+        if (null != userName) {
             connection_options.setUserName(userName);
         }
 
@@ -88,7 +104,12 @@ public abstract class AndesMQTTClient implements Runnable {
     protected abstract void publish(byte[] payload, int noOfMessages) throws MqttException;
 
     /**
-     * Subscribe to a topic
+     * Subscribe to the requested topic
+     * The {@link QualityOfService} specified is the maximum level that messages will be sent to the client at.
+     * For instance if QoS {@link QualityOfService#LEAST_ONCE} is specified, any messages originally published at QoS
+     * {@link QualityOfService#EXACTLY_ONCE} will be downgraded to {@link QualityOfService#MOST_ONCE} when delivering
+     * to the client but messages published at {@link QualityOfService#LEAST_ONCE} and {@link
+     * QualityOfService#MOST_ONCE} will be received at the same level they were published at.
      *
      * @throws MqttException
      */
@@ -108,7 +129,7 @@ public abstract class AndesMQTTClient implements Runnable {
      */
     public int getReceivedMessageCount() {
         int messageCount = 0;
-        if (callbackHandler != null) {
+        if (null != callbackHandler) {
             messageCount = callbackHandler.getReceivedMessageCount();
         }
 
@@ -122,7 +143,7 @@ public abstract class AndesMQTTClient implements Runnable {
      */
     public int getSentMessageCount() {
         int messageCount = 0;
-        if (callbackHandler != null) {
+        if (null != callbackHandler) {
             messageCount = callbackHandler.getSentMessageCount();
         }
 
