@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -29,21 +29,24 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
+ * This samples demonstrates how WSO2 Message Broker MQTT can be used to publish data from running vehicles to a
+ * central server and use that data to analyze and come to conclusions.
+ * <p/>
  * The main class which executes the sample.
  * - Creates mock vehicle types, vehicle models and vehicles
  * - Updates sensor readings periodically in each vehicle with a random value mocking the sensor behaviours
  * - Read sensor data published by all vehicles via mqtt server and generate mock output scenarios.
- * ~ Realtime speed of a given vehicle
- * ~ Realtime average temperature of all the vehicles
- * ~ Realtime maximum speed of a given vehicle type
+ * ~ Real time speed of a given vehicle
+ * ~ Real time average temperature of all the vehicles
+ * ~ Real time maximum speed of a given vehicle type
  */
 public class Main {
 
-    private static List<Vehicle> vehicleList = new ArrayList<Vehicle>();
-    private static Map<vehicleTypes, VehicleType> vehicleTypeMap = new HashMap<vehicleTypes, VehicleType>();
-    private static Set<VehicleModel> vehicleModelSet = new HashSet<VehicleModel>();
+    private static final List<Vehicle> vehicleList = new ArrayList<Vehicle>();
+    private static final Map<vehicleTypes, VehicleType> vehicleTypeMap = new HashMap<vehicleTypes, VehicleType>();
+    private static final Set<VehicleModel> vehicleModelSet = new HashSet<VehicleModel>();
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     private static enum vehicleTypes {car, bike, van} //todo : uppercase
 
@@ -51,7 +54,7 @@ public class Main {
     private static AndesMQTTClient carClient;
     private static AndesMQTTClient harleySpeedClient;
 
-    private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
+    private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
     private static ScheduledFuture vehicleStatusUpdater;
     private static ScheduledFuture vehicleStatusProcessor;
 
@@ -81,7 +84,7 @@ public class Main {
     /**
      * Schedule to periodically update sensor readings of all vehicles.
      */
-    public static void scheduleMockVehicleStatusUpdate() {
+    private static void scheduleMockVehicleStatusUpdate() {
         // Update sensors with random values.
         vehicleStatusUpdater = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -97,9 +100,9 @@ public class Main {
     }
 
     /**
-     * Populate vehiles types with car, bike and van.
+     * Populate vehicles types with car, bike and van.
      */
-    public static void populateVehicleTypes() {
+    private static void populateVehicleTypes() {
         // car
         VehicleType car = new VehicleType(vehicleTypes.car.name());
 
@@ -120,7 +123,7 @@ public class Main {
      * - 5 models of type bike
      * - 3 models of type van
      */
-    public static void populateVehicleModels() {
+    private static void populateVehicleModels() {
         populateVehicleTypes();
 
         VehicleType car = vehicleTypeMap.get(vehicleTypes.car);
@@ -166,7 +169,7 @@ public class Main {
     /**
      * Create mock vehicles, 1 per each model.
      */
-    public static void populateVehicles() {
+    private static void populateVehicles() {
         populateVehicleModels();
 
         int i = 0;
@@ -178,11 +181,11 @@ public class Main {
     }
 
     /**
-     * Read vehicle sensor updates from mqtt and output realtime values.
+     * Read vehicle sensor updates from mqtt and output real time values.
      *
      * @throws MqttException
      */
-    public static void listenToVehicleSensorStatuses() throws MqttException {
+    private static void listenToVehicleSensorStatuses() throws MqttException {
         temperatureClient = new AndesMQTTClient("temperatureClient");
         temperatureClient.subscribe("+/+/+/" + Vehicle.ENGINETEMPERATURE, 1);
 
@@ -192,7 +195,7 @@ public class Main {
         harleySpeedClient = new AndesMQTTClient("harleySpeedClient");
         harleySpeedClient.subscribe(vehicleTypes.bike.name() + "/HarleyDavidsonNightRod/#", 1);
 
-        // Print realtime sensor data each second
+        // Print real time sensor data each second
         vehicleStatusProcessor = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -252,7 +255,7 @@ public class Main {
      *
      * @throws MqttException
      */
-    public static void shutdown() throws MqttException {
+    private static void shutdown() throws MqttException {
         log.info("Stopping sample");
         temperatureClient.disconnect();
         carClient.disconnect();

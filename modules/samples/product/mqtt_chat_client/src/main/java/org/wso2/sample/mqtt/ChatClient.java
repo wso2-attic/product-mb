@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -44,21 +44,23 @@ public class ChatClient {
     /**
      * Start/Join a group chat.
      *
-     * @param chatName The group name
+     * @param groupName The group name
      * @throws MqttException
      */
-    public void startConversation(String chatName) throws MqttException {
-        mqttClient.subscribe(chatName, qos);
+    public void startGroupConversation(String groupName) throws MqttException {
+        mqttClient.subscribe(groupName, qos);
+        ChatWindow.outputToChatWindow("Joined to the group : " + groupName);
     }
 
     /**
      * Leave a group chat.
      *
-     * @param chatName The group name
+     * @param groupName The group name
      * @throws MqttException
      */
-    public void endConversation(String chatName) throws MqttException {
-        mqttClient.unsubscribe(chatName);
+    public void endGroupConversation(String groupName) throws MqttException {
+        mqttClient.unsubscribe(groupName);
+        ChatWindow.outputToChatWindow("Left the group : " + groupName);
     }
 
     /**

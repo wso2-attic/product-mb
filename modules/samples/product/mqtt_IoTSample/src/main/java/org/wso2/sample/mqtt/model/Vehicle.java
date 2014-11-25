@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -50,10 +50,10 @@ public class Vehicle {
 
     private final int qos = 0;
 
-    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture statusUpdateSchedule;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    private final ScheduledFuture statusUpdateSchedule;
 
-    private Log log = LogFactory.getLog(Vehicle.class);
+    private final Log log = LogFactory.getLog(Vehicle.class);
 
     /**
      * Create a new vehicle initialising vehicleId, Model and sensor data update process.
@@ -144,8 +144,8 @@ public class Vehicle {
     /**
      * Generate the hierarchy the vehicle should publish data to in mqtt.
      *
-     * @param leafTopic
-     * @return
+     * @param leafTopic The leaf of the topic hierarchy
+     * @return The topic hierarchy that is feed-able to the broker
      */
     public String generateTopicHierarchy(String leafTopic) {
         return vehicleModel.getVehicleType().getTypeName() + "/" + vehicleModel.getModelName() + "/" + vehicleId +

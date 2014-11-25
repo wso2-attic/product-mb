@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -32,16 +32,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AndesMQTTClient implements MqttCallback {
 
     private MqttClient mqttClient;
-    private String clientId;
 
     // Latest temperature readings received from the server <topic, value>
-    private ConcurrentHashMap<String, String> latestTemperatureReadings = new ConcurrentHashMap<String, String>();
+    private final ConcurrentHashMap<String, String> latestTemperatureReadings = new ConcurrentHashMap<String, String>();
 
     // Latest Speed readings received from the server <topic, value>
-    private ConcurrentHashMap<String, String> latestSpeedReadings = new ConcurrentHashMap<String, String>();
+    private final ConcurrentHashMap<String, String> latestSpeedReadings = new ConcurrentHashMap<String, String>();
 
     // Latest acceleration readings received from the server <topic, value>
-    private ConcurrentHashMap<String, String> latestAccelerationReadings = new ConcurrentHashMap<String, String>();
+    private final ConcurrentHashMap<String, String> latestAccelerationReadings = new ConcurrentHashMap<String,
+            String>();
 
     /**
      * Create new mqtt client with the given clientId.
@@ -50,11 +50,10 @@ public class AndesMQTTClient implements MqttCallback {
      * @throws MqttException
      */
     public AndesMQTTClient(String clientId) throws MqttException {
-        this.clientId = clientId;
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
-        mqttClient = new MqttClient(MQTTSampleConstants.BROKER_URL, this.clientId,
-                new MqttDefaultFilePersistence(MQTTSampleConstants.TMP_DIR + File.pathSeparator + this.clientId));
+        mqttClient = new MqttClient(MQTTSampleConstants.BROKER_URL, clientId,
+                new MqttDefaultFilePersistence(MQTTSampleConstants.TMP_DIR + File.pathSeparator + clientId));
         mqttClient.setCallback(this);
         mqttClient.connect(options);
     }
@@ -71,13 +70,12 @@ public class AndesMQTTClient implements MqttCallback {
     }
 
     /**
-     * Unsubscribe from a topic.
+     * Un-subscribe from a topic.
      *
-     * @param topic
-     * @param clientId
+     * @param topic The topic to un-subscribe from
      * @throws MqttException
      */
-    public void unsubscribe(String topic, String clientId) throws MqttException {
+    public void unsubscribe(String topic) throws MqttException {
         mqttClient.unsubscribe(topic);
     }
 

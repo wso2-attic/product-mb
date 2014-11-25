@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -18,47 +18,59 @@
 
 package org.wso2.sample.mqtt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.io.Console;
 import java.io.PrintWriter;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Scanner;
 
 /**
  * Represents a chat console.
  */
 public final class ChatWindow {
 
-    private static final Log log = LogFactory.getLog(ChatWindow.class);
-
-    private static String newLine = "\n";
+    private static final String newLine = "\n";
 
     // Message header and content separating string
-    private static String seperator = "::";
+    private static final String separator = "::";
 
-    private static final Console console = System.console();
-    private static final PrintWriter writer = console.writer();
+    // Scanner to read user input
+    private static final Scanner scanner = new Scanner(System.in);
 
+    // Console writer to write to the console
+    private static final PrintWriter writer = System.console().writer();
+
+    // The delimiter to separate each keyword in a user input command
     private static final String commandDelimiter = " ";
 
-    private static AtomicBoolean lastInputProcessed = new AtomicBoolean(false);
+    // The command to exit
+    private static final String exitCommand = "exit";
 
-    private static Thread inputThread;
+    // The command keyword to join a group chat
+    private static final String joinGroupCommand = "join";
+
+    // The command keyword to leave a group chat
+    private static final String leaveGroupCommand = "leave";
+
+    // The command keyword to get help
+    private static final String helpCommand = "help";
+
+    // The command line helper string
+    private static final String commandHelper = "Use <alias/group message> to chat to a desired group or a person" +
+            newLine + "<join group_name> to join a group chat" + newLine + "<leave group_name> to leave a group chat"
+            + newLine + "<exit> to exit" + newLine;
 
     /**
      * Print a given message to the chat window console
      *
-     * @param message
+     * @param message The message to print to the console
      */
     public static void outputToChatWindow(String message) {
-        writer.print(message);
+        writer.print(">" + message + newLine);
         writer.flush();
     }
 
     public static String getInputFromChatWindow() {
-        return console.readLine();
+        return scanner.nextLine();
     }
 
     /**
@@ -70,14 +82,14 @@ public final class ChatWindow {
      * @param message  The received message
      */
     public static void decodeAndOutputMessage(String chatName, String message) {
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
 
         if (chatName == null) {
             output.append("Personal message ");
         } else {
             output.append("chat with ").append(chatName).append(newLine);
         }
-        String decoder[] = message.split(seperator);
+        String decoder[] = message.split(separator);
 
         if (decoder.length == 1) { // Info message
             output.append("Info : ").append(decoder[0]);
@@ -87,7 +99,7 @@ public final class ChatWindow {
             output.append("server error...!!!");
         }
 
-        output.append(newLine).append("Waiting for your input").append(newLine);
+        output.append(newLine).append("Waiting for your input. Use <help> for more info").append(newLine);
 
         outputToChatWindow(output.toString());
     }
@@ -100,40 +112,74 @@ public final class ChatWindow {
      * @return The encoded message
      */
     public static String encodeMessage(String sender, String message) {
-        return sender + seperator + message;
+        return sender + separator + message;
     }
 
+    /**
+     * Request and read user input from console giving a message to specify the request.
+     *
+     * @param message The input request message
+     * @return User input line
+     */
     public static String getInput(String message) {
         ChatWindow.outputToChatWindow(message);
-        return console.readLine();
+        return getInputFromChatWindow();
     }
 
-    private static void getInputFromConsole(final ChatClient chatClient) {
-        lastInputProcessed.set(false);
-        inputThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String input = console.readLine();
-                try {
-                    processInput(input, chatClient);
-                } catch (MqttException e) {
-                    log.error("Error processing input.", e);
-                }
-            }
-        });
-
-        inputThread.start();
+    /**
+     * Directly read user input from the console. Use when user has already been notified about what to input.
+     *
+     * @return User input line
+     */
+    public static String getInput() {
+        return getInputFromChatWindow();
     }
 
-    public static void processInput(String input, ChatClient chatClient) throws MqttException {
-        String[] inputArgs = input.split(commandDelimiter, 2);
-        int argsLength = inputArgs.length;
-        if (2 == argsLength) {
-            chatClient.sendMessage(inputArgs[0], inputArgs[1]);
+    /**
+     * Process a given user input and take actions accordingly.
+     * - Set exit flag
+     * - Send messages
+     * - Join a group conversation
+     * - Leave a group conversation
+     *
+     * @param input      The user input line
+     * @param chatClient The mqtt client to use when
+     * @return Running condition
+     * @throws MqttException
+     */
+    public static boolean processInput(String input, ChatClient chatClient) throws MqttException {
+        boolean running = true;
+
+        if (exitCommand.equalsIgnoreCase(input)) {
+            running = false;
+        } else if (helpCommand.equalsIgnoreCase(input)) {
+            printHelper();
         } else {
-
+            String[] inputArgs = input.split(commandDelimiter, 2);
+            int argsLength = inputArgs.length;
+            if (2 == argsLength) {
+                String arg1 = inputArgs[0];
+                String arg2 = inputArgs[1];
+                if (joinGroupCommand.equalsIgnoreCase(arg1)) {
+                    chatClient.startGroupConversation(arg2);
+                } else if (leaveGroupCommand.equalsIgnoreCase(arg1)) {
+                    chatClient.endGroupConversation(arg2);
+                } else {
+                    chatClient.sendMessage(arg1, arg2);
+                }
+            } else {
+                outputToChatWindow("Incorrect command.");
+                printHelper();
+            }
         }
 
-        lastInputProcessed.set(true);
+        return running;
+    }
+
+    /**
+     * Print the help string to the output window.
+     */
+    public static void printHelper() {
+        outputToChatWindow(commandHelper);
     }
 }

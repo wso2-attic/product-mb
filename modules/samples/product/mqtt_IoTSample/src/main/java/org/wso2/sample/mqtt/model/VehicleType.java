@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -24,11 +24,11 @@ package org.wso2.sample.mqtt.model;
  */
 public class VehicleType {
 
-    String typeName;
+    private String typeName;
 
     /**
      * Initialize a vehicle type in the given name.
-     * @param name
+     * @param name The vehicle type name
      */
     public VehicleType(String name) {
         setTypeName(name);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -31,11 +31,14 @@ public class AndesMQTTClient implements MqttCallback {
     // The Message Broker URL
     private static final String brokerURL = "tcp://localhost:1883";
 
-    // The temporaroy directory for mqtt client to work with
+    // The temporary directory for mqtt client to work with
     private static final String tmpDir = System.getProperty("java.io.tmpdir");
 
-    private MqttAsyncClient mqttClient;
-    private String clientId;
+    // The MQTT client which is used to communicate with the server
+    private MqttClient mqttClient;
+
+    // The unique MQTT client Id
+    private final String clientId;
 
     /**
      * Create a new MQTT client with the given client Id. Return after the connection is successful.
@@ -47,11 +50,10 @@ public class AndesMQTTClient implements MqttCallback {
         this.clientId = clientId;
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
-        mqttClient = new MqttAsyncClient(brokerURL, clientId, new MqttDefaultFilePersistence(tmpDir + File.pathSeparator +
+        mqttClient = new MqttClient(brokerURL, clientId, new MqttDefaultFilePersistence(tmpDir + File.pathSeparator +
                 clientId));
         mqttClient.setCallback(this);
-        IMqttToken connectionToken = mqttClient.connect(options);
-        connectionToken.waitForCompletion();
+        mqttClient.connect(options);
     }
 
     /**
@@ -62,8 +64,7 @@ public class AndesMQTTClient implements MqttCallback {
      * @throws MqttException
      */
     public void subscribe(String topic, int qos) throws MqttException {
-        IMqttToken subscriptionToken = mqttClient.subscribe(topic, qos);
-        subscriptionToken.waitForCompletion();
+        mqttClient.subscribe(topic, qos);
     }
 
     /**
@@ -88,8 +89,7 @@ public class AndesMQTTClient implements MqttCallback {
      */
     public void sendMessage(String topic, String message, int qos) throws MqttException {
         String encodedMessage = ChatWindow.encodeMessage(clientId, message);
-        IMqttToken sentToken = mqttClient.publish(topic, encodedMessage.getBytes(), qos, false);
-        sentToken.waitForCompletion();
+        mqttClient.publish(topic, encodedMessage.getBytes(), qos, false);
     }
 
     /**

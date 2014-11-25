@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -18,35 +18,43 @@
 
 package org.wso2.sample.mqtt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.concurrent.TimeUnit;
 
 /**
+ * This sample demonstrates how to use WSO2 Message Broker to create a chat client which uses MQTT.
+ * <p/>
  * The Main class which executes the sample.
- *  - Creates several chat clients
- *  - Initiates personal conversations
- *  - Initiates group conversations
+ * - Creates several chat clients
+ * - Initiates personal conversations
+ * - Initiates group conversations
  */
 public class Main {
-
-    private static final Log log = LogFactory.getLog(Main.class);
 
     private static ChatClient chatClient;
     private static boolean running = true;
 
-    public static void main(String []args) throws MqttException, InterruptedException {
+    /**
+     * The main method which invokes the sample.
+     * - Creates a chat client
+     * - Takes user input
+     *
+     * @param args Command line arguments
+     * @throws MqttException
+     * @throws InterruptedException
+     */
+    public static void main(String[] args) throws MqttException, InterruptedException {
 
         String alias = ChatWindow.getInput("Please enter your chat alias : ");
 
         chatClient = new ChatClient(alias);
 
-        while(running) {
-            if(lastInputProcessed.get()) {
-                getInputFromConsole();
-            }
+        ChatWindow.printHelper();
+
+        while (running) {
+            String input = ChatWindow.getInput();
+            running = ChatWindow.processInput(input, chatClient);
 
             TimeUnit.SECONDS.sleep(1L);
         }
@@ -56,13 +64,12 @@ public class Main {
 
     /**
      * Disconnect all the chat clients from the server.
+     *
      * @throws MqttException
      */
     private static void disconnect() throws MqttException {
         chatClient.closeClient();
     }
-
-
 
 
 }
