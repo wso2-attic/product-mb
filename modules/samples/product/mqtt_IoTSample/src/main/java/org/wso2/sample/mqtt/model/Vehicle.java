@@ -68,7 +68,7 @@ public class Vehicle {
         try {
             mqttClient = new AndesMQTTClient(vehicleId);
         } catch (MqttException e) {
-            log.error("", e); //todo:
+            log.error("Error creating a mqtt client for sensor status updates.", e);
         }
 
         // send sensor statuses to the server periodically.
