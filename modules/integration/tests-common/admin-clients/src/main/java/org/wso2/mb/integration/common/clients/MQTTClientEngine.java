@@ -16,23 +16,22 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.common.clients.operations.mqtt;
+package org.wso2.mb.integration.common.clients;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.async.MQTTAsyncPublisherClient;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.async.MQTTAsyncSubscriberClient;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.blocking.MQTTBlockingPublisherClient;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.blocking.MQTTBlockingSubscriberClient;
+import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncPublisherClient;
+import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncSubscriberClient;
+import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingPublisherClient;
+import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingSubscriberClient;
 
 /**
  * Handle all MQTT operations for MQTT tests.

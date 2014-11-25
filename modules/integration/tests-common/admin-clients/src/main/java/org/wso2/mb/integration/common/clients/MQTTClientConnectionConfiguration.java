@@ -16,7 +16,7 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.common.clients.operations.mqtt.client;
+package org.wso2.mb.integration.common.clients;
 
 /**
  * The configurations that needs to be passed to MQTT client.

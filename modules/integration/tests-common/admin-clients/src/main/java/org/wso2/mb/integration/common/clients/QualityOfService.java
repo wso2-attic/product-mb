@@ -16,7 +16,7 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.common.clients.operations.mqtt;
+package org.wso2.mb.integration.common.clients;
 
 /**
  * The quality of service levels in MQTT.

@@ -19,7 +19,7 @@
 package org.wso2.mb.integration.tests.mqtt.DataProvider;
 
 import org.testng.annotations.DataProvider;
-import org.wso2.mb.integration.common.clients.operations.mqtt.QualityOfService;
+import org.wso2.mb.integration.common.clients.QualityOfService;
 
 /**
  * Data provider to feed Quality Of Service values to test cases.

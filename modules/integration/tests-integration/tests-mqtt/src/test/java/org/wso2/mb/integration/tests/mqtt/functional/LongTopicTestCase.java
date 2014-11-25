@@ -24,10 +24,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.operations.mqtt.MQTTClientEngine;
-import org.wso2.mb.integration.common.clients.operations.mqtt.MQTTConstants;
-import org.wso2.mb.integration.common.clients.operations.mqtt.QualityOfService;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.ClientMode;
+import org.wso2.mb.integration.common.clients.MQTTClientEngine;
+import org.wso2.mb.integration.common.clients.MQTTConstants;
+import org.wso2.mb.integration.common.clients.QualityOfService;
+import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.util.List;

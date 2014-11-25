@@ -16,14 +16,13 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.common.clients.operations.mqtt.client;
+package org.wso2.mb.integration.common.clients;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
-import org.wso2.mb.integration.common.clients.operations.mqtt.QualityOfService;
-import org.wso2.mb.integration.common.clients.operations.mqtt.client.callback.CallbackHandler;
+import org.wso2.mb.integration.common.clients.operations.mqtt.callback.CallbackHandler;
 
 import java.util.List;
 
@@ -55,8 +54,8 @@ public abstract class AndesMQTTClient implements Runnable {
     protected final QualityOfService qos;
 
     //Store messages until server fetches them
-    protected final MqttDefaultFilePersistence dataStore = new MqttDefaultFilePersistence(System.getProperty("java.io" +
-            ".tmpdir"));
+    protected final MqttDefaultFilePersistence dataStore =
+            new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir"));
 
     /**
      * Create a mqtt client initializing mqtt options.
@@ -95,7 +94,7 @@ public abstract class AndesMQTTClient implements Runnable {
     }
 
     /**
-     * Publish to mqtt.
+     * Publish messages to mqtt server.
      *
      * @param payload      Data to send
      * @param noOfMessages Number of message to send
