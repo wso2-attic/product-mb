@@ -271,7 +271,7 @@ do
         -XX:+HeapDumpOnOutOfMemoryError \
         -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
         $JAVA_OPTS \
-        -DandesConfig=andes-config.xml \
+        -DandesConfig=broker.xml \
         -Dcom.sun.management.jmxremote \
         -classpath "$CARBON_CLASSPATH" \
         -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
