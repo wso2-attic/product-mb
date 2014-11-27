@@ -30,7 +30,7 @@
     <artifactId>wso2mb-p2-profile</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Message Broker - P2 Profile Generation</name>
-    <url>http://wso2.org</url>
+    <url>http://wso2.com/products/message-broker/</url>
 
     <build>
         <plugins>
@@ -119,13 +119,6 @@
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.andes.feature:${carbon.platform.version}
-                                </featureArtifactDef>
-                                <!-- cloud mb features-->
-                                <featureArtifactDef>
-                                    org.wso2.mb:org.wso2.stratos.mb.styles.feature:${project.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
-                                    org.wso2.mb:org.wso2.stratos.mb.dashboard.ui.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.tenant.common.feature:${carbon.platform.version}
@@ -233,14 +226,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.andes.feature.group</id>
                                     <version>${carbon.platform.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.stratos.mb.styles.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.stratos.mb.dashboard.ui.feature.group</id>
-                                    <version>${project.version}</version>
                                 </feature>
                                 <!--Cloud service deployment feature -->
                                 <feature>

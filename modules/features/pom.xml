@@ -32,7 +32,7 @@
     <artifactId>mb-features-parent</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 MB Features Parent</name>
-    <url>http://wso2.org/projects/mb/java</url>
+    <url>http://wso2.com/products/message-broker</url>
     <description>WSO2 Message Broker Server Features Parent</description>
 
     <licenses>
@@ -44,7 +44,7 @@
 
     <modules>
         <module>product</module>
-        <module>service</module>
+        <!--module>service</module-->
     </modules>
 
    </project>
