@@ -32,7 +32,7 @@
     <artifactId>wso2mb</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Message Broker - Distribution</name>
-    <url>http://wso2.org/projects/mb/java</url>
+    <url>http://wso2.com/products/message-broker</url>
     <description>WSO2 Message Broker Distribution</description>
 
     <dependencies>
