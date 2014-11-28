@@ -287,7 +287,7 @@
         <emma.version>2.1.5320</emma.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
-        <test.framework.version>4.3.1-SNAPSHOT</test.framework.version>
+        <test.framework.version>4.3.1</test.framework.version>
 	    <!-- Rampart -->
         <rampart.version>1.6.1-wso2v10</rampart.version>
         <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
