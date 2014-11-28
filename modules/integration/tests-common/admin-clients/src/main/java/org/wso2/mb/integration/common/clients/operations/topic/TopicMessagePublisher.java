@@ -154,8 +154,19 @@ public class TopicMessagePublisher implements Runnable {
                             "ThreadID:" + threadID + "  " + everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
-                topicPublisher.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
-                messageCounter.incrementAndGet();
+
+                // Check the message count again before publishing since, messages count might have increased from
+                // other threads after the last check,
+                // Double checking has been done to reduce the synchronized block size
+                synchronized (messageCounter.getClass()) {
+                    if (messageCounter.get() >= numOfMessagesToSend) {
+                        break;
+                    }
+                    topicPublisher.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
+
+                    messageCounter.incrementAndGet();
+                }
+
                 localMessageCount++;
                 if (messageCounter.get() % printNumberOfMessagesPer == 0) {
 
