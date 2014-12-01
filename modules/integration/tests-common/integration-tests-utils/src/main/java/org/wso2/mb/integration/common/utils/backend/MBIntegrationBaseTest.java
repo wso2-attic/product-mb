@@ -63,12 +63,13 @@ public class MBIntegrationBaseTest {
     protected void restartServerWithH2MemMode() throws Exception {
         serverManager = new ServerConfigurationManager(automationContext);
 
-        // Replace the andes-virtualhosts.xml with the new configuration and restarts the server.
+        // Replace the broker.xml with the new configuration and restarts the server.
         serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
-                "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator + "advanced" + File
-                .separator + "andes-virtualhosts-H2-mem.xml"), new File(ServerConfigurationManager.getCarbonHome() +
-                File.separator + "repository" + File.separator + "conf" + File.separator + "advanced" + File
-                .separator + "andes-virtualhosts.xml"), true, true);
+                        "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator +
+                        "broker.xml"),
+                new File(ServerConfigurationManager.getCarbonHome() +
+                        File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml"),
+                true, true);
     }
 
     /**

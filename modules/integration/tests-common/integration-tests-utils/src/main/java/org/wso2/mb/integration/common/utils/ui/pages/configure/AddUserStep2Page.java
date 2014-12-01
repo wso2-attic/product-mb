@@ -23,16 +23,24 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
+import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 
 import java.util.List;
 
-public class AddUserStep2Page {
+/**
+ * UI test class related to the second page of the queue add wizard of Management console
+ */
+public class AddUserStep2Page extends MBPage{
 
     private static final Log log = LogFactory.getLog(AddUserStep2Page.class);
-    private WebDriver driver;
 
-    public AddUserStep2Page(WebDriver driver){
-        this.driver = driver;
+    /**
+     * Checks whether the current page is the correct add user step 2 page. if not throws a
+     * runtime exception (IllegalStateException)
+     * @param driver WebDriver
+     */
+    public AddUserStep2Page(WebDriver driver) {
+        super(driver);
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
                 .getElement("usr.mgt.add.user.step2.sub.header.xpath"))).getText().contains("Step 2 : Select roles of the user")) {
             throw new IllegalStateException("This is not the Add User step2 page");

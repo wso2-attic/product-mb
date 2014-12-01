@@ -41,7 +41,7 @@ public class DurableTopicTestCase {
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase() {
 
-        Integer sendCount = 1500;
+        Integer sendCount = 500;
         Integer runTime = 20;
         Integer expectedCount = 500;
 
@@ -70,7 +70,7 @@ public class DurableTopicTestCase {
 
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub2,delayBetweenMsg=0," +
                 "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
         receivingClient2.startWorking();
 

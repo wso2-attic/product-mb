@@ -38,7 +38,6 @@ public class QueueMessageSequencialAndDuplicateTestCase extends MBIntegrationBas
     @BeforeClass
     public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        restartServer();
         AndesClientUtils.sleepForInterval(15000);
     }
 

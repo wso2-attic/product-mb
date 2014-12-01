@@ -40,7 +40,7 @@ public class AddNewTenantPage {
         // Check that we're on the right page.
         if (!driver.findElement(By.id(UIElementMapper.getInstance()
                 .getElement("home.dashboard.middle.text"))).getText().contains("Register A New Organization")) {
-            throw new IllegalStateException("This is not the home page");
+            throw new IllegalStateException("Not in add new tenant page.");
         }
     }
 
@@ -53,8 +53,7 @@ public class AddNewTenantPage {
      * @param adminUserName admin users' user name
      * @param adminPassword admin users' password
      * @param adminPasswordRepeat admin users' password (if repeat password doesn't match operation
-     *                            must
-     *                            be unsuccessful)
+     *                            must be unsuccessful)
      * @param adminEmail admin users' email
      * @return true if tenant successfully created. false otherwise
      */

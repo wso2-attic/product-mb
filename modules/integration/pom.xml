@@ -32,7 +32,7 @@
     <artifactId>mb-integration-tests</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 MB - Integration Tests</name>
-    <url>http://wso2.org/projects/mb/java</url>
+    <url>http://wso2.com/products/message-broker/</url>
     <description>WSO2 Message Broker Server Parent</description>
 
     <modules>

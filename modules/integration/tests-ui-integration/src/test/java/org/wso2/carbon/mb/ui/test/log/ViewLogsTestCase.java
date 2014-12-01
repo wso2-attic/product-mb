@@ -11,9 +11,9 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
- * under the License. and limitations under the License.
+ * under the License.
  */
 
 package org.wso2.carbon.mb.ui.test.log;
@@ -37,8 +37,7 @@ public class ViewLogsTestCase extends MBIntegrationUiBaseTest {
     public void viewSystemLogsTest() throws Exception {
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
-                mbServer.getContextTenant().getContextUser().getPassword());
+        HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
 
         MonitorPage monitorPage = homePage.getMonitorPage();
         ApplicationLogsPage applicationLogsPage = monitorPage.getApplicationLogsPage();
