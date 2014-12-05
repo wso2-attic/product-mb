@@ -120,7 +120,7 @@
         </fileSet>
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/advanced/
+                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/repository/conf
             </outputDirectory>
