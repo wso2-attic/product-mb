@@ -3,8 +3,9 @@
     <providers>
         <provider>org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceReader</provider>
 
-        <!-- uncomment the following entry to when using an Cassandra data source -->
+        <!-- uncomment either one of the following entry when use external cassandra depending on data source (CQL or Hector) -->
         <!--<provider>org.wso2.carbon.cassandra.datareader.cql.CassandraDataSourceReader</provider>-->
+        <!--provider>org.wso2.carbon.cassandra.datareader.hector.HectorBasedDataSourceReader</provider-->
     </providers>
 
     <datasources>
@@ -99,7 +100,8 @@
         </datasource>
 
 
-        <!-- external Cassandra data source.  -->
+        <!-- external Cassandra data source. please enable either one of datasource (CQL or Hector) based on your preference -->
+        <!-- CQL datasource -->
         <!--datasource>
             <name>WSO2_CASSANDRA_DB</name>
             <description>The datasource used for cassandra</description>
@@ -156,20 +158,84 @@
             </definition>
         </datasource-->
 
+        <!-- Hector datasource -->
+        <!--datasource>
+            <name>HectorDS</name>
+            <description>The datasource used for RSS metadata repository</description>
+            <jndiConfig>
+                <name>CassandraRepo</name>
+            </jndiConfig>
+            <definition type="HECTOR">
+                <configuration>
+                    <hosts>10.100.101.3:9160,10.100.101.4:9160,10.100.101.5:9160</hosts>
+                    <username>admin</username>
+                    <password>admin</password>
+                    <clusterName>TestCluster</clusterName>
+                    <maxActive>200</maxActive>
+                    <enableSecurity>false</enableSecurity>
+                </configuration>
+            </definition>
+        </datasource-->
+        <!-- end of external Cassandra data source.  -->
+
         <!-- MySQL data source -->
         <!--datasource>
              <name>MYSQL_DATA_SOURCE</name>
              <jndiConfig>
-                 <name>jdbc/MySQLMessageStore</name>
+                 <name>jdbc/WSO2MBStoreDB</name>
              </jndiConfig>
              <definition type="RDBMS">
                  <configuration>
                      <driverClassName>com.mysql.jdbc.Driver</driverClassName>
-                     <url>jdbc:mysql://localhost/WSO2_MB</url>
+                     <url>jdbc:mysql://localhost/wso2_mb</url>
                      <username>root</username>
                      <password>root</password>
                  </configuration>
              </definition>
          </datasource-->
+
+        <!-- MSSQL server -->
+        <!-- Please enable any one of the following datasource based on your MSSQL driver library -->
+        <!-- JTDS datasource -->
+        <!--datasource>
+            <name>WSO2_MB_STORE_DB</name>
+            <jndiConfig>
+                <name>jdbc/WSO2MBStoreDB</name>
+            </jndiConfig>
+            <definition type="RDBMS">
+            <configuration>
+                    <url>jdbc:jtds:sqlserver://10.100.101.10:1433/wso2_mb</url>
+                    <username>sa</username>
+                    <password>sa</password>
+                    <driverClassName>net.sourceforge.jtds.jdbc.Driver</driverClassName>
+                    <maxActive>200</maxActive>
+                    <maxWait>60000</maxWait>
+                    <minIdle>5</minIdle>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1</validationQuery>
+                    <validationInterval>30000</validationInterval>
+                </configuration>
+            </definition>
+        </datasource-->
+
+        <!-- SQLServerXA datasource -->
+        <!--datasource>
+            <name>WSO2_MB_STORE_DB</name>
+            <jndiConfig>
+                <name>jdbc/WSO2MBStoreDB</name>
+            </jndiConfig>
+            <definition type="RDBMS">
+                <configuration>
+                    <dataSourceClassName>com.microsoft.sqlserver.jdbc.SQLServerXADataSource</dataSourceClassName>
+                    <dataSourceProps>
+                <property name = "URL">jdbc:sqlserver://10.100.101.10\SQLExpress:1433</property>
+                <property name="databaseName">wso2_mb</property>
+                        <property name="user">sa</property>
+                        <property name="password">sa</property>
+                    </dataSourceProps>
+                </configuration>
+            </definition>
+        </datasource-->
+
     </datasources>
 </datasources-configuration>
