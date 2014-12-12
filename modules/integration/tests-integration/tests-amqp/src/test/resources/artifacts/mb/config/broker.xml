@@ -117,7 +117,7 @@
         </contextStore-->
 
         <!-- Hector based store -->
-        <!--messageStore class="org.wso2.andes.store.cassandra.hector.HectorBasedAndesContextStoreImpl">
+        <!--messageStore class="org.wso2.andes.store.cassandra.hector.HectorBasedMessageStoreImpl">
             <property name="dataSource">CassandraRepo</property>
             <property name="asyncStoring">true</property>
             <property name="replicationFactor">1</property>
