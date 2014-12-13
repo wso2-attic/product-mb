@@ -1,11 +1,11 @@
-<datasources-configuration xmlns:svns="http://org.wso2.securevault/configuration">
+<datasources-configuration>
 
     <providers>
         <provider>org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceReader</provider>
 
         <!-- uncomment either one of the following entry when use external cassandra depending on data source (CQL or Hector) -->
         <!--<provider>org.wso2.carbon.cassandra.datareader.cql.CassandraDataSourceReader</provider>-->
-        <!--provider>org.wso2.carbon.cassandra.datareader.hector.HectorBasedDataSourceReader</provider-->
+        <!--<provider>org.wso2.carbon.cassandra.datareader.hector.HectorBasedDataSourceReader</provider>-->
     </providers>
 
     <datasources>
@@ -70,7 +70,7 @@
             <name>WSO2_MB_STORE_DB</name>
             <description>The datasource used for registry and user manager</description>
             <jndiConfig>
-                <name>jdbc/WSO2MBStoreDB</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
@@ -86,10 +86,11 @@
         </datasource>
 
         <!-- WSO2 MB in memory store     -->
+
         <datasource>
             <name>WSO2_MB_IN_MEMORY_STORE_DB</name>
             <jndiConfig>
-                <name>jdbc/InMemoryStore</name>
+                <name>WSO2MBInMemoryStoreDB</name>
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
@@ -102,11 +103,12 @@
 
         <!-- external Cassandra data source. please enable either one of datasource (CQL or Hector) based on your preference -->
         <!-- CQL datasource -->
-        <!--datasource>
+<!--
+        <datasource>
             <name>WSO2_CASSANDRA_DB</name>
             <description>The datasource used for cassandra</description>
             <jndiConfig>
-                <name>CassandraRepo</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="CASSANDRA">
                 <configuration>
@@ -120,7 +122,7 @@
                     <maxConnections>100</maxConnections>
 
                     <hosts>
-                        <host>127.0.0.1</host>
+                        <host>localhost</host>
                     </hosts>
                     <loadBalancePolicy>
                         <exclusionThreshold>2.5</exclusionThreshold>
@@ -156,18 +158,21 @@
                 </configuration>
 
             </definition>
-        </datasource-->
+        </datasource>
+-->
+
 
         <!-- Hector datasource -->
-        <!--datasource>
+<!--
+        <datasource>
             <name>HectorDS</name>
             <description>The datasource used for RSS metadata repository</description>
             <jndiConfig>
-                <name>CassandraRepo</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="HECTOR">
                 <configuration>
-                    <hosts>10.100.101.3:9160,10.100.101.4:9160,10.100.101.5:9160</hosts>
+                    <hosts>localhost:9160</hosts>
                     <username>admin</username>
                     <password>admin</password>
                     <clusterName>TestCluster</clusterName>
@@ -175,14 +180,16 @@
                     <enableSecurity>false</enableSecurity>
                 </configuration>
             </definition>
-        </datasource-->
-        <!-- end of external Cassandra data source.  -->
+        </datasource>
+-->
+        <!-- end of external Cassandra data sources.  -->
 
         <!-- MySQL data source -->
-        <!--datasource>
+<!--
+        <datasource>
              <name>MYSQL_DATA_SOURCE</name>
              <jndiConfig>
-                 <name>jdbc/WSO2MBStoreDB</name>
+                 <name>WSO2MBStoreDB</name>
              </jndiConfig>
              <definition type="RDBMS">
                  <configuration>
@@ -192,19 +199,21 @@
                      <password>root</password>
                  </configuration>
              </definition>
-         </datasource-->
+         </datasource>
+-->
 
         <!-- MSSQL server -->
         <!-- Please enable any one of the following datasource based on your MSSQL driver library -->
         <!-- JTDS datasource -->
-        <!--datasource>
+<!--
+        <datasource>
             <name>WSO2_MB_STORE_DB</name>
             <jndiConfig>
-                <name>jdbc/WSO2MBStoreDB</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="RDBMS">
             <configuration>
-                    <url>jdbc:jtds:sqlserver://10.100.101.10:1433/wso2_mb</url>
+                    <url>jdbc:jtds:sqlserver://localhost:1433/wso2_mb</url>
                     <username>sa</username>
                     <password>sa</password>
                     <driverClassName>net.sourceforge.jtds.jdbc.Driver</driverClassName>
@@ -216,26 +225,29 @@
                     <validationInterval>30000</validationInterval>
                 </configuration>
             </definition>
-        </datasource-->
+        </datasource>
+-->
 
         <!-- SQLServerXA datasource -->
-        <!--datasource>
+<!--
+        <datasource>
             <name>WSO2_MB_STORE_DB</name>
             <jndiConfig>
-                <name>jdbc/WSO2MBStoreDB</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
                     <dataSourceClassName>com.microsoft.sqlserver.jdbc.SQLServerXADataSource</dataSourceClassName>
                     <dataSourceProps>
-                <property name = "URL">jdbc:sqlserver://10.100.101.10\SQLExpress:1433</property>
+                <property name = "URL">jdbc:sqlserver://localhost\SQLExpress:1433</property>
                 <property name="databaseName">wso2_mb</property>
                         <property name="user">sa</property>
                         <property name="password">sa</property>
                     </dataSourceProps>
                 </configuration>
             </definition>
-        </datasource-->
+        </datasource>
+-->
 
     </datasources>
 </datasources-configuration>
