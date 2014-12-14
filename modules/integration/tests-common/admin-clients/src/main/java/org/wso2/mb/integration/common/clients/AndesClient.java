@@ -218,7 +218,8 @@ public class AndesClient {
             int commitAfterEach = Integer.MAX_VALUE;
             int rollbackAfterEach = Integer.MAX_VALUE;
             int unsubscribeAfter = Integer.MAX_VALUE;
-            Long jmsExpiration = 0l;
+            Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
+            // value is larger than 0.
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
