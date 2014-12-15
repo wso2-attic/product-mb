@@ -57,7 +57,10 @@ public class QueueMessageSender implements Runnable {
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
 
-    private Long jmsExpiration = 0l;
+    /**
+     * By default, according to JMS 1.1, message expiration is only activated if this value is larger than 0.
+     */
+    private Long jmsExpiration = 0L;
 
     public QueueMessageSender(String connectionString, String hostName, String port, String userName,
                               String password, String queueName,

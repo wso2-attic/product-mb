@@ -57,7 +57,11 @@ public class TopicMessagePublisher implements Runnable {
     private String topicName = null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
-    private Long jmsExpiration = 0l;
+
+    /**
+     * By default, according to JMS 1.1, message expiration is only activated if this value is larger than 0.
+     */
+    private Long jmsExpiration = 0L;
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
