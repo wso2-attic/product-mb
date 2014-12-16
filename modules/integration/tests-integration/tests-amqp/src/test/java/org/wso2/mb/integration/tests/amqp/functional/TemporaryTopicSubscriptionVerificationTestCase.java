@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class TemporaryTopicSubscriptionVerificationTestCase {
 
@@ -158,9 +159,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase {
         @Override
         public Boolean call() throws Exception {
             //wait
-            log.info("====Async thread launched...");
-            Thread.sleep(30 * 1000);
-            log.info("====Async subscriber subscribing...");
+            TimeUnit.SECONDS.sleep(30);
             Integer runTime = 20;
             //re-subscribe and see if messages are coming
             AndesClient newReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
@@ -173,7 +172,6 @@ public class TemporaryTopicSubscriptionVerificationTestCase {
 
             boolean messagesAreReceived = AndesClientUtils
                     .waitUntilMessagesAreReceived(newReceivingClient, 1, runTime);
-            System.out.println("Retuning result = " + messagesAreReceived);
             return messagesAreReceived;
         }
     }
