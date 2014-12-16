@@ -249,5 +249,28 @@
         </datasource>
 -->
 
+<!--
+        <datasource>
+            <name>ORACLE_DATA_SOURCE</name>
+            <jndiConfig>
+                <name>jdbc/WSO2MBStoreDB</name>
+            </jndiConfig>
+            <definition type="RDBMS">
+                <configuration>
+                    <driverClassName>oracle.jdbc.driver.OracleDriver</driverClassName>
+                    <url>jdbc:oracle:thin:@localhost:1521/orcl</url>
+                    <maxActive>80</maxActive>
+                    <maxWait>60000</maxWait>
+                    <minIdle>5</minIdle>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1</validationQuery>
+                    <validationInterval>30000</validationInterval>
+                    <username>scott</username>
+                    <password>tiger</password>
+                </configuration>
+            </definition>
+        </datasource>
+-->
+
     </datasources>
 </datasources-configuration>
