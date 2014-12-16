@@ -253,13 +253,13 @@
         <datasource>
             <name>ORACLE_DATA_SOURCE</name>
             <jndiConfig>
-                <name>jdbc/WSO2MBStoreDB</name>
+                <name>WSO2MBStoreDB</name>
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
                     <driverClassName>oracle.jdbc.driver.OracleDriver</driverClassName>
                     <url>jdbc:oracle:thin:@localhost:1521/orcl</url>
-                    <maxActive>80</maxActive>
+                    <maxActive>100</maxActive>
                     <maxWait>60000</maxWait>
                     <minIdle>5</minIdle>
                     <testOnBorrow>true</testOnBorrow>
