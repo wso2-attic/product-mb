@@ -150,6 +150,10 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.cassandra.datareader.feature:${carbon.platform.version}
                                 </featureArtifactDef>
+                                <!-- mb styles -->
+                                <featureArtifactDef>
+                                    org.wso2.mb:org.wso2.mb.styles.feature:${project.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -260,6 +264,11 @@
                                 <feature>
                                     <id>org.wso2.carbon.cassandra.datareader.feature.group</id>
                                     <version>${carbon.platform.version}</version>
+                                </feature>
+                                <!-- mb style -->
+                                <feature>
+                                    <id>org.wso2.mb.styles.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>
