@@ -44,7 +44,7 @@ public class Vehicle {
 
     private double acceleration; // m/s^2
 
-    public static final String ENGINETEMPERATURE = "engintemperature";
+    public static final String ENGINE_TEMPERATURE = "engintemperature";
     public static final String SPEED = "speed";
     public static final String ACCELERATION = "acceleration";
 
@@ -60,16 +60,13 @@ public class Vehicle {
      *
      * @param vehicleId    The vehicle Id to create
      * @param vehicleModel The model of the vehicle
+     * @throws MqttException
      */
-    public Vehicle(final String vehicleId, VehicleModel vehicleModel) {
+    public Vehicle(final String vehicleId, VehicleModel vehicleModel) throws MqttException {
         setVehicleId(vehicleId);
         setVehicleModel(vehicleModel);
 
-        try {
-            mqttClient = new AndesMQTTClient(vehicleId);
-        } catch (MqttException e) {
-            log.error("Error creating a mqtt client for sensor status updates.", e);
-        }
+        mqttClient = new AndesMQTTClient(vehicleId, true);
 
         // send sensor statuses to the server periodically.
         statusUpdateSchedule = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -77,7 +74,7 @@ public class Vehicle {
             public void run() {
                 try {
                     // Send temperature reading
-                    mqttClient.sendMessage(generateTopicHierarchy(ENGINETEMPERATURE),
+                    mqttClient.sendMessage(generateTopicHierarchy(ENGINE_TEMPERATURE),
                             String.valueOf(getEngineTemperature()), qos);
 
                     // Send speed reading

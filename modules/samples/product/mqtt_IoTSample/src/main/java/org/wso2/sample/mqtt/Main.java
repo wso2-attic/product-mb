@@ -18,6 +18,7 @@
 
 package org.wso2.sample.mqtt;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -48,7 +49,7 @@ public class Main {
 
     private static final Random random = new Random();
 
-    private static enum vehicleTypes {car, bike, van} //todo : uppercase
+    private static enum vehicleTypes {CAR, BIKE, VAN}
 
     private static AndesMQTTClient temperatureClient;
     private static AndesMQTTClient carClient;
@@ -68,8 +69,9 @@ public class Main {
      *
      * @param args main command line arguments
      * @throws InterruptedException
+     * @throws MqttException
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, MqttException {
         populateVehicles();
         scheduleMockVehicleStatusUpdate();
         try {
@@ -100,33 +102,33 @@ public class Main {
     }
 
     /**
-     * Populate vehicles types with car, bike and van.
+     * Populate vehicles types with CAR, BIKE and VAN.
      */
     private static void populateVehicleTypes() {
-        // car
-        VehicleType car = new VehicleType(vehicleTypes.car.name());
+        // CAR
+        VehicleType car = new VehicleType(vehicleTypes.CAR.name());
 
-        // bike
-        VehicleType bike = new VehicleType(vehicleTypes.bike.name());
+        // BIKE
+        VehicleType bike = new VehicleType(vehicleTypes.BIKE.name());
 
-        // van
-        VehicleType van = new VehicleType(vehicleTypes.van.name());
+        // VAN
+        VehicleType van = new VehicleType(vehicleTypes.VAN.name());
 
-        vehicleTypeMap.put(vehicleTypes.car, car);
-        vehicleTypeMap.put(vehicleTypes.bike, bike);
-        vehicleTypeMap.put(vehicleTypes.van, van);
+        vehicleTypeMap.put(vehicleTypes.CAR, car);
+        vehicleTypeMap.put(vehicleTypes.BIKE, bike);
+        vehicleTypeMap.put(vehicleTypes.VAN, van);
     }
 
     /**
      * Populate vehicle models.
-     * - 5 models of type car
-     * - 5 models of type bike
-     * - 3 models of type van
+     * - 5 models of type CAR
+     * - 5 models of type BIKE
+     * - 3 models of type VAN
      */
     private static void populateVehicleModels() {
         populateVehicleTypes();
 
-        VehicleType car = vehicleTypeMap.get(vehicleTypes.car);
+        VehicleType car = vehicleTypeMap.get(vehicleTypes.CAR);
 
         String bmwM3 = "BMWM3";
         String carreraGt = "PorscheCarreraGT";
@@ -140,7 +142,7 @@ public class Main {
         vehicleModelSet.add(new VehicleModel(challenger, car));
         vehicleModelSet.add(new VehicleModel(mercielago, car));
 
-        VehicleType bike = vehicleTypeMap.get(vehicleTypes.bike);
+        VehicleType bike = vehicleTypeMap.get(vehicleTypes.BIKE);
 
         String nightRod = "HarleyDavidsonNightRod";
         String h2r = "KawasakiH2R";
@@ -154,7 +156,7 @@ public class Main {
         vehicleModelSet.add(new VehicleModel(vfr, bike));
         vehicleModelSet.add(new VehicleModel(gsx, bike));
 
-        VehicleType van = vehicleTypeMap.get(vehicleTypes.van);
+        VehicleType van = vehicleTypeMap.get(vehicleTypes.VAN);
 
         String odyssey = "HondaOdyssey";
         String grandCaravan = "DodgeGrandCaravan";
@@ -168,8 +170,10 @@ public class Main {
 
     /**
      * Create mock vehicles, 1 per each model.
+     *
+     * @throws MqttException
      */
-    private static void populateVehicles() {
+    private static void populateVehicles() throws MqttException {
         populateVehicleModels();
 
         int i = 0;
@@ -186,14 +190,14 @@ public class Main {
      * @throws MqttException
      */
     private static void listenToVehicleSensorStatuses() throws MqttException {
-        temperatureClient = new AndesMQTTClient("temperatureClient");
-        temperatureClient.subscribe("+/+/+/" + Vehicle.ENGINETEMPERATURE, 1);
+        temperatureClient = new AndesMQTTClient("temperatureClient", true);
+        temperatureClient.subscribe("+/+/+/" + Vehicle.ENGINE_TEMPERATURE, 1);
 
-        carClient = new AndesMQTTClient("carClient");
-        carClient.subscribe(vehicleTypes.car.name() + "/#", 1);
+        carClient = new AndesMQTTClient("carClient", true);
+        carClient.subscribe(vehicleTypes.CAR.name() + "/#", 1);
 
-        harleySpeedClient = new AndesMQTTClient("harleySpeedClient");
-        harleySpeedClient.subscribe(vehicleTypes.bike.name() + "/HarleyDavidsonNightRod/#", 1);
+        harleySpeedClient = new AndesMQTTClient("harleySpeedClient", true);
+        harleySpeedClient.subscribe(vehicleTypes.BIKE.name() + "/HarleyDavidsonNightRod/#", 1);
 
         // Print real time sensor data each second
         vehicleStatusProcessor = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -204,8 +208,8 @@ public class Main {
                     StringBuilder outputString = new StringBuilder();
                     // Print the speed of Harley
                     ConcurrentHashMap<String, String> latestHarleyReadings = harleySpeedClient.getLatestSpeedReadings();
-                    for (String key : latestHarleyReadings.keySet()) {
-                        String latestReading = latestHarleyReadings.get(key);
+                    for (Map.Entry<String, String> entry : latestHarleyReadings.entrySet()) {
+                        String latestReading = entry.getValue();
                         outputString.append("Latest Harley Speed Reading : ").append(latestReading);
                     }
 
@@ -213,28 +217,28 @@ public class Main {
                     ConcurrentHashMap<String, String> latestTemperatureReadings = temperatureClient
                             .getLatestTemperatureReadings();
                     double totalTemperaturesSum = 0;
-                    for (String key : latestTemperatureReadings.keySet()) {
-                        String latestReading = latestTemperatureReadings.get(key);
-                        if (latestReading != null && !"".equals(latestReading)) {
-                            totalTemperaturesSum += Double.parseDouble(latestReading);
+                    for (Map.Entry<String, String> entry : latestTemperatureReadings.entrySet()) {
+                        String latestReading = entry.getValue();
+                        if (!StringUtils.isEmpty(latestReading)) {
+                            totalTemperaturesSum = totalTemperaturesSum + Double.parseDouble(latestReading);
                         }
                     }
 
                     outputString.append("\tLatest Average Temperature of All vehicles : ").append
                             (totalTemperaturesSum / latestTemperatureReadings.size());
 
-                    // Print the car which has the maximum acceleration at the moment
+                    // Print the CAR which has the maximum acceleration at the moment
                     ConcurrentHashMap<String, String> latestCarAccelerationReadings = carClient
                             .getLatestSpeedReadings();
                     double maxAcceleration = 0;
                     String maxAccelerationVehicle = "Undefined";
-                    for (String key : latestCarAccelerationReadings.keySet()) {
-                        String latestReading = latestCarAccelerationReadings.get(key);
+                    for (Map.Entry<String, String> entry : latestCarAccelerationReadings.entrySet()) {
+                        String latestReading = entry.getValue();
                         if (latestReading != null && !"".equals(latestReading)) {
                             double latestAcceleration = Double.parseDouble(latestReading);
                             if (maxAcceleration < latestAcceleration) {
                                 maxAcceleration = latestAcceleration;
-                                maxAccelerationVehicle = key;
+                                maxAccelerationVehicle = entry.getKey();
                             }
                         }
                     }

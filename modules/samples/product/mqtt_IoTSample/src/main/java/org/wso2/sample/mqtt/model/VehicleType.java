@@ -20,7 +20,7 @@ package org.wso2.sample.mqtt.model;
 
 /**
  * This represents a vehicle type.
- * eg :- car, bike, van
+ * eg :- CAR, BIKE, VAN
  */
 public class VehicleType {
 
