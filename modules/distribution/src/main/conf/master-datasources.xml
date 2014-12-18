@@ -134,8 +134,8 @@
                     </loadBalancePolicy>
 
                     <poolOptions>
-                        <coreConnectionsForLocal>10</coreConnectionsForLocal>
-                        <coreConnectionsForRemote>10</coreConnectionsForRemote>
+                        <coreConnectionsForLocal>7</coreConnectionsForLocal>
+                        <coreConnectionsForRemote>1</coreConnectionsForRemote>
                         <maxConnectionsForLocal>10</maxConnectionsForLocal>
                         <maxConnectionsForRemote>10</maxConnectionsForRemote>
                         <maxSimultaneousRequestsForLocal>10</maxSimultaneousRequestsForLocal>
@@ -154,7 +154,6 @@
                         <readTimeoutMillis>15000</readTimeoutMillis>
                         <tcpNoDelay>true</tcpNoDelay>
                     </socketOptions>
-
                 </configuration>
 
             </definition>
