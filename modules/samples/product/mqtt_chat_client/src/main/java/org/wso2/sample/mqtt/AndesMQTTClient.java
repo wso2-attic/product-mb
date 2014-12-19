@@ -28,16 +28,24 @@ import java.io.File;
  */
 public class AndesMQTTClient implements MqttCallback {
 
-    // The Message Broker URL
+    /**
+     * The Message Broker URL
+     */
     private static final String brokerURL = "tcp://localhost:1883";
 
-    // The temporary directory for mqtt client to work with
+    /**
+     * The temporary directory for mqtt client to work with
+     */
     private static final String tmpDir = System.getProperty("java.io.tmpdir");
 
-    // The MQTT client which is used to communicate with the server
+    /**
+     * The MQTT client which is used to communicate with the server
+     */
     private MqttClient mqttClient;
 
-    // The unique MQTT client Id
+    /**
+     * The unique MQTT client Id
+     */
     private final String clientId;
 
     /**

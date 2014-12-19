@@ -61,9 +61,10 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
+        boolean saveMessages = true;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, true,
+        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
                 ClientMode.BLOCKING);
 
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
@@ -92,9 +93,10 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 100;
+        boolean saveMessages = false;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, false,
+        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
                 ClientMode.BLOCKING);
 
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,

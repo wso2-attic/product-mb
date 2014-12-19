@@ -54,11 +54,11 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
         super(configuration, clientID, topic, qos, callbackHandler);
 
         // Construct MQTT client
-        mqttClient = new MqttClient(this.broker_url, clientID, dataStore);
+        mqttClient = new MqttClient(this.brokerUrl, clientID, dataStore);
 
         // Connect to the MQTT server
-        log.info("Connecting to " + broker_url + " with client ID " + mqttClientID);
-        mqttClient.connect(connection_options);
+        log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
+        mqttClient.connect(connectionOptions);
 
         log.info("Client " + mqttClientID + " Connected");
 

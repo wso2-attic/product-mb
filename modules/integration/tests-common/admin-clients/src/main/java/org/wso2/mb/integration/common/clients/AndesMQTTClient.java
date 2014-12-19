@@ -35,25 +35,39 @@ import java.util.List;
  */
 public abstract class AndesMQTTClient implements Runnable {
 
-    // The MQTT callback handler which handles message arrival, delivery complete and connection loss requests.
+    /**
+     * The MQTT callback handler which handles message arrival, delivery complete and connection loss requests.
+     */
     private final CallbackHandler callbackHandler;
 
-    // unique identifier for mqtt client - less than or equal to 23 characters
+    /**
+     * unique identifier for mqtt client - less than or equal to 23 characters
+     */
     protected final String mqttClientID;
 
-    // Connection options that are required to create a connection to a MQTT server
-    protected final MqttConnectOptions connection_options;
+    /**
+     * Connection options that are required to create a connection to a MQTT server
+     */
+    protected final MqttConnectOptions connectionOptions;
 
-    // Message broker MQTT URL
-    protected final String broker_url;
+    /**
+     * Message broker MQTT URL
+     */
+    protected final String brokerUrl;
 
-    // The topic the messages needs to send to / received from
+    /**
+     * The topic the messages needs to send to / received from
+     */
     protected final String topic;
 
-    // The quality of service to send/receive messages
+    /**
+     * The quality of service to send/receive messages *
+     */
     protected final QualityOfService qos;
 
-    //Store messages until server fetches them
+    /**
+     * Store messages until server fetches them
+     */
     protected final MqttDefaultFilePersistence dataStore =
             new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir"));
 
@@ -70,7 +84,7 @@ public abstract class AndesMQTTClient implements Runnable {
                            QualityOfService qos, CallbackHandler callbackHandler) {
 
         //Initializing the variables locally
-        this.broker_url = configuration.getBrokerURL();
+        this.brokerUrl = configuration.getBrokerURL();
         this.mqttClientID = clientID;
         String password = configuration.getBrokerPassword();
         String userName = configuration.getBrokerUserName();
@@ -79,14 +93,14 @@ public abstract class AndesMQTTClient implements Runnable {
 
         // Construct the connection options object that contains connection parameters
         // such as cleanSession and LWT
-        connection_options = new MqttConnectOptions();
-        connection_options.setCleanSession(configuration.isCleanSession());
+        connectionOptions = new MqttConnectOptions();
+        connectionOptions.setCleanSession(configuration.isCleanSession());
 
         if (null != password) {
-            connection_options.setPassword(password.toCharArray());
+            connectionOptions.setPassword(password.toCharArray());
         }
         if (null != userName) {
-            connection_options.setUserName(userName);
+            connectionOptions.setUserName(userName);
         }
 
         // Set callback handler

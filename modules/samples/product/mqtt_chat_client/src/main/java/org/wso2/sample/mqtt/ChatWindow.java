@@ -28,36 +28,57 @@ import java.util.Scanner;
  */
 public final class ChatWindow {
 
-    private static final String newLine = "\n";
+    /**
+     * The new line character
+     */
+    private static final String NEW_LINE = "\n";
 
-    // Message header and content separating string
-    private static final String separator = "::";
+    /**
+     * Message header and content separating string
+     */
+    private static final String SEPARATOR = "::";
 
-    // Scanner to read user input
+    /**
+     * Scanner to read user input
+     */
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Console writer to write to the console
+    /**
+     * Console writer to write to the console
+     */
     private static final PrintWriter writer = System.console().writer();
 
-    // The delimiter to separate each keyword in a user input command
-    private static final String commandDelimiter = " ";
+    /**
+     * The delimiter to separate each keyword in a user input command
+     */
+    private static final String COMMAND_DELIMITER = " ";
 
-    // The command to exit
-    private static final String exitCommand = "exit";
+    /**
+     * The command to exit
+     */
+    private static final String EXIT_COMMAND = "exit";
 
-    // The command keyword to join a group chat
-    private static final String joinGroupCommand = "join";
+    /**
+     * The command keyword to join a group chat
+     */
+    private static final String JOIN_GROUP_COMMAND = "join";
 
-    // The command keyword to leave a group chat
-    private static final String leaveGroupCommand = "leave";
+    /**
+     * The command keyword to leave a group chat
+     */
+    private static final String LEAVE_GROUP_COMMAND = "leave";
 
-    // The command keyword to get help
-    private static final String helpCommand = "help";
+    /**
+     * The command keyword to get help
+     */
+    private static final String HELP_COMMAND = "help";
 
-    // The command line helper string
-    private static final String commandHelper = "Use <alias/group message> to chat to a desired group or a person" +
-            newLine + "<join group_name> to join a group chat" + newLine + "<leave group_name> to leave a group chat"
-            + newLine + "<exit> to exit" + newLine;
+    /**
+     * The command line helper string
+     */
+    private static final String HELP_STRING = "Use <alias/group message> to chat to a desired group or a person" +
+            NEW_LINE + "<join group_name> to join a group chat" + NEW_LINE + "<leave group_name> to leave a group chat"
+            + NEW_LINE + "<exit> to exit" + NEW_LINE;
 
     /**
      * Print a given message to the chat window console
@@ -65,7 +86,7 @@ public final class ChatWindow {
      * @param message The message to print to the console
      */
     public static void outputToChatWindow(String message) {
-        writer.print(">" + message + newLine);
+        writer.print(">" + message + NEW_LINE);
         writer.flush();
     }
 
@@ -84,22 +105,23 @@ public final class ChatWindow {
     public static void decodeAndOutputMessage(String chatName, String message) {
         StringBuilder output = new StringBuilder();
 
-        if (chatName == null) {
+        if (null == chatName) {
             output.append("Personal message ");
         } else {
-            output.append("chat with ").append(chatName).append(newLine);
+            output.append("chat with ").append(chatName).append(NEW_LINE);
         }
-        String decoder[] = message.split(separator);
+
+        String decoder[] = message.split(SEPARATOR);
 
         if (decoder.length == 1) { // Info message
             output.append("Info : ").append(decoder[0]);
-        } else if (decoder.length == 2) {
-            output.append("from ").append(decoder[0]).append(newLine).append(decoder[1]);
+        } else if (decoder.length == 2) { // chat message
+            output.append("from ").append(decoder[0]).append(NEW_LINE).append(decoder[1]);
         } else {
-            output.append("server error...!!!");
+            output.append("Invalid message received from the server.");
         }
 
-        output.append(newLine).append("Waiting for your input. Use <help> for more info").append(newLine);
+        output.append(NEW_LINE).append("Waiting for your input. Use <help> for more info").append(NEW_LINE);
 
         outputToChatWindow(output.toString());
     }
@@ -112,7 +134,7 @@ public final class ChatWindow {
      * @return The encoded message
      */
     public static String encodeMessage(String sender, String message) {
-        return sender + separator + message;
+        return sender + SEPARATOR + message;
     }
 
     /**
@@ -150,19 +172,19 @@ public final class ChatWindow {
     public static boolean processInput(String input, ChatClient chatClient) throws MqttException {
         boolean running = true;
 
-        if (exitCommand.equalsIgnoreCase(input)) {
+        if (EXIT_COMMAND.equalsIgnoreCase(input)) {
             running = false;
-        } else if (helpCommand.equalsIgnoreCase(input)) {
+        } else if (HELP_COMMAND.equalsIgnoreCase(input)) {
             printHelper();
         } else {
-            String[] inputArgs = input.split(commandDelimiter, 2);
+            String[] inputArgs = input.split(COMMAND_DELIMITER, 2);
             int argsLength = inputArgs.length;
             if (2 == argsLength) {
                 String arg1 = inputArgs[0];
                 String arg2 = inputArgs[1];
-                if (joinGroupCommand.equalsIgnoreCase(arg1)) {
+                if (JOIN_GROUP_COMMAND.equalsIgnoreCase(arg1)) {
                     chatClient.startGroupConversation(arg2);
-                } else if (leaveGroupCommand.equalsIgnoreCase(arg1)) {
+                } else if (LEAVE_GROUP_COMMAND.equalsIgnoreCase(arg1)) {
                     chatClient.endGroupConversation(arg2);
                 } else {
                     chatClient.sendMessage(arg1, arg2);
@@ -180,6 +202,6 @@ public final class ChatWindow {
      * Print the help string to the output window.
      */
     public static void printHelper() {
-        outputToChatWindow(commandHelper);
+        outputToChatWindow(HELP_STRING);
     }
 }

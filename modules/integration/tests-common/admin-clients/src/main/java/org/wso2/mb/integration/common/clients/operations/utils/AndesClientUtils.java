@@ -22,7 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.AndesClient;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 public class AndesClientUtils {
 
@@ -128,7 +136,7 @@ public class AndesClientUtils {
             }
             lastCount = thisCount;
             try {
-                Thread.sleep(1000 * 10);
+                TimeUnit.SECONDS.sleep(10);
             } catch (InterruptedException ignore) {
             }
             log.info("Total messages in " + queueName + " [" + thisCount + "] ");
@@ -163,7 +171,7 @@ public class AndesClientUtils {
             lastCount = thisCount;
 
             try {
-                Thread.sleep(1000 * 10);
+                TimeUnit.SECONDS.sleep(10);
             } catch (InterruptedException ignore) {
             }
         }
