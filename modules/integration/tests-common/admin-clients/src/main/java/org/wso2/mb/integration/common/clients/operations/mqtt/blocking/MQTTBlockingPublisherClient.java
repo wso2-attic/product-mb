@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.callback.CallbackHandler;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,6 +89,6 @@ public class MQTTBlockingPublisherClient extends AndesMQTTBlockingClient {
      */
     @Override
     public List<MqttMessage> getReceivedMessages() {
-        return new ArrayList<MqttMessage>(0);
+        return Collections.emptyList();
     }
 }

@@ -117,14 +117,15 @@ public class AndesMQTTClient implements MqttCallback {
     }
 
     /**
-     * Handle losing connection with the server.
+     * Connection lost message received from the server.
      *
      * @param throwable Connection lost cause
      */
     @Override
     public void connectionLost(Throwable throwable) {
         // We're only logging the connection lost here since this class is only responsible for handling callbacks
-        // from server
+        // from server. If client tries to invoke any further operation on server it will create a server error which
+        // will then be handled by the client.
         log.warn("Server connection lost.", throwable);
     }
 

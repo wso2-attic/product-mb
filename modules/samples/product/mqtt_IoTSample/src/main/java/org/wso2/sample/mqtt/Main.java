@@ -59,8 +59,10 @@ public class Main {
     private static ScheduledFuture vehicleStatusUpdater;
     private static ScheduledFuture vehicleStatusProcessor;
 
-    // Time to run the sample in seconds
-    private static final int runtime = 20000;
+    /**
+     * Time to run the sample in seconds
+     */
+    private static final int RUNTIME = 20000;
 
     private static final Log log = LogFactory.getLog(Main.class);
 
@@ -76,7 +78,9 @@ public class Main {
         scheduleMockVehicleStatusUpdate();
         try {
             listenToVehicleSensorStatuses();
-            Thread.sleep(runtime);
+
+            // Let stats publish and stats processing commence for RUNTIME amount of time before exiting the sample
+            Thread.sleep(RUNTIME);
             shutdown();
         } catch (MqttException e) {
             log.error("Error running the sample.", e);

@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.operations.mqtt.callback.CallbackHandler;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,10 +34,10 @@ import java.util.List;
  */
 public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
 
-    // The payload to send as the message content
+    /** The payload to send as the message content **/
     private byte[] messagePayLoad;
 
-    // The number of messages to send
+    /** The number of messages to send **/
     private int noOfMessages;
 
     private static final Log log = LogFactory.getLog(MQTTAsyncPublisherClient.class);
@@ -89,6 +89,6 @@ public class MQTTAsyncPublisherClient extends AndesMQTTAsyncClient {
      */
     @Override
     public List<MqttMessage> getReceivedMessages() {
-        return new ArrayList<MqttMessage>(0);
+        return Collections.emptyList();
     }
 }
