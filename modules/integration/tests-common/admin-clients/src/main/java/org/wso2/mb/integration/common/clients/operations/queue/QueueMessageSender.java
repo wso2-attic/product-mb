@@ -56,6 +56,7 @@ public class QueueMessageSender implements Runnable {
     private String queueName = null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
+    private String jmsType=null;
 
     private String typeOfMessage = "text";
 
@@ -68,7 +69,7 @@ public class QueueMessageSender implements Runnable {
                               String password, String queueName,
                               AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
                               String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
-                              Long jmsExpiration) {
+                              Long jmsExpiration,String jmsType) {
 
         this.hostName = hostName;
         this.port = port;
@@ -84,6 +85,7 @@ public class QueueMessageSender implements Runnable {
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
         this.isToPrintEachMessage = isToPrintEachMessage;
         this.jmsExpiration = jmsExpiration;
+        this.jmsType=jmsType;
 
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, QPID_ICF);
@@ -171,7 +173,14 @@ public class QueueMessageSender implements Runnable {
                 } else if (typeOfMessage.equals("stream")) {
                     message = queueSession.createStreamMessage();
                 }
+
                 message.setStringProperty("msgID", Integer.toString(messageCounter.get()));
+
+                //Setting jmsType in message
+                if (null != jmsType) {
+                    message.setJMSType(jmsType);
+                }
+
                 synchronized (messageCounter.getClass()) {
                     if (messageCounter.get() >= numOfMessagesToSend) {
                         break;

@@ -110,6 +110,60 @@ public class QueueMessageReceiver implements Runnable {
 
     }
 
+    public QueueMessageReceiver(String connectionString, String hostName, String port, String userName,
+                                String password, String queueName, int ackMode,
+                                boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages,
+                                int printNumberOfMessagesPer, boolean isToPrintEachMessage,
+                                String fileToWriteReceivedMessages, int stopAfter, int ackAfterEach,
+                                int commitAfterEach, int rollbackAfterEach, String selectors) {
+
+        this.hostName = hostName;
+        this.port = port;
+        this.connectionString = connectionString;
+        this.useMessageListener = useMessageListener;
+        this.delayBetweenMessages = delayBetweenMessages;
+        this.messageCounter = messageCounter;
+        this.queueName = queueName;
+        this.printNumberOfMessagesPer = printNumberOfMessagesPer;
+        this.isToPrintEachMessage = isToPrintEachMessage;
+        this.fileToWriteReceivedMessages = fileToWriteReceivedMessages;
+        this.stopAfter = stopAfter;
+        this.ackAfterEach = ackAfterEach;
+        this.commitAfterEach = commitAfterEach;
+        this.rollbackAfterEach = rollbackAfterEach;
+
+        Properties properties = new Properties();
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, QPID_ICF);
+        properties.put(CF_NAME_PREFIX + CF_NAME, getTCPConnectionURL(userName, password));
+        properties.put("queue." + queueName, queueName);
+
+        try {
+            InitialContext ctx = new InitialContext(properties);
+            // Lookup connection factory
+            QueueConnectionFactory connFactory = (QueueConnectionFactory) ctx.lookup(CF_NAME);
+            queueConnection = connFactory.createQueueConnection();
+            queueConnection.start();
+            if (ackMode == QueueSession.SESSION_TRANSACTED) {
+                queueSession = queueConnection.createQueueSession(true, ackMode);
+            } else {
+                queueSession = queueConnection.createQueueSession(false, ackMode);
+            }
+            Queue queue = (Queue) ctx.lookup(queueName);
+
+            if (null != selectors) {
+                queueReceiver = queueSession.createReceiver(queue, selectors);
+            } else {
+                queueReceiver = queueSession.createReceiver(queue);
+            }
+
+        } catch (NamingException e) {
+            log.error("Error while looking up for queue", e);
+        } catch (JMSException e) {
+            log.error("Error while initializing queue connection", e);
+        }
+
+    }
+
     private String getTCPConnectionURL(String username, String password) {
         if (connectionString != null && !connectionString.equals("")) {
             return connectionString;

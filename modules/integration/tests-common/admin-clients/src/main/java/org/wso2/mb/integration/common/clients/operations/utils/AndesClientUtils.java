@@ -87,9 +87,10 @@ public class AndesClientUtils {
             }
             log.info(">>>>total q count=" + client.getReceivedqueueMessagecount() + " total t count=" + client
                     .getReceivedTopicMessagecount());
-            if (client.getReceivedqueueMessagecount() == messageCountExpected && client.getReceivedTopicMessagecount
-                    () == messageCountExpected) {
-
+            if ((!client.getQueueListeners().isEmpty() &&
+                 client.getReceivedqueueMessagecount() == messageCountExpected) ||
+                (!client.getTopicListeners().isEmpty() &&
+                 client.getReceivedTopicMessagecount() == messageCountExpected)) {
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtils.sleepForInterval(500);
                 log.info("SUCCESS: Received expected " + messageCountExpected + ". Received q=" + client
@@ -97,12 +98,12 @@ public class AndesClientUtils {
                 flushPrintWriter();
                 client.shutDownClient();
                 return true;
-            } else if (client.getReceivedqueueMessagecount() > messageCountExpected || client
-                    .getReceivedTopicMessagecount() > messageCountExpected) {
+            } else if (client.getReceivedqueueMessagecount() > messageCountExpected ||
+                       client.getReceivedTopicMessagecount() > messageCountExpected) {
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtils.sleepForInterval(500);
                 log.info("FAILED: Received more messages than expected " + messageCountExpected + ". Received q=" +
-                        client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
+                         client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
                 client.shutDownClient();
                 return false;
@@ -206,7 +207,7 @@ public class AndesClientUtils {
 
     public static boolean getIfSenderIsSuccess(AndesClient sendingClient, int expectedMsgCount) {
         boolean sendingSuccess = false;
-        if (expectedMsgCount == sendingClient.getReceivedqueueMessagecount()) {
+        if (expectedMsgCount == sendingClient.getReceivedqueueMessagecount() || expectedMsgCount==sendingClient.getReceivedTopicMessagecount()) {
             sendingSuccess = true;
         }
         return sendingSuccess;
