@@ -14,7 +14,7 @@ import static org.testng.Assert.assertTrue;
 public class DifferentSubscriptionsWithDurableTopicTestCase {
 
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDifferentTopicSubscriptionsWithDurableTopicTes() {
+    public void performDifferentTopicSubscriptionsWithDurableTopicTest() {
 
         Integer sendCount = 1000;
         Integer runTime = 20;

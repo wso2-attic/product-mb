@@ -82,14 +82,11 @@
         </contextStore-->
 
         <!-- In memory message store running on H2 -->
-        <messageStore class="org.wso2.andes.store.jdbc.h2.H2MemMessageStoreImpl">
-        	<property name="dataSource">jdbc/InMemoryStore</property>
-            <property name="asyncStoring">false</property>
+        <messageStore class="org.wso2.andes.store.rdbms.h2.H2MemMessageStoreImpl">
         </messageStore>
 
         <!-- In memory context store running on H2 -->
-        <contextStore class="org.wso2.andes.store.jdbc.h2.H2MemAndesContextStoreImpl">
-        	<property name="dataSource">jdbc/InMemoryStore</property>
+        <contextStore class="org.wso2.andes.store.rdbms.h2.H2MemAndesContextStoreImpl">
         </contextStore>
 
 
