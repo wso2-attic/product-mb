@@ -117,7 +117,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.utils</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.kernel.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -167,7 +167,7 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.kernel.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -275,7 +275,7 @@
         <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
         <servlet-api.version>2.4</servlet-api.version>
         <stratos.version>2.2.0</stratos.version>
-        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <axis2.version>${orbit.version.axis2}</axis2.version>
         <version.log4j>1.2.13</version.log4j>
