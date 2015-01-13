@@ -37,6 +37,8 @@
             <class name="org.wso2.mb.platform.tests.clustering.topic.MultipleSubscriberMultiplePublisherTopicTestCase" />
             <class name="org.wso2.mb.platform.tests.clustering.DifferentAckModeQueueTestCase" />
             <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentAckModeTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.DifferentMessageTypesQueueTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentMessageTypesTopicTestCase" />
         </classes>
     </test>
 </suite>
