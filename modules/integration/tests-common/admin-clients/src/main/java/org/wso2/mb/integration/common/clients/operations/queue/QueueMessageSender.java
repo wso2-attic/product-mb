@@ -162,7 +162,6 @@ public class QueueMessageSender implements Runnable {
                     } else {
                         message = queueSession.createTextMessage(everything);
                     }
-                 //   message.setStringProperty("msgID", Integer.toString(messageCounter.get()));
                 } else if (typeOfMessage.equals("byte")) {
                     message = queueSession.createBytesMessage();
                 } else if (typeOfMessage.equals("map")) {
