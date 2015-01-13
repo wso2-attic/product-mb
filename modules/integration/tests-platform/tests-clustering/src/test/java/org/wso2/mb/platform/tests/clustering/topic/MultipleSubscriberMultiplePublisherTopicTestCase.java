@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering.topic;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -109,12 +110,13 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
                 (receivingClient1, expectedCount, runTime);
         boolean receiveSuccessInClient2 = AndesClientUtils.waitUntilMessagesAreReceived
                 (receivingClient1, expectedCount, runTime);
-
-        assertEquals((receiveSuccessInClient1 && receiveSuccessInClient2),true);
-
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccessInClient1 && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccessInClient1, "Did not receive all the messages by the " +
+                "receiving client 1");
+        Assert.assertTrue(receiveSuccessInClient2, "Did not receive all the messages by the " +
+                "receiving client 2");
+        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -160,7 +162,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -206,7 +209,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
     /**
@@ -252,7 +256,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -304,7 +309,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 

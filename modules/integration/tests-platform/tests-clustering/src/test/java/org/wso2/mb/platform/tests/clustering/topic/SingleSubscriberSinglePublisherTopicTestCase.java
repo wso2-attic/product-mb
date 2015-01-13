@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering.topic;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -60,7 +61,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     }
 
     /**
-     * Publish message to a topic in a single node and receive from the same node
+     * Publish messages to a topic in a single node and receive from the same node
      *
      * @throws Exception
      */
@@ -98,11 +99,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in a node and receive from the same node at a slow rate.
+     * Publish messages to a topic in a node and receive from the same node at a slow rate.
      *
      * @throws Exception
      */
@@ -141,12 +143,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
 
     /**
-     * Publish message at a slow rate to a topic in one node and and receive from the
+     * Publish messages at a slow rate to a topic in one node and and receive from the
      * same node.
      *
      * @throws Exception
@@ -186,11 +189,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in a single node and receive from a different node
+     * Publish messages to a topic in a single node and receive from a different node
      *
      * @throws Exception
      */
@@ -233,11 +237,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in a single node and receive from a different node at a slow
+     * Publish messages to a topic in a single node and receive from a different node at a slow
      * rate.
      *
      * @throws Exception
@@ -281,11 +286,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in a single node and receive from a different node at a slow
+     * Publish messages to a topic in a single node and receive from a different node at a slow
      * rate.
      *
      * @throws Exception
@@ -329,11 +335,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in a single node at a slower rate and receive from a different
+     * Publish messages to a topic in a single node at a slower rate and receive from a different
      * node at a slow rate.
      *
      * @throws Exception
@@ -378,12 +385,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
 
     /**
-     * Publish message to a topic in a single node at a slower rate and receive from a different
+     * Publish messages to a topic in a single node at a slower rate and receive from a different
      * node at a slow rate.
      *
      * @throws Exception
@@ -424,7 +432,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
