@@ -45,7 +45,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
     }
 
     /**
-     * Publish message to a single node and receive from the same node with SESSION_TRANSACTED
+     * Publish messages to a single node and receive from the same node with SESSION_TRANSACTED
      * ack mode
      *
      * @throws Exception
@@ -97,7 +97,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
 
 
     /**
-     * Publish message to a single node and receive from the same node with AUTO_ACKNOWLEDGE
+     * Publish messages to a single node and receive from the same node with AUTO_ACKNOWLEDGE
      * ack mode
      *
      * @throws Exception
@@ -148,7 +148,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
     }
 
     /**
-     * Publish message to a single node and receive from the same node with CLIENT_ACKNOWLEDGE
+     * Publish messages to a single node and receive from the same node with CLIENT_ACKNOWLEDGE
      * ack mode
      *
      * @throws Exception
@@ -200,7 +200,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
 
 
     /**
-     * Publish message to a single node and receive from the same node with DUPS_OK_ACKNOWLEDGE
+     * Publish messages to a single node and receive from the same node with DUPS_OK_ACKNOWLEDGE
      * ack mode
      *
      * @throws Exception
