@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering.topic;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -57,7 +58,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
 
 
     /**
-     * Publish message to a topic in single node and receive from the same node with
+     * Publish messages to a topic in single node and receive from the same node with
      * SESSION_TRANSACTED ack mode
      * @throws Exception
      */
@@ -93,11 +94,12 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in single node and receive from the same node with
+     * Publish messages to a topic in single node and receive from the same node with
      * AUTO_ACKNOWLEDGE ack mode
      * @throws Exception
      */
@@ -133,11 +135,12 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in single node and receive from the same node with
+     * Publish messages to a topic in single node and receive from the same node with
      * CLIENT_ACKNOWLEDGE ack mode
      * @throws Exception
      */
@@ -173,11 +176,12 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
-     * Publish message to a topic in single node and receive from the same node with
+     * Publish messages to a topic in single node and receive from the same node with
      * DUPS_OK_ACKNOWLEDGE ack mode
      * @throws Exception
      */
@@ -213,7 +217,8 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
 
         boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertEquals((receiveSuccess && sendSuccess ), true);
+        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+        Assert.assertTrue(sendSuccess, "Messaging sending failed");
     }
 
     /**
