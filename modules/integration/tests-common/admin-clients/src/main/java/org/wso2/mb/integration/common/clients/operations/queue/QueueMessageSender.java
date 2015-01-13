@@ -57,6 +57,8 @@ public class QueueMessageSender implements Runnable {
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
 
+    private String typeOfMessage = "text";
+
     /**
      * By default, according to JMS 1.1, message expiration is only activated if this value is larger than 0.
      */
@@ -125,7 +127,7 @@ public class QueueMessageSender implements Runnable {
 
     public void run() {
         try {
-            TextMessage textMessage = null;
+            Message message = null;
             String everything = "";
             if (readFromFile) {
                 BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -153,19 +155,29 @@ public class QueueMessageSender implements Runnable {
             long threadID = Thread.currentThread().getId();
             int localMessageCount = 0;
             while (messageCounter.get() < numOfMessagesToSend) {
-                if (!readFromFile) {
-                    textMessage = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
-                            "ThreadID:" + threadID);
-                } else {
-                    textMessage = queueSession.createTextMessage(everything);
+                if (typeOfMessage.equals("text")) {
+                    if (!readFromFile) {
+                        message = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
+                                "ThreadID:" + threadID);
+                    } else {
+                        message = queueSession.createTextMessage(everything);
+                    }
+                 //   message.setStringProperty("msgID", Integer.toString(messageCounter.get()));
+                } else if (typeOfMessage.equals("byte")) {
+                    message = queueSession.createBytesMessage();
+                } else if (typeOfMessage.equals("map")) {
+                    message = queueSession.createMapMessage();
+                } else if (typeOfMessage.equals("object")) {
+                    message = queueSession.createObjectMessage();
+                } else if (typeOfMessage.equals("stream")) {
+                    message = queueSession.createStreamMessage();
                 }
-                textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
-
+                message.setStringProperty("msgID", Integer.toString(messageCounter.get()));
                 synchronized (messageCounter.getClass()) {
                     if (messageCounter.get() >= numOfMessagesToSend) {
                         break;
                     }
-                    queueSender.send(textMessage, DeliveryMode.PERSISTENT, 0, jmsExpiration);
+                    queueSender.send(message, DeliveryMode.PERSISTENT, 0, jmsExpiration);
                     messageCounter.incrementAndGet();
                 }
                 localMessageCount++;
@@ -178,7 +190,7 @@ public class QueueMessageSender implements Runnable {
                             numOfMessagesToSend);
                 }
                 if (isToPrintEachMessage) {
-                    log.info("(count:" + messageCounter.get() + "/threadID:" + threadID + ") " + textMessage);
+                    log.info("(count:" + messageCounter.get() + "/threadID:" + threadID + ") " + message);
                 }
                 if (delay != 0) {
                     try {
@@ -215,5 +227,13 @@ public class QueueMessageSender implements Runnable {
         } catch (JMSException e) {
             log.error("Error while stopping the sender.", e);
         }
+    }
+
+    public String getTypeOfMessage() {
+        return typeOfMessage;
+    }
+
+    public void setTypeOfMessage(String typeOfMessage) {
+        this.typeOfMessage = typeOfMessage;
     }
 }

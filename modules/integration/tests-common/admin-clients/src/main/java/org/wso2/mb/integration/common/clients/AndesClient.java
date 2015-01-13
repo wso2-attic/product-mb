@@ -60,6 +60,8 @@ public class AndesClient {
     private String username = "admin";
     private String password = "admin";
 
+    private String messageType = "text";
+
     private List<QueueMessageReceiver> queueListeners = new ArrayList<QueueMessageReceiver>();
     private List<TopicMessageReceiver> topicListeners = new ArrayList<TopicMessageReceiver>();
     private List<QueueMessageSender> queueMessageSenders = new ArrayList<QueueMessageSender>();
@@ -274,7 +276,7 @@ public class AndesClient {
                         //start a queue sender
                         QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
                                 queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
-
+                        queueMessageSender.setTypeOfMessage(messageType);
                         queueMessageSenders.add(queueMessageSender);
 
                         new Thread(queueMessageSender).start();
@@ -520,5 +522,13 @@ public class AndesClient {
 
     public List<QueueMessageReceiver> getQueueListeners() {
         return queueListeners;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
     }
 }
