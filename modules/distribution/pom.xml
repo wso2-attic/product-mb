@@ -93,7 +93,7 @@
                                 <artifactItem>
                                     <groupId>org.wso2.carbon</groupId>
                                     <artifactId>wso2carbon-core</artifactId>
-                                    <version>${carbon.platform.version}</version>
+                                    <version>${carbon.kernel.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target</outputDirectory>
@@ -124,7 +124,7 @@
                                         <include name="wso2mb-${project.version}.zip"/>
                                     </fileset>
                                 </unzip>
-                                <copy todir="target/wso2carbon-core-${carbon.platform.version}/repository/components/"
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
                                       overwrite="false">
                                     <fileset
                                             dir="${tempdir}/wso2mb-${project.version}/repository/components/">
@@ -132,7 +132,7 @@
                                 </copy>
                                 <unzip dest="${tempdir}">
                                     <fileset
-                                            dir="target/wso2carbon-core-${carbon.platform.version}/repository/components/plugins/">
+                                            dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
                                         <include name="*.ui*.jar"/>
                                     </fileset>
                                 </unzip>
@@ -186,7 +186,7 @@
                                 <delete dir="target/archive-tmp"/>
                                 <delete dir="target/dependency-maven-plugin-markers"/>
                                 <delete dir="target/maven-archiver"/>
-                                <delete dir="target/wso2carbon-core-${carbon.platform.version}"/>
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
                                 <delete dir="target/sources"/>
                                 <delete dir="target/site"/>
                                 <delete dir="src/site"/>
