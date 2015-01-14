@@ -31,7 +31,6 @@ import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -65,7 +64,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case")
+    @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case",
+            enabled = true)
     public void testSameNodePubSub() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -108,7 +108,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Same node publisher, slow subscriber test case")
+    @Test(groups = "wso2.mb", description = "Same node publisher, slow subscriber test case",
+            enabled = true)
     public void testSameNodeSlowSubscriber() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -154,7 +155,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Same node slow publisher test case")
+    @Test(groups = "wso2.mb", description = "Same node slow publisher test case",
+            enabled = true)
     public void testSameNodeSlowPublisher() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -198,7 +200,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Different node publisher subscriber test case")
+    @Test(groups = "wso2.mb", description = "Different node publisher subscriber test case",
+            enabled = true)
     public void testDifferentNodePubSub() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -212,22 +215,22 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                 automationContext1.getInstance().getPorts().get("amqp");
 
         AndesClient receivingClient = new AndesClient("receive", hostInfoForReceiver
-                , "topic:singleTopic4",
+                , "topic:singleTopic10",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        TopicNode topic = topicAdminClient1.getTopicByName("singleTopic4");
+        TopicNode topic = topicAdminClient1.getTopicByName("singleTopic10");
 
-        assertTrue(topic.getTopicName().equalsIgnoreCase("singleTopic4"),
+        assertTrue(("singleTopic10").equalsIgnoreCase(topic.getTopicName()),
                 "Topic created in MB node 1 not exist");
 
         String hostInfoForSender = automationContext2.getInstance().getHosts().get("default") +
                 ":" +
                 automationContext2.getInstance().getPorts().get("amqp");
         AndesClient sendingClient = new AndesClient("send", hostInfoForSender
-                , "topic:singleTopic4", "100", "false",
+                , "topic:singleTopic10", "100", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
@@ -247,7 +250,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Different node slow subscriber test case")
+    @Test(groups = "wso2.mb", description = "Different node slow subscriber test case",
+            enabled = true)
     public void testDifferentNodeSlowSubscriber() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -296,7 +300,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Different node slow publisher test case")
+    @Test(groups = "wso2.mb", description = "Different node slow publisher test case",
+            enabled = true)
     public void testDifferentNodeSlowPublisher() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -346,7 +351,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * @throws Exception
      */
     @Test(groups = "wso2.mb", description = "Different node slow publisher slow subscriber test " +
-            "case")
+            "case",enabled = true)
     public void testDifferentNodeSlowPublisherSlowSubscriber() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -396,7 +401,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      *
      * @throws Exception
      */
-    @Test(groups = "wso2.mb", description = "Single node slow publisher slow subscriber test case")
+    @Test(groups = "wso2.mb", description = "Single node slow publisher slow subscriber test case",
+            enabled = true)
     public void testSingleNodeSlowPublisherSlowSubscriber() throws Exception {
         // Max number of seconds to run the client
         Integer runTime = 80;
@@ -447,11 +453,11 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
         topicAdminClient1.removeTopic("singleTopic1");
         topicAdminClient1.removeTopic("singleTopic2");
         topicAdminClient1.removeTopic("singleTopic3");
-        topicAdminClient1.removeTopic("singleTopic4");
         topicAdminClient1.removeTopic("singleTopic5");
         topicAdminClient1.removeTopic("singleTopic6");
         topicAdminClient1.removeTopic("singleTopic7");
         topicAdminClient1.removeTopic("singleTopic8");
+        topicAdminClient1.removeTopic("singleTopic10");
 
 
     }
