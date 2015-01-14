@@ -23,7 +23,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>target/wso2carbon-core-${carbon.platform.version}</directory>
+            <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>wso2mb-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/*.sh</exclude>
@@ -43,7 +43,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>target/wso2carbon-core-${carbon.platform.version}</directory>
+            <directory>target/wso2carbon-core-${carbon.kernel.version}</directory>
             <outputDirectory>wso2mb-${pom.version}</outputDirectory>
             <excludes>
                 <exclude>**/wso2server.sh</exclude>
@@ -120,7 +120,7 @@
         </fileSet>
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/repository/conf
             </outputDirectory>
@@ -131,7 +131,7 @@
         <!--QPID related configurations-->
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/advanced/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/advanced/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/advanced</outputDirectory>
             <includes>
@@ -143,7 +143,7 @@
         <!--Multitenancy related file -->
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/multitenancy/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/multitenancy/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/multitenancy</outputDirectory>
             <includes>
@@ -156,7 +156,7 @@
 
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/etc/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/etc</outputDirectory>
             <includes>
@@ -173,7 +173,7 @@
         </fileSet>
         <fileSet>
             <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/dbscripts/identity/
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/identity/
             </directory>
             <outputDirectory>wso2mb-${pom.version}/dbscripts/identity</outputDirectory>
             <includes>
@@ -230,7 +230,7 @@
     <files>
         <file>
             <source>
-                target/wso2carbon-core-${carbon.platform.version}/repository/conf/axis2/axis2.xml
+                target/wso2carbon-core-${carbon.kernel.version}/repository/conf/axis2/axis2.xml
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/axis2</outputDirectory>
             <filtered>true</filtered>
@@ -313,26 +313,26 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>target/wso2carbon-core-${carbon.platform.version}/bin/README.txt</source>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/bin/README.txt</source>
             <outputDirectory>wso2mb-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>target/wso2carbon-core-${carbon.platform.version}/bin/version.txt</source>
+            <source>target/wso2carbon-core-${carbon.kernel.version}/bin/version.txt</source>
             <outputDirectory>wso2mb-${pom.version}/bin/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
             <source>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/etc/logging-config.xml
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/logging-config.xml
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/etc/</outputDirectory>
         </file>
         <file>
             <source>
-                ../p2-profile/target/wso2carbon-core-${carbon.platform.version}/repository/conf/identity.xml
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/identity.xml
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
             <filtered>true</filtered>
