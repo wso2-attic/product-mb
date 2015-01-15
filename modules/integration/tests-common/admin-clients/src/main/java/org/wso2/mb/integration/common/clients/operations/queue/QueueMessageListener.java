@@ -70,7 +70,7 @@ public class QueueMessageListener implements MessageListener {
     public void onMessage(Message message) {
         messageCount.incrementAndGet();
         localMessageCount++;
-        TextMessage receivedMessage = (TextMessage) message;
+        Message receivedMessage = message;
         try {
 
             String redelivery = "";
@@ -84,10 +84,13 @@ public class QueueMessageListener implements MessageListener {
                         "localMessageCount:" + localMessageCount + " totalMessageCount:" + messageCount.get() + " max" +
                         " count:" + stopMessageCount);
             }
-            if (isToPrintEachMessage) {
-                log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/queue:" +
-                        queueName + ") " + redelivery + " >> " + receivedMessage.getText());
-                AndesClientUtils.writeToFile(receivedMessage.getText(), fileToWriteReceivedMessages);
+            if (receivedMessage instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) receivedMessage;
+                if (isToPrintEachMessage) {
+                    log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/queue:" +
+                            queueName + ") " + redelivery + " >> " + textMessage.getText());
+                    AndesClientUtils.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
+                }
             }
 
             if (messageCount.get() % ackAfterEach == 0) {

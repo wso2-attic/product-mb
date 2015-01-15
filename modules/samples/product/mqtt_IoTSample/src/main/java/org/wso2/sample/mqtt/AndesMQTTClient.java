@@ -18,7 +18,14 @@
 
 package org.wso2.sample.mqtt;
 
-import org.eclipse.paho.client.mqttv3.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.wso2.sample.mqtt.model.Vehicle;
 
@@ -31,27 +38,36 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AndesMQTTClient implements MqttCallback {
 
+    private static final Log log = LogFactory.getLog(AndesMQTTClient.class);
+
     private MqttClient mqttClient;
 
-    // Latest temperature readings received from the server <topic, value>
+    /**
+     * Latest temperature readings received from the server <topic, value> *
+     */
     private final ConcurrentHashMap<String, String> latestTemperatureReadings = new ConcurrentHashMap<String, String>();
 
-    // Latest Speed readings received from the server <topic, value>
+    /**
+     * Latest Speed readings received from the server <topic, value> *
+     */
     private final ConcurrentHashMap<String, String> latestSpeedReadings = new ConcurrentHashMap<String, String>();
 
-    // Latest acceleration readings received from the server <topic, value>
+    /**
+     * Latest acceleration readings received from the server <topic, value> *
+     */
     private final ConcurrentHashMap<String, String> latestAccelerationReadings = new ConcurrentHashMap<String,
             String>();
 
     /**
      * Create new mqtt client with the given clientId.
      *
-     * @param clientId The unique client Id
+     * @param clientId     The unique client Id
+     * @param cleanSession Clean previous session data
      * @throws MqttException
      */
-    public AndesMQTTClient(String clientId) throws MqttException {
+    public AndesMQTTClient(String clientId, boolean cleanSession) throws MqttException {
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(true);
+        options.setCleanSession(cleanSession);
         mqttClient = new MqttClient(MQTTSampleConstants.BROKER_URL, clientId,
                 new MqttDefaultFilePersistence(MQTTSampleConstants.TMP_DIR + File.pathSeparator + clientId));
         mqttClient.setCallback(this);
@@ -100,9 +116,17 @@ public class AndesMQTTClient implements MqttCallback {
         mqttClient.disconnect();
     }
 
+    /**
+     * Connection lost message received from the server.
+     *
+     * @param throwable Connection lost cause
+     */
     @Override
     public void connectionLost(Throwable throwable) {
-        // not implemented
+        // We're only logging the connection lost here since this class is only responsible for handling callbacks
+        // from server. If client tries to invoke any further operation on server it will create a server error which
+        // will then be handled by the client.
+        log.warn("Server connection lost.", throwable);
     }
 
     /**
@@ -117,7 +141,7 @@ public class AndesMQTTClient implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String sensorReading = mqttMessage.toString();
-        if (topic.endsWith(Vehicle.ENGINETEMPERATURE)) {
+        if (topic.endsWith(Vehicle.ENGINE_TEMPERATURE)) {
             latestTemperatureReadings.put(topic, sensorReading);
         } else if (topic.endsWith(Vehicle.SPEED)) {
             latestSpeedReadings.put(topic, sensorReading);

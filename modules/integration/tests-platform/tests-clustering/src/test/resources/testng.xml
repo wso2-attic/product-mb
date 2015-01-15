@@ -33,6 +33,13 @@
             <class name="org.wso2.mb.platform.tests.clustering.QueueAckMixTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckSubscriberCloseTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.topic.SingleSubscriberSinglePublisherTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.topic.MultipleSubscriberMultiplePublisherTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.DifferentAckModeQueueTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentAckModeTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.DifferentMessageTypesQueueTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentMessageTypesTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.topic.MultipleTopicTestCase" />
         </classes>
     </test>
 </suite>

@@ -54,11 +54,11 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
         super(configuration, clientID, topic, qos, callbackHandler);
 
         // Construct MQTT client
-        mqttClient = new MqttAsyncClient(this.broker_url, clientID, dataStore);
+        mqttClient = new MqttAsyncClient(this.brokerUrl, clientID, dataStore);
 
         // Connect to the MQTT server
-        log.info("Connecting to " + broker_url + " with client ID " + mqttClientID);
-        IMqttToken connectionToken = mqttClient.connect(connection_options);
+        log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
+        IMqttToken connectionToken = mqttClient.connect(connectionOptions);
 
         // Wait until connection is complete. Otherwise test results will be unpredictable
         connectionToken.waitForCompletion();

@@ -39,31 +39,48 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlock
  */
 public class MQTTClientEngine {
 
-    // Keeps all the publishers created through the engine
+    /**
+     * Keeps all the publishers created through the engine
+     */
     private final List<AndesMQTTClient> publisherList = new ArrayList<AndesMQTTClient>();
 
-    // Keep all the subscribers created through the engine
+    /**
+     * Keep all the subscribers created through the engine
+     */
     private final List<AndesMQTTClient> subscriberList = new ArrayList<AndesMQTTClient>();
 
-    // Subscriber client thread executor, executes runnable subscribers
+    /**
+     * Subscriber client thread executor, executes runnable subscribers
+     */
     private final ExecutorService clientControlSubscriptionThreads = Executors.newFixedThreadPool(10);
 
-    // Publisher client thread executor, executes runnable publishers
+    /**
+     * Publisher client thread executor, executes runnable publishers
+     */
     private final ExecutorService clientControlPublisherThreads = Executors.newFixedThreadPool(10);
 
     private final Log log = LogFactory.getLog(MQTTClientEngine.class);
 
-    private static final int millisecondsToASecond = 1000;
+    private static final int MILLISECONDS_TO_A_SECOND = 1000;
 
+    /**
+     * The executor service to invoke scheduled jobs
+     */
     private final ScheduledExecutorService scheduleExecutor = Executors.newScheduledThreadPool(1);
 
-    // Schedule which publishes send/receive TPS
+    /**
+     * Schedule which publishes send/receive TPS
+     */
     private ScheduledFuture tpsPublisherSchedule;
 
-    // The received message count there was when the previous TPS calculation happened
+    /**
+     * The received message count there was when the previous TPS calculation happened
+     */
     private int previousReceivedMessageCount;
 
-    // The sent message count there was when the previous TPS calculation happened
+    /**
+     * The sent message count there was when the previous TPS calculation happened
+     */
     private int previousSentMessageCount;
 
     /**
@@ -358,7 +375,7 @@ public class MQTTClientEngine {
      * @return Transactions Per Second
      */
     private double calculateTPS(long timeDiffMillis, int messageCount) {
-        return ((double) messageCount) / ((double) timeDiffMillis / millisecondsToASecond);
+        return ((double) messageCount) / ((double) timeDiffMillis / MILLISECONDS_TO_A_SECOND);
     }
 
     /**
@@ -374,7 +391,7 @@ public class MQTTClientEngine {
                 int currentSentMessageCount = getSentMessageCount();
 
                 if (currentReceivedMessageCount != previousReceivedMessageCount) {
-                    double receiveTPS = calculateTPS(scheduleTimeInSeconds * millisecondsToASecond,
+                    double receiveTPS = calculateTPS(scheduleTimeInSeconds * MILLISECONDS_TO_A_SECOND,
                             currentReceivedMessageCount - previousReceivedMessageCount);
                     log.info("Message Receiving TPS for the last " + scheduleTimeInSeconds + " seconds : " +
                             receiveTPS);
@@ -383,7 +400,7 @@ public class MQTTClientEngine {
                 }
 
                 if (currentSentMessageCount != previousSentMessageCount) {
-                    double sentTPS = calculateTPS(scheduleTimeInSeconds * millisecondsToASecond,
+                    double sentTPS = calculateTPS(scheduleTimeInSeconds * MILLISECONDS_TO_A_SECOND,
                             currentSentMessageCount - previousSentMessageCount);
                     log.info("Message Sending TPS for the last " + scheduleTimeInSeconds + " seconds : " + sentTPS);
 
