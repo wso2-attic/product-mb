@@ -21,11 +21,16 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 
+/**
+ * This class used to get Andes Client outputs from parse file.
+ */
 public class AndesClientOutputParser {
 
     private static Log log = LogFactory.getLog(AndesClientOutputParser.class);
@@ -144,5 +149,99 @@ public class AndesClientOutputParser {
         for (int count = 0; count < cloneOfMessages.size(); count++) {
             log.info(cloneOfMessages.get(count) + "\n");
         }
+    }
+
+    /**
+     * check whether all the messages are transacted
+     *
+     * @param operationOccurredIndex index of the operation occurred message 
+     * @return transactedResult
+     */
+    public boolean transactedOperations(long operationOccurredIndex) {
+        boolean result = false;
+        int count = 0;
+        long firstMessageIdentifier = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            //Needed try/finally to close the file
+            try {
+                String line = br.readLine();
+                while (line != null) {
+                    String[] infoParts = line.split("-");
+                    String messageIdentifierAsString = infoParts[1];
+                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    if (count == 0) {
+                        firstMessageIdentifier = messageIdentifier;
+                    }
+                    if (count == (operationOccurredIndex)) {
+                        if (messageIdentifier == firstMessageIdentifier) {
+                            result = true;
+                        }
+                    }
+                    line = br.readLine();
+                    count++;
+                }
+            } catch (IOException e) {
+                log.error("Error while parsing the file containing received messages", e);
+            } finally {
+                try {
+                    if (null != br) {
+                        br.close();
+                    }
+                } catch (IOException e) {
+                    log.error("Error while closing the file containing received messages", e);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+        }
+
+        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
+        return result;
+    }
+
+    /**
+     * parse the file and get the number of duplicate messages
+     *
+     * @return duplicate count
+     */
+    public int numberDuplicatedMessages() {
+        int duplicateCount = 0;
+        List<Long> messagesDuplicated = new ArrayList<Long>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            //Needed try/finally to close the file
+            try {
+                String line = br.readLine();
+                while (line != null) {
+                    String[] infoParts = line.split("-");
+                    String messageIdentifierAsString = infoParts[1];
+                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    //Checking for duplicates
+                    if (messagesDuplicated.contains(messageIdentifier)) {
+                        duplicateCount++;
+                    } else {
+                        messagesDuplicated.add(messageIdentifier);
+                    }
+                    line = br.readLine();
+                }
+            } catch (IOException e) {
+                log.error("Error while parsing the file containing received messages", e);
+            } finally {
+
+                try {
+                    if (null != br) {
+                        br.close();
+                    }
+                } catch (IOException e) {
+                    log.error("Error while closing the file containing received messages", e);
+                }
+
+            }
+        } catch (FileNotFoundException e) {
+            log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+        }
+        return duplicateCount;
     }
 }
