@@ -31,7 +31,7 @@
     </target>
 
     <target name="run" depends="compile">
-        <java classname="org.sample.jms.Main"
+        <java classname="org.sample.jms.SelectorMainClass"
               classpathref="javac.classpath" fork="true">
         </java>
     </target>

@@ -27,6 +27,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.JMSTestConstants;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class SelectorsTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
@@ -61,10 +62,11 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 0, 20);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, messageCount);
+        boolean sendSuccess =
+                AndesClientUtils.getIfSenderIsSuccess(sendingClient, JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT);
 
-        assertEquals((receiveSuccess), true);
-        assertEquals((sendSuccess), true);
+        assertTrue(receiveSuccess, "Message receiving failed");
+        assertTrue(sendSuccess, "Message sending failed.");
     }
 
     /**
@@ -114,10 +116,10 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         boolean sendSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2, messageCount);
 
         //Sending messages with configured jmsType
-        assertEquals(sendingClient1, true);
+        assertTrue(receiveSuccess, "Message receiving failed");
         //Sending message without jmsType
-        assertEquals(sendingClient2, true);
+        assertTrue(sendSuccess1, "Message sending failed in Sender1");
         //receiving both sender's messages
-        assertEquals(receivingClient, true);
+        assertTrue(sendSuccess2, "Message sending failed in Sender2");
     }
 }

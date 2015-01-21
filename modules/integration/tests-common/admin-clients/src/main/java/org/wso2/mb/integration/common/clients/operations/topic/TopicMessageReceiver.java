@@ -63,13 +63,12 @@ public class TopicMessageReceiver implements Runnable {
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
-    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName,
-                                String password, String topicName, boolean isDurable, String subscriptionID,
-                                int ackMode,
+    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName, String password,
+                                String topicName, boolean isDurable, String subscriptionID, int ackMode,
                                 boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages,
                                 int printNumberOfMessagesPer, boolean isToPrintEachMessage,
                                 String fileToWriteReceivedMessages, int stopAfter, int unsubscrbeAfter,
-                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach,String selectors) {
+                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach, String selectors) {
 
         this.hostName = hostName;
         this.port = port;
@@ -115,7 +114,7 @@ public class TopicMessageReceiver implements Runnable {
 
             if (isDurable) {
                 if (null != selectors) {
-                    topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId, selectors , false);
+                    topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId, selectors, false);
                 } else {
                     topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId);
                 }

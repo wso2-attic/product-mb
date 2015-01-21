@@ -223,7 +223,7 @@ public class AndesClient {
             Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
             // value is larger than 0.
             String selectors = null;
-            String jmsType=null;
+            String jmsType = null;
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
@@ -259,7 +259,6 @@ public class AndesClient {
                 } else if (key.equals("setJMSType")) {
                     jmsType = value;
                 } else if (key.equals("jmsExpiration")) {
-
                     if (!value.equals("")) {
                         jmsExpiration = Long.parseLong(value);
                     }
@@ -298,8 +297,11 @@ public class AndesClient {
                         String topic = topics[topicIndex];
 
                         //start a topic sender
-                        TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration,jmsType);
+                        TopicMessagePublisher topicMessagePublisher =
+                                new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
+                                                          topic, topicMessageCounter, messageCount,
+                                                          delayBetWeenMessages, filePath, printNumberOfMessagesPer,
+                                                          isToPrintEachMessage, jmsExpiration, jmsType);
                         topicMessagePublishers.add(topicMessagePublisher);
 
                         new Thread(topicMessagePublisher).start();
@@ -435,6 +437,8 @@ public class AndesClient {
                             Integer.MAX_VALUE, false, "", messageCount, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
             queueListeners.add(queueMessageReceiver);
             new Thread(queueMessageReceiver).start();
+
+            topicMessageCounter.set(messageCount);
 
         } else if (mode.equals("analyse")) {
 
