@@ -520,6 +520,27 @@ public class AndesClient {
         return andesClientOutputParser.checkIfMessagesAreInOrder();
     }
 
+    /**
+     * This method return whether received messages are transacted
+     *
+     * @param operationOccurredIndex Index of the operated message most of the time last message
+     * @return
+     */
+    public boolean transactedOperation(long operationOccurredIndex) {
+        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        return andesClientOutputParser.transactedOperations(operationOccurredIndex);
+    }
+
+    /**
+     * This method returns number of duplicate received messages
+     *
+     * @return duplicate message count
+     */
+    public int getTotalNumberOfDuplicates() {
+        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        return andesClientOutputParser.numberDuplicatedMessages();
+    }
+
     public List<QueueMessageReceiver> getQueueListeners() {
         return queueListeners;
     }
