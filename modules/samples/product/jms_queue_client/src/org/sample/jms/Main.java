@@ -27,7 +27,7 @@ import javax.naming.NamingException;
 public class Main {
 
 	public static void main(String[] args) throws NamingException, JMSException {
-        SampleQueueReceiver queueReceiver = new SampleQueueReceiver();
+        SampleQueueSelectorReceiver queueReceiver = new SampleQueueSelectorReceiver();
         MessageConsumer consumer = queueReceiver.registerSubscriber();
         SampleQueueSender queueSender = new SampleQueueSender();
         queueSender.sendMessages();

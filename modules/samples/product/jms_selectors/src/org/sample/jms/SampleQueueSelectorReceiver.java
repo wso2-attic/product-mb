@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * This class contains methods and properties relate to Queue Receiver (Subscriber)
  */
-public class SampleQueueReceiver {
+public class SampleQueueSelectorReceiver {
     //JNDI Initial Context Factory. Don't change this
     public static final String QPID_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
     //Connection factory prefix

@@ -149,12 +149,8 @@ public class QueueMessageReceiver implements Runnable {
                 queueSession = queueConnection.createQueueSession(false, ackMode);
             }
             Queue queue = (Queue) ctx.lookup(queueName);
-
-            if (null != selectors) {
-                queueReceiver = queueSession.createReceiver(queue, selectors);
-            } else {
-                queueReceiver = queueSession.createReceiver(queue);
-            }
+            // Creating a queue receiver with selectors
+            queueReceiver = queueSession.createReceiver(queue, selectors);
 
         } catch (NamingException e) {
             log.error("Error while looking up for queue", e);
