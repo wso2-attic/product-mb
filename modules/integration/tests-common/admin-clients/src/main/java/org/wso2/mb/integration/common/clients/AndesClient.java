@@ -53,6 +53,7 @@ public class AndesClient {
     private String numberOfThreadsAsString = "1";
     private String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
     private String connectionString = "";
+    private int unsubscribeAfter = Integer.MAX_VALUE;
 
     private String analyticOperation = "";
     private String numberOfMessagesExpectedForAnalysis = "";
@@ -61,6 +62,7 @@ public class AndesClient {
     private String password = "admin";
 
     private String messageType = "text";
+    private boolean isDurable = false;
 
     private List<QueueMessageReceiver> queueListeners = new ArrayList<QueueMessageReceiver>();
     private List<TopicMessageReceiver> topicListeners = new ArrayList<TopicMessageReceiver>();
@@ -209,7 +211,6 @@ public class AndesClient {
 
             //decode parameters
             boolean isToUseListerner = true;
-            boolean isDurable = false;
             String subscriptionID = "";
             String filePath = null;
             //default AUTO_ACK
@@ -219,7 +220,6 @@ public class AndesClient {
             int ackAfterEach = Integer.MAX_VALUE;
             int commitAfterEach = Integer.MAX_VALUE;
             int rollbackAfterEach = Integer.MAX_VALUE;
-            int unsubscribeAfter = Integer.MAX_VALUE;
             Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
             // value is larger than 0.
 
@@ -251,7 +251,7 @@ public class AndesClient {
                 } else if (key.equals("rollbackAfterEach")) {
                     rollbackAfterEach = Integer.parseInt(value);
                 } else if (key.equals("unsubscribeAfter")) {
-                    unsubscribeAfter = Integer.parseInt(value);
+                    setUnsubscribeAfter(Integer.parseInt(value));
                 } else if (key.equals("jmsExpiration")) {
                     if (!value.equals("")) {
                         jmsExpiration = Long.parseLong(value);
@@ -334,7 +334,7 @@ public class AndesClient {
 
                         //start a topic receiver
                         TopicMessageReceiver topicMessageReceiver = new TopicMessageReceiver(connectionString, host, port, this.username, this.password, topic, isDurable,
-                                subscriptionID, ackMode, isToUseListerner, topicMessageCounter, delayBetWeenMessages, printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
+                                subscriptionID, ackMode, isToUseListerner, topicMessageCounter, delayBetWeenMessages, printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, getUnsubscribeAfter(), ackAfterEach, commitAfterEach, rollbackAfterEach);
                         topicListeners.add(topicMessageReceiver);
                         new Thread(topicMessageReceiver).start();
 
@@ -551,5 +551,13 @@ public class AndesClient {
 
     public void setMessageType(String messageType) {
         this.messageType = messageType;
+    }
+
+    public int getUnsubscribeAfter() {
+        return unsubscribeAfter;
+    }
+
+    public void setUnsubscribeAfter(int unsubscribeAfter) {
+        this.unsubscribeAfter = unsubscribeAfter;
     }
 }
