@@ -75,6 +75,10 @@
             <id>Eclipse Paho Repo</id>
             <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
         </repository>
+        <repository>
+            <id>WSO2 Dist</id>
+            <url>http://dist.wso2.org/maven2/</url>
+        </repository>
     </repositories>
 
 
