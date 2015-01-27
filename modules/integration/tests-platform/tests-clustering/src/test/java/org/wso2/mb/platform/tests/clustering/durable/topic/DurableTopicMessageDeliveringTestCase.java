@@ -18,9 +18,8 @@
 
 package org.wso2.mb.platform.tests.clustering.durable.topic;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -31,12 +30,13 @@ import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
+/**
+ * This class performs tests related to message delivery of durable topics
+ */
 public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest{
 
-    private static Log log = LogFactory.getLog(DurableTopicSubscriptionTestCase.class);
 
     private AutomationContext automationContext1;
-    private AutomationContext automationContext2;
     private TopicAdminClient topicAdminClient1;
 
     /**
@@ -49,14 +49,17 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest{
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
         automationContext1 = getAutomationContextWithKey("mb002");
-        automationContext2 = getAutomationContextWithKey("mb003");
         topicAdminClient1 = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
                 super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
     }
 
+    /**
+     * Subscribe to a durable topic and publish messages to that topic
+     * @throws Exception
+     */
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDurableTopicTestCase() throws Exception{
+    public void pubSubDurableTopicTestCase() throws Exception{
 
         Integer sendCount = 500;
         Integer runTime = 20;
@@ -66,18 +69,20 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest{
                 ":" +
                 automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient = new AndesClient("receive", hostInfoReceiver, "topic:durableTopic",
+        AndesClient receivingClient = new AndesClient("receive", hostInfoReceiver,
+                "topic:durableTopic1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=durableTopicSub1," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=durableTopicSub5," +
+                "unsubscribeAfter=500," +
                 "delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
-
         receivingClient.startWorking();
 
         String hostInfoSender = automationContext1.getInstance().getHosts().get("default") +
                 ":" +
                 automationContext1.getInstance().getPorts().get("amqp");
-        AndesClient sendingClient = new AndesClient("send", hostInfoSender, "topic:durableTopic", "100",
+        AndesClient sendingClient = new AndesClient("send", hostInfoSender,
+                "topic:durableTopic1", "100",
                 "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
@@ -91,6 +96,17 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest{
 
         Assert.assertTrue(receivingSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendingSuccess, "Messaging sending failed");
+
+    }
+
+    /**
+     * Cleanup after running tests.
+     *
+     * @throws Exception
+     */
+    @AfterClass(alwaysRun = true)
+    public void destroy() throws Exception {
+        topicAdminClient1.removeTopic("durableTopic1");
 
     }
 }

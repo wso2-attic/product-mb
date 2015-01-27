@@ -48,8 +48,6 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     private String password = "admin";
     private long intervalBetSubscription = 100;
 
-    private AutomationContext automationContext1;
-    private AutomationContext automationContext2;
     private TopicAdminClient topicAdminClient1;
 
     /**
@@ -61,8 +59,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     public void init() throws Exception {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
-        automationContext1 = getAutomationContextWithKey("mb002");
-        automationContext2 = getAutomationContextWithKey("mb003");
+        AutomationContext automationContext1 = getAutomationContextWithKey("mb002");
+        AutomationContext automationContext2 = getAutomationContextWithKey("mb003");
         hostNode1 = automationContext1.getInstance().getHosts().get("default");
         hostNode2 = automationContext2.getInstance().getHosts().get("default");
         portInNode1 = automationContext1.getInstance().getPorts().get("amqp");
@@ -110,7 +108,7 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
         String topic = "durableTopic2";
         String subID = "wso2sub1";
         BasicTopicSubscriber sub1 = null;
-        BasicTopicSubscriber sub2 = null;
+        BasicTopicSubscriber sub2;
         boolean multipleSubsNotAllowed = true;
         try {
             sub1 = new BasicTopicSubscriber(hostNode1, portInNode1, userName, password, topic);

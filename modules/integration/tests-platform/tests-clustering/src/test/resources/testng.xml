@@ -40,6 +40,9 @@
             <class name="org.wso2.mb.platform.tests.clustering.DifferentMessageTypesQueueTestCase" />
             <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentMessageTypesTopicTestCase" />
             <class name="org.wso2.mb.platform.tests.clustering.topic.MultipleTopicTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionTestCase" />
+            <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicMessageDeliveringTestCase" />
+
         </classes>
     </test>
 </suite>
