@@ -20,7 +20,9 @@ package org.wso2.sample.mqtt;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Scanner;
 
 /**
@@ -44,9 +46,9 @@ public final class ChatWindow {
     private static final Scanner scanner = new Scanner(System.in);
 
     /**
-     * Console writer to write to the console
+     * Output StreamWriter to write to the console
      */
-    private static final PrintWriter writer = System.console().writer();
+    private static final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
     /**
      * The delimiter to separate each keyword in a user input command
@@ -86,8 +88,12 @@ public final class ChatWindow {
      * @param message The message to print to the console
      */
     public static void outputToChatWindow(String message) {
-        writer.print(">" + message + NEW_LINE);
-        writer.flush();
+        try {
+            writer.write(">" + message + NEW_LINE);
+            writer.flush();
+        } catch (IOException ignore) {
+            // Silently ignore since there is no other way than this method itself to print to the output
+        }
     }
 
     public static String getInputFromChatWindow() {

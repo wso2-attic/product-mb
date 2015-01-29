@@ -100,6 +100,11 @@
         <pathelement
                 location="${path.variable.maven_repository}/org/eclipse/paho/mqtt-client/0.4.1-SNAPSHOT/mqtt-client-0.4.1-20140602.040113-100.jar"/>
     </path>
+    
+    <path id="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath">
+        <pathelement
+                location="${path.variable.maven_repository}/commons-lang/wso2/commons-lang/2.6.0.wso2v1/commons-lang-2.6.0.wso2v1.jar"/>
+    </path>
 
     <!-- Modules -->
 
@@ -125,6 +130,7 @@
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
         <path refid="library.maven:_avalon-framework:avalon-framework:4.1.3.classpath"/>
         <path refid="library.maven:_javax.servlet:servlet-api:2.3.classpath"/>
+        <path refid="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath"/>
     </path>
 
     <path id="iotsample.runtime.production.module.classpath">
@@ -135,6 +141,7 @@
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
         <path refid="library.maven:_avalon-framework:avalon-framework:4.1.3.classpath"/>
         <path refid="library.maven:_javax.servlet:servlet-api:2.3.classpath"/>
+        <path refid="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath"/>
     </path>
 
     <path id="iotsample.module.classpath">
@@ -145,6 +152,7 @@
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
         <path refid="library.maven:_avalon-framework:avalon-framework:4.1.3.classpath"/>
         <path refid="library.maven:_javax.servlet:servlet-api:2.3.classpath"/>
+        <path refid="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath"/>
     </path>
 
     <path id="iotsample.runtime.module.classpath">
@@ -156,6 +164,7 @@
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
         <path refid="library.maven:_avalon-framework:avalon-framework:4.1.3.classpath"/>
         <path refid="library.maven:_javax.servlet:servlet-api:2.3.classpath"/>
+        <path refid="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath"/>
     </path>
 
 
