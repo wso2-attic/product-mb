@@ -57,6 +57,7 @@ public class TopicMessagePublisher implements Runnable {
     private String topicName = null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
+    private String jmsType = null;
 
     /**
      * By default, according to JMS 1.1, message expiration is only activated if this value is larger than 0.
@@ -66,10 +67,10 @@ public class TopicMessagePublisher implements Runnable {
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
     public TopicMessagePublisher(String connectionString, String hostName, String port, String userName,
-                                 String password, String topicName,
-                                 AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
-                                 String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
-                                 long jmsExpiration) {
+                                 String password, String topicName, AtomicInteger messageCounter,
+                                 int numOfMessagesToSend, int delayBetweenMessages, String filePath,
+                                 int printNumberOfMessagesPer, boolean isToPrintEachMessage, long jmsExpiration,
+                                 String selector) {
 
         this.hostName = hostName;
         this.port = port;
@@ -84,7 +85,7 @@ public class TopicMessagePublisher implements Runnable {
         }
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
         this.isToPrintEachMessage = isToPrintEachMessage;
-
+        this.jmsType = selector;
         this.jmsExpiration = jmsExpiration;
 
         Properties properties = new Properties();
@@ -158,6 +159,10 @@ public class TopicMessagePublisher implements Runnable {
                             "ThreadID:" + threadID + "  " + everything);
                 }
                 textMessage.setStringProperty("msgID", Integer.toString(messageCounter.get()));
+                //Setting jmsType in message
+                if (null != jmsType) {
+                    textMessage.setJMSType(jmsType);
+                }
 
                 // Check the message count again before publishing since, messages count might have increased from
                 // other threads after the last check,

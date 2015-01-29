@@ -56,6 +56,7 @@ public class QueueMessageSender implements Runnable {
     private String queueName = null;
     private int printNumberOfMessagesPer = 1;
     private boolean isToPrintEachMessage = false;
+    private String jmsType = null;
 
     private String typeOfMessage = "text";
 
@@ -65,10 +66,9 @@ public class QueueMessageSender implements Runnable {
     private Long jmsExpiration = 0L;
 
     public QueueMessageSender(String connectionString, String hostName, String port, String userName,
-                              String password, String queueName,
-                              AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
-                              String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
-                              Long jmsExpiration) {
+                              String password, String queueName, AtomicInteger messageCounter, int numOfMessagesToSend,
+                              int delayBetweenMessages, String filePath, int printNumberOfMessagesPer,
+                              boolean isToPrintEachMessage, Long jmsExpiration, String jmsType) {
 
         this.hostName = hostName;
         this.port = port;
@@ -84,6 +84,7 @@ public class QueueMessageSender implements Runnable {
         this.printNumberOfMessagesPer = printNumberOfMessagesPer;
         this.isToPrintEachMessage = isToPrintEachMessage;
         this.jmsExpiration = jmsExpiration;
+        this.jmsType = jmsType;
 
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, QPID_ICF);
@@ -158,7 +159,7 @@ public class QueueMessageSender implements Runnable {
                 if (typeOfMessage.equals("text")) {
                     if (!readFromFile) {
                         message = queueSession.createTextMessage("sending Message:-" + messageCounter.get() + "- " +
-                                "ThreadID:" + threadID);
+                                                                 "ThreadID:" + threadID);
                     } else {
                         message = queueSession.createTextMessage(everything);
                     }
@@ -171,7 +172,14 @@ public class QueueMessageSender implements Runnable {
                 } else if (typeOfMessage.equals("stream")) {
                     message = queueSession.createStreamMessage();
                 }
+
                 message.setStringProperty("msgID", Integer.toString(messageCounter.get()));
+
+                //Setting jmsType in message
+                if (null != jmsType) {
+                    message.setJMSType(jmsType);
+                }
+
                 synchronized (messageCounter.getClass()) {
                     if (messageCounter.get() >= numOfMessagesToSend) {
                         break;
@@ -182,11 +190,10 @@ public class QueueMessageSender implements Runnable {
                 localMessageCount++;
                 if (messageCounter.get() % printNumberOfMessagesPer == 0) {
 
-                    log.info((readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[QUEUE SEND] ThreadID:" +
-                            threadID + " queueName:" +
-                            queueName + " localMessageCount:" + localMessageCount + " totalMessageCount:-" +
-                            messageCounter.get() + "- count to send:" +
-                            numOfMessagesToSend);
+                    log.info(
+                            (readFromFile ? "(FROM FILE)" : "(SIMPLE MESSAGE) ") + "[QUEUE SEND] ThreadID:" + threadID +
+                            " queueName:" + queueName + " localMessageCount:" + localMessageCount +
+                            " totalMessageCount:-" + messageCounter.get() + "- count to send:" + numOfMessagesToSend);
                 }
                 if (isToPrintEachMessage) {
                     log.info("(count:" + messageCounter.get() + "/threadID:" + threadID + ") " + message);

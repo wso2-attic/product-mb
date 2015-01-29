@@ -222,6 +222,8 @@ public class AndesClient {
             int rollbackAfterEach = Integer.MAX_VALUE;
             Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
             // value is larger than 0.
+            String selectors = null;
+            String jmsType = null;
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
@@ -251,7 +253,11 @@ public class AndesClient {
                 } else if (key.equals("rollbackAfterEach")) {
                     rollbackAfterEach = Integer.parseInt(value);
                 } else if (key.equals("unsubscribeAfter")) {
-                    setUnsubscribeAfter(Integer.parseInt(value));
+                    unsubscribeAfter = Integer.parseInt(value);
+                } else if (key.equals("jMSSelector")){
+                    selectors=value;
+                } else if (key.equals("setJMSType")) {
+                    jmsType = value;
                 } else if (key.equals("jmsExpiration")) {
                     if (!value.equals("")) {
                         jmsExpiration = Long.parseLong(value);
@@ -274,9 +280,13 @@ public class AndesClient {
                         String queue = queues[queueIndex];
 
                         //start a queue sender
-                        QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
-                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+                        QueueMessageSender queueMessageSender =
+                                new QueueMessageSender(connectionString, host, port, this.username, this.password,
+                                                       queue, queueMessageCounter, messageCount, delayBetWeenMessages,
+                                                       filePath, printNumberOfMessagesPer, isToPrintEachMessage,
+                                                       jmsExpiration, jmsType);
                         queueMessageSender.setTypeOfMessage(messageType);
+
                         queueMessageSenders.add(queueMessageSender);
 
                         new Thread(queueMessageSender).start();
@@ -287,8 +297,11 @@ public class AndesClient {
                         String topic = topics[topicIndex];
 
                         //start a topic sender
-                        TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+                        TopicMessagePublisher topicMessagePublisher =
+                                new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
+                                                          topic, topicMessageCounter, messageCount,
+                                                          delayBetWeenMessages, filePath, printNumberOfMessagesPer,
+                                                          isToPrintEachMessage, jmsExpiration, jmsType);
                         topicMessagePublishers.add(topicMessagePublisher);
 
                         new Thread(topicMessagePublisher).start();
@@ -322,9 +335,13 @@ public class AndesClient {
                         String queue = queues[queueIndex];
 
                         //start a queue receiver
-                        QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
-                                (connectionString, host, port, this.username, this.password, queue, ackMode, isToUseListerner, queueMessageCounter, delayBetWeenMessages,
-                                        printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
+                        QueueMessageReceiver queueMessageReceiver =
+                                new QueueMessageReceiver(connectionString, host, port, this.username, this.password,
+                                                         queue, ackMode, isToUseListerner, queueMessageCounter,
+                                                         delayBetWeenMessages, printNumberOfMessagesPer,
+                                                         isToPrintEachMessage, filePathToWriteReceivedMessages,
+                                                         stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach,
+                                                         selectors);
                         queueListeners.add(queueMessageReceiver);
                         new Thread(queueMessageReceiver).start();
                     }
@@ -333,8 +350,13 @@ public class AndesClient {
                         String topic = topics[topicIndex];
 
                         //start a topic receiver
-                        TopicMessageReceiver topicMessageReceiver = new TopicMessageReceiver(connectionString, host, port, this.username, this.password, topic, isDurable,
-                                subscriptionID, ackMode, isToUseListerner, topicMessageCounter, delayBetWeenMessages, printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, getUnsubscribeAfter(), ackAfterEach, commitAfterEach, rollbackAfterEach);
+                        TopicMessageReceiver topicMessageReceiver =
+                                new TopicMessageReceiver(connectionString, host, port, this.username, this.password,
+                                                         topic, isDurable, subscriptionID, ackMode, isToUseListerner,
+                                                         topicMessageCounter, delayBetWeenMessages,
+                                                         printNumberOfMessagesPer, isToPrintEachMessage,
+                                                         filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter,
+                                                         ackAfterEach, commitAfterEach, rollbackAfterEach, selectors);
                         topicListeners.add(topicMessageReceiver);
                         new Thread(topicMessageReceiver).start();
 
@@ -559,5 +581,9 @@ public class AndesClient {
 
     public void setUnsubscribeAfter(int unsubscribeAfter) {
         this.unsubscribeAfter = unsubscribeAfter;
+    }
+
+    public List<TopicMessageReceiver> getTopicListeners() {
+        return topicListeners;
     }
 }
