@@ -188,9 +188,23 @@
                 <version>${carbon.platform.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Snapshot eclipse mqtt client -->
+
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>mqtt-client</artifactId>
+                <version>${mqttclient.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>Eclipse Paho Repo</id>
+            <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
+        </repository>
+    </repositories>
 
     <scm>
         <connection>scm:git:https://github.com/wso2/product-mb.git</connection>
@@ -296,6 +310,8 @@
         <!--Apache Derby-->
         <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
         <emma.version>2.1.5320</emma.version>
+        <!-- mqtt client snapshot-->
+        <mqttclient.version>0.4.1-SNAPSHOT</mqttclient.version>
     </properties>
 
 </project>
