@@ -30,7 +30,7 @@
     <groupId>org.wso2.mb</groupId>
     <artifactId>mb-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>2.5.0-SNAPSHOT</version>
     <name>WSO2 MB</name>
     <url>http://wso2.org/projects/mb/java</url>
     <description>WSO2 Message Broker Server</description>
@@ -41,7 +41,12 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
+    <scm>
+        <url>https://github.com/wso2/product-mb.git</url>
+        <developerConnection>scm:git:https://github.com/wso2/product-mb.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2/product-mb.git</connection>
+        <tag>HEAD</tag>
+    </scm>
     <modules>
         <module>modules/styles</module>
         <module>modules/features</module>
@@ -51,7 +56,18 @@
         <!--module>modules/org.wso2.stratos.mb.login.ui</module-->
         <module>modules/integration</module> 
     </modules>
-
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>WSO2 Release Distribution Repository</name>
+            <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>wso2.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     <dependencyManagement>
         <dependencies>
             <!-- Dependencies for dashboard ui -->
@@ -190,14 +206,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
-    <scm>
-        <connection>scm:git:https://github.com/wso2/product-mb.git</connection>
-        <developerConnection>scm:git:https://github.com/wso2/product-mb.git</developerConnection>
-        <url>https://github.com/wso2/product-mb</url>
-    </scm>
-
     <profiles>
         <profile>
             <id>signed-build</id>
@@ -208,6 +216,18 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-release-plugin</artifactId>
+                         <configuration>
+                           <preparationGoals>clean install</preparationGoals>
+                           <autoVersionSubmodules>true</autoVersionSubmodules>
+                         </configuration>
+                    </plugin>
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -265,6 +285,7 @@
     </build>
 
     <properties>
+        <project.scm.id>my-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jline.version>1.0</jline.version>
         <carbon.version>4.3.0-SNAPSHOT</carbon.version>
@@ -286,7 +307,7 @@
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <emma.version>2.1.5320</emma.version>
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
-        <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
+        <product.mb.version>2.5.0-SNAPSHOT</product.mb.version>
         <test.framework.version>4.3.1</test.framework.version>
 	    <!-- Rampart -->
         <rampart.version>1.6.1-wso2v10</rampart.version>
