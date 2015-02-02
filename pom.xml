@@ -189,12 +189,30 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- Snapshot eclipse mqtt client -->
+            <!-- Snapshot dependency eclipse mqtt client -->
 
             <dependency>
                 <groupId>org.eclipse.paho</groupId>
                 <artifactId>mqtt-client</artifactId>
                 <version>${mqttclient.version}</version>
+            </dependency>
+
+            <!-- Clustering test dependecies -->
+
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.event.stub</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.andes.stub</artifactId>
+                <version>${andesstub.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.mb.platform.common.utils</artifactId>
+                <version>${product.mb.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -302,6 +320,7 @@
         <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
         <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
         <test.framework.version>4.3.1</test.framework.version>
+        <andesstub.version>4.2.1</andesstub.version>
 	    <!-- Rampart -->
         <rampart.version>1.6.1-wso2v10</rampart.version>
         <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
@@ -310,7 +329,7 @@
         <!--Apache Derby-->
         <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
         <emma.version>2.1.5320</emma.version>
-        <!-- mqtt client snapshot-->
+        <!--Mqtt client snapshot-->
         <mqttclient.version>0.4.1-SNAPSHOT</mqttclient.version>
     </properties>
 
