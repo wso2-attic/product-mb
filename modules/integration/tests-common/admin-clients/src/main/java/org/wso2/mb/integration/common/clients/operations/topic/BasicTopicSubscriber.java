@@ -26,7 +26,8 @@ public class BasicTopicSubscriber {
 
     private TopicConnection topicConnection = null;
     private TopicSession topicSession = null;
-    private InitialContext ctx = null;
+    private String subscriptionId = null;
+    InitialContext ctx = null;
     private TopicSubscriber topicSubscriber = null;
 
     public BasicTopicSubscriber(String host, String port, String userName, String password,

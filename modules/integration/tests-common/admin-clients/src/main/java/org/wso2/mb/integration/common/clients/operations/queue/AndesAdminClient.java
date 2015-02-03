@@ -22,50 +22,105 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.andes.stub.AndesAdminServiceException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceStub;
+import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
+import org.wso2.carbon.andes.stub.admin.types.QueueRolePermission;
 
 import java.rmi.RemoteException;
 
-
+/**
+ * Andes Admin Client is a client which is used to contact the Andes Admin services
+ */
 public class AndesAdminClient {
-
-    private static final Log log = LogFactory.getLog(AndesAdminClient.class);
-
     String backendUrl = null;
-    String SessionCookie = null;
+    String sessionCookie = null;
     ConfigurationContext configurationContext = null;
     AndesAdminServiceStub stub = null;
 
+    /**
+     * Initializes Andes Admin Client
+     *
+     * @param backendUrl           the backend url
+     * @param sessionCookie        the session cookie string
+     * @param configurationContext configuration context
+     * @throws AxisFault
+     */
     public AndesAdminClient(String backendUrl, String sessionCookie,
                             ConfigurationContext configurationContext) throws AxisFault {
 
         this.backendUrl = backendUrl
-                + "AndesAdminService";
-        this.SessionCookie = sessionCookie;
+                          + "AndesAdminService";
+        this.sessionCookie = sessionCookie;
         this.configurationContext = configurationContext;
         stub = new AndesAdminServiceStub(configurationContext,
-                this.backendUrl);
+                                         this.backendUrl);
         configureCookie(stub._getServiceClient());
-
     }
 
-    public void createQueue(String queue) throws Exception {
+    /**
+     * Creates a new queue
+     *
+     * @param queue new queue name
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
+    public void createQueue(String queue)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         stub.createQueue(queue);
     }
 
-    public void deleteQueue(String queue) throws Exception {
+    /**
+     * Gets messages in a queue
+     *
+     * @param queue               the queue name
+     * @param startingIndex       starting index of the messages to be returned
+     * @param maximumMessageCount maximum number of messages to return
+     * @return an array of messages
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
+    public Message[] browseQueue(String queue, int startingIndex, int maximumMessageCount)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
+        return stub.browseQueue(queue, startingIndex, maximumMessageCount);
+    }
+
+    /**
+     * Deletes a queue
+     *
+     * @param queue the queue name
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
+    public void deleteQueue(String queue)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         stub.deleteQueue(queue);
     }
 
-    public Queue[] getAllQueues() throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
-        return stub.getAllQueues();
+    /**
+     * Deletes all messages in a queue
+     *
+     * @param queue the name of the queue
+     * @throws AndesAdminServiceException
+     * @throws RemoteException
+     */
+    public void purgeQueue(String queue)
+            throws AndesAdminServiceException, RemoteException {
+        stub.purgeMessagesOfQueue(queue);
     }
 
-    public Queue getQueueByName(String name) throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
+    /**
+     * Get queue object by queue name
+     *
+     * @param name the name of the queue
+     * @return a queue
+     * @throws RemoteException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     */
+    public Queue getQueueByName(String name)
+            throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
         Queue[] queues = stub.getAllQueues();
 
         if (queues != null && queues.length > 0) {
@@ -80,12 +135,31 @@ public class AndesAdminClient {
         return null;
     }
 
+    /**
+     * Updating permissions for a queue. Permissions may include publish, consume etc
+     *
+     * @param queueName   queue name
+     * @param permissions new permissions
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
+    public void updatePermissionForQueue(String queueName, QueueRolePermission permissions)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
+        stub.updatePermission(queueName, new QueueRolePermission[]{permissions});
+    }
+
+    /**
+     * Adding session cookie to service client options
+     *
+     * @param client the service client
+     * @throws AxisFault
+     */
     private void configureCookie(ServiceClient client) throws AxisFault {
-        if(SessionCookie != null){
+        if (sessionCookie != null) {
             Options option = client.getOptions();
             option.setManageSession(true);
             option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
-                    SessionCookie);
+                               sessionCookie);
         }
     }
 }

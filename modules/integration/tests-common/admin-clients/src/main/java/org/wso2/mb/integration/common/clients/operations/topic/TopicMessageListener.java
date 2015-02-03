@@ -93,7 +93,7 @@ public class TopicMessageListener implements MessageListener {
             if (isToPrintEachMessage) {
                 log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/topic:" +
                         topicName + ") " + redelivery + " >> " + receivedMessage.getText());
-                AndesClientUtils.writeToFile(receivedMessage.getText(), fileToWriteReceivedMessages);
+                AndesClientUtilsTemp.writeToFile(receivedMessage.getText(), fileToWriteReceivedMessages);
             }
 
             if (messageCount.get() % ackAfterEach == 0) {
@@ -113,10 +113,10 @@ public class TopicMessageListener implements MessageListener {
 
             if (messageCount.get() >= unsubscribeMessageCount) {
                 unsubscribeConsumer();
-                AndesClientUtils.sleepForInterval(200);
+                AndesClientUtilsTemp.sleepForInterval(200);
             } else if (messageCount.get() >= stopMessageCount) {
                 stopMessageListener();
-                AndesClientUtils.sleepForInterval(200);
+                AndesClientUtilsTemp.sleepForInterval(200);
             }
 
             if (delayBetweenMessages != 0) {

@@ -1,33 +1,24 @@
-/*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+package org.wso2.mb.integration.common.clients;
 
-package org.wso2.mb.integration.common.clients.operations.queue;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.QueueConnection;
+import javax.jms.QueueSession;
+import javax.jms.TextMessage;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QueueMessageListener implements MessageListener {
-
-    private static Log log = LogFactory.getLog(QueueMessageListener.class);
+/**
+ * Created by hemikakodikara on 1/29/15.
+ */
+public class TestListener implements MessageListener {
+    private static Log log = LogFactory.getLog(TestListener.class);
 
     private QueueConnection queueConnection;
     private QueueSession queueSession;
@@ -46,7 +37,7 @@ public class QueueMessageListener implements MessageListener {
 
     //private static final Logger log = Logger.getLogger(queue.QueueMessageListener.class);
 
-    public QueueMessageListener(QueueConnection queueConnection, QueueSession queueSession,
+    public TestListener(QueueConnection queueConnection, QueueSession queueSession,
                                 MessageConsumer queueReceiver, String queue, AtomicInteger messageCounter,
                                 int delayBetweenMessages, int printNumberOfMessagesPer,
                                 boolean isToPrintEachMessage, String fileToWriteReceivedMessages, int stopAfter,
@@ -81,14 +72,14 @@ public class QueueMessageListener implements MessageListener {
             }
             if (messageCount.get() % printNumberOfMessagesPer == 0) {
                 log.info("[QUEUE RECEIVE] ThreadID:" + Thread.currentThread().getId() + " queue:" + queueName + " " +
-                        "localMessageCount:" + localMessageCount + " totalMessageCount:" + messageCount.get() + " max" +
-                        " count:" + stopMessageCount);
+                         "localMessageCount:" + localMessageCount + " totalMessageCount:" + messageCount.get() + " max" +
+                         " count:" + stopMessageCount);
             }
             if (receivedMessage instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) receivedMessage;
                 if (isToPrintEachMessage) {
                     log.info("(count:" + messageCount.get() + "/threadID:" + Thread.currentThread().getId() + "/queue:" +
-                            queueName + ") " + redelivery + " >> " + textMessage.getText());
+                             queueName + ") " + redelivery + " >> " + textMessage.getText());
                     AndesClientUtilsTemp.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
                 }
             }

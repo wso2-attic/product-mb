@@ -63,12 +63,13 @@ public class TopicMessageReceiver implements Runnable {
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
-    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName, String password,
-                                String topicName, boolean isDurable, String subscriptionID, int ackMode,
+    public TopicMessageReceiver(String connectionString, String hostName, String port, String userName,
+                                String password, String topicName, boolean isDurable, String subscriptionID,
+                                int ackMode,
                                 boolean useMessageListener, AtomicInteger messageCounter, int delayBetweenMessages,
                                 int printNumberOfMessagesPer, boolean isToPrintEachMessage,
                                 String fileToWriteReceivedMessages, int stopAfter, int unsubscrbeAfter,
-                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach, String selectors) {
+                                int ackAfterEach, int commitAfterEach, int rollbackAfterEach) {
 
         this.hostName = hostName;
         this.port = port;
@@ -113,17 +114,9 @@ public class TopicMessageReceiver implements Runnable {
             log.info("Starting listening on topic: " + topic);
 
             if (isDurable) {
-                if (null != selectors) {
-                    topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId, selectors, false);
-                } else {
-                    topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId);
-                }
+                topicSubscriber = topicSession.createDurableSubscriber(topic, subscriptionId);
             } else {
-                if (null != selectors) {
-                    topicSubscriber = topicSession.createSubscriber(topic, selectors, false);
-                } else {
-                    topicSubscriber = topicSession.createSubscriber(topic);
-                }
+                topicSubscriber = topicSession.createSubscriber(topic);
             }
 
         } catch (NamingException e) {
@@ -215,7 +208,7 @@ public class TopicMessageReceiver implements Runnable {
                         if (isToPrintEachMessage) {
                             log.info("(count:" + messageCounter.get() + "/threadID:" + Thread.currentThread().getId()
                                     + "/topic:" + topicName + ") " + redelivery + " >> " + textMessage.getText());
-                            AndesClientUtils.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
+                            AndesClientUtilsTemp.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
                         }
                     }
 

@@ -197,7 +197,7 @@ public class AndesClientOutputParser {
             log.error("Error " + filePath + " the file containing received messages couldn't found", e);
         }
 
-        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
+        AndesClientUtilsTemp.flushPrintWriter();
         return result;
     }
 
