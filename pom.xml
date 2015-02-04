@@ -30,7 +30,7 @@
     <groupId>org.wso2.mb</groupId>
     <artifactId>mb-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>${product.mb.version}</version>
     <name>WSO2 MB</name>
     <url>http://wso2.org/projects/mb/java</url>
     <description>WSO2 Message Broker Server</description>
@@ -54,7 +54,7 @@
         <module>modules/distribution</module>
         <!--module>modules/org.wso2.stratos.mb.dashboard.ui</module-->
         <!--module>modules/org.wso2.stratos.mb.login.ui</module-->
-        <module>modules/integration</module> 
+        <module>modules/integration</module>
     </modules>
     <distributionManagement>
         <repository>
@@ -100,7 +100,7 @@
             <dependency>
                 <groupId>org.wso2.andes.wso2</groupId>
                 <artifactId>andes-client</artifactId>
-                <version>${product.mb.version}</version>
+                <version>${andes.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs.wso2</groupId>
@@ -115,17 +115,17 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.messagebox.stub</artifactId>
-                <version>${carbon.version}</version>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.event.client.stub</artifactId>
-                <version>${carbon.version}</version>
+                <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.event.client</artifactId>
-                <version>${carbon.version}</version>
+                <version>${carbon.commons.version}</version>
             </dependency>
 
             <!--Dependencies for integration tests  -->
@@ -149,13 +149,13 @@
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.test.utils</artifactId>
-                <version>${test.framework.version}</version>
+                <version>${carbon.testautomation.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.extensions</artifactId>
-                <version>${test.framework.version}</version>
+                <version>${carbon.testautomation.version}</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -171,13 +171,13 @@
             <dependency>
                 <groupId>org.wso2.carbon.automation</groupId>
                 <artifactId>org.wso2.carbon.automation.engine</artifactId>
-                <version>${test.framework.version}</version>
+                <version>${carbon.testautomation.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.automationutils.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -187,22 +187,62 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.admin.client</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.automationutils.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.automationutils.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.automationutils</groupId>
                 <artifactId>org.wso2.carbon.integration.common.tests</artifactId>
-                <version>${carbon.platform.version}</version>
+                <version>${carbon.automationutils.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.8.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.event.stub</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.andes.stub</artifactId>
+                <version>${carbon.messaging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.mb.platform.common.utils</artifactId>
+                <version>${product.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>mqtt-client</artifactId>
+                <version>0.4.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.core</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ui</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.statistics.ui</artifactId>
+                <version>${carbon.commons.version}}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -217,16 +257,16 @@
             <build>
                 <plugins>
                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-release-plugin</artifactId>
-                         <configuration>
-                           <preparationGoals>clean install</preparationGoals>
-                           <autoVersionSubmodules>true</autoVersionSubmodules>
-                         </configuration>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <preparationGoals>clean install</preparationGoals>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                        </configuration>
                     </plugin>
                     <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-deploy-plugin</artifactId>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -269,6 +309,50 @@
         </mailingList>
     </mailingLists>
 
+    <properties>
+        <project.scm.id>my-scm-server</project.scm.id>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jline.version>1.0</jline.version>
+        <log4j.version>1.2.13</log4j.version>
+        <commons.logging.version>1.1</commons.logging.version>
+        <opencsv.version>1.8</opencsv.version>
+        <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>
+        <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
+        <servlet-api.version>2.4</servlet-api.version>
+        <stratos.version>2.2.0</stratos.version>
+        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
+        <axis2.version>${orbit.version.axis2}</axis2.version>
+        <version.log4j>1.2.13</version.log4j>
+        <version.commons.logging>1.1</version.commons.logging>
+        <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
+        <slf4j.wso2.version>1.5.10.wso2v1</slf4j.wso2.version>
+        <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
+        <emma.version>2.1.5320</emma.version>
+        <!-- Rampart -->
+        <rampart.version>1.6.1-wso2v10</rampart.version>
+        <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
+        <rampart.osgi.version>1.6.1.wso2v10</rampart.osgi.version>
+        <orbit.version.rampart>1.6.1.wso2v10</orbit.version.rampart>
+        <!--Apache Derby-->
+        <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
+        <emma.version>2.1.5320</emma.version>
+
+
+
+        <carbon.commons.version>4.3.3</carbon.commons.version>
+        <carbon.identity.version>4.3.1</carbon.identity.version>
+        <carbon.registry.version>4.3.0</carbon.registry.version>
+        <carbon.messaging.version>2.5.0</carbon.messaging.version>
+        <carbon.multitenancy.version>4.3.3</carbon.multitenancy.version>
+        <carbon.storagemgt.version>4.3.0</carbon.storagemgt.version>
+
+        <andes.version>2.5.0</andes.version>
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
+        <product.mb.version>2.5.0</product.mb.version>
+        <carbon.testautomation.version>4.3.1</carbon.testautomation.version>
+        <carbon.automationutils.version>4.3.0</carbon.automationutils.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -283,40 +367,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <project.scm.id>my-scm-server</project.scm.id>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jline.version>1.0</jline.version>
-        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-        <log4j.version>1.2.13</log4j.version>
-        <commons.logging.version>1.1</commons.logging.version>
-        <opencsv.version>1.8</opencsv.version>
-        <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>
-        <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
-        <servlet-api.version>2.4</servlet-api.version>
-        <stratos.version>2.2.0</stratos.version>
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
-        <axis2.version>${orbit.version.axis2}</axis2.version>
-        <version.log4j>1.2.13</version.log4j>
-        <version.commons.logging>1.1</version.commons.logging>
-        <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
-        <slf4j.wso2.version>1.5.10.wso2v1</slf4j.wso2.version>
-        <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
-        <emma.version>2.1.5320</emma.version>
-        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
-        <product.mb.version>2.5.0-SNAPSHOT</product.mb.version>
-        <test.framework.version>4.3.1</test.framework.version>
-	    <!-- Rampart -->
-        <rampart.version>1.6.1-wso2v10</rampart.version>
-        <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
-        <rampart.osgi.version>1.6.1.wso2v10</rampart.osgi.version>
-        <orbit.version.rampart>1.6.1.wso2v10</orbit.version.rampart>
-        <!--Apache Derby-->
-        <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
-        <emma.version>2.1.5320</emma.version>
-    </properties>
 
 </project>

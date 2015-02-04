@@ -39,7 +39,7 @@
             <dependency>
                 <groupId>org.wso2.mb</groupId>
                 <artifactId>org.wso2.stratos.mb.styles</artifactId>
-                <version>${project.version}</version>
+                <version>${product.mb.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

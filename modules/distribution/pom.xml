@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>${product.mb.version}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -60,11 +60,11 @@
             <artifactId>geronimo-jms_1.1_spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.client.stub</artifactId>
         </dependency>
 	<dependency>
@@ -121,13 +121,13 @@
                                 <mkdir dir="${tempdir}"/>
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="wso2mb-${project.version}.zip"/>
+                                        <include name="wso2mb-${product.mb.version}.zip"/>
                                     </fileset>
                                 </unzip>
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
                                       overwrite="false">
                                     <fileset
-                                            dir="${tempdir}/wso2mb-${project.version}/repository/components/">
+                                            dir="${tempdir}/wso2mb-${product.mb.version}/repository/components/">
                                     </fileset>
                                 </copy>
                                 <unzip dest="${tempdir}">
@@ -270,8 +270,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <carbon.version>4.3.0-SNAPSHOT</carbon.version>
-    </properties>
 </project>

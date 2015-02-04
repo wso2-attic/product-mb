@@ -60,17 +60,9 @@
             <artifactId>andes-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.stub</artifactId>
-            <version>${carbon.platform.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.andes.stub</artifactId>
-            <version>4.2.1</version>
-        </dependency>
-
-
     </dependencies>
 
     <build>
