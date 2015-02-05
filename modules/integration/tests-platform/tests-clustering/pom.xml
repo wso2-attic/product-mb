@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>org.wso2.mb.platform.tests</artifactId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>${product.mb.version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -39,7 +39,7 @@
                         <property>
                             <name>carbon.zip</name>
                             <value>
-                                ${basedir}/../../../distribution/target/wso2mb-${project.version}.zip
+                                ${basedir}/../../../distribution/target/wso2mb-${product.mb.version}.zip
                             </value>
                         </property>
                         <property>
@@ -104,7 +104,7 @@
                                 <artifactItem>
                                     <groupId>org.wso2.mb</groupId>
                                     <artifactId>wso2mb</artifactId>
-                                    <version>${project.version}</version>
+                                    <version>${product.mb.version}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${basedir}/target/tobeCopied/</outputDirectory>
@@ -161,7 +161,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2mb-${project.version}/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2mb-${product.mb.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>
@@ -182,7 +182,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2mb-${project.version}/repository/conf/axis2/
+                                        ${basedir}/target/tobeCopied/wso2mb-${product.mb.version}/repository/conf/axis2/
                                     </directory>
                                     <includes>
                                         <include>**/*.xml</include>
@@ -203,7 +203,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2mb-${project.version}/repository/deployment/client/modules
+                                        ${basedir}/target/tobeCopied/wso2mb-${product.mb.version}/repository/deployment/client/modules
                                     </directory>
                                     <includes>
                                         <include>**/*.mar</include>
@@ -219,19 +219,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.stub</artifactId>
-            <version>${carbon.platform.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.andes.stub</artifactId>
-            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.mb</groupId>
             <artifactId>org.wso2.mb.platform.common.utils</artifactId>
-            <version>2.5.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.automation</groupId>
@@ -250,15 +247,15 @@
             <artifactId>org.wso2.mb.integration.common.clients</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.automationutils</groupId>
             <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.automationutils</groupId>
             <artifactId>org.wso2.carbon.integration.common.extensions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.automationutils</groupId>
             <artifactId>org.wso2.carbon.integration.common.tests</artifactId>
         </dependency>
     </dependencies>

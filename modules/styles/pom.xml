@@ -24,7 +24,7 @@
     <parent>
     	<groupId>org.wso2.mb</groupId>
     	<artifactId>mb-parent</artifactId>
-    	<version>2.5.0-SNAPSHOT</version>
+    	<version>${product.mb.version}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
