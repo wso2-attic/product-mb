@@ -17,14 +17,12 @@
   ~  under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>2.5.0-SNAPSHOT</version>
+        <version>2.5.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -114,64 +112,59 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="tempdir" value="target/docs-temp"/>
-                                <mkdir dir="${tempdir}"/>
+                                <property name="tempdir" value="target/docs-temp" />
+                                <mkdir dir="${tempdir}" />
                                 <unzip dest="${tempdir}">
                                     <fileset dir="target">
-                                        <include name="wso2mb-${product.mb.version}.zip"/>
+                                        <include name="wso2mb-${product.mb.version}.zip" />
                                     </fileset>
                                 </unzip>
-                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/"
-                                      overwrite="false">
-                                    <fileset
-                                            dir="${tempdir}/wso2mb-${product.mb.version}/repository/components/">
+                                <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/" overwrite="false">
+                                    <fileset dir="${tempdir}/wso2mb-${product.mb.version}/repository/components/">
                                     </fileset>
                                 </copy>
                                 <unzip dest="${tempdir}">
-                                    <fileset
-                                            dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
-                                        <include name="*.ui*.jar"/>
+                                    <fileset dir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/">
+                                        <include name="*.ui*.jar" />
                                     </fileset>
                                 </unzip>
                                 <move todir="${tempdir}/web/" includeemptydirs="false">
                                     <fileset dir="${tempdir}/web/">
-                                        <exclude name="**/yui/**"/>
-                                        <!--<exclude name="**/tenant-login/**"/>-->
-                                        <exclude name="**/codepress/**"/>
-                                        <exclude name="**/editarea/**"/>
-                                        <exclude name="**/ajax/**"/>
-                                        <exclude name="**/WEB-INF/**"/>
-                                        <include name="**/*.html"/>
+                                        <exclude name="**/yui/**" />
+                                        <!--<exclude name="**/tenant-login/**" />-->
+                                        <exclude name="**/codepress/**" />
+                                        <exclude name="**/editarea/**" />
+                                        <exclude name="**/ajax/**" />
+                                        <exclude name="**/WEB-INF/**" />
+                                        <include name="**/*.html" />
                                     </fileset>
-                                    <mapper type="glob" from="*.html" to="*.xml"/>
+                                    <mapper type="glob" from="*.html" to="*.xml" />
                                 </move>
-                                <mkdir dir="src/site/xdoc"/>
-                                <copy todir="src/site/xdoc" overwrite="false"
-                                      includeemptydirs="false">
+                                <mkdir dir="src/site/xdoc" />
+                                <copy todir="src/site/xdoc" overwrite="false" includeemptydirs="false">
                                     <fileset dir="${tempdir}/web">
-                                        <exclude name="**/yui/**"/>
-                                        <exclude name="**/codepress/**"/>
-                                        <exclude name="**/editarea/**"/>
-                                        <exclude name="**/ajax/**"/>
-                                        <exclude name="**/WEB-INF/**"/>
-                                        <exclude name="**/*.html"/>
-                                        <exclude name="**/*.js"/>
-                                        <exclude name="**/*.jsp"/>
-                                        <exclude name="**/*.xsl"/>
-                                        <exclude name="*.*"/>
+                                        <exclude name="**/yui/**" />
+                                        <exclude name="**/codepress/**" />
+                                        <exclude name="**/editarea/**" />
+                                        <exclude name="**/ajax/**" />
+                                        <exclude name="**/WEB-INF/**" />
+                                        <exclude name="**/*.html" />
+                                        <exclude name="**/*.js" />
+                                        <exclude name="**/*.jsp" />
+                                        <exclude name="**/*.xsl" />
+                                        <exclude name="*.*" />
                                     </fileset>
                                 </copy>
                                 <copy todir="src/site" overwrite="false" includeemptydirs="false">
                                     <fileset dir="../../docs">
                                     </fileset>
                                 </copy>
-                                <copy todir="target/site/" overwrite="false"
-                                      includeemptydirs="false">
+                                <copy todir="target/site/" overwrite="false" includeemptydirs="false">
                                     <fileset dir="src/site/xdoc/">
-                                        <include name="**/images/*.*"/>
+                                        <include name="**/images/*.*" />
                                     </fileset>
                                 </copy>
-                                <!--<delete dir="${tempdir}"/>-->
+                                <!--<delete dir="${tempdir}" />-->
                             </tasks>
                         </configuration>
                     </execution>
@@ -180,13 +173,13 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="target/archive-tmp"/>
-                                <delete dir="target/dependency-maven-plugin-markers"/>
-                                <delete dir="target/maven-archiver"/>
-                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
-                                <delete dir="target/sources"/>
-                                <delete dir="target/site"/>
-                                <delete dir="src/site"/>
+                                <delete dir="target/archive-tmp" />
+                                <delete dir="target/dependency-maven-plugin-markers" />
+                                <delete dir="target/maven-archiver" />
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
+                                <delete dir="target/sources" />
+                                <delete dir="target/site" />
+                                <delete dir="src/site" />
                             </tasks>
                         </configuration>
                         <goals>
