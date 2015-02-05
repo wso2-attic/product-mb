@@ -227,7 +227,7 @@
             <dependency>
                 <groupId>org.eclipse.paho</groupId>
                 <artifactId>mqtt-client</artifactId>
-                <version>0.4.1-SNAPSHOT</version>
+                <version>${eclipse.paho.mqtt.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -390,6 +390,7 @@
         <carbon.ui.menu.stratos.version>2.0.0</carbon.ui.menu.stratos.version>
         <commons.logging.version>1.1</commons.logging.version>
         <testng.version>6.8.5</testng.version>
+        <eclipse.paho.mqtt.client.version>0.4.1-SNAPSHOT</eclipse.paho.mqtt.client.version>
 
     </properties>
 
