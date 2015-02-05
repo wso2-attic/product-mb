@@ -44,9 +44,6 @@ public abstract class AndesClient{
     public abstract void stopClient() throws JMSException;
 
     public double getPublisherTPS() {
-        log.info("firstMessagePublishTimestamp : " + firstMessagePublishTimestamp.get());
-        log.info("lastMessagePublishTimestamp : " + lastMessagePublishTimestamp.get());
-        log.info("sentMessageCount : " + sentMessageCount.doubleValue());
         if (0 == this.lastMessagePublishTimestamp.get() - this.firstMessagePublishTimestamp.get()) {
             return this.sentMessageCount.doubleValue() / (1D / 1000);
         } else {
@@ -55,9 +52,6 @@ public abstract class AndesClient{
     }
 
     public double getSubscriberTPS() {
-        log.info("firstMessageConsumedTimestamp : " + this.firstMessageConsumedTimestamp.get());
-        log.info("lastMessageConsumedTimestamp : " + this.lastMessageConsumedTimestamp.get());
-        log.info("receivedMessageCount : " + this.receivedMessageCount.doubleValue());
         if (0 == this.lastMessageConsumedTimestamp.get() - this.firstMessageConsumedTimestamp.get()) {
             return this.receivedMessageCount.doubleValue() / (1D / 1000);
         } else {
@@ -66,8 +60,6 @@ public abstract class AndesClient{
     }
 
     public double getAverageLatency() {
-        log.info("receivedMessageCount : " + this.receivedMessageCount.get());
-        log.info("totalLatency : " + this.totalLatency.doubleValue());
         if (0 == this.receivedMessageCount.get()) {
             log.warn("No messages were received");
             return 0D;

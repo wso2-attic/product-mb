@@ -37,7 +37,6 @@ public class AndesJMSSubscriberClient extends AndesJMSClient implements Runnable
 
         this.subscriberConfig = (AndesJMSSubscriberClientConfiguration) super.config;
         if (this.subscriberConfig.getExchangeType() == ExchangeType.QUEUE) {
-            // Lookup connection factory
             QueueConnectionFactory connFactory = (QueueConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
             QueueConnection queueConnection = connFactory.createQueueConnection();
             queueConnection.start();
@@ -54,7 +53,6 @@ public class AndesJMSSubscriberClient extends AndesJMSClient implements Runnable
             session = queueSession;
             receiver = queueSession.createReceiver(queue);
         } else if (this.subscriberConfig.getExchangeType() == ExchangeType.TOPIC) {
-//            // Lookup connection factory
             TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
             TopicConnection topicConnection = connFactory.createTopicConnection();
             topicConnection.setClientID(this.subscriberConfig.getSubscriptionID());
@@ -215,20 +213,18 @@ public class AndesJMSSubscriberClient extends AndesJMSClient implements Runnable
     @Override
     public void onMessage(Message message) {
         try {
-            log.info("MESSAGE RECEIVED");
             long threadID = Thread.currentThread().getId();
             // calculating total latency
             long currentTimeStamp = System.currentTimeMillis();
             super.totalLatency.set(super.totalLatency.get() + (currentTimeStamp - message.getJMSTimestamp()));
             // setting timestamps for TPS calculation
-            if (super.firstMessageConsumedTimestamp.get() == 0) {
+            if (0 == super.firstMessageConsumedTimestamp.get()) {
                 super.firstMessageConsumedTimestamp.set(currentTimeStamp);
             }
 
             super.lastMessageConsumedTimestamp.set(currentTimeStamp);
 
             if (message instanceof TextMessage) {
-                log.info("MESSAGE RECEIVED - TEXTMESSAGE");
                 super.receivedMessageCount.incrementAndGet();
                 String redelivery;
                 TextMessage textMessage = (TextMessage) message;
@@ -237,15 +233,10 @@ public class AndesJMSSubscriberClient extends AndesJMSClient implements Runnable
                 } else {
                     redelivery = "ORIGINAL";
                 }
-//                if (super.receivedMessageCount.get() % this.subscriberConfig.getPrintsPerMessageCount() == 0) {
-//                    log.info("[TOPIC RECEIVE] ThreadID:" + threadID + " destination:" +
-//                             this.subscriberConfig.getDestinationName() + " totalMessageCount:" +
-//                             super.receivedMessageCount.get() + " max count:" + this.subscriberConfig.getMaximumMessagesToReceived());
-//                }
-                if (this.subscriberConfig.getPrintsPerMessageCount() == -1) {
-                    log.info("(count:" + super.receivedMessageCount.get() + "/threadID:" + threadID
-                             + "/destination:" + this.subscriberConfig.getDestinationName() + ") " + redelivery + " >> " + textMessage.getText());
-
+                if (0 == super.receivedMessageCount.get() % this.subscriberConfig.getPrintsPerMessageCount()) {
+                    log.info("[DESTINATION RECEIVE] ThreadID:" + threadID + " Destination:" +
+                             this.subscriberConfig.getDestinationName() + " TotalMessageCount:" +
+                             super.receivedMessageCount.get() + " MaximumMessageToReceive:" + this.subscriberConfig.getMaximumMessagesToReceived() + "Original/Redelivered :" + redelivery);
                     if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
                         AndesClientUtils.writeToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
                     }

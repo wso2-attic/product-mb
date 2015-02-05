@@ -11,7 +11,6 @@ import javax.naming.NamingException;
 import java.util.Properties;
 
 public abstract class AndesJMSClient extends AndesClient {
-    private static Logger log = Logger.getLogger(AndesJMSClient.class);
     private InitialContext initialContext;
 
     protected AndesJMSClient(AndesClientConfiguration config) throws NamingException {
@@ -23,7 +22,6 @@ public abstract class AndesJMSClient extends AndesClient {
         super.initialize();
         AndesJMSClientConfiguration jmsConfig = (AndesJMSClientConfiguration) super.config;
 
-        log.info("Initializing Andes JMS client");
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, AndesClientConstants.ANDES_ICF);
         properties.put(AndesClientConstants.CF_NAME_PREFIX + AndesClientConstants.CF_NAME, jmsConfig.getConnectionString());

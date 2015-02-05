@@ -1,116 +1,104 @@
 package org.wso2.mb.integration.common.clients.configurations;
 
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration {
-    private final String readMessagesFromFilePath;
-    private final JMSMessageType jmsMessageType;
-    private final long messageLifetime;
-    private final long numberOfMessagesToSend;
-    private final int publisherCount;
-    private final long JMSMessageExpiryTime;
+    private String readMessagesFromFilePath;
+    private JMSMessageType jmsMessageType;
+    private long numberOfMessagesToSend;
+    private int publisherCount;
+    private long jmsMessageExpiryTime;
 
-    public static class AndesJMSPublisherClientConfigurationBuilder
-            extends AndesJMSClientConfiguration.AndesJMSClientConfigurationBuilder {
-
-        //optional
-        private String readMessagesFromFilePath = null;
-        private JMSMessageType jmsMessageType = JMSMessageType.TEXT;
-        private long messageLifetime = 0L;
-        private long numberOfMessagesToSend = 10;
-        private int publisherCount = 1;
-        private long jmsMessageExpiryTime = 0L;
-
-        public AndesJMSPublisherClientConfigurationBuilder(String connectionString,
-                                                           ExchangeType exchangeType,
-                                                           String destinationName) {
-            super(connectionString, exchangeType, destinationName);
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder(String userName, String password,
-                                                           String hostName, int port,
-                                                           ExchangeType exchangeType,
-                                                           String destinationName) {
-            super(userName, password, hostName, port, exchangeType, destinationName);
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder(AndesJMSClientConfiguration config) {
-            super(config.getConnectionString(), config.getExchangeType(), config.getDestinationName());
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder setReadMessagesFromFilePath(
-                String readMessagesFromFilePath) {
-            this.readMessagesFromFilePath = readMessagesFromFilePath;
-            return this;
-        }
-
-
-        public AndesJMSPublisherClientConfigurationBuilder setJmsMessageType(
-                JMSMessageType jmsMessageType) {
-            this.jmsMessageType = jmsMessageType;
-            return this;
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder setMessageLifetime(
-                long messageLifetime) {
-            this.messageLifetime = messageLifetime;
-            return this;
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder setNumberOfMessagesToSend(
-                long numberOfMessagesToSend) {
-            this.numberOfMessagesToSend = numberOfMessagesToSend;
-            return this;
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder setPublisherCount(int publisherCount) {
-            this.publisherCount = publisherCount;
-            return this;
-        }
-
-        public AndesJMSPublisherClientConfigurationBuilder setJmsMessageExpiryTime(long jmsMessageExpiryTime) {
-            this.jmsMessageExpiryTime = jmsMessageExpiryTime;
-            return this;
-        }
-
-        public AndesJMSPublisherClientConfiguration build() {
-            return new AndesJMSPublisherClientConfiguration(this);
-        }
+    public AndesJMSPublisherClientConfiguration(String connectionString,
+                                                ExchangeType exchangeType,
+                                                String destinationName) {
+        super(connectionString, exchangeType, destinationName);
+        this.initialize();
     }
 
-    private AndesJMSPublisherClientConfiguration(
-            AndesJMSPublisherClientConfigurationBuilder builder) {
-        super(builder);
-        this.readMessagesFromFilePath = builder.readMessagesFromFilePath;
-        this.jmsMessageType = builder.jmsMessageType;
-        this.messageLifetime = builder.messageLifetime;
-        this.numberOfMessagesToSend = builder.numberOfMessagesToSend;
-        this.publisherCount = builder.publisherCount;
-        this.JMSMessageExpiryTime = builder.jmsMessageExpiryTime;
+    public AndesJMSPublisherClientConfiguration(String userName, String password,
+                                                String hostName, int port,
+                                                ExchangeType exchangeType,
+                                                String destinationName) {
+        super(userName, password, hostName, port, exchangeType, destinationName);
+        this.initialize();
+    }
+
+    public AndesJMSPublisherClientConfiguration(AndesJMSClientConfiguration config) {
+        super(config.getConnectionString(), config.getExchangeType(), config.getDestinationName());
+        this.initialize();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        readMessagesFromFilePath = null;
+        jmsMessageType = JMSMessageType.TEXT;
+        numberOfMessagesToSend = 10;
+        publisherCount = 1;
+        jmsMessageExpiryTime = 0L;
     }
 
     public String getReadMessagesFromFilePath() {
-        return this.readMessagesFromFilePath;
+        return readMessagesFromFilePath;
+    }
+
+    public void setReadMessagesFromFilePath(String readMessagesFromFilePath)
+            throws AndesClientException, FileNotFoundException {
+        File messagesFilePath = new File(readMessagesFromFilePath);
+        if (messagesFilePath.exists() && !messagesFilePath.isDirectory()) {
+            this.readMessagesFromFilePath = readMessagesFromFilePath;
+        }else{
+            throw new FileNotFoundException("File is missing : " + messagesFilePath);
+        }
     }
 
     public JMSMessageType getJMSMessageType() {
-        return this.jmsMessageType;
+        return jmsMessageType;
     }
 
-    public long getMessageLifetime() {
-        return this.messageLifetime;
+    public void setJMSMessageType(JMSMessageType jmsMessageType) {
+        this.jmsMessageType = jmsMessageType;
     }
 
     public long getNumberOfMessagesToSend() {
-        return this.numberOfMessagesToSend;
+        return numberOfMessagesToSend;
+    }
+
+    public void setNumberOfMessagesToSend(long numberOfMessagesToSend) throws AndesClientException {
+        if (0 < numberOfMessagesToSend) {
+            this.numberOfMessagesToSend = numberOfMessagesToSend;
+        }else{
+            throw new AndesClientException("The number of messages to send cannot be less than 1");
+        }
     }
 
     public int getPublisherCount() {
         return publisherCount;
     }
 
+    public void setPublisherCount(int publisherCount) throws AndesClientException {
+        if (0 < publisherCount) {
+            this.publisherCount = publisherCount;
+        }else{
+            throw new AndesClientException("The amount of publishers cannot be less than 1");
+        }
+    }
+
     public long getJMSMessageExpiryTime() {
-        return JMSMessageExpiryTime;
+        return jmsMessageExpiryTime;
+    }
+
+    public void setJMSMessageExpiryTime(long jmsMessageExpiryTime) throws AndesClientException {
+        if (0 <= jmsMessageExpiryTime) {
+            this.jmsMessageExpiryTime = jmsMessageExpiryTime;
+        }else{
+            throw new AndesClientException("Message expiry time cannot be less than 0");
+        }
     }
 }

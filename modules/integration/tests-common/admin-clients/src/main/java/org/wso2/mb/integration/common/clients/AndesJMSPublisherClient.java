@@ -108,7 +108,6 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
             long threadID = Thread.currentThread().getId();
             while (super.sentMessageCount.get() < this.publisherConfig.getNumberOfMessagesToSend()) {
                 if (JMSMessageType.TEXT == this.publisherConfig.getJMSMessageType()) {
-                    log.info("TEXT MESSAGE");
                     if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                         message = this.session.createTextMessage(this.messageContentFromFile);
                     } else {
@@ -117,43 +116,36 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
                     }
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
-                    log.info("BYTE MESSAGE");
                 } else if (JMSMessageType.MAP == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createMapMessage();
-                    log.info("MAP MESSAGE");
                 } else if (JMSMessageType.OBJECT == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createObjectMessage();
-                    log.info("OBJECT MESSAGE");
                 } else if (JMSMessageType.STREAM == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createStreamMessage();
-                    log.info("STREAM MESSAGE");
                 }
 
                 if (null != message) {
-//                    synchronized (super.sentMessageCount.getClass()) {
+                    synchronized (super.sentMessageCount.getClass()) {
                         if (super.sentMessageCount.get() >= this.publisherConfig.getNumberOfMessagesToSend()) {
                             break;
                         }
                         this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
                         super.sentMessageCount.incrementAndGet();
-//                    }
-//                    if (super.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount() == 0) {
-//                        if(null != this.publisherConfig.getReadMessagesFromFilePath()){
-//                            log.info("(FROM FILE)" + "[QUEUE SEND] ThreadID:" +
-//                                     threadID + " DestinationName:" +
-//                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
-//                                     super.sentMessageCount.get() + " CountToSend:" +
-//                                     this.publisherConfig.getNumberOfMessagesToSend());
-//                        }else {
-//                            log.info("(INBUILT MESSAGE) " + "[QUEUE SEND] ThreadID:" +
-//                                     threadID + " DestinationName:" +
-//                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
-//                                     super.sentMessageCount.get() + " CountToSend:" +
-//                                     this.publisherConfig.getNumberOfMessagesToSend());
-//                        }
-//                    }
-                    if (-1 == this.publisherConfig.getPrintsPerMessageCount()) {
-                        log.info("(Count:" + super.sentMessageCount.get() + "/threadID:" + threadID + ") " + message);
+                    }
+                    if (0 == super.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount()) {
+                        if(null != this.publisherConfig.getReadMessagesFromFilePath()){
+                            log.info("(FROM FILE)" + "[DESTINATION SEND] ThreadID:" +
+                                     threadID + " DestinationName:" +
+                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
+                                     super.sentMessageCount.get() + " CountToSend:" +
+                                     this.publisherConfig.getNumberOfMessagesToSend());
+                        }else {
+                            log.info("(INBUILT MESSAGE) " + "[DESTINATION SEND] ThreadID:" +
+                                     threadID + " DestinationName:" +
+                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
+                                     super.sentMessageCount.get() + " CountToSend:" +
+                                     this.publisherConfig.getNumberOfMessagesToSend());
+                        }
                     }
                     if (0 < this.publisherConfig.getRunningDelay()) {
                         try {

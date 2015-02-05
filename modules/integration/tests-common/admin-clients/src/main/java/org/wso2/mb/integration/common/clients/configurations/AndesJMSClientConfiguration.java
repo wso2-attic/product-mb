@@ -1,89 +1,88 @@
 package org.wso2.mb.integration.common.clients.configurations;
 
 
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 public class AndesJMSClientConfiguration extends AndesClientConfiguration {
-    private static final String CARBON_CLIENT_ID = "carbon";
-    private static final String CARBON_VIRTUAL_HOST_NAME = "carbon";
+    private String connectionString;
+    private ExchangeType exchangeType;
+    private String destinationName;
+    private long printsPerMessageCount;
+    private long runningDelay;
 
-    private final String connectionString;
-    private final ExchangeType exchangeType;
-    private final String destinationName;
-    private final long printsPerMessageCount;
-    private final long runningDelay;
-
-    public static class AndesJMSClientConfigurationBuilder
-            extends AndesClientConfiguration.AndesClientConfigurationBuilder {
-
-        //required
-        private final String connectionString;
-        private final ExchangeType exchangeType;
-        private final String destinationName;
-
-        //optional
-        private long printsPerMessageCount = -1;
-        private long runningDelay = 0;
-
-        public AndesJMSClientConfigurationBuilder(String connectionString,
-                                                  ExchangeType exchangeType,
-                                                  String destinationName) {
-            this.connectionString = connectionString;
-            this.exchangeType = exchangeType;
-            this.destinationName = destinationName;
-        }
-
-        public AndesJMSClientConfigurationBuilder(String userName, String password, String hostName,
-                                                  int port, ExchangeType exchangeType,
-                                                  String destinationName) {
-            this.connectionString = "amqp://" + userName + ":" + password + "@" + CARBON_CLIENT_ID + "/" +
-                                    CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" + hostName + ":" + port + "'";
-            this.exchangeType = exchangeType;
-            this.destinationName = destinationName;
-        }
-
-        public AndesJMSClientConfigurationBuilder setRunningDelay(long runningDelay) {
-            this.runningDelay = runningDelay;
-            return this;
-        }
-
-        public AndesJMSClientConfigurationBuilder setPrintsPerMessageCount(
-                long printsPerMessageCount) {
-            this.printsPerMessageCount = printsPerMessageCount;
-            return this;
-        }
-
-        public AndesJMSClientConfiguration build() {
-            return new AndesJMSClientConfiguration(this);
-        }
+    public AndesJMSClientConfiguration(String connectionString,
+                                              ExchangeType exchangeType,
+                                              String destinationName) {
+        this.connectionString = connectionString;
+        this.exchangeType = exchangeType;
+        this.destinationName = destinationName;
+        this.initialize();
     }
 
-    public AndesJMSClientConfiguration(AndesJMSClientConfigurationBuilder builder) {
-        super(builder);
-        this.connectionString = builder.connectionString;
-        this.exchangeType = builder.exchangeType;
-        this.destinationName = builder.destinationName;
-        this.printsPerMessageCount = builder.printsPerMessageCount;
-        this.runningDelay = builder.runningDelay;
+    public AndesJMSClientConfiguration(String userName, String password, String hostName,
+                                              int port, ExchangeType exchangeType,
+                                              String destinationName) {
+        this.connectionString = "amqp://" + userName + ":" + password + "@" + AndesClientConstants.CARBON_CLIENT_ID + "/" +
+                                AndesClientConstants.CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" + hostName + ":" + port + "'";
+        this.exchangeType = exchangeType;
+        this.destinationName = destinationName;
+        this.initialize();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        printsPerMessageCount = -1L;
+        runningDelay = 0L;
     }
 
     public String getConnectionString() {
-        return this.connectionString;
+        return connectionString;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
     }
 
     public ExchangeType getExchangeType() {
         return exchangeType;
     }
 
+    public void setExchangeType(ExchangeType exchangeType) {
+        this.exchangeType = exchangeType;
+    }
+
     public String getDestinationName() {
         return destinationName;
+    }
+
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
     }
 
     public long getPrintsPerMessageCount() {
         return printsPerMessageCount;
     }
 
+    public void setPrintsPerMessageCount(long printsPerMessageCount) throws AndesClientException {
+        if (0 < printsPerMessageCount) {
+            this.printsPerMessageCount = printsPerMessageCount;
+        } else {
+            throw new AndesClientException("Prints per message count cannot be less than one");
+        }
+    }
+
     public long getRunningDelay() {
         return runningDelay;
+    }
+
+    public void setRunningDelay(long runningDelay) throws AndesClientException {
+        if (0 <= runningDelay) {
+            this.runningDelay = runningDelay;
+        } else {
+            throw new AndesClientException("Running delay cannot be less than 0");
+        }
     }
 }
