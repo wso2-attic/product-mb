@@ -44,7 +44,7 @@
         <module>tests-platform</module>
     </modules>
 
-    <build>
+    <!--build>
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -60,5 +60,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build-->
 </project>
