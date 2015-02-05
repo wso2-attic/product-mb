@@ -430,7 +430,7 @@
     <repositories>
         <repository>
             <id>Eclipse Paho Repo</id>
-            <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
+            <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
         </repository>
     </repositories>
 </project>
