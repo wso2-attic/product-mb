@@ -84,7 +84,7 @@
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>${version.commons.logging}</version>
+                <version>${commons.logging.version}</version>
             </dependency>
             <!-- Dependencies for login ui -->
             <dependency>
@@ -207,7 +207,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.8.5</version>
+                <version>${testng.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
@@ -243,6 +243,41 @@
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.statistics.ui</artifactId>
                 <version>${carbon.commons.version}}</version>
+            </dependency>
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.stratos.mb.dashboard.ui</artifactId>
+                <version>${product.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.ui.menu.stratos</artifactId>
+                <version>${carbon.ui.menu.stratos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.stratos.mb.deployment</artifactId>
+                <version>${product.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.stratos.mb.login.ui</artifactId>
+                <version>${product.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.core</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.mb</groupId>
+                <artifactId>org.wso2.mb.styles</artifactId>
+                <version>${product.mb.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -314,7 +349,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jline.version>1.0</jline.version>
         <log4j.version>1.2.13</log4j.version>
-        <commons.logging.version>1.1</commons.logging.version>
         <opencsv.version>1.8</opencsv.version>
         <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>
         <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
@@ -323,7 +357,6 @@
         <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
         <axis2.version>${orbit.version.axis2}</axis2.version>
         <version.log4j>1.2.13</version.log4j>
-        <version.commons.logging>1.1</version.commons.logging>
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
         <slf4j.wso2.version>1.5.10.wso2v1</slf4j.wso2.version>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
@@ -353,6 +386,11 @@
         <!--automation and tests-->
         <carbon.testautomation.version>4.3.1</carbon.testautomation.version>
         <carbon.automationutils.version>4.3.0</carbon.automationutils.version>
+
+        <carbon.ui.menu.stratos.version>2.0.0</carbon.ui.menu.stratos.version>
+        <commons.logging.version>1.1</commons.logging.version>
+        <testng.version>6.8.5</testng.version>
+
     </properties>
 
     <build>

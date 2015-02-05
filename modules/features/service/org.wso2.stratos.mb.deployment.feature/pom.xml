@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.wso2.mb</groupId>
             <artifactId>org.wso2.stratos.mb.deployment</artifactId>
-            <version>${product.mb.version}</version>
         </dependency>
     </dependencies>
 
