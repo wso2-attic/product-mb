@@ -24,23 +24,20 @@
 
     <groupId>org.wso2.mb</groupId>
     <artifactId>org.wso2.mb.samples.mqtt.simple</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.5.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>mqtt-client</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.13</version>
         </dependency>
     </dependencies>
 
@@ -64,13 +61,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>Eclipse Paho Repo</id>
-            <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
-        </repository>
-    </repositories>
 
 
 </project>

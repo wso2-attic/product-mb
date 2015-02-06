@@ -1,8 +1,8 @@
 ================================================================================
-                        WSO2 Message Broker Server 3.0.0-SNAPSHOT
+                        WSO2 Message Broker Server 2.5.0
 ================================================================================
 
-Welcome to the WSO2 MB 3.0.0-SNAPSHOT release
+Welcome to the WSO2 MB 2.5.0 release
 
 WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
 Server (MB) which is available under the Apache Software License v2.0.
@@ -67,7 +67,7 @@ For more details see
 Installation & Running
 ==================================
 
-1. Extract the wso2mb-3.0.0-SNAPSHOT.zip and go to the extracted directory
+1. Extract the wso2mb-2.5.0.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
@@ -80,7 +80,7 @@ Installation & Running
 
    
 
-WSO2 MB 3.0.0-SNAPSHOT distribution directory structure
+WSO2 MB 2.5.0 distribution directory structure
 =============================================
 
 	CARBON_HOME

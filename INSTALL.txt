@@ -1,4 +1,4 @@
-Installing  WSO2 Message Broker Server (MB) 3.0.0-SNAPSHOT
+Installing  WSO2 Message Broker Server (MB) 2.5.0
 ===================================================================
 
 1. The directory containing this INSTALL.txt file will be the root and it will be
