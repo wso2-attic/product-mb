@@ -167,8 +167,9 @@ public class TopicMessageReceiver implements Runnable {
         try {
 
             log.info("closing Subscriber");
-            if(null != topicSubscriber)
+            if(null != topicSubscriber) {
                 topicSubscriber.close();
+            }
             topicSession.close();
             topicConnection.close();
             log.info("done closing Subscriber");
