@@ -31,6 +31,12 @@ import java.io.File;
 
 import static org.testng.Assert.assertEquals;
 
+
+/**
+ * This class holds test case to verify if shared durable topic subscriptions.
+ * Shared durable topic subscriptions has enabled in broker.xml and tested in following test class.
+ *
+ */
 public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrationBaseTest {
 
 
@@ -47,7 +53,8 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         super.serverManager = new ServerConfigurationManager(automationContext);
 
-        // Replace the broker.xml with the new configuration and restarts the server.
+        // Replace the broker.xml with the allowSharedTopicSubscriptions configuration enabled under amqp
+        // and restarts the server.
         super.serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
                         "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator +
                         "allowSharedTopicSubscriptionsConfig" + File.separator + "broker.xml"),
