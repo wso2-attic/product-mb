@@ -41,7 +41,7 @@ public class MBIntegrationBaseTest {
     protected Log log = LogFactory.getLog(MBIntegrationBaseTest.class);
     protected AutomationContext automationContext;
     protected String backendURL;
-    private ServerConfigurationManager serverManager = null;
+    protected ServerConfigurationManager serverManager = null;
 
     /**
      * Initialize the base test by initializing the automation context.
