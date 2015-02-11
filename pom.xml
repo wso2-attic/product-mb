@@ -392,7 +392,7 @@
         <carbon.storagemgt.version>4.3.1</carbon.storagemgt.version>
 
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <andes.version>2.5.0</andes.version>
+        <andes.version>3.0.0-SNAPSHOT</andes.version>
 
         <!--product version-->
         <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
