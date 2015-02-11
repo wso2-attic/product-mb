@@ -41,8 +41,8 @@ public class DurableTopicTestCase {
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase() {
 
-        Integer sendCount = 500;
-        Integer runTime = 20;
+        Integer sendCount = 1500;
+        Integer runTime = 40;
         Integer expectedCount = 500;
 
 
@@ -62,7 +62,7 @@ public class DurableTopicTestCase {
         boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount,
                 runTime);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+
 
         //we just closed the subscription. Rest of messages should be delivered now.
 
@@ -70,9 +70,12 @@ public class DurableTopicTestCase {
 
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub2,delayBetweenMsg=0," +
-                "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "unsubscribeAfter=" + expectedCount , "");
+
         receivingClient2.startWorking();
+
+
 
         boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
                 runTime);
@@ -90,6 +93,9 @@ public class DurableTopicTestCase {
 
         boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
                 runTime);
+
+
+        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(sendingSuccess, "Message sending failed.");
 
