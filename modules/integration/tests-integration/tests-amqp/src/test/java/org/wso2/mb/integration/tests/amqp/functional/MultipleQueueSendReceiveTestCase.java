@@ -22,9 +22,19 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 
 /**
@@ -34,6 +44,10 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
  */
 public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
 
+    private static final long SEND_COUNT = 2000L;
+    private static final long ADDITIONAL_COUNT = 10L;
+    private static final long EXPECTED_COUNT = SEND_COUNT + ADDITIONAL_COUNT;
+
     @BeforeClass
     public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
@@ -41,34 +55,79 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
     }
 
     @Test(groups = {"wso2.mb", "queue"})
-    public void performMultipleQueueSendReceiveTestCase() {
+    public void performMultipleQueueSendReceiveTestCase()
+            throws AndesClientException, CloneNotSupportedException, JMSException, NamingException,
+                   IOException {
 
-        Integer sendCount = 2000;
-        Integer runTime = 20;
-        int additional = 10;
 
-        //wait some more time to see if more messages are received
-        Integer expectedCount = 2000 + additional;
+// Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "multipleQueue1");
+        // Amount of message to receive
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig1.setPrintsPerMessageCount(100L);
+        consumerConfig1.setSubscriberCount(3);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:multipleQueue1," +
-                "multipleQueue2,", "100", "false",
-                runTime.toString(), expectedCount.toString(), "3",
-                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
+        consumerConfig2.setDestinationName("multipleQueue2");
 
-        receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:multipleQueue1,multipleQueue2",
-                "100",
-                "false", runTime.toString(), sendCount.toString(), "3",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "multipleQueue1");
+        publisherConfig1.setPrintsPerMessageCount(100L);
+        publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig1.setPublisherCount(3);
 
-        sendingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig2 = publisherConfig1.clone();
+        publisherConfig2.setDestinationName("multipleQueue2");
 
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig1);
+        consumerClient1.startClient();
 
-        Integer receivedMessageCount = receivingClient.getReceivedqueueMessagecount();
-        Integer messageCountRequired = expectedCount - additional;
+        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig2);
+        consumerClient2.startClient();
+
+        AndesJMSPublisherClient publisherClient1 = new AndesJMSPublisherClient(publisherConfig1);
+        publisherClient1.startClient();
+
+        AndesJMSPublisherClient publisherClient2 = new AndesJMSPublisherClient(publisherConfig2);
+        publisherClient2.startClient();
+
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
+
+        long receivedMessageCount = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount();
+        long messageCountRequired = EXPECTED_COUNT - ADDITIONAL_COUNT;
 
         Assert.assertEquals(receivedMessageCount, messageCountRequired, "Expected message count was not received.");
+
+
+//        Integer sendCount = 2000;
+//        Integer runTime = 20;
+//        int additional = 10;
+//
+//        //wait some more time to see if more messages are received
+//        Integer expectedCount = 2000 + additional;
+//
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:multipleQueue1," +
+//                "multipleQueue2,", "100", "false",
+//                runTime.toString(), EXPECTED_COUNT.toString(), "3",
+//                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "");
+//
+//        receivingClient.startWorking();
+//
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:multipleQueue1,multipleQueue2",
+//                "100",
+//                "false", runTime.toString(), sendCount.toString(), "3",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, EXPECTED_COUNT, runTime);
+//
+//        Integer receivedMessageCount = receivingClient.getReceivedqueueMessagecount();
+//        Integer messageCountRequired = EXPECTED_COUNT - additional;
+//
+//        Assert.assertEquals(receivedMessageCount, messageCountRequired, "Expected message count was not received.");
     }
 }

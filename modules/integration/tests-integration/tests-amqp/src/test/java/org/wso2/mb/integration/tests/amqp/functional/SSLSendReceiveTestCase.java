@@ -18,22 +18,33 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import java.io.File;
-
-import static org.testng.Assert.assertTrue;
+import java.io.IOException;
 
 
 /**
  * send messages using SSL and receive messages using SSL
  */
 public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
+
+    private static final long EXPECTED_COUNT = 100L;
+    private static final long SEND_COUNT = 100L;
 
     @BeforeClass
     public void prepare() throws Exception {
@@ -42,10 +53,11 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
     }
 
     @Test(groups = {"wso2.mb", "queue", "security"})
-    public void performSingleQueueSendReceiveTestCase() {
-        Integer sendCount = 100;
-        Integer runTime = 20;
-        Integer expectedCount = 100;
+    public void performSingleQueueSendReceiveTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
+//        Integer sendCount = 100;
+//        Integer runTime = 20;
+//        Integer expectedCount = 100;
         String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
                 + "resources" + File.separator + "security" + File.separator + "wso2carbon.jks";
         String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
@@ -57,22 +69,53 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
                 trustStorePassword
                 + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "''";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:8672", "queue:SSLSingleQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, sslConnectionURL);
 
-        receivingClient.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
+        // Use a listener
+        consumerConfig.setAsync(true);
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig.setPrintsPerMessageCount(10L);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:SSLSingleQueue", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, sslConnectionURL);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
+        publisherConfig.setPrintsPerMessageCount(10L);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        assertTrue(sendSuccess, "Message sending failed.");
-        assertTrue(receiveSuccess, "Message receiving failed.");
+        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        publisherClient.startClient();
+
+
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
+
+
+//
+//
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:8672", "queue:SSLSingleQueue",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, sslConnectionURL);
+//
+//        receivingClient.startWorking();
+//
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:SSLSingleQueue", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, sslConnectionURL);
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+//
+//        assertTrue(sendSuccess, "Message sending failed.");
+//        assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

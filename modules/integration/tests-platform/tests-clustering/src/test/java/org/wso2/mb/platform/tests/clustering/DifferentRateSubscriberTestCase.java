@@ -24,7 +24,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
@@ -93,7 +92,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
@@ -142,7 +141,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
@@ -193,7 +192,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
@@ -242,7 +241,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,

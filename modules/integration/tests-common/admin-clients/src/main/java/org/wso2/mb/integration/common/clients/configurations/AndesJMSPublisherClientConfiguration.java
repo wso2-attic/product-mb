@@ -7,12 +7,21 @@ import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration {
+public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration{
     private String readMessagesFromFilePath;
     private JMSMessageType jmsMessageType;
     private long numberOfMessagesToSend;
     private int publisherCount;
     private long jmsMessageExpiryTime;
+
+    public AndesJMSPublisherClientConfiguration() {
+        super();
+    }
+
+    public AndesJMSPublisherClientConfiguration(
+            ExchangeType exchangeType, String destinationName) {
+        super(exchangeType, destinationName);
+    }
 
     public AndesJMSPublisherClientConfiguration(String connectionString,
                                                 ExchangeType exchangeType,
@@ -29,8 +38,14 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
         this.initialize();
     }
 
-    public AndesJMSPublisherClientConfiguration(AndesJMSClientConfiguration config) {
-        super(config.getConnectionString(), config.getExchangeType(), config.getDestinationName());
+    // TODO : implement
+    public AndesJMSPublisherClientConfiguration(String xmlConfigFilePath) {
+        super(xmlConfigFilePath);
+    }
+
+    public AndesJMSPublisherClientConfiguration(
+            AndesJMSClientConfiguration config) {
+        super(config);
         this.initialize();
     }
 
@@ -100,5 +115,10 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
         }else{
             throw new AndesClientException("Message expiry time cannot be less than 0");
         }
+    }
+
+    @Override
+    public AndesJMSPublisherClientConfiguration clone() throws CloneNotSupportedException {
+        return (AndesJMSPublisherClientConfiguration)super.clone();
     }
 }

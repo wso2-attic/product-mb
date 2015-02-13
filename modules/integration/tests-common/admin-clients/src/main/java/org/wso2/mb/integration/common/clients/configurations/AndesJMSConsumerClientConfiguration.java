@@ -1,49 +1,65 @@
 package org.wso2.mb.integration.common.clients.configurations;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.UUID;
 
-public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfiguration {
+public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfiguration {
+    private static Logger log = Logger.getLogger(AndesJMSConsumerClientConfiguration.class);
     private long unSubscribeAfterEachMessageCount;
-    private  long rollbackAfterEachMessageCount;
-    private  long commitAfterEachMessageCount;
-    private  long acknowledgeAfterEachMessageCount;
-    private  String filePathToWriteReceivedMessages;
-    private  long maximumMessagesToReceived;
-    private  String subscriptionID;
-    private  boolean durable;
-    private  int acknowledgeMode;
-    private  boolean async;
-    private  int subscriberCount;
+    private long rollbackAfterEachMessageCount;
+    private long commitAfterEachMessageCount;
+    private long acknowledgeAfterEachMessageCount;
+    private String filePathToWriteReceivedMessages;
+    private long maximumMessagesToReceived;
+    private String subscriptionID;
+    private boolean durable;
+    private JMSAcknowledgeMode acknowledgeMode;
+    private boolean async;
+    private int subscriberCount;
 
-    public AndesJMSSubscriberClientConfiguration(String connectionString,
-                                                 ExchangeType exchangeType,
-                                                 String destinationName) {
+    public AndesJMSConsumerClientConfiguration() {
+        super();
+    }
+
+    public AndesJMSConsumerClientConfiguration(
+            ExchangeType exchangeType, String destinationName) {
+        super(exchangeType, destinationName);
+        this.initialize();
+    }
+
+    public AndesJMSConsumerClientConfiguration(String connectionString,
+                                               ExchangeType exchangeType,
+                                               String destinationName) {
         super(connectionString, exchangeType, destinationName);
         this.initialize();
     }
 
-    public AndesJMSSubscriberClientConfiguration(String userName, String password,
-                                                 String hostName, int port,
-                                                 ExchangeType exchangeType,
-                                                 String destinationName) {
+    public AndesJMSConsumerClientConfiguration(String userName, String password,
+                                               String hostName, int port,
+                                               ExchangeType exchangeType,
+                                               String destinationName) {
         super(userName, password, hostName, port, exchangeType, destinationName);
         this.initialize();
     }
 
-    public AndesJMSSubscriberClientConfiguration(AndesJMSClientConfiguration config) {
-        super(config.getConnectionString(), config.getExchangeType(), config.getDestinationName());
-        this.initialize();
+    // TODO : implement
+    public AndesJMSConsumerClientConfiguration(String xmlConfigFilePath) {
+        super(xmlConfigFilePath);
+    }
+
+    public AndesJMSConsumerClientConfiguration(
+            AndesJMSClientConfiguration config) {
+        super(config);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void initialize() {
         unSubscribeAfterEachMessageCount = Long.MAX_VALUE;
 
         //role back only after a certain message count
@@ -62,16 +78,16 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
         maximumMessagesToReceived = Long.MAX_VALUE;
 
         //generating subscription ID
-        subscriptionID = UUID.randomUUID().toString().replace("-", "");
+        subscriptionID = "";
 
         //for topics. If its queue, keep it as false
         durable = false;
 
         //session.AUTO_ACKNOWLEDGE
-        acknowledgeMode = 1;
+        acknowledgeMode = JMSAcknowledgeMode.AUTO_ACKNOWLEDGE;
 
-        //asynchronous message receive. Using MessageListener of JMS
-        async = false;
+        //asynchronous message receive. Using MessageListener of JMS.
+        async = true;
 
         // number of subscribers
         subscriberCount = 1;
@@ -85,7 +101,7 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
             throws AndesClientException {
         if (0 < unSubscribeAfterEachMessageCount) {
             this.unSubscribeAfterEachMessageCount = unSubscribeAfterEachMessageCount;
-        }else{
+        } else {
             throw new AndesClientException("Value cannot be less than 0");
         }
     }
@@ -98,7 +114,7 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
             throws AndesClientException {
         if (0 < rollbackAfterEachMessageCount) {
             this.rollbackAfterEachMessageCount = rollbackAfterEachMessageCount;
-        }else{
+        } else {
             throw new AndesClientException("Value cannot be less than 0");
         }
     }
@@ -111,7 +127,7 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
             throws AndesClientException {
         if (0 < commitAfterEachMessageCount) {
             this.commitAfterEachMessageCount = commitAfterEachMessageCount;
-        }else{
+        } else {
             throw new AndesClientException("Value cannot be less than 0");
         }
     }
@@ -124,7 +140,7 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
             throws AndesClientException {
         if (0 < acknowledgeAfterEachMessageCount) {
             this.acknowledgeAfterEachMessageCount = acknowledgeAfterEachMessageCount;
-        }else{
+        } else {
             throw new AndesClientException("Value cannot be less than 0");
         }
     }
@@ -138,13 +154,13 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
         File messagesFilePath = new File(filePathToWriteReceivedMessages);
         if (messagesFilePath.exists() && !messagesFilePath.isDirectory()) {
             this.filePathToWriteReceivedMessages = filePathToWriteReceivedMessages;
-        }else{
+        } else {
             throw new FileNotFoundException("File is missing : " + messagesFilePath);
         }
     }
 
     public long getMaximumMessagesToReceived() {
-        return maximumMessagesToReceived;
+        return this.maximumMessagesToReceived;
     }
 
     public void setMaximumMessagesToReceived(long maximumMessagesToReceived)
@@ -161,10 +177,15 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
     }
 
     public void setSubscriptionID(String subscriptionID) throws AndesClientException {
-        if (null != subscriptionID && StringUtils.isNotEmpty(subscriptionID)) {
+        if(this.durable){
+            if(StringUtils.isNotEmpty(subscriptionID)){
+                this.subscriptionID = subscriptionID;
+            }else{
+                throw new AndesClientException("Subscription ID cannot be null or empty for an durable topic");
+            }
+        }else{
             this.subscriptionID = subscriptionID;
-        } else {
-            throw new AndesClientException("Subscription ID cannot be empty or null");
+            log.warn("Setting subscription ID is not necessary for non-durable topics or queues");
         }
     }
 
@@ -172,20 +193,34 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
         return durable;
     }
 
-    public void setDurable(boolean durable) {
+    public void setDurable(boolean durable, String subscriptionID) throws AndesClientException {
+
+        if(durable){
+            if(StringUtils.isNotEmpty(subscriptionID)){
+                this.subscriptionID = subscriptionID;
+            }else{
+                throw new AndesClientException("Subscription ID cannot be null or empty for an durable topic");
+            }
+        }
+
         this.durable = durable;
     }
 
-    public int getAcknowledgeMode() {
+    public JMSAcknowledgeMode getAcknowledgeMode() {
         return acknowledgeMode;
     }
 
-    public void setAcknowledgeMode(int acknowledgeMode) throws AndesClientException {
-        if (0 <= acknowledgeMode && 3 >= acknowledgeMode) {
-            this.acknowledgeMode = acknowledgeMode;
-        }else{
-            throw new AndesClientException("Invalid acknowledge mode");
-        }
+    /**
+     * int AUTO_ACKNOWLEDGE = 1;
+     * int CLIENT_ACKNOWLEDGE = 2;
+     * int DUPS_OK_ACKNOWLEDGE = 3;
+     * int SESSION_TRANSACTED = 0;
+     *
+     * @param acknowledgeMode
+     * @throws AndesClientException
+     */
+    public void setAcknowledgeMode(JMSAcknowledgeMode acknowledgeMode) throws AndesClientException {
+        this.acknowledgeMode = acknowledgeMode;
     }
 
     public boolean isAsync() {
@@ -203,9 +238,32 @@ public class AndesJMSSubscriberClientConfiguration extends AndesJMSClientConfigu
     public void setSubscriberCount(int subscriberCount) throws AndesClientException {
         if (0 < subscriberCount) {
             this.subscriberCount = subscriberCount;
-        }else{
+        } else {
             throw new AndesClientException("The amount of subscribers cannot be less than 1");
 
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder toStringVal = new StringBuilder();
+        toStringVal.append(super.toString());
+        toStringVal.append("UnSubscribeAfterEachMessageCount=").append(this.unSubscribeAfterEachMessageCount).append("\n");
+        toStringVal.append("RollbackAfterEachMessageCount=").append(this.rollbackAfterEachMessageCount).append("\n");
+        toStringVal.append("CommitAfterEachMessageCount=").append(this.commitAfterEachMessageCount).append("\n");
+        toStringVal.append("AcknowledgeAfterEachMessageCount=").append(this.acknowledgeAfterEachMessageCount).append("\n");
+        toStringVal.append("FilePathToWriteReceivedMessages=").append(this.filePathToWriteReceivedMessages).append("\n");
+        toStringVal.append("MaximumMessagesToReceived=").append(this.maximumMessagesToReceived).append("\n");
+        toStringVal.append("SubscriptionID=").append(this.subscriptionID).append("\n");
+        toStringVal.append("Durable=").append(this.durable).append("\n");
+        toStringVal.append("AcknowledgeMode=").append(this.acknowledgeMode).append("\n");
+        toStringVal.append("Async=").append(this.async).append("\n");
+        toStringVal.append("SubscriberCount=").append(this.subscriberCount).append("\n");
+        return toStringVal.toString();
+    }
+
+    @Override
+    public AndesJMSConsumerClientConfiguration clone() throws CloneNotSupportedException {
+        return (AndesJMSConsumerClientConfiguration) super.clone();
     }
 }

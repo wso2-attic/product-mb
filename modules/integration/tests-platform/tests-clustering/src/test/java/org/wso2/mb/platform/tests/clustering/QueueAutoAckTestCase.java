@@ -25,10 +25,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
-import javax.jms.QueueSession;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
@@ -97,7 +95,7 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 

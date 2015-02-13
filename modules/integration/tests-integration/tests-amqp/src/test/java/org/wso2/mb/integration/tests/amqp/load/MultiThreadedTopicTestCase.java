@@ -21,8 +21,9 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 /**
  * 1. send 2000 messages to a topic by 10 threads
@@ -44,7 +45,7 @@ public class MultiThreadedTopicTestCase {
         Integer runTime = 200;
         Integer expectedCount = 2000 * numberOfSubscriberThreads;
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
                                                       "topic:multiThreadTopic",
                                                       "100", "false", runTime.toString(),
                                                       expectedCount.toString(),
@@ -55,7 +56,7 @@ public class MultiThreadedTopicTestCase {
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
                                                     "topic:multiThreadTopic",
                                                     "100", "false",
                                                     runTime.toString(), sendCount.toString(),
@@ -66,10 +67,10 @@ public class MultiThreadedTopicTestCase {
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils
+        boolean receiveSuccess = AndesClientUtilsTemp
                 .waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(sendSuccess, "Message sending failed.");
         Assert.assertTrue(receiveSuccess, "Message receiving failed.");

@@ -84,7 +84,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         assertEquals((receiveSuccess && sendSuccess), true);
     }
@@ -156,7 +156,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         sendingClient.startWorking();
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient,sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         assertEquals((receiveSuccess && sendSuccess), true);
     }

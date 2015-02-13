@@ -24,7 +24,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
@@ -144,7 +143,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed for client 4.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         int allMessagesRecieved = receivingClient1.getReceivedqueueMessagecount()
@@ -243,7 +242,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed for client 4.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         int allMessagesRecieved = receivingClient1.getReceivedqueueMessagecount()

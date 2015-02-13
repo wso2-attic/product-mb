@@ -111,7 +111,7 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingReturnClient, "MillionTenPercentReturnQueue", noOfReturnMessages, (runTime / 10));
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 

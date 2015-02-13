@@ -97,7 +97,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
                 (receivingClient, expectedCount, runTime);
 
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
@@ -142,7 +142,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
                 (receivingClient, expectedCount, runTime);
 
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
@@ -188,7 +188,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
                 (receivingClient, expectedCount, runTime);
 
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
@@ -233,7 +233,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
                 (receivingClient, expectedCount, runTime);
 
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendSuccess, "Messaging sending failed");

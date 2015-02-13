@@ -22,9 +22,21 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 /**
  * 1. start a queue receiver in client ack mode
@@ -33,6 +45,9 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
  */
 public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
+    private static final long EXPECTED_COUNT = 1000L;
+    private static final long SEND_COUNT = 1000L;
+
     @BeforeClass
     public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
@@ -40,38 +55,73 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
     }
 
     @Test(groups = {"wso2.mb", "queue"})
-    public void performClientAcknowledgementsTestCase() {
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 1000;
+    public void performClientAcknowledgementsTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:clientAckTestQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=2,delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig.setPrintsPerMessageCount(100L);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
 
-        receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:clientAckTestQueue", "100",
-                "false",
-                runTime.toString(), sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount,
-                "");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        publisherConfig.setPrintsPerMessageCount(100L);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        sendingClient.startWorking();
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig);
+        consumerClient1.startClient();
 
-        Integer totalMsgsReceived = receivingClient.getReceivedqueueMessagecount();
+        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        publisherClient.startClient();
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        receivingClient.startWorking();
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, 15);
+        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig);
+        consumerClient2.startClient();
 
-        totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
+        AndesClientUtilsTemp.sleepForInterval(2000);
 
-        Assert.assertTrue(success, "Message receiving failed.");
+        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount();
 
-        Assert.assertEquals(totalMsgsReceived, expectedCount, "Expected message count not received.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
+        Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
+
+//        Integer sendCount = 1000;
+//        Integer runTime = 20;
+//        Integer expectedCount = 1000;
+
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:clientAckTestQueue",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=2,delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:clientAckTestQueue", "100",
+//                "false",
+//                runTime.toString(), sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount,
+//                "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean success = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+//
+//        Integer totalMsgsReceived = receivingClient.getReceivedqueueMessagecount();
+//
+//        AndesClientUtilsTemp.sleepForInterval(2000);
+//
+//        receivingClient.startWorking();
+//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, 15);
+//
+//        totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
+//
+//        Assert.assertTrue(success, "Message receiving failed.");
+//
+//        Assert.assertEquals(totalMsgsReceived, expectedCount, "Expected message count not received.");
     }
 
 }

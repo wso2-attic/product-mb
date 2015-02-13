@@ -21,9 +21,9 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 /**
@@ -51,7 +51,7 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
         //wait some more time to see if more messages are received
         Integer expectedCount = sendCount + additional;
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
                 "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
                 "false",
                 runTime.toString(), expectedCount.toString(),
@@ -62,7 +62,7 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
                 "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
                 "false", runTime.toString(),
                 sendCount.toString(), numOfSendingThreads.toString(),
@@ -72,7 +72,7 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), expectedCount - additional,
                 "Did not receive expected message count.");

@@ -83,9 +83,9 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
                 expectedMessageCountFromSubscriberSession, JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
 
-        boolean sendSuccess1 = AndesClientUtils.getIfSenderIsSuccess(sendingClient1, messageCountWithoutExpiration);
+        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCountWithoutExpiration);
 
-        boolean sendSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2, messageCountWithExpiration);
+        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCountWithExpiration);
 
         assertEquals((receiveSuccess && sendSuccess1 && sendSuccess2), true);
     }

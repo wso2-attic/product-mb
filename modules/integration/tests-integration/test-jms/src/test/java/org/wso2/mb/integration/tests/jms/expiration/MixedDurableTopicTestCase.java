@@ -73,8 +73,8 @@ public class MixedDurableTopicTestCase {
 
         boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedMessageCountFromOneSubscriberSession , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
 
-        boolean sendingSuccess1 = AndesClientUtils.getIfSenderIsSuccess(sendingClient1,messageCountWithoutExpiration);
-        boolean sendingSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2,messageCountWithExpiration);
+        boolean sendingSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCountWithoutExpiration);
+        boolean sendingSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCountWithExpiration);
 
         //we just closed the subscription. Rest of messages should be delivered now.
 

@@ -34,20 +34,10 @@ import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.carbon.user.mgt.stub.types.carbon.FlaggedName;
-import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
-import org.wso2.mb.integration.common.clients.AndesJMSSubscriberClient;
-import org.wso2.mb.integration.common.clients.configurations.AndesClientConfiguration;
-import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
-import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.configurations.AndesJMSSubscriberClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
-import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
-import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.xml.sax.SAXException;
 
@@ -135,24 +125,44 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueuePermissionTestCase()
             throws IOException, UserAdminUserAdminException, XPathExpressionException,
-                   JMSException, NamingException {
+                   JMSException, NamingException, AndesClientException {
 
+//        AndesJMSConsumerClientConfiguration subscriberConfig = new AndesJMSConsumerClientConfiguration("authUser1", "authUser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testQueue1");
+//        subscriberConfig.setAcknowledgeMode(1);
+//        subscriberConfig.setAsync(true);
+//        subscriberConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+//
+//        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(subscriberConfig);
+//        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+//
+//        AndesClient receivingClient = new AndesJMSConsumerClient(subscriberConfig);
+//        receivingClient.startClient();
+//
+//        AndesClient sendingClient = new AndesJMSPublisherClient(publisherConfig);
+//        sendingClient.startClient();
+//
+//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
+//                                                                                           EXPECTED_COUNT, RUNTIME);
+//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, SEND_COUNT);
+//
+//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
 
-        try {
-            Thread s = new Thread(new AndesJMSSubscriberClient());
-
-            Thread p = new Thread(new AndesJMSPublisherClient());
-
-            s.start();
+//        try {
+//            Thread s = new Thread(new AndesJMSConsumerClient());
+//
+//            Thread p = new Thread(new AndesJMSPublisherClient());
+//
+//            s.start();
+////            Thread.sleep(30000);
+//            p.start();
+//
 //            Thread.sleep(30000);
-            p.start();
-
-            Thread.sleep(30000);
-
-        } catch (Exception e) {
-            log.error("ERROR AT TEST");
-            e.printStackTrace();
-        }
+//
+//        } catch (Exception e) {
+//            log.error("ERROR AT TEST");
+//            e.printStackTrace();
+//        }
 
 //        AndesJMSPublisherClient q = new AndesJMSPublisherClient();
 
@@ -162,7 +172,8 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 ////        receivingAndesClientForAuthUs.startWorking();
 //
 //        // creating, publish and subscribe using "authUser1"
-//        AndesJMSSubscriberClientConfiguration andesJMSSubscriberClientConfiguration = new AndesJMSSubscriberClientConfiguration.AndesJMSSubscriberClientConfigurationBuilder("admin", "admin", "127.0.0.1", 5672, ExchangeType.QUEUE, "q1").setAcknowledgeMode(1).setMaximumMessagesToReceived(5).build();
+//        AndesJMSConsumerClientConfiguration andesJMSSubscriberClientConfiguration = new AndesJMSConsumerClientConfiguration.AndesJMSSubscriberClientConfigurationBuilder("admin", "admin", "127.0.0.1", 5672, ExchangeType.QUEUE, "q1").setAcknowledgeMode(1).setMaximumMessagesToReceived(5).build();
+
 ////        andesSubscriberClientConfiguration.setHostName("127.0.0.1");
 ////        andesSubscriberClientConfiguration.setPort(5672);
 ////        andesSubscriberClientConfiguration.setUserName("admin");
@@ -172,7 +183,8 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 ////        andesSubscriberClientConfiguration.setAcknowledgeMode(1);
 ////        andesSubscriberClientConfiguration.setPrintsPerMessageCount(-1);
 //
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesJMSSubscriberClient(andesJMSSubscriberClientConfiguration);
+//        AndesClient receivingAndesClientForAuthUser1 = new AndesJMSConsumerClient(andesJMSSubscriberClientConfiguration);
+
 //        receivingAndesClientForAuthUser1.startClient();
 //
 ////        AndesJMSClientConfiguration temp = (AndesJMSClientConfiguration) receivingAndesClientForAuthUser1.getConfig();
@@ -193,333 +205,337 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 //        sendingAndesClientForAuthUser1.startClient();
 //
 //        log.info("STATS : " + receivingAndesClientForAuthUser1.getPublisherTPS() + " " +
-//                 receivingAndesClientForAuthUser1.getSubscriberTPS() + " " +
+//                 receivingAndesClientForAuthUser1.getConsumerTPS() + " " +
 //                 receivingAndesClientForAuthUser1.getAverageLatency());
 //
 //        log.info("STATS : " + sendingAndesClientForAuthUser1.getPublisherTPS() + " " +
-//                 sendingAndesClientForAuthUser1.getSubscriberTPS() + " " +
+//                 sendingAndesClientForAuthUser1.getConsumerTPS() + " " +
 //                 sendingAndesClientForAuthUser1.getAverageLatency());
 
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue1",
+                                                                            "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                            "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
 
-//        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue1", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                                                           EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue1", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                                                           EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
     }
 
-//    /**
-//     * User1 and User2 exists in the same role where create queue permission is assigned.
-//     * User1 creates a queue and then publishes and consumes messages. User2 tries to publish and consume messages. But unable to succeed.
-//     *
-//     * @throws RemoteException
-//     * @throws UserAdminUserAdminException
-//     * @throws XPathExpressionException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
-//    public void performQueuePermissionSameRoleUsersWithNoPublishOrConsume()
-//            throws RemoteException, UserAdminUserAdminException, XPathExpressionException,
-//                   JMSException {
-//        // creating, publish and subscribe using "authUser1"
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue2",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
-//        receivingAndesClientForAuthUser1.startWorking();
-//        AndesClient sendingAndesClientForAuthUser1 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue2", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
-//
-//        // publishing and creating using "authUser2" to "testQueue2"
-//        AndesClient receivingAndesClientForAuthUser2 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue2",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
-//        // a JMS exception will occur when "startWorking" is called. But the exception is logged and not thrown.
-//        receivingAndesClientForAuthUser2.startWorking();
-//        AndesClient sendingAndesClientForAuthUser2 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue2", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
-//        sendingAndesClientForAuthUser2.startWorking();
-//
-//        // a NullPointerException is thrown here
-//        AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2, EXPECTED_COUNT, RUNTIME);
-//        AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
-//    }
-//
-//    /**
-//     * User1 and User2 exists in the same role where create queue permission is assigned.
-//     * User1 creates a queue and then publishes and consumes messages. Add publish and consume permissions to the role in which User1 exists.
-//     * User2 tries to publish and consume messages. User2 succeeds.
-//     *
-//     * @throws RemoteException
-//     * @throws UserAdminUserAdminException
-//     * @throws XPathExpressionException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"})
-//    public void performQueuePermissionSameRoleUsersWithPublishOrConsume()
-//            throws IOException, LoginAuthenticationExceptionException, URISyntaxException,
-//                   LogoutAuthenticationExceptionException, XMLStreamException,
-//                   AndesAdminServiceBrokerManagerAdminException, SAXException,
-//                   XPathExpressionException, UserAdminUserAdminException, JMSException {
-//        // creating, publish and subscribe using "authUser1"
-//        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue3",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
-//        receivingAndesClientForAuthUser1.startWorking();
-//        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue3", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
-//
-//        // adding "authUser2" to "testQueue3"
-//        QueueRolePermission queueRolePermission = new QueueRolePermission();
-//        queueRolePermission.setRoleName(CREATE_PUB_SUB_QUEUE_ROLE);
-//        queueRolePermission.setAllowedToConsume(true);
-//        queueRolePermission.setAllowedToPublish(true);
-//        this.updateQueueRoleConsumePublishPermission("testQueue3", queueRolePermission);
-//        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
-//
-//        // publishing and creating using "authUser2" to "testQueue3"
-//        AndesClientTemp receivingAndesClientForAuthUser2 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue3",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
-//        receivingAndesClientForAuthUser2.startWorking();
-//        AndesClientTemp sendingAndesClientForAuthUser2 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue3", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
-//        sendingAndesClientForAuthUser2.startWorking();
-//
-//        boolean receiveSuccessForAuthUser2 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser2 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser2, "Failed receiving messages for authUser2");
-//        Assert.assertTrue(sendSuccessForAuthUser2, "Failed sending messages for authUser2");
-//    }
-//
-//    /**
-//     * User1 is in Role1 where there is queue creating permissions.
-//     * User5 is in Role2 where there are no create queue permissions.
-//     * User1 creates a queue and then publishes and consumes messages.
-//     * User5 tries to publish and consume messages. User5 fails.
-//     *
-//     * @throws JMSException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
-//    public void performQueuePermissionDifferentRoleUsersWithNoPermissions()
-//            throws JMSException {
-//        // creating, publish and subscribe using "authUser1"
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue4",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
-//        receivingAndesClientForAuthUser1.startWorking();
-//        AndesClient sendingAndesClientForAuthUser1 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue4", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
-//
-//        // publishing and creating using "authUser5" to "testQueue4"
-//        AndesClient receivingAndesClientForAuthUser5 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue4",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser5", "authUser5");
-//        receivingAndesClientForAuthUser5.startWorking();
-//        AndesClient sendingAndesClientForAuthUser5 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue4", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser5", "authUser5");
-//        sendingAndesClientForAuthUser5.startWorking();
-//
-//        AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser5,
-//                                                          EXPECTED_COUNT, RUNTIME);
-//        AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser5, SEND_COUNT);
-//    }
-//
-//    /**
-//     * User1 exists in a role where create queue permission is assigned.
-//     * User1 creates a queue and then publishes and consumes messages.
-//     * User1 is removed from the role.
-//     * User1 tries to publish and consume messages. User1 fails.
-//     *
-//     * @throws RemoteException
-//     * @throws UserAdminUserAdminException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
-//    public void performQueuePermissionSameUserRemovedFromRole()
-//            throws RemoteException, UserAdminUserAdminException, JMSException {
-//        // creating, publish and subscribe using "authUser1"
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue5",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
-//        receivingAndesClientForAuthUser1.startWorking();
-//        AndesClient sendingAndesClientForAuthUser1 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue5", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        // Removing authUser1 from create_pub_sub_queue_role and Internal/_testQueue5
-//        userManagementClient.addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_testQueue5"});
-//        log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_testQueue5");
-//
-//        receivingAndesClientForAuthUser1.startWorking();
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                          EXPECTED_COUNT, RUNTIME);
-//        AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//    }
-//
-//    /**
-//     * User1 and User2 exists in the same role where create queue permission is assigned.
-//     * User1 creates a queue and then publishes and consumes messages.
-//     * Admin assigns publishing and consuming  permissions to the role in which User1 and User2 are in.
-//     * User1 is removed from the role.
-//     * User2 tries to publish and consume messages. User2 succeeds.
-//     *
-//     * @throws RemoteException
-//     * @throws UserAdminUserAdminException
-//     * @throws XPathExpressionException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"})
-//    public void performQueuePermissionSameRoleAssignedPermissions()
-//            throws IOException, LoginAuthenticationExceptionException, URISyntaxException,
-//                   LogoutAuthenticationExceptionException, XMLStreamException,
-//                   AndesAdminServiceBrokerManagerAdminException, SAXException,
-//                   XPathExpressionException, UserAdminUserAdminException, JMSException {
-//        // creating, publish and subscribe using "authUser1"
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue6",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
-//        receivingAndesClientForAuthUser1.startWorking();
-//        AndesClient sendingAndesClientForAuthUser1 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue6", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
-//        sendingAndesClientForAuthUser1.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
-//
-//        // Updating permissions for create_pub_sub_queue_role
-//        QueueRolePermission queueRolePermission = new QueueRolePermission();
-//        queueRolePermission.setRoleName(CREATE_PUB_SUB_QUEUE_ROLE);
-//        queueRolePermission.setAllowedToConsume(true);
-//        queueRolePermission.setAllowedToPublish(true);
-//        this.updateQueueRoleConsumePublishPermission("testQueue6", queueRolePermission);
-//        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
-//
-//        // Removing authUser1 permissions
-//        userManagementClient.addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_testQueue6"});
-//        log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_testQueue6");
-//
-//        // publishing and creating using "authUser2" to "testQueue6"
-//        AndesClient receivingAndesClientForAuthUser2 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue6",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
-//        receivingAndesClientForAuthUser2.startWorking();
-//
-//        AndesClient sendingAndesClientForAuthUser2 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue6", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
-//        sendingAndesClientForAuthUser2.startWorking();
-//
-//        boolean receiveSuccessForAuthUser2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser2 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser2, "Failed receiving messages for authUser2");
-//        Assert.assertTrue(sendSuccessForAuthUser2, "Failed sending messages for authUser2");
-//    }
-//
-//    /**
-//     * User1 is in Role1 where there is queue creating permissions.
-//     * User3 is in Role2 where there are no create queue permissions.
-//     * User1 creates a queue and then publishes and consumes messages.
-//     * Admin assigns publishing and consuming permissions to Role2.
-//     * User3 is removed from Role1.
-//     * User3 tries to publish and consume messages. User3 succeeds.
-//     *
-//     * @throws RemoteException
-//     * @throws UserAdminUserAdminException
-//     * @throws XPathExpressionException
-//     */
-//    @Test(groups = {"wso2.mb", "queue"})
-//    public void performQueuePermissionDifferentRolesAssignedPermissions()
-//            throws IOException, XPathExpressionException,
-//                   AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
-//                   XMLStreamException, UserAdminUserAdminException,
-//                   LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
-//                   JMSException {
-//        // creating, publish and subscribe using "admin"
-//        AndesClient receivingAndesClientForAdmin = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue7",
-//                                                                   "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                   "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "admin", "admin");
-//        receivingAndesClientForAdmin.startWorking();
-//        AndesClient sendingAndesClientForAdmin = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue7", "100", "false",
-//                                                                 Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "admin", "admin");
-//        sendingAndesClientForAdmin.startWorking();
-//
-//        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAdmin,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser1 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAdmin, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
-//        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
-//
-//        // Updating permissions for pub_sub_queue_role
-//        QueueRolePermission queueRolePermission = new QueueRolePermission();
-//        queueRolePermission.setRoleName(PUB_SUB_QUEUE_ROLE);
-//        queueRolePermission.setAllowedToConsume(true);
-//        queueRolePermission.setAllowedToPublish(true);
-//        this.updateQueueRoleConsumePublishPermission("testQueue7", queueRolePermission);
-//        log.info("Consume/Publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
-//
-//        // publishing and creating using "authUser3" to "testQueue7"
-//        AndesClient receivingAndesClientForAuthUser3 = new AndesClient("receive", "127.0.0.1:5672", "queue:testQueue7",
-//                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
-//                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser3", "authUser3");
-//        receivingAndesClientForAuthUser3.startWorking();
-//        AndesClient sendingAndesClientForAuthUser3 = new AndesClient("send", "127.0.0.1:5672", "queue:testQueue7", "100", "false",
-//                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
-//                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser3", "authUser3");
-//        sendingAndesClientForAuthUser3.startWorking();
-//
-//        boolean receiveSuccessForAuthUser3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser3,
-//                                                                                               EXPECTED_COUNT, RUNTIME);
-//        boolean sendSuccessForAuthUser3 = AndesClientUtils.getIfSenderIsSuccess(sendingAndesClientForAuthUser3, SEND_COUNT);
-//
-//        Assert.assertTrue(receiveSuccessForAuthUser3, "Failed receiving messages for authUser3");
-//        Assert.assertTrue(sendSuccessForAuthUser3, "Failed sending messages for authUser3");
-//    }
+    /**
+     * User1 and User2 exists in the same role where create queue permission is assigned.
+     * User1 creates a queue and then publishes and consumes messages. User2 tries to publish and consume messages. But unable to succeed.
+     *
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    public void performQueuePermissionSameRoleUsersWithNoPublishOrConsume()
+            throws RemoteException, UserAdminUserAdminException, XPathExpressionException,
+                   JMSException {
+        // creating, publish and subscribe using "authUser1"
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue2",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
+        receivingAndesClientForAuthUser1.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue2", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+
+        // publishing and creating using "authUser2" to "testQueue2"
+        AndesClientTemp receivingAndesClientForAuthUser2 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue2",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
+        // a JMS exception will occur when "startWorking" is called. But the exception is logged and not thrown.
+        receivingAndesClientForAuthUser2.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser2 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue2", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
+        sendingAndesClientForAuthUser2.startWorking();
+
+        // a NullPointerException is thrown here
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2, EXPECTED_COUNT, RUNTIME);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
+    }
+
+    /**
+     * User1 and User2 exists in the same role where create queue permission is assigned.
+     * User1 creates a queue and then publishes and consumes messages. Add publish and consume permissions to the role in which User1 exists.
+     * User2 tries to publish and consume messages. User2 succeeds.
+     *
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueuePermissionSameRoleUsersWithPublishOrConsume()
+            throws IOException, LoginAuthenticationExceptionException, URISyntaxException,
+                   LogoutAuthenticationExceptionException, XMLStreamException,
+                   AndesAdminServiceBrokerManagerAdminException, SAXException,
+                   XPathExpressionException, UserAdminUserAdminException, JMSException {
+        // creating, publish and subscribe using "authUser1"
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue3",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
+        receivingAndesClientForAuthUser1.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue3", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+
+        // adding "authUser2" to "testQueue3"
+        QueueRolePermission queueRolePermission = new QueueRolePermission();
+        queueRolePermission.setRoleName(CREATE_PUB_SUB_QUEUE_ROLE);
+        queueRolePermission.setAllowedToConsume(true);
+        queueRolePermission.setAllowedToPublish(true);
+        this.updateQueueRoleConsumePublishPermission("testQueue3", queueRolePermission);
+        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
+
+        // publishing and creating using "authUser2" to "testQueue3"
+        AndesClientTemp receivingAndesClientForAuthUser2 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue3",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
+        receivingAndesClientForAuthUser2.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser2 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue3", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
+        sendingAndesClientForAuthUser2.startWorking();
+
+        boolean receiveSuccessForAuthUser2 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser2 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser2, "Failed receiving messages for authUser2");
+        Assert.assertTrue(sendSuccessForAuthUser2, "Failed sending messages for authUser2");
+    }
+
+    /**
+     * User1 is in Role1 where there is queue creating permissions.
+     * User5 is in Role2 where there are no create queue permissions.
+     * User1 creates a queue and then publishes and consumes messages.
+     * User5 tries to publish and consume messages. User5 fails.
+     *
+     * @throws JMSException
+     */
+    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    public void performQueuePermissionDifferentRoleUsersWithNoPermissions()
+            throws JMSException {
+        // creating, publish and subscribe using "authUser1"
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue4",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
+        receivingAndesClientForAuthUser1.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue4", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+
+        // publishing and creating using "authUser5" to "testQueue4"
+        AndesClientTemp receivingAndesClientForAuthUser5 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue4",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser5", "authUser5");
+        receivingAndesClientForAuthUser5.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser5 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue4", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser5", "authUser5");
+        sendingAndesClientForAuthUser5.startWorking();
+
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser5,
+                                                          EXPECTED_COUNT, RUNTIME);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser5, SEND_COUNT);
+    }
+
+    /**
+     * User1 exists in a role where create queue permission is assigned.
+     * User1 creates a queue and then publishes and consumes messages.
+     * User1 is removed from the role.
+     * User1 tries to publish and consume messages. User1 fails.
+     *
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
+     */
+    @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = {JMSException.class}, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    public void performQueuePermissionSameUserRemovedFromRole()
+            throws RemoteException, UserAdminUserAdminException, JMSException {
+        // creating, publish and subscribe using "authUser1"
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue5",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
+        receivingAndesClientForAuthUser1.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue5", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        // Removing authUser1 from create_pub_sub_queue_role and Internal/_testQueue5
+        userManagementClient.addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_testQueue5"});
+        log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_testQueue5");
+
+        receivingAndesClientForAuthUser1.startWorking();
+        sendingAndesClientForAuthUser1.startWorking();
+
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                          EXPECTED_COUNT, RUNTIME);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+    }
+
+    /**
+     * User1 and User2 exists in the same role where create queue permission is assigned.
+     * User1 creates a queue and then publishes and consumes messages.
+     * Admin assigns publishing and consuming  permissions to the role in which User1 and User2 are in.
+     * User1 is removed from the role.
+     * User2 tries to publish and consume messages. User2 succeeds.
+     *
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueuePermissionSameRoleAssignedPermissions()
+            throws IOException, LoginAuthenticationExceptionException, URISyntaxException,
+                   LogoutAuthenticationExceptionException, XMLStreamException,
+                   AndesAdminServiceBrokerManagerAdminException, SAXException,
+                   XPathExpressionException, UserAdminUserAdminException, JMSException {
+        // creating, publish and subscribe using "authUser1"
+        AndesClientTemp receivingAndesClientForAuthUser1 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue6",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser1", "authUser1");
+        receivingAndesClientForAuthUser1.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser1 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue6", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser1", "authUser1");
+        sendingAndesClientForAuthUser1.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser1,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser1, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+
+        // Updating permissions for create_pub_sub_queue_role
+        QueueRolePermission queueRolePermission = new QueueRolePermission();
+        queueRolePermission.setRoleName(CREATE_PUB_SUB_QUEUE_ROLE);
+        queueRolePermission.setAllowedToConsume(true);
+        queueRolePermission.setAllowedToPublish(true);
+        this.updateQueueRoleConsumePublishPermission("testQueue6", queueRolePermission);
+        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
+
+        // Removing authUser1 permissions
+        userManagementClient.addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_testQueue6"});
+        log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_testQueue6");
+
+        // publishing and creating using "authUser2" to "testQueue6"
+        AndesClientTemp receivingAndesClientForAuthUser2 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue6",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser2", "authUser2");
+        receivingAndesClientForAuthUser2.startWorking();
+
+        AndesClientTemp sendingAndesClientForAuthUser2 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue6", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser2", "authUser2");
+        sendingAndesClientForAuthUser2.startWorking();
+
+        boolean receiveSuccessForAuthUser2 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser2,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser2 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser2, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser2, "Failed receiving messages for authUser2");
+        Assert.assertTrue(sendSuccessForAuthUser2, "Failed sending messages for authUser2");
+    }
+
+    /**
+     * User1 is in Role1 where there is queue creating permissions.
+     * User3 is in Role2 where there are no create queue permissions.
+     * User1 creates a queue and then publishes and consumes messages.
+     * Admin assigns publishing and consuming permissions to Role2.
+     * User3 is removed from Role1.
+     * User3 tries to publish and consume messages. User3 succeeds.
+     *
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueuePermissionDifferentRolesAssignedPermissions()
+            throws IOException, XPathExpressionException,
+                   AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+                   XMLStreamException, UserAdminUserAdminException,
+                   LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
+                   JMSException {
+        // creating, publish and subscribe using "admin"
+        AndesClientTemp receivingAndesClientForAdmin = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue7",
+                                                                   "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                   "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "admin", "admin");
+        receivingAndesClientForAdmin.startWorking();
+        AndesClientTemp sendingAndesClientForAdmin = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue7", "100", "false",
+                                                                 Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "admin", "admin");
+        sendingAndesClientForAdmin.startWorking();
+
+        boolean receiveSuccessForAuthUser1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAdmin,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser1 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAdmin, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser1, "Failed receiving messages for authUser1");
+        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
+
+        // Updating permissions for pub_sub_queue_role
+        QueueRolePermission queueRolePermission = new QueueRolePermission();
+        queueRolePermission.setRoleName(PUB_SUB_QUEUE_ROLE);
+        queueRolePermission.setAllowedToConsume(true);
+        queueRolePermission.setAllowedToPublish(true);
+        this.updateQueueRoleConsumePublishPermission("testQueue7", queueRolePermission);
+        log.info("Consume/Publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
+
+        // publishing and creating using "authUser3" to "testQueue7"
+        AndesClientTemp receivingAndesClientForAuthUser3 = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue7",
+                                                                       "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
+                                                                       "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "", "authUser3", "authUser3");
+        receivingAndesClientForAuthUser3.startWorking();
+        AndesClientTemp sendingAndesClientForAuthUser3 = new AndesClientTemp("send", "127.0.0.1:5672", "queue:testQueue7", "100", "false",
+                                                                     Integer.toString(RUNTIME), Integer.toString(SEND_COUNT), "1",
+                                                                     "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "", "authUser3", "authUser3");
+        sendingAndesClientForAuthUser3.startWorking();
+
+        boolean receiveSuccessForAuthUser3 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingAndesClientForAuthUser3,
+                                                                                               EXPECTED_COUNT, RUNTIME);
+        boolean sendSuccessForAuthUser3 = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingAndesClientForAuthUser3, SEND_COUNT);
+
+        Assert.assertTrue(receiveSuccessForAuthUser3, "Failed receiving messages for authUser3");
+        Assert.assertTrue(sendSuccessForAuthUser3, "Failed sending messages for authUser3");
+    }
+
 
     /**
      * Assigning consuming publishing permissions of a queue to a role.

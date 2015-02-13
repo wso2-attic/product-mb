@@ -1,27 +1,25 @@
 package org.wso2.mb.integration.common.clients;
 
-import org.apache.log4j.Logger;
-import org.wso2.mb.integration.common.clients.configurations.AndesClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 
+import javax.jms.JMSException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.io.IOException;
 import java.util.Properties;
 
-public abstract class AndesJMSClient extends AndesClient {
+public abstract class AndesJMSClient{
+    protected final AndesJMSClientConfiguration jmsConfig;
+
     private InitialContext initialContext;
 
-    protected AndesJMSClient(AndesClientConfiguration config) throws NamingException {
-        super(config);
-        this.initialize();
+    protected AndesJMSClient(AndesJMSClientConfiguration config) throws NamingException {
+        this.jmsConfig = config;
     }
 
     protected void initialize() throws NamingException {
-        super.initialize();
-        AndesJMSClientConfiguration jmsConfig = (AndesJMSClientConfiguration) super.config;
-
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, AndesClientConstants.ANDES_ICF);
         properties.put(AndesClientConstants.CF_NAME_PREFIX + AndesClientConstants.CF_NAME, jmsConfig.getConnectionString());
@@ -30,7 +28,13 @@ public abstract class AndesJMSClient extends AndesClient {
         initialContext = new InitialContext(properties);
     }
 
-    public InitialContext getInitialContext() {
+    protected InitialContext getInitialContext() {
         return initialContext;
     }
+
+    public abstract void startClient() throws JMSException, NamingException, IOException;
+
+    public abstract void stopClient() throws JMSException;
+
+    public abstract AndesJMSClientConfiguration getConfig();
 }

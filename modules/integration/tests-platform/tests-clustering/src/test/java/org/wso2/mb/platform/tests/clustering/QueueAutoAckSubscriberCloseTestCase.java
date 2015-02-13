@@ -27,7 +27,6 @@ import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageRecei
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
-import javax.jms.QueueSession;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
         AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue", noOfMessagesToExpect,
                 runTime);
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient, "MillionTenPercentSubscriberCloseQueue",
                 noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);

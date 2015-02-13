@@ -88,7 +88,7 @@ public class AndesTopicSubscriber {
 
         // Initialized to default parameters
         String brokerHost = "localhost";
-        int port = AndesClientUtils.ANDES_DEFAULT_PORT;
+        int port = 5672;//AndesClientUtils.ANDES_DEFAULT_PORT;
         private InitialContext initialContext;
 
         public Builder(String username, String password, String destinationName) {
@@ -119,14 +119,14 @@ public class AndesTopicSubscriber {
 
         private Properties createContextProperties() {
             Properties contextProperties = new Properties();
-            contextProperties.put(Context.INITIAL_CONTEXT_FACTORY,
-                                  AndesClientUtils.ANDES_INITIAL_CONTEXT_FACTORY);
-            String connectionString = AndesClientUtils.getBrokerConnectionString(this.username,
-                                                                                 this.password,
-                                                                                 this.brokerHost,
-                                                                                 this.port);
-            contextProperties.put("connectionfactory." + connectionFactory,
-                                  connectionString);
+//            contextProperties.put(Context.INITIAL_CONTEXT_FACTORY,
+//                                  AndesClientUtils.ANDES_INITIAL_CONTEXT_FACTORY);
+//            String connectionString = AndesClientUtils.getBrokerConnectionString(this.username,
+//                                                                                 this.password,
+//                                                                                 this.brokerHost,
+//                                                                                 this.port);
+//            contextProperties.put("connectionfactory." + connectionFactory,
+//                                  connectionString);
             contextProperties.put("topic." + this.destinationName, this.destinationName);
             return contextProperties;
         }

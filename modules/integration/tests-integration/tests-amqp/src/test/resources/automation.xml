@@ -133,6 +133,26 @@
                         <userName>testuser21</userName>
                         <password>testuser21</password>
                     </user>
+                    <user key="authUser1">
+                        <userName>authUser1</userName>
+                        <password>authUser1</password>
+                    </user>
+                    <user key="authUser2">
+                        <userName>authUser2</userName>
+                        <password>authUser2</password>
+                    </user>
+                    <user key="authUser3">
+                        <userName>authUser3</userName>
+                        <password>authUser3</password>
+                    </user>
+                    <user key="authUser4">
+                        <userName>authUser4</userName>
+                        <password>authUser4</password>
+                    </user>
+                    <user key="authUser5">
+                        <userName>authUser5</userName>
+                        <password>authUser5</password>
+                    </user>
                 </users>
             </tenant>
         </superTenant>

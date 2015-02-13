@@ -5,12 +5,39 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
-public class AndesJMSClientConfiguration extends AndesClientConfiguration {
+public class AndesJMSClientConfiguration implements Cloneable {
+    private static final String TEMP_QUEUE_NAME = "temporaryClientQueue";
+    private int port;
+    private String hostName;
+    private String userName;
+    private String password;
     private String connectionString;
     private ExchangeType exchangeType;
     private String destinationName;
     private long printsPerMessageCount;
     private long runningDelay;
+    private String filePathToWriteStatistics;
+
+    public AndesJMSClientConfiguration() {
+        this(ExchangeType.QUEUE, TEMP_QUEUE_NAME);
+    }
+
+    public AndesJMSClientConfiguration(ExchangeType exchangeType, String destinationName) {
+        this("admin", "admin", "127.0.0.1", 5672, exchangeType, destinationName);
+    }
+
+    public AndesJMSClientConfiguration(String userName, String password, String hostName,
+                                       int port, ExchangeType exchangeType,
+                                       String destinationName) {
+        this.exchangeType = exchangeType;
+        this.destinationName = destinationName;
+        this.userName = userName;
+        this.password = password;
+        this.hostName = hostName;
+        this.port = port;
+        this.initialize();
+        this.recreateConnectionString();
+    }
 
     public AndesJMSClientConfiguration(String connectionString,
                                               ExchangeType exchangeType,
@@ -21,21 +48,65 @@ public class AndesJMSClientConfiguration extends AndesClientConfiguration {
         this.initialize();
     }
 
-    public AndesJMSClientConfiguration(String userName, String password, String hostName,
-                                              int port, ExchangeType exchangeType,
-                                              String destinationName) {
-        this.connectionString = "amqp://" + userName + ":" + password + "@" + AndesClientConstants.CARBON_CLIENT_ID + "/" +
-                                AndesClientConstants.CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" + hostName + ":" + port + "'";
-        this.exchangeType = exchangeType;
-        this.destinationName = destinationName;
-        this.initialize();
+    // TODO : implement
+    public AndesJMSClientConfiguration(String xmlConfigFilePath){
+
     }
 
-    @Override
-    public void initialize() {
-        super.initialize();
-        printsPerMessageCount = -1L;
-        runningDelay = 0L;
+    public AndesJMSClientConfiguration(
+            AndesJMSClientConfiguration config) {
+        this.connectionString = config.getConnectionString();
+        this.exchangeType = config.getExchangeType();
+        this.destinationName = config.destinationName;
+        this.printsPerMessageCount = config.getPrintsPerMessageCount();
+        this.runningDelay = config.getRunningDelay();
+    }
+
+    private void recreateConnectionString() {
+        this.connectionString = "amqp://" + this.userName + ":" + this.password + "@" + AndesClientConstants.CARBON_CLIENT_ID +
+                                "/" + AndesClientConstants.CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" +
+                                this.hostName + ":" + this.port + "'";
+    }
+
+    protected void initialize() {
+        this.printsPerMessageCount = 1L;
+        this.runningDelay = 0L;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+        this.recreateConnectionString();
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+        this.recreateConnectionString();
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+        this.recreateConnectionString();
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+        this.recreateConnectionString();
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getHostName() {
+        return this.hostName;
+    }
+
+    public int getPort() {
+        return this.port;
     }
 
     public String getConnectionString() {
@@ -63,7 +134,7 @@ public class AndesJMSClientConfiguration extends AndesClientConfiguration {
     }
 
     public long getPrintsPerMessageCount() {
-        return printsPerMessageCount;
+        return this.printsPerMessageCount;
     }
 
     public void setPrintsPerMessageCount(long printsPerMessageCount) throws AndesClientException {
@@ -84,5 +155,23 @@ public class AndesJMSClientConfiguration extends AndesClientConfiguration {
         } else {
             throw new AndesClientException("Running delay cannot be less than 0");
         }
+    }
+
+    public String getFilePathToWriteStatistics() {
+        return filePathToWriteStatistics;
+    }
+
+    public void setFilePathToWriteStatistics(String filePathToPrintStatistics) {
+        this.filePathToWriteStatistics = filePathToPrintStatistics;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder toStringVal = new StringBuilder();
+        toStringVal.append("ConnectionString=").append(this.connectionString).append("\n");
+        toStringVal.append("ExchangeType=").append(this.exchangeType).append("\n");
+        toStringVal.append("PrintsPerMessageCount=").append(this.printsPerMessageCount).append("\n");
+        toStringVal.append("RunningDelay=").append(this.runningDelay).append("\n");
+        return toStringVal.toString();
     }
 }

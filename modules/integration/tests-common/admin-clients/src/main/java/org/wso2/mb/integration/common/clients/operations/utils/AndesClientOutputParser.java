@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,6 +28,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class used to get Andes Client outputs from parse file.
@@ -44,29 +47,31 @@ public class AndesClientOutputParser {
         this.filePath = filePath;
     }
 
-    public AndesClientOutputParser(String filePath) {
+    public AndesClientOutputParser(String filePath) throws IOException {
         this.filePath = filePath;
         parseFile();
     }
 
-    public void parseFile() {
+    public void parseFile() throws IOException {
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
             try {
                 String line = br.readLine();
-
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
                     addMessage(messageIdentifier);
                     line = br.readLine();
                 }
             } finally {
                 br.close();
             }
-        } catch (Exception e) {
-            log.error("Error while parsing the file containing received messages", e);
+        } catch (FileNotFoundException e) {
+            log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Error " + filePath + " the file cannot be read", e);
+            throw e;
         }
     }
 
@@ -154,10 +159,10 @@ public class AndesClientOutputParser {
     /**
      * check whether all the messages are transacted
      *
-     * @param operationOccurredIndex index of the operation occurred message 
+     * @param operationOccurredIndex index of the operation occurred message
      * @return transactedResult
      */
-    public boolean transactedOperations(long operationOccurredIndex) {
+    public boolean transactedOperations(long operationOccurredIndex) throws FileNotFoundException {
         boolean result = false;
         int count = 0;
         long firstMessageIdentifier = 0;
@@ -195,6 +200,7 @@ public class AndesClientOutputParser {
 
         } catch (FileNotFoundException e) {
             log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+            throw e;
         }
 
         AndesClientUtilsTemp.flushPrintWriter();
@@ -206,8 +212,8 @@ public class AndesClientOutputParser {
      *
      * @return duplicate count
      */
-    public int numberDuplicatedMessages() {
-        int duplicateCount = 0;
+    public long numberDuplicatedMessages() {
+        long duplicateCount = 0;
         List<Long> messagesDuplicated = new ArrayList<Long>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -231,9 +237,7 @@ public class AndesClientOutputParser {
             } finally {
 
                 try {
-                    if (null != br) {
-                        br.close();
-                    }
+                    br.close();
                 } catch (IOException e) {
                     log.error("Error while closing the file containing received messages", e);
                 }

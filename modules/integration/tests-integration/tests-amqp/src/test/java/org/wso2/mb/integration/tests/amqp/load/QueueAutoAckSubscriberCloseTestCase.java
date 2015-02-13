@@ -22,9 +22,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.util.List;
@@ -67,12 +68,12 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
 
         String queueNameArg = "queue:MillionTenPercentSubscriberCloseQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), noOfMessagesToExpect.toString(),
                 noOfNonClosingSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
 
-        AndesClient receivingClosingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingClosingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), noOfMessagesToReceiveByClosingSubscribers.toString(),
                 noOfSubscribersToClose.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
@@ -86,19 +87,19 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
         log.info("Number of Subscriber [" + queueListeners.size() + "]");
         log.info("Number of Closing Subscriber [" + queueClosingListeners.size() + "]");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue",
-                noOfMessagesToExpect,
-                runTime);
+        AndesClientUtilsTemp.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue",
+                                                          noOfMessagesToExpect,
+                                                          runTime);
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient,
+        AndesClientUtilsTemp.waitUntilExactNumberOfMessagesReceived(receivingClosingClient,
                 "MillionTenPercentSubscriberCloseQueue",
                 noOfMessagesToReceiveByClosingSubscribers, runTime);
 

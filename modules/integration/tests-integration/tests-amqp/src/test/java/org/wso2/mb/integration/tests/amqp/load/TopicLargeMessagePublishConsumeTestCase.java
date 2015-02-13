@@ -21,8 +21,9 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 import java.io.File;
 
@@ -49,21 +50,21 @@ public class TopicLargeMessagePublishConsumeTestCase {
         String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom1mb.xml";
         AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 1024);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic1MB",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:singleLargeTopic1MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic1MB", "1", "false",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:singleLargeTopic1MB", "1", "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(sendSuccess, "Message sending failed.");
         Assert.assertTrue(receiveSuccess, "Message receiving failed.");
@@ -81,22 +82,22 @@ public class TopicLargeMessagePublishConsumeTestCase {
         String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom10mb.xml";
         AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 10 * 1024);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:singleLargeTopic10MB",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:singleLargeTopic10MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:singleLargeTopic10MB", "1",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:singleLargeTopic10MB", "1",
                 "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(sendSuccess, "Message sending failed.");
         Assert.assertTrue(receiveSuccess, "Message receiving failed.");

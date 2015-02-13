@@ -21,6 +21,8 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
 import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -28,38 +30,45 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import java.io.IOException;
 
 /**
- * subscribe to a topic and send 1000 messages and verify if messages are being received
+ * 1. send 1000 messages and subscribe them for a single queue (set expected count to more than 1000 so it will wait)
+ * 2. check if messages were received in order
+ * 3. check if there are any duplicates
  */
-public class SingleTopicPublishSubscribeTestCase {
+public class QueueMessageSequentialAndDuplicateTestCase extends MBIntegrationBaseTest {
 
-    private static final long EXPECTED_COUNT = 5000L;
+    private static final long EXPECTED_COUNT = 1000L;
     private static final long SEND_COUNT = 1000L;
 
     @BeforeClass
-    public void prepare() {
+    public void prepare() throws Exception {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    @Test(groups = {"wso2.mb", "topic"})
-    public void performSingleTopicPublishSubscribeTestCase()
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performQueueMessageSequentialAndDuplicateTestCase()
             throws AndesClientException, JMSException, NamingException, IOException {
 
+
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "hasitha");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        consumerConfig.setPrintsPerMessageCount(1000L);
+        consumerConfig.setPrintsPerMessageCount(500L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "hasitha");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
         publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
@@ -74,29 +83,43 @@ public class SingleTopicPublishSubscribeTestCase {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");
 
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed");
+
+        Assert.assertTrue(AndesClientUtils.checkIfMessagesAreInOrder(consumerClient), "Messages are not in order");
+
+        Assert.assertEquals(AndesClientUtils.checkIfMessagesAreDuplicated(consumerClient).keySet().size(), 0, "Duplicate message are available.");
+
+
+
 
 
 //        Integer sendCount = 1000;
 //        Integer runTime = 20;
-//        Integer expectedCount = 1000;
+//        Integer expectedCount = 5000;
 //
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:hasitha",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
+//
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:singleQueue",
+//                "100", "true", runTime.toString(), expectedCount.toString(),
 //                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 //
 //        receivingClient.startWorking();
 //
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:hasitha", "100", "false",
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
 //                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=1000", "");
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 //
 //        sendingClient.startWorking();
 //
-//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 //
-//        Assert.assertTrue(sendSuccess, "Message sending failed.");
-//        Assert.assertFalse(receiveSuccess, "Message receiving failed.");
+//        boolean senderSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(senderSuccess, "Message sending failed.");
+//
+//        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount.intValue());
+//
+//        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order");
+//
+//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate message are available.");
     }
 }

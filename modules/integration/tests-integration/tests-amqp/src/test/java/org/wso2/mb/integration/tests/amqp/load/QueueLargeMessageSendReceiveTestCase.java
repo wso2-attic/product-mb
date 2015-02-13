@@ -26,8 +26,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.io.*;
@@ -76,21 +77,21 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
             log.warn("Error reading input content from file : " + messageContentInputFilePath);
         }
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "true",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "true",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, sendCount, runTime);
+        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, sendCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Integer actualReceiveCount = receivingClient.getReceivedqueueMessagecount();
 
@@ -112,22 +113,22 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
         String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom10mb.xml";
         AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 10 * 1024);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleLargeQueue10MB",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:singleLargeQueue10MB",
                 "1", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleLargeQueue10MB", "1",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:singleLargeQueue10MB", "1",
                 "false",
                 runTime.toString(), sendCount.toString(), "1",
                 "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(sendSuccess, "Message sending failed.");
         Assert.assertTrue(receiveSuccess, "Message receiving failed.");

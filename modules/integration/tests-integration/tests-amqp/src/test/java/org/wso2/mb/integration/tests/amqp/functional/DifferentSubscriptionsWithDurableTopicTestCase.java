@@ -1,148 +1,312 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 /**
  * This test class with perform test case of having different types of subscriptions together with
  * durable topic subscription.
  */
 public class DifferentSubscriptionsWithDurableTopicTestCase {
+    private static final long SEND_COUNT = 1000L;
+    private static final long EXPECTED_COUNT = 500L;
+
+    private static final String TOPIC_NAME = "a.b.c";
+    private static final String HIERARCHICAL_TOPIC = "a.b.*";
 
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDifferentTopicSubscriptionsWithDurableTopicTest() {
+    public void performDifferentTopicSubscriptionsWithDurableTopicTest()
+            throws AndesClientException, CloneNotSupportedException, JMSException, NamingException,
+                   IOException {
 
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 500;
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        // Use a listener
+        durableTopicConsumerConfig1.setAsync(true);
+        // Amount of message to receive
+        durableTopicConsumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        durableTopicConsumerConfig1.setPrintsPerMessageCount(100L);
+        durableTopicConsumerConfig1.setDurable(true, "sub1");
 
-        String topicName = "a.b.c";
-        String hierarchicalTopic = "a.b.*";
-
-        // Start durable subscription 1
-        AndesClient durableTopicSub1 = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:" + topicName,
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1,durable=true," +
-                        "subscriptionID=sub21,delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        durableTopicSub1.startWorking();
-
-        // Start durable subscription 2
-        AndesClient durableTopicSub2 = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:" + topicName,
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1,durable=true," +
-                        "subscriptionID=sub22,delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        durableTopicSub2.startWorking();
-
-        //start a normal topic subscriber
-        AndesClient normalTopicSub = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:" + topicName,
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1,durable=false," +
-                        "delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        normalTopicSub.startWorking();
-
-        //start a hierarchical normal topic subscriber
-        AndesClient normalHierarchicalTopicSub = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:" + hierarchicalTopic,
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1," +
-                        "durable=false," +
-                        "delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        normalHierarchicalTopicSub.startWorking();
-
-        //start a hierarchical durable topic subscriber
-        AndesClient durableHierarchicalTopicSub = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:" + hierarchicalTopic,
-                "100", "false",
-                runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1," +
-                        "durable=true," +
-                        "subscriptionID=sub23," +
-                        "delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        durableHierarchicalTopicSub.startWorking();
-
-        //start a queue subscriber
-        AndesClient queueSubscriber = new AndesClient("receive", "127.0.0.1:5672",
-                "queue:" + topicName,
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                "1",
-                "listener=true,ackMode=1,durable=false," +
-                        "delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount, "");
-        queueSubscriber.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        // Use a listener
+        durableTopicConsumerConfig2.setAsync(true);
+        // Amount of message to receive
+        durableTopicConsumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        durableTopicConsumerConfig2.setPrintsPerMessageCount(100L);
+        durableTopicConsumerConfig2.setDurable(true, "sub2");
 
 
-        // Start message publisher
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
-                "topic:" + topicName,
-                "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
-        sendingClient.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration normalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        // Use a listener
+        normalTopicConsumerConfig.setAsync(true);
+        // Amount of message to receive
+        normalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        normalTopicConsumerConfig.setPrintsPerMessageCount(100L);
 
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
+        // Use a listener
+        normalHierarchicalTopicConsumerConfig.setAsync(true);
+        // Amount of message to receive
+        normalHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(100L);
+
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration durableHierarchicalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
+        // Use a listener
+        durableHierarchicalTopicConsumerConfig.setAsync(true);
+        // Amount of message to receive
+        durableHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(100L);
+        durableHierarchicalTopicConsumerConfig.setDurable(true, "sub3");
+
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration queueConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, TOPIC_NAME);
+        // Use a listener
+        queueConsumerConfig.setAsync(true);
+        // Amount of message to receive
+        queueConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        queueConsumerConfig.setPrintsPerMessageCount(100L);
+
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+
+
+//        log.info(durableTopicConsumerConfig1.toString());
+//        log.info("\n");
+//        log.info(durableTopicConsumerConfig2.toString());
+//        log.info("\n");
+//        log.info(normalTopicConsumerConfig.toString());
+//        log.info("\n");
+//        log.info(normalHierarchicalTopicConsumerConfig.toString());
+//        log.info("\n");
+//        log.info(durableHierarchicalTopicConsumerConfig.toString());
+//        log.info("\n");
+//        log.info(queueConsumerConfig.toString());
+//        log.info("\n");
+
+
+        //Creating clients
+        AndesJMSConsumerClient durableTopicConsumerClient1 = new AndesJMSConsumerClient(durableTopicConsumerConfig1);
+        durableTopicConsumerClient1.startClient();
+
+        AndesJMSConsumerClient durableTopicConsumerClient2 = new AndesJMSConsumerClient(durableTopicConsumerConfig2);
+        durableTopicConsumerClient2.startClient();
+
+        AndesJMSConsumerClient normalTopicConsumerClient = new AndesJMSConsumerClient(normalTopicConsumerConfig);
+        normalTopicConsumerClient.startClient();
+
+        AndesJMSConsumerClient normalHierarchicalTopicConsumerClient = new AndesJMSConsumerClient(normalHierarchicalTopicConsumerConfig);
+        normalHierarchicalTopicConsumerClient.startClient();
+
+        AndesJMSConsumerClient durableHierarchicalTopicConsumerClient = new AndesJMSConsumerClient(durableHierarchicalTopicConsumerConfig);
+        durableHierarchicalTopicConsumerClient.startClient();
+
+        AndesJMSConsumerClient queueConsumerClient = new AndesJMSConsumerClient(queueConsumerConfig);
+        queueConsumerClient.startClient();
+
+        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        publisherClient.startClient();
+
+
+        // Evaluation
         AndesClientUtils.sleepForInterval(4000);
 
-        boolean durableTopicSub1Success = AndesClientUtils
-                .waitUntilMessagesAreReceived(durableTopicSub1, expectedCount,
-                        runTime);
-        assertTrue(durableTopicSub1Success, "Message receive error from durable subscriber 1");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(durableTopicConsumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(durableTopicConsumerClient1.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from durable subscriber 1");
 
-        boolean durableTopicSub2Success = AndesClientUtils
-                .waitUntilMessagesAreReceived(durableTopicSub2, expectedCount,
-                        runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(durableTopicConsumerClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(durableTopicConsumerClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from durable subscriber 2");
 
-        assertTrue(durableTopicSub2Success, "Message receive error from durable subscriber 2");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(normalTopicConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(normalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from normal topic subscriber");
 
-        boolean normalTopicSubSuccess = AndesClientUtils
-                .waitUntilMessagesAreReceived(normalTopicSub, expectedCount,
-                        runTime);
-        assertTrue(normalTopicSubSuccess, "Message receive error from normal topic subscriber");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(normalHierarchicalTopicConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(normalHierarchicalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
+                            "Message receive error from normal hierarchical topic subscriber");
 
-        boolean normalHierarchicalTopicSubSuccess = AndesClientUtils
-                .waitUntilMessagesAreReceived(normalHierarchicalTopicSub, expectedCount,
-                        runTime);
-        assertTrue(normalHierarchicalTopicSubSuccess,
-                "Message receive error from normal hierarchical topic subscriber");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(durableHierarchicalTopicConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(durableHierarchicalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
+                            "Message receive error from durable hierarchical topic subscriber");
 
-        boolean durableHierarchicalTopicSubSuccess = AndesClientUtils
-                .waitUntilMessagesAreReceived(durableHierarchicalTopicSub, expectedCount,
-                        runTime);
-        assertTrue(durableHierarchicalTopicSubSuccess,
-                "Message receive error from durable hierarchical topic subscriber");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(queueConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
+                            "Message received from queue subscriber. This should not happen");
 
-        boolean queueSubscriberSuccess = AndesClientUtils
-                .waitUntilMessagesAreReceived(queueSubscriber, expectedCount,
-                        runTime);
-        assertFalse(queueSubscriberSuccess,
-                "Message received from queue subscriber. This should not happen");
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClientUtilsTemp.sleepForInterval(2000L);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-        assertTrue(sendingSuccess, "Message send error");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT,
+                            "Message send error");
+//
+//
+//
+//        AndesJMSConsumerClientConfiguration normalTopicConsumerConfig2 = (AndesJMSConsumerClientConfiguration) durableTopicConsumerConfig1.clone();
+//        normalTopicConsumerConfig2.setDurable(false);
+//        normalTopicConsumerConfig2.setSubscriptionID(StringUtils.EMPTY);
+//
+//        AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig2 = (AndesJMSConsumerClientConfiguration) durableTopicConsumerConfig1.clone();
+//        normalHierarchicalTopicConsumerConfig2.setDurable(false);
+//        normalHierarchicalTopicConsumerConfig2.setSubscriptionID(StringUtils.EMPTY);
+//        normalHierarchicalTopicConsumerConfig2.setDestinationName(HIERARCHICAL_TOPIC);
+//
+//        AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig2 = (AndesJMSConsumerClientConfiguration) durableTopicConsumerConfig1.clone();
+//        normalHierarchicalTopicConsumerConfig2.setDurable(false);
+//        normalHierarchicalTopicConsumerConfig2.setSubscriptionID("sub3");
+//        normalHierarchicalTopicConsumerConfig2.setDestinationName(HIERARCHICAL_TOPIC);
+//
+//        Integer sendCount = 1000;
+//        Integer  AndesClientConstants.DEFAULT_RUN_TIME = 20;
+//        Integer expectedCount = 500;
+//
+//        String topicName = "a.b.c";
+//        String hierarchicalTopic = "a.b.*";
+//
+//        // Start durable subscription 1
+//        AndesClientTemp durableTopicSub1 = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                               "topic:" + topicName,
+//                                                               "100", "false",  AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                               expectedCount.toString(),
+//                                                               "1",
+//                                                               "listener=true,ackMode=1,durable=true," +
+//                                                               "subscriptionID=sub1,delayBetweenMsg=0," +
+//                                                               "stopAfter=" + expectedCount, "");
+//        durableTopicSub1.startWorking();
+//
+//        // Start durable subscription 2
+//        AndesClientTemp durableTopicSub2 = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                               "topic:" + topicName,
+//                                                               "100", "false",  AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                               expectedCount.toString(),
+//                                                               "1",
+//                                                               "listener=true,ackMode=1,durable=true," +
+//                                                               "subscriptionID=sub2,delayBetweenMsg=0," +
+//                                                               "stopAfter=" + expectedCount, "");
+//        durableTopicSub2.startWorking();
+//
+//        //start a normal topic subscriber
+//        AndesClientTemp normalTopicSub = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                             "topic:" + topicName,
+//                                                             "100", "false",  AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                             expectedCount.toString(),
+//                                                             "1",
+//                                                             "listener=true,ackMode=1,durable=false," +
+//                                                             "delayBetweenMsg=0," +
+//                                                             "stopAfter=" + expectedCount, "");
+//        normalTopicSub.startWorking();
+//
+//        //start a hierarchical normal topic subscriber
+//        AndesClientTemp normalHierarchicalTopicSub = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                                         "topic:" + hierarchicalTopic,
+//                                                                         "100", "false",  AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                                         expectedCount.toString(),
+//                                                                         "1",
+//                                                                         "listener=true,ackMode=1," +
+//                                                                         "durable=false," +
+//                                                                         "delayBetweenMsg=0," +
+//                                                                         "stopAfter=" + expectedCount, "");
+//        normalHierarchicalTopicSub.startWorking();
+//
+//        //start a hierarchical durable topic subscriber
+//        AndesClientTemp durableHierarchicalTopicSub = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                                          "topic:" + hierarchicalTopic,
+//                                                                          "100", "false",
+//                                                                           AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                                          expectedCount.toString(),
+//                                                                          "1",
+//                                                                          "listener=true,ackMode=1," +
+//                                                                          "durable=true," +
+//                                                                          "subscriptionID=sub3," +
+//                                                                          "delayBetweenMsg=0," +
+//                                                                          "stopAfter=" + expectedCount, "");
+//        durableHierarchicalTopicSub.startWorking();
+//
+//        //start a queue subscriber
+//        AndesClientTemp queueSubscriber = new AndesClientTemp("receive", "127.0.0.1:5672",
+//                                                              "queue:" + topicName,
+//                                                              "100", "false",  AndesClientConstants.DEFAULT_RUN_TIME.toString(),
+//                                                              expectedCount.toString(),
+//                                                              "1",
+//                                                              "listener=true,ackMode=1,durable=false," +
+//                                                              "delayBetweenMsg=0," +
+//                                                              "stopAfter=" + expectedCount, "");
+//        queueSubscriber.startWorking();
+//
+//
+//        // Start message publisher
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
+//                                                            "topic:" + topicName,
+//                                                            "100", "false",
+//                                                             AndesClientConstants.DEFAULT_RUN_TIME.toString(), sendCount.toString(), "1",
+//                                                            "ackMode=1,delayBetweenMsg=0," +
+//                                                            "stopAfter=" + sendCount,
+//                                                            "");
+//        sendingClient.startWorking();
+//
+//        AndesClientUtils.sleepForInterval(4000);
+//
+//        boolean durableTopicSub1Success = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(durableTopicSub1, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//        assertTrue(durableTopicSub1Success, "Message receive error from durable subscriber 1");
+//
+//        boolean durableTopicSub2Success = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(durableTopicSub2, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//
+//        assertTrue(durableTopicSub2Success, "Message receive error from durable subscriber 2");
+//
+//        boolean normalTopicSubSuccess = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(normalTopicSub, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//        assertTrue(normalTopicSubSuccess, "Message receive error from normal topic subscriber");
+//
+//        boolean normalHierarchicalTopicSubSuccess = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(normalHierarchicalTopicSub, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//        assertTrue(normalHierarchicalTopicSubSuccess,
+//                   "Message receive error from normal hierarchical topic subscriber");
+//
+//        boolean durableHierarchicalTopicSubSuccess = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(durableHierarchicalTopicSub, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//        assertTrue(durableHierarchicalTopicSubSuccess,
+//                   "Message receive error from durable hierarchical topic subscriber");
+//
+//        boolean queueSubscriberSuccess = AndesClientUtilsTemp
+//                .waitUntilMessagesAreReceived(queueSubscriber, expectedCount,
+//                                               AndesClientConstants.DEFAULT_RUN_TIME);
+//        assertFalse(queueSubscriberSuccess,
+//                    "Message received from queue subscriber. This should not happen");
+//        AndesClientUtilsTemp.sleepForInterval(2000);
+//
+//        boolean sendingSuccess = AndesClientUtilsTemp.getIfPublisherIsSuccess(sendingClient, sendCount);
+//        assertTrue(sendingSuccess, "Message send error");
     }
 }
 

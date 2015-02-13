@@ -21,19 +21,32 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 
 /**
  * Test topic subscriptions with Topic and Children(#) and Immediate Children(*).
  */
 public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
+    private static final long EXPECTED_COUNT = 1000L;
+    private static final long SEND_COUNT = 1000L;
 
-    static Integer sendCount = 1000;
-    static Integer runTime = 20;
-    static Integer expectedCount = 1000;
+
+//    static Integer sendCount = 1000;
+//    static Integer runTime = 20;
+//    static Integer expectedCount = 1000;
 
 
     @BeforeClass
@@ -45,39 +58,41 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * Testing on subscribers without wildcard characters
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void performHierarchicalTopicsTopicOnlyTestCase() {
+    public void performHierarchicalTopicsTopicOnlyTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
 
         /**
          * topic only option. Here we subscribe to games.cricket and verify that only messages
          * specifically published to games.cricket is received
          */
-        boolean topicOnlySuccess = false;
-
         //we should not get any message here
-        AndesClient receivingClient1 = getReceivingClientforTopic("games.cricket");
-        receivingClient1.startWorking();
+        AndesJMSConsumerClient receivingClient1 = getConsumerClientForTopic("games.cricket");
+        receivingClient1.startClient();
 
-        AndesClient sendingClient1 = getSendingClientForTopic("games");
-        sendingClient1.startWorking();
+        AndesJMSPublisherClient sendingClient1 = getPublishingClientForTopic("games");
+        sendingClient1.startClient();
 
-        boolean receiveSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages specific to games.cricket topic. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesClient receivingClient2 = getReceivingClientforTopic("games.cricket");
-        receivingClient2.startWorking();
+        AndesJMSConsumerClient receivingClient2 = getConsumerClientForTopic("games.cricket");
+        receivingClient2.startClient();
 
-        AndesClient sendingClient2 = getSendingClientForTopic("games.cricket");
-        sendingClient2.startWorking();
+        AndesJMSPublisherClient sendingClient2 = getPublishingClientForTopic("games.cricket");
+        sendingClient2.startClient();
 
-        boolean receiveSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertFalse(receiveSuccess1, "Messages received when subscriber should not receive messages.");
+        // evaluating publishers
+        Assert.assertEquals(sendingClient1.getSentMessageCount(), SEND_COUNT, "Publisher client1 failed to publish messages");
+        Assert.assertEquals(sendingClient2.getSentMessageCount(), SEND_COUNT, "Publisher client2 failed to publish messages");
 
-        Assert.assertTrue(receiveSuccess2, "Did not receive messages for games.cricket.");
+        // evaluating consumers
+        Assert.assertNotEquals(receivingClient1.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received when subscriber should not receive messages.");
+        Assert.assertEquals(receivingClient1.getReceivedMessageCount(), 0, "Messages received when subscriber should not receive messages.");
+        Assert.assertEquals(receivingClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for games.cricket.");
     }
 
 
@@ -87,48 +102,54 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 2. subscribe to games.* and publish to games.football. Messages should be received
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void performHierarchicalTopicsImmediateChildrenTestCase() {
-        boolean immediateChildrenSuccess = false;
+    public void performHierarchicalTopicsImmediateChildrenTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
 
         //we should not get any message here
-        AndesClient receivingClient3 = getReceivingClientforTopic("games.*");
-        receivingClient3.startWorking();
+        AndesJMSConsumerClient consumerClient3 = getConsumerClientForTopic("games.*");
+        consumerClient3.startClient();
 
-        AndesClient sendingClient3 = getSendingClientForTopic("games");
-        sendingClient3.startWorking();
+        AndesJMSPublisherClient publisherClient3 = getPublishingClientForTopic("games");
+        publisherClient3.startClient();
 
-        boolean receiveSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient3,  AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages child to games.football. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesClient receivingClient4 = getReceivingClientforTopic("games.*");
-        receivingClient4.startWorking();
+        AndesJMSConsumerClient consumerClient4 = getConsumerClientForTopic("games.*");
+        consumerClient4.startClient();
 
-        AndesClient sendingClient4 = getSendingClientForTopic("games.football");
-        sendingClient4.startWorking();
+        AndesJMSPublisherClient publisherClient4 = getPublishingClientForTopic("games.football");
+        publisherClient4.startClient();
 
-        boolean receiveSuccess4 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages to a child that is not immediate. We should not receive messages
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesClient receivingClient5 = getReceivingClientforTopic("games.*");
-        receivingClient5.startWorking();
+        AndesJMSConsumerClient consumerClient5 = getConsumerClientForTopic("games.*");
+        consumerClient5.startClient();
 
-        AndesClient sendingClient5 = getSendingClientForTopic("games.cricket.sriLanka");
-        sendingClient5.startWorking();
+        AndesJMSPublisherClient publisherClient5 = getPublishingClientForTopic("games.cricket.sriLanka");
+        publisherClient5.startClient();
 
-        boolean receiveSuccess5 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient5, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertFalse(receiveSuccess3, "Message received for games.* when subscriber 3 should not receive any.");
 
-        Assert.assertTrue(receiveSuccess4, "Did not receive messages for games.* for subscriber 4");
+        // evaluating publishers
+        Assert.assertEquals(publisherClient3.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient3 failed to publish messages");
+        Assert.assertEquals(publisherClient4.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient4 failed to publish messages");
+        Assert.assertEquals(publisherClient5.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient5 failed to publish messages");
 
-        Assert.assertFalse(receiveSuccess5, "Message received for games.* when subscriber 5 should not receive any.");
+        // evaluating consumers
+        Assert.assertNotEquals(consumerClient3.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received when subscriber consumerClient3 should not receive messages.");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient3 should not receive messages.");
+
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient4.");
+
+        Assert.assertNotEquals(consumerClient5.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received when subscriber consumerClient5 should not receive messages.");
+        Assert.assertEquals(consumerClient5.getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient5 should not receive messages.");
 
 
     }
@@ -138,48 +159,64 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * in the hierarchy should be received
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void performHierarchicalTopicsChildrenTestCase() {
-        boolean topicAndChildrenSuccess = false;
+    public void performHierarchicalTopicsChildrenTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
 
         //we should  get any message here
-        AndesClient receivingClient6 = getReceivingClientforTopic("games.#");
-        receivingClient6.startWorking();
+        AndesJMSConsumerClient consumerClient6 = getConsumerClientForTopic("games.#");
+        consumerClient6.startClient();
 
-        AndesClient sendingClient6 = getSendingClientForTopic("games");
-        sendingClient6.startWorking();
+        AndesJMSPublisherClient publisherClient6 = getPublishingClientForTopic("games");
+        publisherClient6.startClient();
 
-        boolean receiveSuccess6 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient6, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient6,  AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages to level 2 child. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesClient receivingClient7 = getReceivingClientforTopic("games.#");
-        receivingClient7.startWorking();
+        AndesJMSConsumerClient consumerClient7 = getConsumerClientForTopic("games.#");
+        consumerClient7.startClient();
 
-        AndesClient sendingClient7 = getSendingClientForTopic("games.football.sriLanka");
-        sendingClient7.startWorking();
+        AndesJMSPublisherClient publisherClient7 = getPublishingClientForTopic("games.football.sriLanka");
+        publisherClient7.startClient();
 
-        boolean receiveSuccess7 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient7, expectedCount,
-                runTime);
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient7,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        topicAndChildrenSuccess = (receiveSuccess6 && receiveSuccess7);
+        Assert.assertEquals(publisherClient6.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient6 failed to publish messages");
+        Assert.assertEquals(publisherClient7.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient7 failed to publish messages");
 
-        Assert.assertTrue(receiveSuccess6, "Did not receive messages for games for subscriber 6.");
-        Assert.assertTrue(receiveSuccess7, "Did not receive messages for games.# for subscriber 7.");
+        Assert.assertEquals(consumerClient6.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient6.");
+        Assert.assertEquals(consumerClient7.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient7.");
     }
 
-    private AndesClient getReceivingClientforTopic(String topicName) {
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topicName,
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-        return receivingClient;
+    private AndesJMSConsumerClient getConsumerClientForTopic(String topicName)
+            throws AndesClientException, JMSException, NamingException {
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig.setPrintsPerMessageCount(100L);
+
+        return new AndesJMSConsumerClient(consumerConfig);
+
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:" + topicName,
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//        return receivingClient;
     }
 
-    private AndesClient getSendingClientForTopic(String topicName) {
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:" + topicName, "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=1000", "");
-        return sendingClient;
+    private AndesJMSPublisherClient getPublishingClientForTopic(String topicName)
+            throws AndesClientException, JMSException, NamingException {
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
+        publisherConfig.setPrintsPerMessageCount(100L);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+
+        return new AndesJMSPublisherClient(publisherConfig);
+
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:" + topicName, "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=1000", "");
+//        return sendingClient;
     }
 }

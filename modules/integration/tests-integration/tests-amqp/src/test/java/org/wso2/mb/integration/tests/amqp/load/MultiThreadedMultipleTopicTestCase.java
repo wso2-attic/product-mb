@@ -21,8 +21,9 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 /**
  * 1. Create 45 topic subscribers (there will be three for each topic) thus there will be 15 topics
@@ -48,7 +49,7 @@ public class MultiThreadedMultipleTopicTestCase {
         //wait some more time to see if more messages are received
         Integer expectedCount = 3 * 2000 * 15 + additional;
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
                 "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
                 "false",
                 runTime.toString(), expectedCount.toString(),
@@ -59,7 +60,7 @@ public class MultiThreadedMultipleTopicTestCase {
 
         receivingClient.startWorking();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
                 "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
                 "false", runTime.toString(),
                 sendCount.toString(), numOfSendingThreads.toString(),
@@ -69,7 +70,7 @@ public class MultiThreadedMultipleTopicTestCase {
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), expectedCount - additional,
                 "Did not receive expected message count.");

@@ -21,9 +21,10 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.QueueSession;
@@ -69,12 +70,12 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
 
         String queueNameArg = "queue:MillionTenPercentReturnQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 noOfAutoAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.AUTO_ACKNOWLEDGE + "," +
                 "delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
 
-        AndesClient receivingReturnClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingReturnClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), noOfReturnMessages.toString(),
                 noOfClientAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.CLIENT_ACKNOWLEDGE + "," +
                 "ackAfterEach=100000,delayBetweenMsg=0,stopAfter=" + noOfReturnMessages, "");
@@ -87,19 +88,19 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
         log.info("Number of AUTO ACK Subscriber [" + autoAckListeners.size() + "]");
         log.info("Number of CLIENT ACK Subscriber [" + clientAckListeners.size() + "]");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentReturnQueue", expectedCount,
-                runTime);
+        AndesClientUtilsTemp.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentReturnQueue", expectedCount,
+                                                          runTime);
 
-        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingReturnClient,
+        AndesClientUtilsTemp.waitUntilExactNumberOfMessagesReceived(receivingReturnClient,
                 "MillionTenPercentReturnQueue", noOfReturnMessages, runTime);
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingReturnClient
                 .getReceivedqueueMessagecount();

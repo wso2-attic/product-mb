@@ -18,9 +18,20 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 import static org.testng.Assert.assertTrue;
 
@@ -30,46 +41,88 @@ import static org.testng.Assert.assertTrue;
  */
 public class DurableMultipleTopicSubscriberTestCase {
 
+    private static final long EXPECTED_COUNT = 500L;
+    private static final long SEND_COUNT = 1000L;
+
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDurableTopicTestCase() {
+    public void performDurableTopicTestCase()
+            throws AndesClientException, JMSException, NamingException, IOException {
 
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 500;
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+        // Amount of message to receive
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig1.setPrintsPerMessageCount(50L);
+        consumerConfig1.setDurable(true, "sub1");
 
-        // Start subscription 1
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subwso2,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient1.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+        // Amount of message to receive
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // Prints per message
+        consumerConfig2.setPrintsPerMessageCount(50L);
+        consumerConfig2.setDurable(true, "sub2");
 
-        // Start subscription 2
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=wso2sub,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient2.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+        publisherConfig.setPrintsPerMessageCount(100L);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        // Start message publisher
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-        sendingClient.startWorking();
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig1);
+        consumerClient1.startClient();
 
-        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount,
-                runTime);
-        assertTrue(receivingSuccess1, "Message receive error from subscriber 1");
+        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig2);
+        consumerClient2.startClient();
 
-        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
-                runTime);
-        assertTrue(receivingSuccess2, "Message receive error from subscriber 2");
+        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        publisherClient.startClient();
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClientUtils.sleepForInterval(4000);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-        assertTrue(sendingSuccess, "Message send error");
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from sub1");
+
+        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from sub2");
+
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");
+
+
+
+//        // Start subscription 1
+//        AndesClientTemp receivingClient1 = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//        receivingClient1.startWorking();
+//
+//        // Start subscription 2
+//        AndesClientTemp receivingClient2 = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub2,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//        receivingClient2.startWorking();
+//
+//        // Start message publisher
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//        sendingClient.startWorking();
+//
+//        AndesClientUtils.sleepForInterval(2000);
+//
+//        boolean receivingSuccess1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient1, expectedCount,
+//                runTime);
+//        assertTrue(receivingSuccess1, "Message receive error from subscriber 1");
+//
+//        boolean receivingSuccess2 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
+//                                                                                      runTime);
+//        assertTrue(receivingSuccess2, "Message receive error from subscriber 2");
+//
+//        AndesClientUtils.sleepForInterval(2000);
+//
+//        boolean sendingSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+//        assertTrue(sendingSuccess, "Message send error");
     }
 }

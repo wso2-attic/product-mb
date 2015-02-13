@@ -116,25 +116,25 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         sendingClient10.startWorking();
 
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                 "Messaging sending failed in sender 1");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient2, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, sendCount),
                 "Messaging sending failed in sender 2");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient3, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient3, sendCount),
                 "Messaging sending failed in sender 3");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient4, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient4, sendCount),
                 "Messaging sending failed in sender 4");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient5, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient5, sendCount),
                 "Messaging sending failed in sender 5");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient6, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient6, sendCount),
                 "Messaging sending failed in sender 6");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient7, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient7, sendCount),
                 "Messaging sending failed in sender 7");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient8, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient8, sendCount),
                 "Messaging sending failed in sender 8");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient9, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient9, sendCount),
                 "Messaging sending failed in sender 9");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient10, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient10, sendCount),
                 "Messaging sending failed in sender 10");
 
 

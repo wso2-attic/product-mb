@@ -92,7 +92,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest{
         boolean receivingSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount,
                 runTime);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        boolean sendingSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
         Assert.assertTrue(receivingSuccess, "Did not receive all the messages");
         Assert.assertTrue(sendingSuccess, "Messaging sending failed");

@@ -19,12 +19,12 @@
 package org.wso2.mb.integration.tests.amqp.load;
 
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
     public void performMillionMessageTestCase() {
         String queueNameArg = "queue:MillionQueue";
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
+        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 noOfSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
@@ -73,15 +73,15 @@ public class QueueAutoAckTestCase extends MBIntegrationBaseTest {
 
         log.info("Number of Subscriber [" + queueListeners.size() + "]");
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "false",
+        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "false",
                 runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 
         sendingClient.startWorking();
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
+        AndesClientUtilsTemp.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
 
         Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
 

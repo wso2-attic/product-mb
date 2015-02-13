@@ -70,8 +70,8 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedMessageCountFromSubscriberSession, JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
 
-        boolean sendSuccess1 = AndesClientUtils.getIfSenderIsSuccess(sendingClient1, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
-        boolean sendSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
+        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
+        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
 
         assertEquals((receiveSuccess && sendSuccess1 && sendSuccess2), true);
     }
@@ -114,8 +114,8 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         int msgCountFromClient1 = AndesClientUtils.getNoOfMessagesReceived(receivingClient1, expectedMessageCountFromOneSubscriberSession, JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
         int msgCountFromClient2 = AndesClientUtils.getNoOfMessagesReceived(receivingClient2, expectedMessageCountFromOneSubscriberSession, JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
 
-        boolean sendSuccess1 = AndesClientUtils.getIfSenderIsSuccess(sendingClient1, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
-        boolean sendSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
+        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
+        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS);
 
         assertEquals((msgCountFromClient1+msgCountFromClient2 == messageCountWithExpiration) && sendSuccess1 && sendSuccess2,true);
     }

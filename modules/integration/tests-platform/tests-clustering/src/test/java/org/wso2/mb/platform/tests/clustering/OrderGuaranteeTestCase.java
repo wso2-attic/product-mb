@@ -92,7 +92,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
@@ -145,7 +145,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
                                                                         maxRunningTime),
                           "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
                           "Message sending failed.");
 
         Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,

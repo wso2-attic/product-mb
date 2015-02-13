@@ -63,7 +63,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 0, 20);
 
         boolean sendSuccess =
-                AndesClientUtils.getIfSenderIsSuccess(sendingClient, JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT);
+                AndesClientUtils.getIfPublisherIsSuccess(sendingClient, JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT);
 
         assertTrue(receiveSuccess, "Message receiving failed");
         assertTrue(sendSuccess, "Message sending failed.");
@@ -112,8 +112,8 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
 
         boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 2 * messageCount, 20);
 
-        boolean sendSuccess1 = AndesClientUtils.getIfSenderIsSuccess(sendingClient1, messageCount);
-        boolean sendSuccess2 = AndesClientUtils.getIfSenderIsSuccess(sendingClient2, messageCount);
+        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCount);
+        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCount);
 
         //Sending messages with configured jmsType
         assertTrue(receiveSuccess, "Message receiving failed");

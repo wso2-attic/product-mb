@@ -24,14 +24,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
-
-import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This class tests broker with multiple publisher and subscribers
@@ -170,13 +167,13 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                                                         maxRunningTime),
                           "Message receiving failed for client 4.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 4.");
 
         int receiveCount = receivingClient1.getReceivedqueueMessagecount()
@@ -301,13 +298,13 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                                                         maxRunningTime),
                           "Message receiving failed for client 4.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 4.");
 
         int receiveCount = receivingClient1.getReceivedqueueMessagecount()
@@ -432,13 +429,13 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                                                         maxRunningTime),
                           "Message receiving failed for client 4.");
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
+        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, sendCount),
                           "Message sending failed for client 4.");
 
         int receiveCount = receivingClient1.getReceivedqueueMessagecount()

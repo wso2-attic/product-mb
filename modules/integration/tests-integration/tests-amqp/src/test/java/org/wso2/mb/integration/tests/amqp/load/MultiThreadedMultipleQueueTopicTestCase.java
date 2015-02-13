@@ -21,8 +21,9 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 public class MultiThreadedMultipleQueueTopicTestCase {
 
@@ -51,7 +52,7 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         //wait some more time to see if more messages are received
         Integer topicExpectedCount = topicSendCount + additional;
 
-        AndesClient queueReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
+        AndesClientTemp queueReceivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
                 "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
                 "false",
                 queueRunTime.toString(), queueExpectedCount.toString(),
@@ -63,7 +64,7 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         queueReceivingClient.startWorking();
 
 
-        AndesClient topicReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
+        AndesClientTemp topicReceivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
                 "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
                 "false",
                 topicRunTime.toString(), topicExpectedCount.toString(),
@@ -75,7 +76,7 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         topicReceivingClient.startWorking();
 
 
-        AndesClient queueSendingClient = new AndesClient("send", "127.0.0.1:5672",
+        AndesClientTemp queueSendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
                 "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
                 "false", queueRunTime.toString(),
                 queueSendCount.toString(), queueNumOfSendingThreads.toString(),
@@ -86,7 +87,7 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         queueSendingClient.startWorking();
 
 
-        AndesClient topicSendingClient = new AndesClient("send", "127.0.0.1:5672",
+        AndesClientTemp topicSendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
                 "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
                 "false", topicRunTime.toString(),
                 topicSendCount.toString(), topicNumOfSendingThreads.toString(),
@@ -97,7 +98,7 @@ public class MultiThreadedMultipleQueueTopicTestCase {
         topicSendingClient.startWorking();
 
         //let us wait topic message receive time which is larger
-        AndesClientUtils.waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
+        AndesClientUtilsTemp.waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
 
         Assert.assertEquals(queueReceivingClient.getReceivedqueueMessagecount(), queueExpectedCount - additional,
                 "Did not receive expected message count for Queues.");
