@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -61,6 +62,19 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
                 new File(ServerConfigurationManager.getCarbonHome() +
                         File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml"),
                 true, true);
+
+    }
+
+
+    /**
+     * Restore MB configurations after execute test
+     *
+     * @throws Exception
+     */
+    @AfterClass
+    public void cleanUp() throws Exception {
+
+        super.serverManager.restoreToLastConfiguration(true);
 
     }
 
