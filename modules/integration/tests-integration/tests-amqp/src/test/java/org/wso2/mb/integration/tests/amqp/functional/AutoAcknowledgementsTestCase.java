@@ -84,7 +84,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case with droping the receiving client")
     public void autoAcknowledgementsDropReceiverTestCase() {
         Integer sendCount = 1500;
-        Integer runTime = 10;
+        Integer runTime = 30;
         Integer expectedCount = 1500;
         //Create receiving client
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:autoAckTestQueue",

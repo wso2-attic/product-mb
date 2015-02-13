@@ -30,7 +30,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
                                                        expectedCount.toString(),
                                                        "1",
                                                        "listener=true,ackMode=1,durable=true," +
-                                                       "subscriptionID=sub1,delayBetweenMsg=0," +
+                                                       "subscriptionID=sub21,delayBetweenMsg=0," +
                                                        "stopAfter=" + expectedCount, "");
         durableTopicSub1.startWorking();
 
@@ -41,7 +41,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
                                                        expectedCount.toString(),
                                                        "1",
                                                        "listener=true,ackMode=1,durable=true," +
-                                                       "subscriptionID=sub2,delayBetweenMsg=0," +
+                                                       "subscriptionID=sub22,delayBetweenMsg=0," +
                                                        "stopAfter=" + expectedCount, "");
         durableTopicSub2.startWorking();
 
@@ -77,7 +77,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
                                                                   "1",
                                                                   "listener=true,ackMode=1," +
                                                                   "durable=true," +
-                                                                  "subscriptionID=sub3," +
+                                                                  "subscriptionID=sub23," +
                                                                   "delayBetweenMsg=0," +
                                                                   "stopAfter=" + expectedCount, "");
         durableHierarchicalTopicSub.startWorking();

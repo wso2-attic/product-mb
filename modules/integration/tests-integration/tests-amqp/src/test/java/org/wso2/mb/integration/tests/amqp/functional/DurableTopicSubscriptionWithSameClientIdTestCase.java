@@ -80,21 +80,21 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
         // Start subscription 1
         AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
         receivingClient1.startWorking();
 
         // Start subscription 2
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
         receivingClient2.startWorking();
 
         // Start subscription 3
         AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
                 "stopAfter=" + expectedCount, "");
         receivingClient3.startWorking();
 

@@ -23,7 +23,7 @@ public class DurableTopicSubscriptionTestCase {
     private String password = "admin";
     private Integer runTime = 10;
     private Integer expectedCount = 10;
-    private long intervalBetSubscription = 100;
+    private long intervalBetSubscription = 1000;
 
     @Test(groups = {"wso2.mb", "topic"})
     public void basicSubscriptionTest() throws JMSException, NamingException {
