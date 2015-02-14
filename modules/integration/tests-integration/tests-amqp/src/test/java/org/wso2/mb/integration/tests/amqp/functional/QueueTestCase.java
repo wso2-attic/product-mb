@@ -71,7 +71,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT_1000, "Message sending failed");
 
@@ -124,7 +124,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT_1000, "Message sending failed");
 

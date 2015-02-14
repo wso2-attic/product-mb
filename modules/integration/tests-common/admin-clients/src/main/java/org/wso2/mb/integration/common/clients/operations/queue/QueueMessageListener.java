@@ -93,6 +93,7 @@ public class QueueMessageListener implements MessageListener {
                 }
             }
 
+            log.info("MESSAGE COUNTER : " + messageCount.get() + " THREADID : " + Thread.currentThread().getId() + " " + ackAfterEach);
             if (messageCount.get() % ackAfterEach == 0) {
                 if (queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
                     receivedMessage.acknowledge();

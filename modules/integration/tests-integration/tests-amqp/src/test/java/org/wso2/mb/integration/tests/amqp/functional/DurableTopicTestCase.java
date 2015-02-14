@@ -75,7 +75,7 @@ public class DurableTopicTestCase {
         publisherClient.startClient();
 
         //Wait until messages receive
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
@@ -85,7 +85,7 @@ public class DurableTopicTestCase {
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
@@ -94,7 +94,7 @@ public class DurableTopicTestCase {
         AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3);
         tertiaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(5000);
 

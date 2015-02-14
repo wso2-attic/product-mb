@@ -41,6 +41,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = 0L;
     }
 
+    // TODO : set username, etc
     public AndesJMSClientConfiguration(String connectionString,
                                               ExchangeType exchangeType,
                                               String destinationName) {

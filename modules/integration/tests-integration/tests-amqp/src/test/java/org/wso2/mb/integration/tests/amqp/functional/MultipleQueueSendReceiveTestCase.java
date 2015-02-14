@@ -23,13 +23,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -91,8 +89,8 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient2 = new AndesClient(publisherConfig2);
         publisherClient2.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         long sentMessageCount = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount();
         long receivedMessageCount = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount();

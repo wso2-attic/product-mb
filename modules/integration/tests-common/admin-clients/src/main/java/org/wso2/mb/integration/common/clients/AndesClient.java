@@ -1,12 +1,14 @@
 package org.wso2.mb.integration.common.clients;
 
 
+import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AndesClient {
+    private static Logger log = Logger.getLogger(AndesJMSConsumer.class);
     List<AndesJMSConsumer> consumers = new ArrayList<AndesJMSConsumer>();
     List<AndesJMSPublisher> publishers = new ArrayList<AndesJMSPublisher>();
 
@@ -25,6 +28,7 @@ public class AndesClient {
             for (int i = 0; i < numberOfThreads; i++) {
                 if (config instanceof AndesJMSConsumerClientConfiguration) {
                     consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config));
+                    AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
                 } else if (config instanceof AndesJMSPublisherClientConfiguration) {
                     publishers.add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config));
                 }
@@ -39,6 +43,7 @@ public class AndesClient {
     public AndesClient(AndesJMSClientConfiguration config) throws JMSException, NamingException {
         if (config instanceof AndesJMSConsumerClientConfiguration) {
             consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config));
+            AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
         } else if (config instanceof AndesJMSPublisherClientConfiguration) {
             publishers.add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config));
         }

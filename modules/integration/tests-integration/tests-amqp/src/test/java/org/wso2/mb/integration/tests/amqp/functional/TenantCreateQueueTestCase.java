@@ -79,7 +79,7 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.sleepForInterval(10000);
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "TENANT 1 send failed");

@@ -90,8 +90,8 @@ public class MultipleTopicPublishSubscribeTestCase {
         AndesClient publisherClient2 = new AndesClient(publisherConfig2);
         publisherClient2.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT_2000, "Publisher publisherClient1 failed to publish messages");
         Assert.assertEquals(publisherClient2.getSentMessageCount(), SEND_COUNT_1000, "Publisher publisherClient2 failed to publish messages");

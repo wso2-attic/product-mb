@@ -93,6 +93,7 @@ class AndesJMSConsumer extends AndesJMSClient
     public void startClient() throws JMSException, NamingException {
         Thread subscriberThread = new Thread(this);
         subscriberThread.start();
+        log.info("Starting consumer | ThreadID : " + subscriberThread.getId());
     }
 
     @Override
@@ -115,7 +116,7 @@ class AndesJMSConsumer extends AndesJMSClient
 
                 if (null != this.connection) {
                     TopicConnection topicConnection = (TopicConnection) this.connection;
-                    topicConnection.stop();
+                    //topicConnection.stop();
                     topicConnection.close();
                 }
             } else if (ExchangeType.QUEUE == this.subscriberConfig.getExchangeType()) {
@@ -205,6 +206,7 @@ class AndesJMSConsumer extends AndesJMSClient
                         if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getAcknowledgeAfterEachMessageCount()) {
                             if (session.getAcknowledgeMode() == Session.CLIENT_ACKNOWLEDGE) {
                                 message.acknowledge();
+                                log.info("Acknowledging message : " + message.getJMSMessageID());
                             }
                         }
 
@@ -284,6 +286,7 @@ class AndesJMSConsumer extends AndesJMSClient
             if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getAcknowledgeAfterEachMessageCount()) {
                 if (session.getAcknowledgeMode() == Session.CLIENT_ACKNOWLEDGE) {
                     message.acknowledge();
+                    log.info("Acknowledging message : " + message.getJMSMessageID());
                 }
             }
 
@@ -311,18 +314,7 @@ class AndesJMSConsumer extends AndesJMSClient
 
                 unSubscribeThread.start();
             } else if (this.receivedMessageCount.get() >= subscriberConfig.getMaximumMessagesToReceived()) {
-                Thread stopClientThread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            stopClient();
-                        } catch (JMSException e) {
-                            log.error("Error while stopping the client", e);
-                            throw new RuntimeException("JMSException : Error while stopping the client", e);
-                        }
-                    }
-                };
-                stopClientThread.start();
+                stopClient();
             }
 
             if (0 < subscriberConfig.getRunningDelay()) {

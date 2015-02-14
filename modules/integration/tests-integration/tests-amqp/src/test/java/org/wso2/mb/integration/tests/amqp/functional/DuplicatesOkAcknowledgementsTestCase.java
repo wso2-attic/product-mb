@@ -89,7 +89,7 @@ public class DuplicatesOkAcknowledgementsTestCase extends MBIntegrationBaseTest 
 
         AndesClientUtils.sleepForInterval(5000);
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");

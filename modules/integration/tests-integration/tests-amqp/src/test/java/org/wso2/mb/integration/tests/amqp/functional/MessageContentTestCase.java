@@ -23,13 +23,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -73,64 +71,6 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     public void performQueueContentSendReceiveTestCase()
             throws AndesClientException, IOException, JMSException, NamingException {
 
-//        char[] inputContent = new char[SIZE_TO_READ];
-//
-//        try {
-//            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
-//            inputFileReader.read(inputContent);
-//        } catch (FileNotFoundException e) {
-//            log.warn("Error locating input content from file : " + messageContentInputFilePath);
-//        } catch (IOException e) {
-//            log.warn("Error reading input content from file : " + messageContentInputFilePath);
-//        }
-//
-//
-//        // Creating a initial JMS consumer client configuration
-//        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
-//        // Amount of message to receive
-//        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-//
-//        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
-//        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-//        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath);
-//
-//        AndesClient consumerClient = new AndesClient(consumerConfig);
-//        consumerClient.startClient();
-//
-//        AndesClient publisherClient = new AndesClient(publisherConfig);
-//        publisherClient.startClient();
-//
-//        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
-//
-//
-//        char[] outputContent = new char[SIZE_TO_READ];
-//
-//        try {
-//            BufferedReader inputFileReader = new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-//            inputFileReader.read(outputContent);
-//        } catch (FileNotFoundException e) {
-//            log.warn("Error locating output content from file : " + messageContentInputFilePath);
-//        } catch (IOException e) {
-//            log.warn("Error reading output content from file : " + messageContentInputFilePath);
-//        }
-//
-//        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-//        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-//        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
-
-
-
-
-
-
-
-
-
-        Integer sendCount = 1;
-        Integer runTime = 20;
-        Integer expectedCount = 1;
-        String queueNameArg = "queue:QueueContentSendReceive";
-
         char[] inputContent = new char[SIZE_TO_READ];
 
         try {
@@ -142,27 +82,30 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
             log.warn("Error reading input content from file : " + messageContentInputFilePath);
         }
 
-        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
-                                                              "100", "true", runTime.toString(), expectedCount.toString(),
-                                                              "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 
-        receivingClient.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "true",
-                                                            runTime.toString(), sendCount.toString(), "1",
-                                                            "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath);
 
-        sendingClient.startWorking();
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
 
         char[] outputContent = new char[SIZE_TO_READ];
 
         try {
-            BufferedReader inputFileReader = new BufferedReader(new FileReader(receivingClient
-                                                                                       .filePathToWriteReceivedMessages));
+            BufferedReader inputFileReader = new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
             inputFileReader.read(outputContent);
         } catch (FileNotFoundException e) {
             log.warn("Error locating output content from file : " + messageContentInputFilePath);
@@ -170,9 +113,67 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
             log.warn("Error reading output content from file : " + messageContentInputFilePath);
         }
 
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
-
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+
+
+
+
+
+
+
+
+
+//        Integer sendCount = 1;
+//        Integer runTime = 20;
+//        Integer expectedCount = 1;
+//        String queueNameArg = "queue:QueueContentSendReceive";
+//
+//        char[] inputContent = new char[SIZE_TO_READ];
+//
+//        try {
+//            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
+//            inputFileReader.read(inputContent);
+//        } catch (FileNotFoundException e) {
+//            log.warn("Error locating input content from file : " + messageContentInputFilePath);
+//        } catch (IOException e) {
+//            log.warn("Error reading input content from file : " + messageContentInputFilePath);
+//        }
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
+//                                                              "100", "true", runTime.toString(), expectedCount.toString(),
+//                                                              "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//        AndesClientUtilsTemp.writeToFile("POINT 1", receivingClient.filePathToWriteReceivedMessages);
+//
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "true",
+//                                                            runTime.toString(), sendCount.toString(), "1",
+//                                                            "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//        AndesClientUtilsTemp.writeToFile("POINT 2", receivingClient.filePathToWriteReceivedMessages);
+//
+//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+//        AndesClientUtilsTemp.writeToFile("POINT 3", receivingClient.filePathToWriteReceivedMessages);
+//
+//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
+//
+//        char[] outputContent = new char[SIZE_TO_READ];
+//        AndesClientUtilsTemp.writeToFile("POINT 4", receivingClient.filePathToWriteReceivedMessages);
+//
+//        try {
+//            BufferedReader inputFileReader = new BufferedReader(new FileReader(receivingClient.filePathToWriteReceivedMessages));
+//            inputFileReader.read(outputContent);
+//        } catch (FileNotFoundException e) {
+//            log.warn("Error locating output content from file : " + messageContentInputFilePath);
+//        } catch (IOException e) {
+//            log.warn("Error reading output content from file : " + messageContentInputFilePath);
+//        }
+//
+//        Assert.assertTrue(sendSuccess, "Message sending failed.");
+//        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+//
+//        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
     }
 }

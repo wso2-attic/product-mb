@@ -71,7 +71,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient sendingClient1 = getPublishingClientForTopic("games");
         sendingClient1.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages specific to games.cricket topic. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -82,7 +82,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient sendingClient2 = getPublishingClientForTopic("games.cricket");
         sendingClient2.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // evaluating publishers
         Assert.assertEquals(sendingClient1.getSentMessageCount(), SEND_COUNT, "Publisher client1 failed to publish messages");
@@ -111,7 +111,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient3 = getPublishingClientForTopic("games");
         publisherClient3.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient3,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages child to games.football. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -122,7 +122,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient4 = getPublishingClientForTopic("games.football");
         publisherClient4.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages to a child that is not immediate. We should not receive messages
         AndesClientUtils.sleepForInterval(1000);
@@ -133,7 +133,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sriLanka");
         publisherClient5.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
 
         // evaluating publishers
@@ -168,7 +168,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient6 = getPublishingClientForTopic("games");
         publisherClient6.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient6,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient6, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages to level 2 child. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -179,7 +179,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient7 = getPublishingClientForTopic("games.football.sriLanka");
         publisherClient7.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient7,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient7, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient6.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient6 failed to publish messages");
         Assert.assertEquals(publisherClient7.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient7 failed to publish messages");

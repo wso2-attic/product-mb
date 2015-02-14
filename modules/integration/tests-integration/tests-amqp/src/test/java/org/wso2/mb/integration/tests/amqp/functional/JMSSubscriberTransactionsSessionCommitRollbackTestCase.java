@@ -34,7 +34,6 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -86,7 +85,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(1000);
 
@@ -112,7 +111,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig.clone());
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");

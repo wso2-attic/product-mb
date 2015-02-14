@@ -179,7 +179,9 @@ public class QueueMessageReceiver implements Runnable {
                         }
                     }
 
+                    log.info("MESSAGE COUNTER : " + messageCounter.get() + " " + ackAfterEach);
                     if (messageCounter.get() % ackAfterEach == 0) {
+
                         if (queueSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
                             if (message != null) {
                                 message.acknowledge();

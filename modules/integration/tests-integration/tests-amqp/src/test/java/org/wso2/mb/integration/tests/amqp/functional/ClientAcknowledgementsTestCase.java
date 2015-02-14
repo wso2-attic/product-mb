@@ -78,7 +78,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClient consumerClient2 = new AndesClient(consumerConfig);
         consumerClient2.startClient();

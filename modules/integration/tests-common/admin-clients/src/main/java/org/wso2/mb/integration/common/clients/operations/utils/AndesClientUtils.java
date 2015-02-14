@@ -1,5 +1,6 @@
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.AndesClient;
 
@@ -20,7 +21,9 @@ public class AndesClientUtils {
     private static Logger log = Logger.getLogger(AndesClientUtils.class);
 
     // TODO : check for missing flushers
-    public static void waitUntilAllMessageReceivedAndShutdownClients(AndesClient client, long waitTimeTillMessageCounterChanges) throws JMSException {
+    public static void waitUntilNoMessagesAreReceivedAndShutdownClients(AndesClient client,
+                                                                        long waitTimeTillMessageCounterChanges)
+            throws JMSException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
 
@@ -113,7 +116,6 @@ public class AndesClientUtils {
         if (receivedMessagePrintWriter == null) {
             initializeReceivedMessagesPrintWriter(filePath);
         }
-        log.info("Writing message content : " + content);
         receivedMessagePrintWriter.println(content);
 
     }
@@ -134,10 +136,12 @@ public class AndesClientUtils {
      */
     public static void initializeReceivedMessagesPrintWriter(String filePath) {
         try {
-            File writerFile = new File(filePath);
-            if (writerFile.exists() || writerFile.createNewFile()) {
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
-                receivedMessagePrintWriter = new PrintWriter(bufferedWriter);
+            if (StringUtils.isNotEmpty(filePath)) {
+                File writerFile = new File(filePath);
+                if (writerFile.exists() || writerFile.createNewFile()) {
+                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+                    receivedMessagePrintWriter = new PrintWriter(bufferedWriter);
+                }
             }
         } catch (IOException e) {
             log.error("Error initializing Print Writer.", e);
@@ -151,11 +155,13 @@ public class AndesClientUtils {
      */
     public static void initializeStatisticsPrintWriter(String filePath) {
         try {
-            File writerFile = new File(filePath);
-            if (writerFile.exists() || writerFile.createNewFile()) {
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
-                statisticsPrintWriter = new PrintWriter(bufferedWriter);
-                statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
+            if (StringUtils.isNotEmpty(filePath)) {
+                File writerFile = new File(filePath);
+                if (writerFile.exists() || writerFile.createNewFile()) {
+                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+                    statisticsPrintWriter = new PrintWriter(bufferedWriter);
+                    statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
+                }
             }
         } catch (IOException e) {
             log.error("Error initializing Print Writer.", e);

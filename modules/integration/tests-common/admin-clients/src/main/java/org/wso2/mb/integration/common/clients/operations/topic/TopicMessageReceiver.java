@@ -233,6 +233,7 @@ public class TopicMessageReceiver implements Runnable {
                         unsubscribe();
                         break;
                     } else if (messageCounter.get() >= stopAfter) {
+                        log.info("SHUTTING DOWN AT CLIENT");
                         stopListening();
                         break;
                     }

@@ -62,6 +62,7 @@ public class AndesClientUtilsTemp {
     }
 
     public static void flushPrintWriter() {
+        log.info(Thread.currentThread().getStackTrace());
         if (printWriterGlobal != null) {
             printWriterGlobal.flush();
         }
@@ -95,6 +96,7 @@ public class AndesClientUtilsTemp {
                 log.info("SUCCESS: Received expected " + messageCountExpected + ". Received q=" + client
                         .getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
+                log.info("SHUTTING DOWN AT UTILSTEMP");
                 client.shutDownClient();
                 return true;
             } else if (client.getReceivedqueueMessagecount() > messageCountExpected || client
@@ -102,8 +104,9 @@ public class AndesClientUtilsTemp {
                 //wait for a small time to until clients does their work (eg: onMessage)
                 AndesClientUtilsTemp.sleepForInterval(500);
                 log.info("FAILED: Received more messages than expected " + messageCountExpected + ". Received q=" +
-                        client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
+                         client.getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
+                log.info("SHUTTING DOWN AT UTILSTEMP");
                 client.shutDownClient();
                 return false;
             }
@@ -112,6 +115,7 @@ public class AndesClientUtilsTemp {
         log.info("FAILED. Did not receive messages expected " + messageCountExpected + ". Received q=" + client
                 .getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
         flushPrintWriter();
+        log.info("SHUTTING DOWN AT UTILSTEMP");
         client.shutDownClient();
         return success;
     }

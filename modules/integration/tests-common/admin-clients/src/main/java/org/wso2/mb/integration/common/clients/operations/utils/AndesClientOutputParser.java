@@ -172,9 +172,8 @@ public class AndesClientOutputParser {
             try {
                 String line = br.readLine();
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
                     if (count == 0) {
                         firstMessageIdentifier = messageIdentifier;
                     }
@@ -190,9 +189,7 @@ public class AndesClientOutputParser {
                 log.error("Error while parsing the file containing received messages", e);
             } finally {
                 try {
-                    if (null != br) {
-                        br.close();
-                    }
+                    br.close();
                 } catch (IOException e) {
                     log.error("Error while closing the file containing received messages", e);
                 }
@@ -221,10 +218,8 @@ public class AndesClientOutputParser {
             try {
                 String line = br.readLine();
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
-                    //Checking for duplicates
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
                     if (messagesDuplicated.contains(messageIdentifier)) {
                         duplicateCount++;
                     } else {

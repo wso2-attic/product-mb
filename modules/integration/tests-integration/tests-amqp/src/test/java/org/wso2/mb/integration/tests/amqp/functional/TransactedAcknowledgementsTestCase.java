@@ -76,12 +76,10 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfig1.setRollbackAfterEachMessageCount(10);
         consumerConfig1.setCommitAfterEachMessageCount(30);
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
-
+        consumerConfig1.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactedAckTestQueue");
         publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT);
-
-
 
         AndesClient consumerClient = new AndesClient(consumerConfig1);
         consumerClient.startClient();
@@ -89,7 +87,7 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig1);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Messaging sending failed");
 

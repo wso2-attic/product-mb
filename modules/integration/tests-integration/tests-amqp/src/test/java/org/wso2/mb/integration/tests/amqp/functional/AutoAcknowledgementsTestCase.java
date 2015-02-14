@@ -22,8 +22,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -70,11 +68,13 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         // AUTO_ACKNOWLEDGE = 1;
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(consumerConfig);
         // Amount of messages to send
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
 
         // Creating clients
         AndesClient receivingClient = new AndesClient(consumerConfig);
@@ -84,7 +84,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         sendingClient.startClient();
 
         // Evaluating results
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(sendingClient.getSentMessageCount(), SEND_COUNT, "Messaging sending failed");
         Assert.assertEquals(receivingClient.getReceivedMessageCount(), EXPECTED_COUNT, "Total number of sent and received messages are not equal");
@@ -104,20 +104,16 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
                    IOException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueue");
+        AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
         initialConsumerConfig.setMaximumMessagesToReceived(1000L);
         // Prints per message
         initialConsumerConfig.setPrintsPerMessageCount(100L);
 
         // Creating a JMS publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(initialConsumerConfig);
-        publisherConfig.setRunningDelay(10L);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
+        //publisherConfig.setRunningDelay(10L);
         // Amount of messages to send
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-
-        // Creating a secondary JMS publisher client configuration
-        AndesJMSConsumerClientConfiguration consumerConfigForClientAfterDrop = initialConsumerConfig.clone();
-        consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(500L);
 
         // Creating clients
         AndesClient initialReceivingClient = new AndesClient(initialConsumerConfig);
@@ -127,16 +123,24 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         sendingClient.startClient();
 
         //Wait until messages receive
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialReceivingClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
         long totalMessagesReceived = initialReceivingClient.getReceivedMessageCount();
+        log.info("INITIAL : " + totalMessagesReceived);
 
         initialReceivingClient.stopClient();
+
+
+        // Creating a secondary JMS publisher client configuration
+        AndesJMSConsumerClientConfiguration consumerConfigForClientAfterDrop = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
+        consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(SEND_COUNT-totalMessagesReceived);
+
 
         // Creating clients
         AndesClient secondaryReceivingClient = new AndesClient(consumerConfigForClientAfterDrop);
         secondaryReceivingClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryReceivingClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("SECONDARY : " + secondaryReceivingClient.getReceivedMessageCount());
         totalMessagesReceived = totalMessagesReceived + secondaryReceivingClient.getReceivedMessageCount();
 
         //To pass this test received number of messages equals to sent messages

@@ -91,7 +91,7 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         publisherClient.startClient();
 
 
-        AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
