@@ -17,9 +17,7 @@ public abstract class AndesJMSClient{
 
     protected AndesJMSClient(AndesJMSClientConfiguration config) throws NamingException {
         this.jmsConfig = config;
-    }
 
-    protected void initialize() throws NamingException {
         Properties properties = new Properties();
         properties.put(Context.INITIAL_CONTEXT_FACTORY, AndesClientConstants.ANDES_ICF);
         properties.put(AndesClientConstants.CF_NAME_PREFIX + AndesClientConstants.CF_NAME, jmsConfig.getConnectionString());

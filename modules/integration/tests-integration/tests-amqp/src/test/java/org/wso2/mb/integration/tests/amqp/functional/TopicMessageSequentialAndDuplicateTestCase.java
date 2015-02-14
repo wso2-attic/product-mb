@@ -21,15 +21,12 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -72,10 +69,10 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -83,9 +80,9 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT, "Message receiving failed.");
 
-        Assert.assertTrue(AndesClientUtils.checkIfMessagesAreInOrder(consumerClient), "Messages are not in order.");
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages are not in order.");
 
-        Assert.assertEquals(AndesClientUtils.checkIfMessagesAreDuplicated(consumerClient).keySet().size(), 0, "Duplicate messages received.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate messages received.");
 
 
 

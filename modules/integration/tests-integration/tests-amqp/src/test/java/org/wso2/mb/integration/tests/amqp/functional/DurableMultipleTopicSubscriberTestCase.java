@@ -20,8 +20,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -32,8 +31,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import java.io.IOException;
-
-import static org.testng.Assert.assertTrue;
 
 /**
  * 1. start two durable topic subscription
@@ -69,13 +66,13 @@ public class DurableMultipleTopicSubscriberTestCase {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
 
-        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig1);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1);
         consumerClient1.startClient();
 
-        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
         consumerClient2.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(4000);

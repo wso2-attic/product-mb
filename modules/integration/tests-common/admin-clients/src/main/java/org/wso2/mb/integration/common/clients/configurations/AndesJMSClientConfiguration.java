@@ -35,8 +35,10 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.password = password;
         this.hostName = hostName;
         this.port = port;
-        this.initialize();
-        this.recreateConnectionString();
+        this.createConnectionString();
+
+        this.printsPerMessageCount = 1L;
+        this.runningDelay = 0L;
     }
 
     public AndesJMSClientConfiguration(String connectionString,
@@ -45,7 +47,6 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.connectionString = connectionString;
         this.exchangeType = exchangeType;
         this.destinationName = destinationName;
-        this.initialize();
     }
 
     // TODO : implement
@@ -62,35 +63,30 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = config.getRunningDelay();
     }
 
-    private void recreateConnectionString() {
+    private void createConnectionString() {
         this.connectionString = "amqp://" + this.userName + ":" + this.password + "@" + AndesClientConstants.CARBON_CLIENT_ID +
                                 "/" + AndesClientConstants.CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" +
                                 this.hostName + ":" + this.port + "'";
     }
 
-    protected void initialize() {
-        this.printsPerMessageCount = 1L;
-        this.runningDelay = 0L;
-    }
-
     public void setUserName(String userName) {
         this.userName = userName;
-        this.recreateConnectionString();
+        this.createConnectionString();
     }
 
     public void setPassword(String password) {
         this.password = password;
-        this.recreateConnectionString();
+        this.createConnectionString();
     }
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        this.recreateConnectionString();
+        this.createConnectionString();
     }
 
     public void setPort(int port) {
         this.port = port;
-        this.recreateConnectionString();
+        this.createConnectionString();
     }
 
     public String getUserName() {

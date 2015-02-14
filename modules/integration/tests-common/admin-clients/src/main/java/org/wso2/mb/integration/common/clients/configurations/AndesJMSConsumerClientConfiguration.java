@@ -11,17 +11,16 @@ import java.io.FileNotFoundException;
 
 public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfiguration {
     private static Logger log = Logger.getLogger(AndesJMSConsumerClientConfiguration.class);
-    private long unSubscribeAfterEachMessageCount;
-    private long rollbackAfterEachMessageCount;
-    private long commitAfterEachMessageCount;
-    private long acknowledgeAfterEachMessageCount;
-    private String filePathToWriteReceivedMessages;
-    private long maximumMessagesToReceived;
-    private String subscriptionID;
-    private boolean durable;
-    private JMSAcknowledgeMode acknowledgeMode;
-    private boolean async;
-    private int subscriberCount;
+    private long unSubscribeAfterEachMessageCount = Long.MAX_VALUE;
+    private long rollbackAfterEachMessageCount = Long.MAX_VALUE;
+    private long commitAfterEachMessageCount = Long.MAX_VALUE;
+    private long acknowledgeAfterEachMessageCount = Long.MAX_VALUE;
+    private String filePathToWriteReceivedMessages = null;
+    private long maximumMessagesToReceived = Long.MAX_VALUE;
+    private String subscriptionID = null;
+    private boolean durable = false;
+    private JMSAcknowledgeMode acknowledgeMode = JMSAcknowledgeMode.AUTO_ACKNOWLEDGE;
+    private boolean async = true;
 
     public AndesJMSConsumerClientConfiguration() {
         super();
@@ -30,14 +29,12 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     public AndesJMSConsumerClientConfiguration(
             ExchangeType exchangeType, String destinationName) {
         super(exchangeType, destinationName);
-        this.initialize();
     }
 
     public AndesJMSConsumerClientConfiguration(String connectionString,
                                                ExchangeType exchangeType,
                                                String destinationName) {
         super(connectionString, exchangeType, destinationName);
-        this.initialize();
     }
 
     public AndesJMSConsumerClientConfiguration(String userName, String password,
@@ -45,7 +42,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
                                                ExchangeType exchangeType,
                                                String destinationName) {
         super(userName, password, hostName, port, exchangeType, destinationName);
-        this.initialize();
     }
 
     // TODO : implement
@@ -56,41 +52,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     public AndesJMSConsumerClientConfiguration(
             AndesJMSClientConfiguration config) {
         super(config);
-    }
-
-    @Override
-    protected void initialize() {
-        unSubscribeAfterEachMessageCount = Long.MAX_VALUE;
-
-        //role back only after a certain message count
-        rollbackAfterEachMessageCount = Long.MAX_VALUE;
-
-        // commit only after a certain message count
-        commitAfterEachMessageCount = Long.MAX_VALUE;
-
-        // acknowledge only after a certain message count
-        acknowledgeAfterEachMessageCount = Long.MAX_VALUE;
-
-        // file path to print received messages
-        filePathToWriteReceivedMessages = null;
-
-        // maximum number of message received
-        maximumMessagesToReceived = Long.MAX_VALUE;
-
-        //generating subscription ID
-        subscriptionID = "";
-
-        //for topics. If its queue, keep it as false
-        durable = false;
-
-        //session.AUTO_ACKNOWLEDGE
-        acknowledgeMode = JMSAcknowledgeMode.AUTO_ACKNOWLEDGE;
-
-        //asynchronous message receive. Using MessageListener of JMS.
-        async = true;
-
-        // number of subscribers
-        subscriberCount = 1;
     }
 
     public long getUnSubscribeAfterEachMessageCount() {
@@ -149,14 +110,8 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         return filePathToWriteReceivedMessages;
     }
 
-    public void setFilePathToWriteReceivedMessages(String filePathToWriteReceivedMessages)
-            throws FileNotFoundException {
-        File messagesFilePath = new File(filePathToWriteReceivedMessages);
-        if (messagesFilePath.exists() && !messagesFilePath.isDirectory()) {
+    public void setFilePathToWriteReceivedMessages(String filePathToWriteReceivedMessages){
             this.filePathToWriteReceivedMessages = filePathToWriteReceivedMessages;
-        } else {
-            throw new FileNotFoundException("File is missing : " + messagesFilePath);
-        }
     }
 
     public long getMaximumMessagesToReceived() {
@@ -231,19 +186,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         this.async = async;
     }
 
-    public int getSubscriberCount() {
-        return subscriberCount;
-    }
-
-    public void setSubscriberCount(int subscriberCount) throws AndesClientException {
-        if (0 < subscriberCount) {
-            this.subscriberCount = subscriberCount;
-        } else {
-            throw new AndesClientException("The amount of subscribers cannot be less than 1");
-
-        }
-    }
-
     @Override
     public String toString() {
         StringBuilder toStringVal = new StringBuilder();
@@ -258,7 +200,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         toStringVal.append("Durable=").append(this.durable).append("\n");
         toStringVal.append("AcknowledgeMode=").append(this.acknowledgeMode).append("\n");
         toStringVal.append("Async=").append(this.async).append("\n");
-        toStringVal.append("SubscriberCount=").append(this.subscriberCount).append("\n");
         return toStringVal.toString();
     }
 

@@ -64,11 +64,14 @@ public class QueueMessageSender implements Runnable {
      */
     private Long jmsExpiration = 0L;
 
-    public QueueMessageSender(String connectionString, String hostName, String port, String userName,
+    public QueueMessageSender(String connectionString, String hostName, String port,
+                              String userName,
                               String password, String queueName,
-                              AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
-                              String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
-                              Long jmsExpiration) {
+                              AtomicInteger messageCounter, int numOfMessagesToSend,
+                              int delayBetweenMessages,
+                              String filePath, int printNumberOfMessagesPer,
+                              boolean isToPrintEachMessage,
+                              Long jmsExpiration, String jmsType) {
 
         this.hostName = hostName;
         this.port = port;

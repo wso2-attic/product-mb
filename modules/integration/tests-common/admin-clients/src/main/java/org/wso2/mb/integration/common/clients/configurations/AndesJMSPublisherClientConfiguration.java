@@ -8,11 +8,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration{
-    private String readMessagesFromFilePath;
-    private JMSMessageType jmsMessageType;
-    private long numberOfMessagesToSend;
-    private int publisherCount;
-    private long jmsMessageExpiryTime;
+    private String readMessagesFromFilePath = null;
+    private JMSMessageType jmsMessageType = JMSMessageType.TEXT;
+    private long numberOfMessagesToSend = 10L;
+    private long jmsMessageExpiryTime = 0L;
 
     public AndesJMSPublisherClientConfiguration() {
         super();
@@ -27,7 +26,6 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(connectionString, exchangeType, destinationName);
-        this.initialize();
     }
 
     public AndesJMSPublisherClientConfiguration(String userName, String password,
@@ -35,7 +33,6 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(userName, password, hostName, port, exchangeType, destinationName);
-        this.initialize();
     }
 
     // TODO : implement
@@ -46,17 +43,6 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     public AndesJMSPublisherClientConfiguration(
             AndesJMSClientConfiguration config) {
         super(config);
-        this.initialize();
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        readMessagesFromFilePath = null;
-        jmsMessageType = JMSMessageType.TEXT;
-        numberOfMessagesToSend = 10;
-        publisherCount = 1;
-        jmsMessageExpiryTime = 0L;
     }
 
     public String getReadMessagesFromFilePath() {
@@ -90,18 +76,6 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
             this.numberOfMessagesToSend = numberOfMessagesToSend;
         }else{
             throw new AndesClientException("The number of messages to send cannot be less than 1");
-        }
-    }
-
-    public int getPublisherCount() {
-        return publisherCount;
-    }
-
-    public void setPublisherCount(int publisherCount) throws AndesClientException {
-        if (0 < publisherCount) {
-            this.publisherCount = publisherCount;
-        }else{
-            throw new AndesClientException("The amount of publishers cannot be less than 1");
         }
     }
 

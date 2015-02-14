@@ -22,8 +22,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -85,10 +84,10 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
 
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
 

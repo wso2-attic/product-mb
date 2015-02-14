@@ -22,8 +22,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -84,10 +83,10 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig1);
+        AndesClient consumerClient = new AndesClient(consumerConfig1);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig1);
+        AndesClient publisherClient = new AndesClient(publisherConfig1);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -96,9 +95,9 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         //If received messages less than expected number wait until received again
         //Get rollback status , check message id of next message of roll backed message equal to first message
-        long duplicateCount = AndesClientUtils.getTotalNumberOfDuplicates(consumerClient);
+        long duplicateCount = consumerClient.getTotalNumberOfDuplicates();
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), (EXPECTED_COUNT + duplicateCount), "Total number of received message should be equal sum of expected and duplicate message count ");
-        Assert.assertTrue(AndesClientUtils.transactedOperation(consumerClient, 10L), "After rollback next message need to equal first message of batch");
+        Assert.assertTrue(consumerClient.transactedOperation(10L), "After rollback next message need to equal first message of batch");
 
 //        Integer sendCount = 10;
 //        Integer runTime = 20;

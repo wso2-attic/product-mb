@@ -22,15 +22,12 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -74,7 +71,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         consumerConfig.setCommitAfterEachMessageCount(EXPECTED_COUNT);
         consumerConfig.setRollbackAfterEachMessageCount(SEND_COUNT);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setFilePathToWriteReceivedMessages(System.getProperty("framework.resource.location") + File.separator + "receivedMessages.txt");
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         // Prints per message
         consumerConfig.setPrintsPerMessageCount(5L);
 
@@ -83,17 +80,17 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesJMSConsumerClient initialConsumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig);
         initialConsumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(1000);
 
-        Map<Long, Integer> duplicateMessages = AndesClientUtils.checkIfMessagesAreDuplicated(initialConsumerClient);
+        Map<Long, Integer> duplicateMessages = initialConsumerClient.checkIfMessagesAreDuplicated();
 
         boolean expectedCountDelivered = false;
         if (duplicateMessages != null) {
@@ -112,7 +109,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
 
         AndesClientUtils.sleepForInterval(2000);
 
-        AndesJMSConsumerClient secondaryConsumerClient = new AndesJMSConsumerClient(consumerConfig.clone());
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig.clone());
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);

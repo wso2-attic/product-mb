@@ -18,14 +18,11 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -65,10 +62,10 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -152,17 +149,17 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendCount);
 
 
-        AndesJMSConsumerClient adminConsumerClient = new AndesJMSConsumerClient(adminConsumerConfig);
+        AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig);
 
-        AndesJMSConsumerClient tenant1ConsumerClient = new AndesJMSConsumerClient(tenant1ConsumerConfig);
+        AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig);
 
-        AndesJMSConsumerClient tenant2ConsumerClient = new AndesJMSConsumerClient(tenant2ConsumerConfig);
+        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig);
 
-        AndesJMSPublisherClient adminPublisherClient = new AndesJMSPublisherClient(adminPublisherConfig);
+        AndesClient adminPublisherClient = new AndesClient(adminPublisherConfig);
 
-        AndesJMSPublisherClient tenant1PublisherClient = new AndesJMSPublisherClient(tenant1PublisherConfig);
+        AndesClient tenant1PublisherClient = new AndesClient(tenant1PublisherConfig);
 
-        AndesJMSPublisherClient tenant2PublisherClient = new AndesJMSPublisherClient(tenant2PublisherConfig);
+        AndesClient tenant2PublisherClient = new AndesClient(tenant2PublisherConfig);
 
         adminConsumerClient.startClient();
         tenant1ConsumerClient.startClient();

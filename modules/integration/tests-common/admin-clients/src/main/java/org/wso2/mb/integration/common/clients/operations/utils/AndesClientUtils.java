@@ -1,7 +1,7 @@
 package org.wso2.mb.integration.common.clients.operations.utils;
 
 import org.apache.log4j.Logger;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 
 import javax.jms.JMSException;
 import java.io.BufferedReader;
@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class AndesClientUtils {
@@ -21,7 +20,7 @@ public class AndesClientUtils {
     private static Logger log = Logger.getLogger(AndesClientUtils.class);
 
     // TODO : check for missing flushers
-    public static void waitUntilAllMessageReceivedAndShutdownClients(AndesJMSConsumerClient client, long waitTimeTillMessageCounterChanges) throws JMSException {
+    public static void waitUntilAllMessageReceivedAndShutdownClients(AndesClient client, long waitTimeTillMessageCounterChanges) throws JMSException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
 
@@ -114,7 +113,7 @@ public class AndesClientUtils {
         if (receivedMessagePrintWriter == null) {
             initializeReceivedMessagesPrintWriter(filePath);
         }
-
+        log.info("Writing message content : " + content);
         receivedMessagePrintWriter.println(content);
 
     }
@@ -156,7 +155,7 @@ public class AndesClientUtils {
             if (writerFile.exists() || writerFile.createNewFile()) {
                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
                 statisticsPrintWriter = new PrintWriter(bufferedWriter);
-                statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,TIMESTAMP,PUBLISHER_TPS");
+                statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
             }
         } catch (IOException e) {
             log.error("Error initializing Print Writer.", e);
@@ -171,41 +170,5 @@ public class AndesClientUtils {
         if (statisticsPrintWriter != null) {
             statisticsPrintWriter.flush();
         }
-    }
-
-    public static Map<Long, Integer> checkIfMessagesAreDuplicated(AndesJMSConsumerClient consumer)
-            throws IOException {
-        AndesClientUtils.flushPrintWriters();
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(consumer.getConfig().getFilePathToWriteReceivedMessages());
-        return andesClientOutputParser.checkIfMessagesAreDuplicated();
-    }
-
-    public static boolean checkIfMessagesAreInOrder(AndesJMSConsumerClient consumer)
-            throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(consumer.getConfig().getFilePathToWriteReceivedMessages());
-        return andesClientOutputParser.checkIfMessagesAreInOrder();
-    }
-
-    /**
-     * This method return whether received messages are transacted
-     *
-     * @param operationOccurredIndex Index of the operated message most of the time last message
-     * @return
-     */
-    public static boolean transactedOperation(AndesJMSConsumerClient consumer, long operationOccurredIndex)
-            throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(consumer.getConfig().getFilePathToWriteReceivedMessages());
-        return andesClientOutputParser.transactedOperations(operationOccurredIndex);
-    }
-
-    /**
-     * This method returns number of duplicate received messages
-     *
-     * @return duplicate message count
-     */
-    public static long getTotalNumberOfDuplicates(AndesJMSConsumerClient consumer)
-            throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(consumer.getConfig().getFilePathToWriteReceivedMessages());
-        return andesClientOutputParser.numberDuplicatedMessages();
     }
 }

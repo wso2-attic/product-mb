@@ -21,15 +21,12 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
@@ -61,7 +58,6 @@ public class MultipleTopicPublishSubscribeTestCase {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
-        consumerConfig1.setSubscriberCount(2);
         // Amount of message to receive
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
         // Prints per message
@@ -75,7 +71,6 @@ public class MultipleTopicPublishSubscribeTestCase {
         consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
 
         AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
-        publisherConfig1.setPublisherCount(2);
         publisherConfig1.setPrintsPerMessageCount(100L);
         publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT_2000);
 
@@ -83,16 +78,16 @@ public class MultipleTopicPublishSubscribeTestCase {
         publisherConfig2.setPrintsPerMessageCount(100L);
         publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_1000);
 
-        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig1);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, 2);
         consumerClient1.startClient();
 
-        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
         consumerClient2.startClient();
 
-        AndesJMSPublisherClient publisherClient1 = new AndesJMSPublisherClient(publisherConfig1);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, 2);
         publisherClient1.startClient();
 
-        AndesJMSPublisherClient publisherClient2 = new AndesJMSPublisherClient(publisherConfig2);
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2);
         publisherClient2.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);

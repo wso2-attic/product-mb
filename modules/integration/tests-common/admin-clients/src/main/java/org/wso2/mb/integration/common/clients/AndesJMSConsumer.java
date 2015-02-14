@@ -26,8 +26,9 @@ import javax.jms.TopicSubscriber;
 import javax.naming.NamingException;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, MessageListener {
-    private static Logger log = Logger.getLogger(AndesJMSConsumerClient.class);
+class AndesJMSConsumer extends AndesJMSClient
+        implements Runnable, MessageListener {
+    private static Logger log = Logger.getLogger(AndesJMSConsumer.class);
 
     private final AndesJMSConsumerClientConfiguration subscriberConfig;
     private AtomicLong firstMessageConsumedTimestamp;
@@ -38,8 +39,7 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
     private Session session;
     private MessageConsumer receiver;
 
-
-    public AndesJMSConsumerClient(AndesJMSConsumerClientConfiguration config)
+    public AndesJMSConsumer(AndesJMSConsumerClientConfiguration config)
             throws NamingException, JMSException {
         super(config);
         firstMessageConsumedTimestamp = new AtomicLong();
@@ -90,39 +90,36 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
     }
 
     @Override
-    public void startClient() {
-        if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
-            AndesClientUtils.initializeReceivedMessagesPrintWriter(this.subscriberConfig.getFilePathToWriteReceivedMessages());
-        }
-        for (int i = 0; i < this.subscriberConfig.getSubscriberCount(); i++) {
-            Thread subscriberThread = new Thread(this);
-            subscriberThread.start();
-        }
+    public void startClient() throws JMSException, NamingException {
+        Thread subscriberThread = new Thread(this);
+        subscriberThread.start();
     }
 
     @Override
     public synchronized void stopClient() throws JMSException {
         try {
-            log.info("Closing subscriber " + this.subscriberConfig.getSubscriptionID());
+            // TODO : remove duplication if possible
+            long threadID = Thread.currentThread().getId();
+            log.info("Closing subscriber | ThreadID : " + threadID);
             if (ExchangeType.TOPIC == this.subscriberConfig.getExchangeType()) {
-                if (null != receiver) {
-                    TopicSubscriber topicSubscriber = (TopicSubscriber) receiver;
+                if (null != this.receiver) {
+                    TopicSubscriber topicSubscriber = (TopicSubscriber) this.receiver;
                     topicSubscriber.close();
                 }
 
-                if (null != session) {
-                    TopicSession topicSession = (TopicSession) session;
+                if (null != this.session) {
+                    TopicSession topicSession = (TopicSession) this.session;
                     topicSession.close();
                 }
 
 
-                if (null != connection) {
-                    TopicConnection topicConnection = (TopicConnection) connection;
+                if (null != this.connection) {
+                    TopicConnection topicConnection = (TopicConnection) this.connection;
                     topicConnection.stop();
                     topicConnection.close();
                 }
             } else if (ExchangeType.QUEUE == this.subscriberConfig.getExchangeType()) {
-                if (null != receiver) {
+                if (null != this.receiver) {
                     QueueReceiver queueReceiver = (QueueReceiver) receiver;
                     queueReceiver.close();
                 }
@@ -138,7 +135,7 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
                 }
             }
 
-            log.info("Subscriber closed");
+            log.info("Subscriber closed | ThreadID : " + threadID);
 
         } catch (JMSException e) {
             log.error("Error in stopping client.", e);
@@ -148,11 +145,11 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
 
     public synchronized void unSubscribe() throws JMSException {
         try {
-            log.info("Un-subscribing Subscriber");
+            long threadID = Thread.currentThread().getId();
+            log.info("Un-subscribing Subscriber | ThreadID : " + threadID);
             this.session.unsubscribe(subscriberConfig.getSubscriptionID());
-            log.info("Subscriber Un-Subscribed");
+            log.info("Subscriber Un-Subscribed | ThreadID : " + threadID);
             this.stopClient();
-            log.info("Closing client");
 
         } catch (JMSException e) {
             log.error("Error in removing subscription(un-subscribing).", e);
@@ -164,7 +161,7 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
     public void run() {
         try {
             if (this.subscriberConfig.isAsync()) {
-                this.receiver.setMessageListener(this);
+                receiver.setMessageListener(this);
             } else {
                 long threadID = Thread.currentThread().getId();
                 while (true) {
@@ -194,13 +191,14 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
                                          this.subscriberConfig.getDestinationName() + " TotalMessageCount:" +
                                          this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
                                          this.subscriberConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + redelivery);
-                                if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
-                                    AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
-                                }
-                                if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
-                                    String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
-                                    AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
-                                }
+
+                            }
+                            if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
+                                AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
+                            }
+                            if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
+                                String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
+                                AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
                             }
                         }
 
@@ -247,7 +245,6 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
     @Override
     public void onMessage(Message message) {
         try {
-            long threadID = Thread.currentThread().getId();
             // calculating total latency
             long currentTimeStamp = System.currentTimeMillis();
             this.totalLatency.set(this.totalLatency.get() + (currentTimeStamp - message.getJMSTimestamp()));
@@ -260,6 +257,7 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
 
             if (message instanceof TextMessage) {
                 this.receivedMessageCount.incrementAndGet();
+                long threadID = Thread.currentThread().getId();
                 String redelivery;
                 TextMessage textMessage = (TextMessage) message;
                 if (message.getJMSRedelivered()) {
@@ -272,13 +270,14 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
                              this.subscriberConfig.getDestinationName() + " TotalMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
                              this.subscriberConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
-                    if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
-                        AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
-                    }
-                    if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
-                        String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
-                        AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
-                    }
+
+                }
+                if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
+                    AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
+                }
+                if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
+                    String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
+                    AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
                 }
             }
 
@@ -311,7 +310,7 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
                 };
 
                 unSubscribeThread.start();
-            } else if (receivedMessageCount.get() >= subscriberConfig.getMaximumMessagesToReceived()) {
+            } else if (this.receivedMessageCount.get() >= subscriberConfig.getMaximumMessagesToReceived()) {
                 Thread stopClientThread = new Thread() {
                     @Override
                     public void run() {
@@ -323,7 +322,6 @@ public class AndesJMSConsumerClient extends AndesJMSClient implements Runnable, 
                         }
                     }
                 };
-
                 stopClientThread.start();
             }
 

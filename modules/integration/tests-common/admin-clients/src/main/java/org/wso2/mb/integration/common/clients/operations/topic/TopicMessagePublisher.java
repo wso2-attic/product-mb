@@ -65,11 +65,14 @@ public class TopicMessagePublisher implements Runnable {
 
     //private static final Logger log = Logger.getLogger(topic.TopicMessageReceiver.class);
 
-    public TopicMessagePublisher(String connectionString, String hostName, String port, String userName,
+    public TopicMessagePublisher(String connectionString, String hostName, String port,
+                                 String userName,
                                  String password, String topicName,
-                                 AtomicInteger messageCounter, int numOfMessagesToSend, int delayBetweenMessages,
-                                 String filePath, int printNumberOfMessagesPer, boolean isToPrintEachMessage,
-                                 long jmsExpiration) {
+                                 AtomicInteger messageCounter, int numOfMessagesToSend,
+                                 int delayBetweenMessages,
+                                 String filePath, int printNumberOfMessagesPer,
+                                 boolean isToPrintEachMessage,
+                                 long jmsExpiration, String jmsType) {
 
         this.hostName = hostName;
         this.port = port;

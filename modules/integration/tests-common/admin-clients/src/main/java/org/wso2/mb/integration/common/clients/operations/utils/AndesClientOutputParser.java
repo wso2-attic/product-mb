@@ -203,7 +203,7 @@ public class AndesClientOutputParser {
             throw e;
         }
 
-        AndesClientUtilsTemp.flushPrintWriter();
+        AndesClientUtils.flushPrintWriters();
         return result;
     }
 

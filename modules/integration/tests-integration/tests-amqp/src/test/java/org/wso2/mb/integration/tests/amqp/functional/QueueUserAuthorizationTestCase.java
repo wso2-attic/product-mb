@@ -135,10 +135,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 //        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(subscriberConfig);
 //        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 //
-//        AndesClient receivingClient = new AndesJMSConsumerClient(subscriberConfig);
+//        AndesClient receivingClient = new AndesJMSConsumer(subscriberConfig);
 //        receivingClient.startClient();
 //
-//        AndesClient sendingClient = new AndesJMSPublisherClient(publisherConfig);
+//        AndesClient sendingClient = new AndesJMSPublisher(publisherConfig);
 //        sendingClient.startClient();
 //
 //        boolean receiveSuccessForAuthUser1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
@@ -149,9 +149,9 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 //        Assert.assertTrue(sendSuccessForAuthUser1, "Failed sending messages for authUser1");
 
 //        try {
-//            Thread s = new Thread(new AndesJMSConsumerClient());
+//            Thread s = new Thread(new AndesJMSConsumer());
 //
-//            Thread p = new Thread(new AndesJMSPublisherClient());
+//            Thread p = new Thread(new AndesJMSPublisher());
 //
 //            s.start();
 ////            Thread.sleep(30000);
@@ -164,7 +164,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 //            e.printStackTrace();
 //        }
 
-//        AndesJMSPublisherClient q = new AndesJMSPublisherClient();
+//        AndesJMSPublisher q = new AndesJMSPublisher();
 
 ////        AndesClientTemp receivingAndesClientForAuthUs = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:testQueue1",
 ////                                                                            "100", "false", Integer.toString(RUNTIME), Integer.toString(EXPECTED_COUNT),
@@ -183,7 +183,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 ////        andesSubscriberClientConfiguration.setAcknowledgeMode(1);
 ////        andesSubscriberClientConfiguration.setPrintsPerMessageCount(-1);
 //
-//        AndesClient receivingAndesClientForAuthUser1 = new AndesJMSConsumerClient(andesJMSSubscriberClientConfiguration);
+//        AndesClient receivingAndesClientForAuthUser1 = new AndesJMSConsumer(andesJMSSubscriberClientConfiguration);
 
 //        receivingAndesClientForAuthUser1.startClient();
 //
@@ -201,7 +201,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 ////        andesPublisherClientConfiguration.setPrintsPerMessageCount(-1);
 ////        andesPublisherClientConfiguration.setJMSMessageType(JMSMessageType.TEXT);
 ////        andesPublisherClientConfiguration.setMessageLifetime(0);
-//        AndesClient sendingAndesClientForAuthUser1 = new AndesJMSPublisherClient(andesPublisherClientConfiguration);
+//        AndesClient sendingAndesClientForAuthUser1 = new AndesJMSPublisher(andesPublisherClientConfiguration);
 //        sendingAndesClientForAuthUser1.startClient();
 //
 //        log.info("STATS : " + receivingAndesClientForAuthUser1.getPublisherTPS() + " " +

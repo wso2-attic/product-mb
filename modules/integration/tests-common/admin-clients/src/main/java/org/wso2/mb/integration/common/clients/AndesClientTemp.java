@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.mb.integration.common.clients;
 
 import org.apache.commons.logging.Log;
@@ -8,12 +26,9 @@ import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageSende
 import org.wso2.mb.integration.common.clients.operations.topic.TopicMessagePublisher;
 import org.wso2.mb.integration.common.clients.operations.topic.TopicMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
-import org.apache.log4j.Logger;
-import org.wso2.mb.integration.common.clients.configurations.AndesClientConfiguration;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +53,7 @@ public class AndesClientTemp {
     private String numberOfThreadsAsString = "1";
     private String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
     private String connectionString = "";
+    private int unsubscribeAfter = Integer.MAX_VALUE;
 
     private String analyticOperation = "";
     private String numberOfMessagesExpectedForAnalysis = "";
@@ -46,18 +62,17 @@ public class AndesClientTemp {
     private String password = "admin";
 
     private String messageType = "text";
+    private boolean isDurable = false;
 
     private List<QueueMessageReceiver> queueListeners = new ArrayList<QueueMessageReceiver>();
     private List<TopicMessageReceiver> topicListeners = new ArrayList<TopicMessageReceiver>();
     private List<QueueMessageSender> queueMessageSenders = new ArrayList<QueueMessageSender>();
     private List<TopicMessagePublisher> topicMessagePublishers = new ArrayList<TopicMessagePublisher>();
+    private String selectors;
 
-    public AndesClientTemp(String mode, String hostInformation, String destinations,
-                           String printNumberOfMessagesPerAsString,
-                           String isToPrintEachMessageAsString, String numOfSecondsToRunAsString,
-                           String messageCountAsString,
-                           String numberOfThreadsAsString, String parameters,
-                           String connectionString, String username,
+    public AndesClientTemp(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
+                           String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
+                           String numberOfThreadsAsString, String parameters, String connectionString, String username,
                            String password) {
         this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
         this.username = username;
@@ -65,12 +80,9 @@ public class AndesClientTemp {
         AndesClientUtilsTemp.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
-    public AndesClientTemp(String mode, String hostInformation, String destinations,
-                           String printNumberOfMessagesPerAsString,
-                           String isToPrintEachMessageAsString, String numOfSecondsToRunAsString,
-                           String messageCountAsString,
-                           String numberOfThreadsAsString, String parameters,
-                           String connectionString) {
+    public AndesClientTemp(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
+                           String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
+                           String numberOfThreadsAsString, String parameters, String connectionString) {
         this.mode = mode;
         this.hostInformation = hostInformation;
         this.destinations = destinations;
@@ -84,15 +96,14 @@ public class AndesClientTemp {
         AndesClientUtilsTemp.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
-    public AndesClientTemp(String mode, String analiticOperation,
-                           String numberOfMessagesExpeactedForAnalysis) {
+    public AndesClientTemp(String mode, String analiticOperation, String numberOfMessagesExpeactedForAnalysis) {
         this.mode = mode;
         this.analyticOperation = analiticOperation;
         this.numberOfMessagesExpectedForAnalysis = numberOfMessagesExpeactedForAnalysis;
         AndesClientUtilsTemp.initializePrintWriter(filePathToWriteReceivedMessages);
     }
 
-    public void startWorking(){
+    public void startWorking() {
 
         queueMessageCounter.set(0);
         topicMessageCounter.set(0);
@@ -201,7 +212,6 @@ public class AndesClientTemp {
 
             //decode parameters
             boolean isToUseListerner = true;
-            boolean isDurable = false;
             String subscriptionID = "";
             String filePath = null;
             //default AUTO_ACK
@@ -211,9 +221,9 @@ public class AndesClientTemp {
             int ackAfterEach = Integer.MAX_VALUE;
             int commitAfterEach = Integer.MAX_VALUE;
             int rollbackAfterEach = Integer.MAX_VALUE;
-            int unsubscribeAfter = Integer.MAX_VALUE;
             Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
             // value is larger than 0.
+            String jmsType = null;
 
             String[] parameterStrings = parameters.split(",");
             for (int count = 0; count < parameterStrings.length; count++) {
@@ -244,6 +254,10 @@ public class AndesClientTemp {
                     rollbackAfterEach = Integer.parseInt(value);
                 } else if (key.equals("unsubscribeAfter")) {
                     unsubscribeAfter = Integer.parseInt(value);
+                } else if (key.equals("jMSSelector")){
+                    selectors=value;
+                } else if (key.equals("setJMSType")) {
+                    jmsType = value;
                 } else if (key.equals("jmsExpiration")) {
                     if (!value.equals("")) {
                         jmsExpiration = Long.parseLong(value);
@@ -266,9 +280,13 @@ public class AndesClientTemp {
                         String queue = queues[queueIndex];
 
                         //start a queue sender
-                        QueueMessageSender queueMessageSender = new QueueMessageSender(connectionString, host, port, this.username, this.password,
-                                queue, queueMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+                        QueueMessageSender queueMessageSender =
+                                new QueueMessageSender(connectionString, host, port, this.username, this.password,
+                                                       queue, queueMessageCounter, messageCount, delayBetWeenMessages,
+                                                       filePath, printNumberOfMessagesPer, isToPrintEachMessage,
+                                                       jmsExpiration, jmsType);
                         queueMessageSender.setTypeOfMessage(messageType);
+
                         queueMessageSenders.add(queueMessageSender);
 
                         new Thread(queueMessageSender).start();
@@ -279,8 +297,11 @@ public class AndesClientTemp {
                         String topic = topics[topicIndex];
 
                         //start a topic sender
-                        TopicMessagePublisher topicMessagePublisher = new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                topic, topicMessageCounter, messageCount, delayBetWeenMessages, filePath, printNumberOfMessagesPer, isToPrintEachMessage,jmsExpiration);
+                        TopicMessagePublisher topicMessagePublisher =
+                                new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
+                                                          topic, topicMessageCounter, messageCount,
+                                                          delayBetWeenMessages, filePath, printNumberOfMessagesPer,
+                                                          isToPrintEachMessage, jmsExpiration, jmsType);
                         topicMessagePublishers.add(topicMessagePublisher);
 
                         new Thread(topicMessagePublisher).start();
@@ -314,9 +335,12 @@ public class AndesClientTemp {
                         String queue = queues[queueIndex];
 
                         //start a queue receiver
-                        QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
-                                (connectionString, host, port, this.username, this.password, queue, ackMode, isToUseListerner, queueMessageCounter, delayBetWeenMessages,
-                                        printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
+                        QueueMessageReceiver queueMessageReceiver =
+                                new QueueMessageReceiver(connectionString, host, port, this.username, this.password,
+                                                         queue, ackMode, isToUseListerner, queueMessageCounter,
+                                                         delayBetWeenMessages, printNumberOfMessagesPer,
+                                                         isToPrintEachMessage, filePathToWriteReceivedMessages,
+                                                         stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
                         queueListeners.add(queueMessageReceiver);
                         new Thread(queueMessageReceiver).start();
                     }
@@ -325,8 +349,13 @@ public class AndesClientTemp {
                         String topic = topics[topicIndex];
 
                         //start a topic receiver
-                        TopicMessageReceiver topicMessageReceiver = new TopicMessageReceiver(connectionString, host, port, this.username, this.password, topic, isDurable,
-                                subscriptionID, ackMode, isToUseListerner, topicMessageCounter, delayBetWeenMessages, printNumberOfMessagesPer, isToPrintEachMessage, filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter, ackAfterEach, commitAfterEach, rollbackAfterEach);
+                        TopicMessageReceiver topicMessageReceiver =
+                                new TopicMessageReceiver(connectionString, host, port, this.username, this.password,
+                                                         topic, isDurable, subscriptionID, ackMode, isToUseListerner,
+                                                         topicMessageCounter, delayBetWeenMessages,
+                                                         printNumberOfMessagesPer, isToPrintEachMessage,
+                                                         filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter,
+                                                         ackAfterEach, commitAfterEach, rollbackAfterEach);
                         topicListeners.add(topicMessageReceiver);
                         new Thread(topicMessageReceiver).start();
 
@@ -344,46 +373,10 @@ public class AndesClientTemp {
               print Number Of Messages Per 100
               is To Print Each Message false
               */
-=======
-import java.util.concurrent.atomic.AtomicLong;
 
-public abstract class AndesClient{
-    protected AndesClientConfiguration config;
-    private static Logger log = Logger.getLogger(AndesClient.class);
+            log.info("===============Browsing Messages====================");
+            //only applies to queues
 
-    protected AtomicLong sentMessageCount;
-    protected AtomicLong receivedMessageCount;
-    protected AtomicLong firstMessagePublishTimestamp;
-    protected AtomicLong lastMessagePublishTimestamp;
-    protected AtomicLong firstMessageConsumedTimestamp;
-    protected AtomicLong lastMessageConsumedTimestamp;
-    /**
-     * Total latency in milliseconds
-     */
-    protected AtomicLong totalLatency;
-
-    protected AndesClient(AndesClientConfiguration config) throws NamingException {
-        this.config = config;
-        this.initialize();
-    }
-
-    protected void initialize() throws NamingException{
-        log.info("Initializing Andes client");
-        sentMessageCount = new AtomicLong();
-        receivedMessageCount = new AtomicLong();
-        firstMessagePublishTimestamp = new AtomicLong();
-        lastMessagePublishTimestamp = new AtomicLong();
-        firstMessageConsumedTimestamp = new AtomicLong();
-        lastMessageConsumedTimestamp = new AtomicLong();
-        totalLatency = new AtomicLong();
-    }
-
-    public abstract void startClient() throws JMSException, NamingException, IOException;
->>>>>>> fa6777ff1fc1f01a4b0c79e507c5902707d8e7c8:modules/integration/tests-common/admin-clients/src/main/java/org/wso2/mb/integration/common/clients/AndesClient.java
-
-    public abstract void stopClient() throws JMSException;
-
-<<<<<<< HEAD:modules/integration/tests-common/admin-clients/src/main/java/org/wso2/mb/integration/common/clients/AndesClientTemp.java
 /*          String hostnameandPort =args[1];
             String destination = args[2];
             String printNumberOfMessagesPerAsString = args[3];
@@ -440,7 +433,7 @@ public abstract class AndesClient{
             //start a queue receiver
             QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
                     ("", hostName, port, this.username, this.password, destinations, 1, true, queueMessageCounter, 0,
-                            Integer.MAX_VALUE, false, "", messageCount, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+                     Integer.MAX_VALUE, false, "", messageCount, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
             queueListeners.add(queueMessageReceiver);
             new Thread(queueMessageReceiver).start();
 
@@ -488,23 +481,49 @@ public abstract class AndesClient{
             } else {
                 log.info("analyse operation not found...");
             }
-=======
-    public double getPublisherTPS() {
-        if (0 == this.lastMessagePublishTimestamp.get() - this.firstMessagePublishTimestamp.get()) {
-            return this.sentMessageCount.doubleValue() / (1D / 1000);
->>>>>>> fa6777ff1fc1f01a4b0c79e507c5902707d8e7c8:modules/integration/tests-common/admin-clients/src/main/java/org/wso2/mb/integration/common/clients/AndesClient.java
         } else {
-            return this.sentMessageCount.doubleValue() / ((this.lastMessagePublishTimestamp.doubleValue() - this.firstMessagePublishTimestamp.doubleValue()) / 1000);
+            log.info("ERROR: Unknown mode of operation");
         }
     }
 
-    public double getSubscriberTPS() {
-        if (0 == this.lastMessageConsumedTimestamp.get() - this.firstMessageConsumedTimestamp.get()) {
-            return this.receivedMessageCount.doubleValue() / (1D / 1000);
-        } else {
-            return this.receivedMessageCount.doubleValue() / ((this.lastMessageConsumedTimestamp.doubleValue() - this.firstMessageConsumedTimestamp.doubleValue()) / 1000);
+    private int browseQueue(String host, String port, String userName, String password, String destination, int printNumberOfMessagesPer, boolean isToPrintMessage) {
+        int messageCount = 0;
+        //create a browser - one threaded app blocking
+        //make an enumeration and get the count
+        QueueMessageBrowser queueMessageBrowser = new QueueMessageBrowser(host, port, userName, password, destination, printNumberOfMessagesPer, isToPrintMessage);
+        messageCount = queueMessageBrowser.getMessageCount();
+        return messageCount;
+    }
+
+
+    //******************************************************************************************************************
+
+    public void shutDownClient() {
+
+        if (mode.equals("send")) {
+
+            for (QueueMessageSender qSender : queueMessageSenders) {
+                qSender.stopSending();
+            }
+            for (TopicMessagePublisher tPublisher : topicMessagePublishers) {
+                tPublisher.stopPublishing();
+            }
+
+        } else if (mode.equals("receive")) {
+
+            for (QueueMessageReceiver qListener : queueListeners) {
+                qListener.stopListening();
+            }
+            for (TopicMessageReceiver tListener : topicListeners) {
+                tListener.stopListening();
+            }
+
+        } else if (mode.equals("purge")) {
+
+            for (QueueMessageReceiver qListener : queueListeners) {
+                qListener.stopListening();
+            }
         }
-<<<<<<< HEAD:modules/integration/tests-common/admin-clients/src/main/java/org/wso2/mb/integration/common/clients/AndesClientTemp.java
 
     }
 
@@ -516,14 +535,24 @@ public abstract class AndesClient{
         return topicMessageCounter.get();
     }
 
-    public Map<Long, Integer> checkIfMessagesAreDuplicated() throws IOException {
-        AndesClientUtilsTemp.flushPrintWriter();
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+    public Map<Long, Integer> checkIfMessagesAreDuplicated() {
+        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp.flushPrintWriter();
+        AndesClientOutputParser andesClientOutputParser = null;
+        try {
+            andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return andesClientOutputParser.checkIfMessagesAreDuplicated();
     }
 
-    public boolean checkIfMessagesAreInOrder() throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+    public boolean checkIfMessagesAreInOrder() {
+        AndesClientOutputParser andesClientOutputParser = null;
+        try {
+            andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return andesClientOutputParser.checkIfMessagesAreInOrder();
     }
 
@@ -533,8 +562,13 @@ public abstract class AndesClient{
      * @param operationOccurredIndex Index of the operated message most of the time last message
      * @return
      */
-    public boolean transactedOperation(long operationOccurredIndex) throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+    public boolean transactedOperation(long operationOccurredIndex) throws FileNotFoundException {
+        AndesClientOutputParser andesClientOutputParser = null;
+        try {
+            andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return andesClientOutputParser.transactedOperations(operationOccurredIndex);
     }
 
@@ -543,8 +577,13 @@ public abstract class AndesClient{
      *
      * @return duplicate message count
      */
-    public long getTotalNumberOfDuplicates() throws IOException {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+    public long getTotalNumberOfDuplicates() {
+        AndesClientOutputParser andesClientOutputParser = null;
+        try {
+            andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return andesClientOutputParser.numberDuplicatedMessages();
     }
 
@@ -559,28 +598,16 @@ public abstract class AndesClient{
     public void setMessageType(String messageType) {
         this.messageType = messageType;
     }
-=======
+
+    public int getUnsubscribeAfter() {
+        return unsubscribeAfter;
     }
 
-    public double getAverageLatency() {
-        if (0 == this.receivedMessageCount.get()) {
-            log.warn("No messages were received");
-            return 0D;
-        } else {
-            return (this.totalLatency.doubleValue() / 1000) / this.receivedMessageCount.doubleValue();
-        }
+    public void setUnsubscribeAfter(int unsubscribeAfter) {
+        this.unsubscribeAfter = unsubscribeAfter;
     }
 
-    public long getSentMessageCount() {
-        return sentMessageCount.get();
+    public List<TopicMessageReceiver> getTopicListeners() {
+        return topicListeners;
     }
-
-    public long getReceivedMessageCount() {
-        return receivedMessageCount.get();
-    }
-
-    public AndesClientConfiguration getConfig(){
-        return config;
-    }
->>>>>>> fa6777ff1fc1f01a4b0c79e507c5902707d8e7c8:modules/integration/tests-common/admin-clients/src/main/java/org/wso2/mb/integration/common/clients/AndesClient.java
 }

@@ -21,10 +21,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.AndesJMSClient;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -78,10 +77,10 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesJMSConsumerClient receivingClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient receivingClient = new AndesClient(consumerConfig);
         receivingClient.startClient();
 
-        AndesJMSPublisherClient sendingClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient sendingClient = new AndesClient(publisherConfig);
         sendingClient.startClient();
 
         // Evaluating results
@@ -121,10 +120,10 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(500L);
 
         // Creating clients
-        AndesJMSConsumerClient initialReceivingClient = new AndesJMSConsumerClient(initialConsumerConfig);
+        AndesClient initialReceivingClient = new AndesClient(initialConsumerConfig);
         initialReceivingClient.startClient();
 
-        AndesJMSPublisherClient sendingClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient sendingClient = new AndesClient(publisherConfig);
         sendingClient.startClient();
 
         //Wait until messages receive
@@ -134,7 +133,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         initialReceivingClient.stopClient();
 
         // Creating clients
-        AndesJMSConsumerClient secondaryReceivingClient = new AndesJMSConsumerClient(consumerConfigForClientAfterDrop);
+        AndesClient secondaryReceivingClient = new AndesClient(consumerConfigForClientAfterDrop);
         secondaryReceivingClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryReceivingClient,  AndesClientConstants.DEFAULT_RUN_TIME);

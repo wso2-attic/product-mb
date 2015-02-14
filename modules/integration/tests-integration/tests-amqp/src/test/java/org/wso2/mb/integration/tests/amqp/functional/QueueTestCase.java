@@ -24,8 +24,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -66,10 +65,10 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT_1000);
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -110,8 +109,6 @@ public class QueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "topic1");
-        // Use a listener
-        consumerConfig.setAsync(true);
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_1000);
         // Prints per message
@@ -121,10 +118,10 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT_1000);
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -177,8 +174,6 @@ public class QueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queue1");
-        // Use a listener
-        consumerConfig2.setAsync(true);
         // Amount of message to receive
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_3000);
         // Prints per message
@@ -188,13 +183,13 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT_3000);
 
-        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig1);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1);
         consumerClient1.startClient();
 
-        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
         consumerClient2.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(5000);

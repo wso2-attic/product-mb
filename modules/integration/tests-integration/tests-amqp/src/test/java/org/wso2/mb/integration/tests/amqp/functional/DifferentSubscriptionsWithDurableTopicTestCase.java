@@ -2,8 +2,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -113,25 +112,25 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
 
 
         //Creating clients
-        AndesJMSConsumerClient durableTopicConsumerClient1 = new AndesJMSConsumerClient(durableTopicConsumerConfig1);
+        AndesClient durableTopicConsumerClient1 = new AndesClient(durableTopicConsumerConfig1);
         durableTopicConsumerClient1.startClient();
 
-        AndesJMSConsumerClient durableTopicConsumerClient2 = new AndesJMSConsumerClient(durableTopicConsumerConfig2);
+        AndesClient durableTopicConsumerClient2 = new AndesClient(durableTopicConsumerConfig2);
         durableTopicConsumerClient2.startClient();
 
-        AndesJMSConsumerClient normalTopicConsumerClient = new AndesJMSConsumerClient(normalTopicConsumerConfig);
+        AndesClient normalTopicConsumerClient = new AndesClient(normalTopicConsumerConfig);
         normalTopicConsumerClient.startClient();
 
-        AndesJMSConsumerClient normalHierarchicalTopicConsumerClient = new AndesJMSConsumerClient(normalHierarchicalTopicConsumerConfig);
+        AndesClient normalHierarchicalTopicConsumerClient = new AndesClient(normalHierarchicalTopicConsumerConfig);
         normalHierarchicalTopicConsumerClient.startClient();
 
-        AndesJMSConsumerClient durableHierarchicalTopicConsumerClient = new AndesJMSConsumerClient(durableHierarchicalTopicConsumerConfig);
+        AndesClient durableHierarchicalTopicConsumerClient = new AndesClient(durableHierarchicalTopicConsumerConfig);
         durableHierarchicalTopicConsumerClient.startClient();
 
-        AndesJMSConsumerClient queueConsumerClient = new AndesJMSConsumerClient(queueConsumerConfig);
+        AndesClient queueConsumerClient = new AndesClient(queueConsumerConfig);
         queueConsumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
 

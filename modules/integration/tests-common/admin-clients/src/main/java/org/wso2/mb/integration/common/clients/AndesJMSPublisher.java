@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable {
-    private static Logger log = Logger.getLogger(AndesJMSPublisherClient.class);
+class AndesJMSPublisher extends AndesJMSClient implements Runnable {
+    private static Logger log = Logger.getLogger(AndesJMSPublisher.class);
 
     private AndesJMSPublisherClientConfiguration publisherConfig;
     private AtomicLong sentMessageCount;
@@ -33,7 +33,7 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
     private MessageProducer sender;
     private String messageContentFromFile = null;
 
-    public AndesJMSPublisherClient(AndesJMSPublisherClientConfiguration config)
+    public AndesJMSPublisher(AndesJMSPublisherClientConfiguration config)
             throws NamingException, JMSException {
         super(config);
 
@@ -60,16 +60,15 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
             this.getMessageContentFromFile();
         }
 
-        for (int i = 0; i < this.publisherConfig.getPublisherCount(); i++) {
             Thread subscriberThread = new Thread(this);
             subscriberThread.start();
-        }
     }
 
     @Override
     public synchronized void stopClient() throws JMSException {
         try {
-            log.info("Closing publisher");
+            long threadID = Thread.currentThread().getId();
+            log.info("Closing publisher | ThreadID : " + threadID);
             if (this.sender != null) {
                 this.sender.close();
                 this.sender = null;
@@ -82,7 +81,7 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
                 this.connection.close();
                 this.connection = null;
             }
-            log.info("Publisher closed");
+            log.info("Publisher closed | ThreadID : " + threadID);
         } catch (JMSException e) {
             log.error("Error while stopping the publisher.", e);
         }
@@ -150,11 +149,6 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
 
                     this.lastMessagePublishTimestamp.set(currentTimeStamp);
                     this.sentMessageCount.incrementAndGet();
-
-                    if (null != this.publisherConfig.getFilePathToWriteStatistics()) {
-                        String statisticsString = ",,," + Long.toString(currentTimeStamp) + "," + Double.toString(this.getPublisherTPS());
-                        AndesClientUtils.writeStatisticsToFile(statisticsString, this.publisherConfig.getFilePathToWriteStatistics());
-                    }
                     if (0 == this.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount()) {
 
                         if(null != this.publisherConfig.getReadMessagesFromFilePath()){
@@ -171,6 +165,10 @@ public class AndesJMSPublisherClient extends AndesJMSClient implements Runnable 
                                      this.sentMessageCount.get() + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }
+                    }
+                    if (null != this.publisherConfig.getFilePathToWriteStatistics()) {
+                        String statisticsString = ",,,," + Long.toString(currentTimeStamp) + "," + Double.toString(this.getPublisherTPS());
+                        AndesClientUtils.writeStatisticsToFile(statisticsString, this.publisherConfig.getFilePathToWriteStatistics());
                     }
                     if (0 < this.publisherConfig.getRunningDelay()) {
                         try {

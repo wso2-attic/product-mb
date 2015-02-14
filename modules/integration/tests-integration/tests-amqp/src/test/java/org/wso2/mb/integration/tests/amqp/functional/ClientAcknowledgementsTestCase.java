@@ -22,8 +22,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -73,15 +72,15 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
 
-        AndesJMSConsumerClient consumerClient1 = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig);
         consumerClient1.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesJMSConsumerClient consumerClient2 = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig);
         consumerClient2.startClient();
 
         AndesClientUtilsTemp.sleepForInterval(2000);

@@ -21,16 +21,12 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSClient;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
@@ -72,10 +68,10 @@ public class DurableTopicTestCase {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesJMSConsumerClient initialConsumerClient = new AndesJMSConsumerClient(consumerConfig1);
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig1);
         initialConsumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         //Wait until messages receive
@@ -86,7 +82,7 @@ public class DurableTopicTestCase {
         consumerConfig2.setUnSubscribeAfterEachMessageCount(EXPECTED_COUNT);
 
         // Creating clients
-        AndesJMSConsumerClient secondaryConsumerClient = new AndesJMSConsumerClient(consumerConfig2);
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -95,7 +91,7 @@ public class DurableTopicTestCase {
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
 
         // Creating clients
-        AndesJMSConsumerClient tertiaryConsumerClient = new AndesJMSConsumerClient(consumerConfig3);
+        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3);
         tertiaryConsumerClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(secondaryConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);

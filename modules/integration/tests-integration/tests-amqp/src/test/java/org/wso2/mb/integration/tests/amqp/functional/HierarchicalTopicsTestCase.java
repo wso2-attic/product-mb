@@ -21,8 +21,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -66,10 +65,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
          * specifically published to games.cricket is received
          */
         //we should not get any message here
-        AndesJMSConsumerClient receivingClient1 = getConsumerClientForTopic("games.cricket");
+        AndesClient receivingClient1 = getConsumerClientForTopic("games.cricket");
         receivingClient1.startClient();
 
-        AndesJMSPublisherClient sendingClient1 = getPublishingClientForTopic("games");
+        AndesClient sendingClient1 = getPublishingClientForTopic("games");
         sendingClient1.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient1,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -77,10 +76,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         //now we send messages specific to games.cricket topic. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesJMSConsumerClient receivingClient2 = getConsumerClientForTopic("games.cricket");
+        AndesClient receivingClient2 = getConsumerClientForTopic("games.cricket");
         receivingClient2.startClient();
 
-        AndesJMSPublisherClient sendingClient2 = getPublishingClientForTopic("games.cricket");
+        AndesClient sendingClient2 = getPublishingClientForTopic("games.cricket");
         sendingClient2.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(receivingClient2,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -106,10 +105,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
             throws AndesClientException, JMSException, NamingException, IOException {
 
         //we should not get any message here
-        AndesJMSConsumerClient consumerClient3 = getConsumerClientForTopic("games.*");
+        AndesClient consumerClient3 = getConsumerClientForTopic("games.*");
         consumerClient3.startClient();
 
-        AndesJMSPublisherClient publisherClient3 = getPublishingClientForTopic("games");
+        AndesClient publisherClient3 = getPublishingClientForTopic("games");
         publisherClient3.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient3,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -117,10 +116,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         //now we send messages child to games.football. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesJMSConsumerClient consumerClient4 = getConsumerClientForTopic("games.*");
+        AndesClient consumerClient4 = getConsumerClientForTopic("games.*");
         consumerClient4.startClient();
 
-        AndesJMSPublisherClient publisherClient4 = getPublishingClientForTopic("games.football");
+        AndesClient publisherClient4 = getPublishingClientForTopic("games.football");
         publisherClient4.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -128,10 +127,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         //now we send messages to a child that is not immediate. We should not receive messages
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesJMSConsumerClient consumerClient5 = getConsumerClientForTopic("games.*");
+        AndesClient consumerClient5 = getConsumerClientForTopic("games.*");
         consumerClient5.startClient();
 
-        AndesJMSPublisherClient publisherClient5 = getPublishingClientForTopic("games.cricket.sriLanka");
+        AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sriLanka");
         publisherClient5.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient4,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -163,10 +162,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
             throws AndesClientException, JMSException, NamingException, IOException {
 
         //we should  get any message here
-        AndesJMSConsumerClient consumerClient6 = getConsumerClientForTopic("games.#");
+        AndesClient consumerClient6 = getConsumerClientForTopic("games.#");
         consumerClient6.startClient();
 
-        AndesJMSPublisherClient publisherClient6 = getPublishingClientForTopic("games");
+        AndesClient publisherClient6 = getPublishingClientForTopic("games");
         publisherClient6.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient6,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -174,10 +173,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         //now we send messages to level 2 child. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
 
-        AndesJMSConsumerClient consumerClient7 = getConsumerClientForTopic("games.#");
+        AndesClient consumerClient7 = getConsumerClientForTopic("games.#");
         consumerClient7.startClient();
 
-        AndesJMSPublisherClient publisherClient7 = getPublishingClientForTopic("games.football.sriLanka");
+        AndesClient publisherClient7 = getPublishingClientForTopic("games.football.sriLanka");
         publisherClient7.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient7,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -189,7 +188,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient7.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient7.");
     }
 
-    private AndesJMSConsumerClient getConsumerClientForTopic(String topicName)
+    private AndesClient getConsumerClientForTopic(String topicName)
             throws AndesClientException, JMSException, NamingException {
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
@@ -198,7 +197,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         // Prints per message
         consumerConfig.setPrintsPerMessageCount(100L);
 
-        return new AndesJMSConsumerClient(consumerConfig);
+        return new AndesClient(consumerConfig);
 
 //        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:" + topicName,
 //                "100", "false", runTime.toString(), expectedCount.toString(),
@@ -206,13 +205,13 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 //        return receivingClient;
     }
 
-    private AndesJMSPublisherClient getPublishingClientForTopic(String topicName)
+    private AndesClient getPublishingClientForTopic(String topicName)
             throws AndesClientException, JMSException, NamingException {
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
         publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        return new AndesJMSPublisherClient(publisherConfig);
+        return new AndesClient(publisherConfig);
 
 //        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:" + topicName, "100", "false",
 //                runTime.toString(), sendCount.toString(), "1",

@@ -22,15 +22,12 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -64,19 +61,19 @@ public class QueueMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        consumerConfig.setPrintsPerMessageCount(500L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
-        publisherConfig.setPrintsPerMessageCount(100L);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
         AndesClientUtils.waitUntilAllMessageReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
@@ -85,9 +82,9 @@ public class QueueMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
 
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed");
 
-        Assert.assertTrue(AndesClientUtils.checkIfMessagesAreInOrder(consumerClient), "Messages are not in order");
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages are not in order");
 
-        Assert.assertEquals(AndesClientUtils.checkIfMessagesAreDuplicated(consumerClient).keySet().size(), 0, "Duplicate message are available.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate message are available.");
 
 
 

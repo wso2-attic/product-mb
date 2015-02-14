@@ -22,14 +22,14 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.mb.integration.common.clients.AndesJMSConsumerClient;
-import org.wso2.mb.integration.common.clients.AndesJMSPublisherClient;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
@@ -46,10 +46,10 @@ import java.io.IOException;
  */
 public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationBaseTest {
 
-    private static final long DEFAULT_MAX_REDELIVERY_ATTEMPTS = 10;
+    private static final long DEFAULT_MAX_REDELIVERY_ATTEMPTS = 10L;
     private static final long SEND_COUNT = 2L;
     private static final long DEFAULT_ACK_WAIT_TIMEOUT = 10L;
-    private static final long EXPECTED_COUNT = DEFAULT_MAX_REDELIVERY_ATTEMPTS * SEND_COUNT;
+    private static final long EXPECTED_COUNT = DEFAULT_MAX_REDELIVERY_ATTEMPTS * 200L;
 
     @BeforeClass
     public void prepare() throws Exception {
@@ -73,23 +73,17 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(100L);
-        consumerConfig.setSubscriberCount(2);
-        consumerConfig.setAcknowledgeAfterEachMessageCount(200);
-
-
-
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
-        publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
 
-        AndesJMSConsumerClient consumerClient = new AndesJMSConsumerClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, 2);
         consumerClient.startClient();
 
-        AndesJMSPublisherClient publisherClient = new AndesJMSPublisherClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
 
