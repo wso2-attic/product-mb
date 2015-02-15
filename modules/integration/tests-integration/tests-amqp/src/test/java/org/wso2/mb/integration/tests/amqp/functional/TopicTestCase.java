@@ -48,59 +48,59 @@ public class TopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single topic send-receive test case")
     public void performSingleTopicSendReceiveTestCase()
             throws AndesClientException, JMSException, NamingException, IOException {
-//        long sendCount = 1000L;
-//        long expectedCount = 1000L;
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleTopic");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        // Prints per message
+        consumerConfig.setPrintsPerMessageCount(expectedCount/10L);
+
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleTopic");
+        publisherConfig.setPrintsPerMessageCount(sendCount/10L);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message send failed");
+
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "TENANT 1 receive failed");
+
+
+
+
+//        Integer sendCount = 1000;
+//        Integer runTime = 20;
+//        Integer expectedCount = 1000;
 //
-//        // Creating a initial JMS consumer client configuration
-//        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleTopic");
-//        // Amount of message to receive
-//        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-//        // Prints per message
-//        consumerConfig.setPrintsPerMessageCount(expectedCount/10L);
+//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:singleTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
 //
+//        receivingClient.startWorking();
 //
-//        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleTopic");
-//        publisherConfig.setPrintsPerMessageCount(sendCount/10L);
-//        publisherConfig.setNumberOfMessagesToSend(sendCount);
+//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:singleTopic", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
 //
+//        sendingClient.startWorking();
 //
-//        AndesClient consumerClient = new AndesClient(consumerConfig);
-//        consumerClient.startClient();
+//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 //
-//        AndesClient publisherClient = new AndesClient(publisherConfig);
-//        publisherClient.startClient();
+//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
 //
-//        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
-//
-//        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message send failed");
-//
-//        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "TENANT 1 receive failed");
-
-
-
-
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 1000;
-
-        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:singleTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:singleTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+//        Assert.assertTrue(sendSuccess, "Message sending failed.");
+//        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
     @Test(groups = "wso2.mb", description = "")

@@ -33,7 +33,7 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
     private MessageProducer sender;
     private String messageContentFromFile = null;
 
-    public AndesJMSPublisher(AndesJMSPublisherClientConfiguration config)
+    AndesJMSPublisher(AndesJMSPublisherClientConfiguration config)
             throws NamingException, JMSException {
         super(config);
 
@@ -152,14 +152,14 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                     if (0 == this.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount()) {
 
                         if(null != this.publisherConfig.getReadMessagesFromFilePath()){
-                            log.info("(FROM FILE)" + "[DESTINATION SEND] ThreadID:" +
+                            log.info("(FROM FILE)" + "[SEND] ThreadID:" +
                                      threadID + " DestinationName:" +
                                      this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +
 
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }else {
-                            log.info("(INBUILT MESSAGE) " + "[DESTINATION SEND] ThreadID:" +
+                            log.info("(INBUILT MESSAGE) " + "[SEND] ThreadID:" +
                                      threadID + " DestinationName:" +
                                      this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +

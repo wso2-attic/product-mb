@@ -60,11 +60,11 @@ public class DurableTopicTestCase {
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        consumerConfig1.setPrintsPerMessageCount(50L);
-        consumerConfig1.setDurable(true, "sub1");
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig1.setDurable(true, "durableSub1");
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
-        publisherConfig.setPrintsPerMessageCount(150L);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -94,7 +94,7 @@ public class DurableTopicTestCase {
         AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3);
         tertiaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(5000);
 
@@ -103,7 +103,8 @@ public class DurableTopicTestCase {
         // TODO : issue with the earlier implementation
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 1.");
         Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 2.");
-        Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 3.");
+        Assert.assertNotEquals(tertiaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 3.");
+        Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), 0L, "Messages received for client 3.");
 
 
 

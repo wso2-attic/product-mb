@@ -19,6 +19,7 @@ import java.util.Map;
 
 public class AndesClient {
     private static Logger log = Logger.getLogger(AndesJMSConsumer.class);
+    private long startDelay = 0L;
     List<AndesJMSConsumer> consumers = new ArrayList<AndesJMSConsumer>();
     List<AndesJMSPublisher> publishers = new ArrayList<AndesJMSPublisher>();
 
@@ -61,6 +62,9 @@ public class AndesClient {
     public void stopClient() throws JMSException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.stopClient();
+            if(this.startDelay > 0L){
+                AndesClientUtils.sleepForInterval(this.startDelay);
+            }
         }
         for (AndesJMSPublisher publisher : publishers) {
             publisher.stopClient();
@@ -157,5 +161,13 @@ public class AndesClient {
         } else {
             return -1L;
         }
+    }
+
+    public long getStartDelay() {
+        return startDelay;
+    }
+
+    public void setStartDelay(long startDelay) {
+        this.startDelay = startDelay;
     }
 }

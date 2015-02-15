@@ -130,7 +130,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient5 = getConsumerClientForTopic("games.*");
         consumerClient5.startClient();
 
-        AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sriLanka");
+        AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sl");
         publisherClient5.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -176,7 +176,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient7 = getConsumerClientForTopic("games.#");
         consumerClient7.startClient();
 
-        AndesClient publisherClient7 = getPublishingClientForTopic("games.football.sriLanka");
+        AndesClient publisherClient7 = getPublishingClientForTopic("games.football.sl");
         publisherClient7.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient7, AndesClientConstants.DEFAULT_RUN_TIME);

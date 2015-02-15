@@ -30,7 +30,7 @@ class AndesJMSConsumer extends AndesJMSClient
         implements Runnable, MessageListener {
     private static Logger log = Logger.getLogger(AndesJMSConsumer.class);
 
-    private final AndesJMSConsumerClientConfiguration subscriberConfig;
+    private final AndesJMSConsumerClientConfiguration consumerConfig;
     private AtomicLong firstMessageConsumedTimestamp;
     private AtomicLong lastMessageConsumedTimestamp;
     private AtomicLong receivedMessageCount;
@@ -39,7 +39,7 @@ class AndesJMSConsumer extends AndesJMSClient
     private Session session;
     private MessageConsumer receiver;
 
-    public AndesJMSConsumer(AndesJMSConsumerClientConfiguration config)
+    AndesJMSConsumer(AndesJMSConsumerClientConfiguration config)
             throws NamingException, JMSException {
         super(config);
         firstMessageConsumedTimestamp = new AtomicLong();
@@ -47,42 +47,42 @@ class AndesJMSConsumer extends AndesJMSClient
         totalLatency = new AtomicLong();
         receivedMessageCount = new AtomicLong();
 
-        this.subscriberConfig = config;
-        if (this.subscriberConfig.getExchangeType() == ExchangeType.QUEUE) {
+        this.consumerConfig = config;
+        if (this.consumerConfig.getExchangeType() == ExchangeType.QUEUE) {
             QueueConnectionFactory connFactory = (QueueConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
             QueueConnection queueConnection = connFactory.createQueueConnection();
             queueConnection.start();
 
             QueueSession queueSession;
-            if (this.subscriberConfig.getAcknowledgeMode().getType() == QueueSession.SESSION_TRANSACTED) {
-                queueSession = queueConnection.createQueueSession(true, this.subscriberConfig.getAcknowledgeMode().getType());
+            if (this.consumerConfig.getAcknowledgeMode().getType() == QueueSession.SESSION_TRANSACTED) {
+                queueSession = queueConnection.createQueueSession(true, this.consumerConfig.getAcknowledgeMode().getType());
             } else {
-                queueSession = queueConnection.createQueueSession(false, this.subscriberConfig.getAcknowledgeMode().getType());
+                queueSession = queueConnection.createQueueSession(false, this.consumerConfig.getAcknowledgeMode().getType());
             }
 
-            Queue queue = (Queue) super.getInitialContext().lookup(this.subscriberConfig.getDestinationName());
+            Queue queue = (Queue) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
             connection = queueConnection;
             session = queueSession;
             receiver = queueSession.createReceiver(queue);
-        } else if (this.subscriberConfig.getExchangeType() == ExchangeType.TOPIC) {
+        } else if (this.consumerConfig.getExchangeType() == ExchangeType.TOPIC) {
             TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
             TopicConnection topicConnection = connFactory.createTopicConnection();
-            topicConnection.setClientID(this.subscriberConfig.getSubscriptionID());
+            topicConnection.setClientID(this.consumerConfig.getSubscriptionID());
             topicConnection.start();
             TopicSession topicSession;
-            if (this.subscriberConfig.getAcknowledgeMode().getType() == TopicSession.SESSION_TRANSACTED) {
-                topicSession = topicConnection.createTopicSession(true, this.subscriberConfig.getAcknowledgeMode().getType());
+            if (this.consumerConfig.getAcknowledgeMode().getType() == TopicSession.SESSION_TRANSACTED) {
+                topicSession = topicConnection.createTopicSession(true, this.consumerConfig.getAcknowledgeMode().getType());
             } else {
-                topicSession = topicConnection.createTopicSession(false, this.subscriberConfig.getAcknowledgeMode().getType());
+                topicSession = topicConnection.createTopicSession(false, this.consumerConfig.getAcknowledgeMode().getType());
             }
 
             // Send message
-            Topic topic = (Topic) super.getInitialContext().lookup(this.subscriberConfig.getDestinationName());
+            Topic topic = (Topic) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
 
             connection = topicConnection;
             session = topicSession;
-            if (this.subscriberConfig.isDurable()) {
-                receiver = topicSession.createDurableSubscriber(topic, this.subscriberConfig.getSubscriptionID());
+            if (this.consumerConfig.isDurable()) {
+                receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID());
             } else {
                 receiver = topicSession.createSubscriber(topic);
             }
@@ -91,77 +91,84 @@ class AndesJMSConsumer extends AndesJMSClient
 
     @Override
     public void startClient() throws JMSException, NamingException {
-        Thread subscriberThread = new Thread(this);
-        subscriberThread.start();
-        log.info("Starting consumer | ThreadID : " + subscriberThread.getId());
+        Thread consumerThread = new Thread(this);
+        consumerThread.start();
+        log.info("Starting Consumer | ThreadID : " + consumerThread.getId());
     }
 
     @Override
-    public synchronized void stopClient() throws JMSException {
-        try {
-            // TODO : remove duplication if possible
-            long threadID = Thread.currentThread().getId();
-            log.info("Closing subscriber | ThreadID : " + threadID);
-            if (ExchangeType.TOPIC == this.subscriberConfig.getExchangeType()) {
-                if (null != this.receiver) {
-                    TopicSubscriber topicSubscriber = (TopicSubscriber) this.receiver;
-                    topicSubscriber.close();
-                }
+    public void stopClient() throws JMSException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // TODO : remove duplication if possible
+                    log.info("Closing Consumer");
+                    if (ExchangeType.TOPIC == consumerConfig.getExchangeType()) {
+                        if (null != receiver) {
+                            TopicSubscriber topicSubscriber = (TopicSubscriber) receiver;
+                            topicSubscriber.close();
+                        }
 
-                if (null != this.session) {
-                    TopicSession topicSession = (TopicSession) this.session;
-                    topicSession.close();
-                }
+                        if (null != session) {
+                            TopicSession topicSession = (TopicSession) session;
+                            topicSession.close();
+                        }
 
+                        if (null != connection) {
+                            TopicConnection topicConnection = (TopicConnection) connection;
+                            //topicConnection.stop();
+                            topicConnection.close();
+                        }
+                    } else if (ExchangeType.QUEUE == consumerConfig.getExchangeType()) {
+                        if (null != receiver) {
+                            QueueReceiver queueReceiver = (QueueReceiver) receiver;
+                            queueReceiver.close();
+                        }
 
-                if (null != this.connection) {
-                    TopicConnection topicConnection = (TopicConnection) this.connection;
-                    //topicConnection.stop();
-                    topicConnection.close();
-                }
-            } else if (ExchangeType.QUEUE == this.subscriberConfig.getExchangeType()) {
-                if (null != this.receiver) {
-                    QueueReceiver queueReceiver = (QueueReceiver) receiver;
-                    queueReceiver.close();
-                }
+                        if (null != session) {
+                            QueueSession queueSession = (QueueSession) session;
+                            queueSession.close();
+                        }
 
-                if (null != session) {
-                    QueueSession queueSession = (QueueSession) session;
-                    queueSession.close();
-                }
+                        if (null != connection) {
+                            QueueConnection queueConnection = (QueueConnection) connection;
+                            queueConnection.close();
+                        }
+                    }
 
-                if (null != connection) {
-                    QueueConnection queueConnection = (QueueConnection) connection;
-                    queueConnection.close();
+                    log.info("Consumer Closed");
+
+                } catch (JMSException e) {
+                    log.error("Error in stopping client.", e);
+                    throw new RuntimeException("JMSException : Error in stopping client.", e);
                 }
             }
-
-            log.info("Subscriber closed | ThreadID : " + threadID);
-
-        } catch (JMSException e) {
-            log.error("Error in stopping client.", e);
-            throw e;
-        }
+        }).start();
     }
 
-    public synchronized void unSubscribe() throws JMSException {
-        try {
-            long threadID = Thread.currentThread().getId();
-            log.info("Un-subscribing Subscriber | ThreadID : " + threadID);
-            this.session.unsubscribe(subscriberConfig.getSubscriptionID());
-            log.info("Subscriber Un-Subscribed | ThreadID : " + threadID);
-            this.stopClient();
+    public void unSubscribe() throws JMSException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    log.info("Un-subscribing Subscriber");
+                    session.unsubscribe(consumerConfig.getSubscriptionID());
+                    log.info("Subscriber Un-Subscribed");
+                    stopClient();
 
-        } catch (JMSException e) {
-            log.error("Error in removing subscription(un-subscribing).", e);
-            throw e;
-        }
+                } catch (JMSException e) {
+                    log.error("Error in removing subscription(un-subscribing).", e);
+                    throw new RuntimeException("JMSException : Error in removing subscription(un-subscribing).", e);
+                }
+            }
+        }).start();
     }
 
     @Override
     public void run() {
         try {
-            if (this.subscriberConfig.isAsync()) {
+            if (this.consumerConfig.isAsync()) {
                 receiver.setMessageListener(this);
             } else {
                 long threadID = Thread.currentThread().getId();
@@ -187,23 +194,23 @@ class AndesJMSConsumer extends AndesJMSClient
                             } else {
                                 redelivery = "ORIGINAL";
                             }
-                            if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getPrintsPerMessageCount()) {
-                                log.info("[DESTINATION RECEIVE] ThreadID:" + threadID + " Destination:" +
-                                         this.subscriberConfig.getDestinationName() + " TotalMessageCount:" +
+                            if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
+                                log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" +
+                                         this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                                          this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
-                                         this.subscriberConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + redelivery);
+                                         this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + redelivery);
 
                             }
-                            if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
-                                AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
+                            if (null != this.consumerConfig.getFilePathToWriteReceivedMessages()) {
+                                AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.consumerConfig.getFilePathToWriteReceivedMessages());
                             }
-                            if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
+                            if (null != this.consumerConfig.getFilePathToWriteStatistics()) {
                                 String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
-                                AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
+                                AndesClientUtils.writeStatisticsToFile(statisticsString, this.consumerConfig.getFilePathToWriteStatistics());
                             }
                         }
 
-                        if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getAcknowledgeAfterEachMessageCount()) {
+                        if (0 == this.receivedMessageCount.get() % this.consumerConfig.getAcknowledgeAfterEachMessageCount()) {
                             if (session.getAcknowledgeMode() == Session.CLIENT_ACKNOWLEDGE) {
                                 message.acknowledge();
                                 log.info("Acknowledging message : " + message.getJMSMessageID());
@@ -211,25 +218,25 @@ class AndesJMSConsumer extends AndesJMSClient
                         }
 
                         //commit get priority
-                        if (0 == this.receivedMessageCount.get() % subscriberConfig.getCommitAfterEachMessageCount()) {
+                        if (0 == this.receivedMessageCount.get() % consumerConfig.getCommitAfterEachMessageCount()) {
                             session.commit();
                             log.info("Committed session");
-                        } else if (0 == this.receivedMessageCount.get() % subscriberConfig.getRollbackAfterEachMessageCount()) {
+                        } else if (0 == this.receivedMessageCount.get() % consumerConfig.getRollbackAfterEachMessageCount()) {
                             session.rollback();
                             log.info("Roll-backed session");
                         }
 
-                        if (this.receivedMessageCount.get() >= subscriberConfig.getUnSubscribeAfterEachMessageCount()) {
+                        if (this.receivedMessageCount.get() >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
                             unSubscribe();
                             break;
-                        } else if (this.receivedMessageCount.get() >= subscriberConfig.getMaximumMessagesToReceived()) {
+                        } else if (this.receivedMessageCount.get() >= consumerConfig.getMaximumMessagesToReceived()) {
                             stopClient();
                             break;
                         }
 
-                        if (0 < subscriberConfig.getRunningDelay()) {
+                        if (0 < consumerConfig.getRunningDelay()) {
                             try {
-                                Thread.sleep(subscriberConfig.getRunningDelay());
+                                Thread.sleep(consumerConfig.getRunningDelay());
                             } catch (InterruptedException e) {
                                 //silently ignore
                             }
@@ -267,23 +274,23 @@ class AndesJMSConsumer extends AndesJMSClient
                 } else {
                     redelivery = "ORIGINAL";
                 }
-                if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getPrintsPerMessageCount()) {
+                if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
                     log.info("[DESTINATION RECEIVE] ThreadID:" + threadID + " Destination:" +
-                             this.subscriberConfig.getDestinationName() + " TotalMessageCount:" +
+                             this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
-                             this.subscriberConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
+                             this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
 
                 }
-                if (null != this.subscriberConfig.getFilePathToWriteReceivedMessages()) {
-                    AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.subscriberConfig.getFilePathToWriteReceivedMessages());
+                if (null != this.consumerConfig.getFilePathToWriteReceivedMessages()) {
+                    AndesClientUtils.writeReceivedMessagesToFile(textMessage.getText(), this.consumerConfig.getFilePathToWriteReceivedMessages());
                 }
-                if (null != this.subscriberConfig.getFilePathToWriteStatistics()) {
+                if (null != this.consumerConfig.getFilePathToWriteStatistics()) {
                     String statisticsString = Long.toString(currentTimeStamp) + "," + Double.toString(this.getConsumerTPS()) + "," + Double.toString(this.getAverageLatency());
-                    AndesClientUtils.writeStatisticsToFile(statisticsString, this.subscriberConfig.getFilePathToWriteStatistics());
+                    AndesClientUtils.writeStatisticsToFile(statisticsString, this.consumerConfig.getFilePathToWriteStatistics());
                 }
             }
 
-            if (0 == this.receivedMessageCount.get() % this.subscriberConfig.getAcknowledgeAfterEachMessageCount()) {
+            if (0 == this.receivedMessageCount.get() % this.consumerConfig.getAcknowledgeAfterEachMessageCount()) {
                 if (session.getAcknowledgeMode() == Session.CLIENT_ACKNOWLEDGE) {
                     message.acknowledge();
                     log.info("Acknowledging message : " + message.getJMSMessageID());
@@ -291,35 +298,26 @@ class AndesJMSConsumer extends AndesJMSClient
             }
 
             //commit get priority
-            if (0 == this.receivedMessageCount.get() % subscriberConfig.getCommitAfterEachMessageCount()) {
+            if (0 == this.receivedMessageCount.get() % consumerConfig.getCommitAfterEachMessageCount()) {
                 session.commit();
                 log.info("Committed session");
-            } else if (0 == this.receivedMessageCount.get() % subscriberConfig.getRollbackAfterEachMessageCount()) {
+            } else if (0 == this.receivedMessageCount.get() % consumerConfig.getRollbackAfterEachMessageCount()) {
                 session.rollback();
                 log.info("Roll-backed session");
             }
 
-            if (receivedMessageCount.get() >= subscriberConfig.getUnSubscribeAfterEachMessageCount()) {
-                Thread unSubscribeThread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            unSubscribe();
-                        } catch (JMSException e) {
-                            log.error("Error while un-subscribing", e);
-                            throw new RuntimeException("JMSException : Error while un-subscribing", e);
-                        }
-                    }
-                };
-
-                unSubscribeThread.start();
-            } else if (this.receivedMessageCount.get() >= subscriberConfig.getMaximumMessagesToReceived()) {
+            if (receivedMessageCount.get() >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
+                unSubscribe();
+                AndesClientUtils.sleepForInterval(500L);
+            } else if (this.receivedMessageCount.get() >= consumerConfig.getMaximumMessagesToReceived()) {
                 stopClient();
+                AndesClientUtils.sleepForInterval(500L);
+
             }
 
-            if (0 < subscriberConfig.getRunningDelay()) {
+            if (0 < consumerConfig.getRunningDelay()) {
                 try {
-                    Thread.sleep(subscriberConfig.getRunningDelay());
+                    Thread.sleep(consumerConfig.getRunningDelay());
                 } catch (InterruptedException e) {
                     //silently ignore
                 }
@@ -338,7 +336,7 @@ class AndesJMSConsumer extends AndesJMSClient
         if (0 == this.lastMessageConsumedTimestamp.get() - this.firstMessageConsumedTimestamp.get()) {
             return this.receivedMessageCount.doubleValue() / (1D / 1000);
         } else {
-            return this.receivedMessageCount.doubleValue() / ((this.lastMessageConsumedTimestamp.doubleValue() - this.firstMessageConsumedTimestamp.doubleValue()) / 1000);
+            return this.receivedMessageCount.doubleValue() / ((this.lastMessageConsumedTimestamp.doubleValue() - this.firstMessageConsumedTimestamp.doubleValue()) / 1000D);
         }
     }
 
@@ -347,12 +345,12 @@ class AndesJMSConsumer extends AndesJMSClient
             log.warn("No messages were received");
             return 0D;
         } else {
-            return (this.totalLatency.doubleValue() / 1000) / this.receivedMessageCount.doubleValue();
+            return (this.totalLatency.doubleValue() / 1000D) / this.receivedMessageCount.doubleValue();
         }
     }
 
     @Override
     public AndesJMSConsumerClientConfiguration getConfig() {
-        return this.subscriberConfig;
+        return this.consumerConfig;
     }
 }

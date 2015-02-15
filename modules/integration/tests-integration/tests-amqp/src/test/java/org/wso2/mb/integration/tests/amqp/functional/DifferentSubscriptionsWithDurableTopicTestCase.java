@@ -38,8 +38,8 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableTopicConsumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableTopicConsumerConfig1.setPrintsPerMessageCount(100L);
-        durableTopicConsumerConfig1.setDurable(true, "sub1");
+        durableTopicConsumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableTopicConsumerConfig1.setDurable(true, "diffSub1");
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration durableTopicConsumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
@@ -48,8 +48,8 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableTopicConsumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableTopicConsumerConfig2.setPrintsPerMessageCount(100L);
-        durableTopicConsumerConfig2.setDurable(true, "sub2");
+        durableTopicConsumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableTopicConsumerConfig2.setDurable(true, "diffSub2");
 
 
         // Creating a initial JMS consumer client configuration
@@ -59,7 +59,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         normalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        normalTopicConsumerConfig.setPrintsPerMessageCount(100L);
+        normalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
 
         // Creating a initial JMS consumer client configuration
@@ -69,7 +69,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         normalHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(100L);
+        normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
 
         // Creating a initial JMS consumer client configuration
@@ -79,8 +79,8 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(100L);
-        durableHierarchicalTopicConsumerConfig.setDurable(true, "sub3");
+        durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableHierarchicalTopicConsumerConfig.setDurable(true, "diffSub3");
 
 
         // Creating a initial JMS consumer client configuration
@@ -90,7 +90,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         queueConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        queueConsumerConfig.setPrintsPerMessageCount(100L);
+        queueConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
@@ -155,7 +155,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
                             "Message receive error from durable hierarchical topic subscriber");
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(queueConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
+        Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), 0L,
                             "Message received from queue subscriber. This should not happen");
 
         AndesClientUtilsTemp.sleepForInterval(2000L);
