@@ -44,9 +44,6 @@
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
 
-            <!--Not Working-->
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>-->
-
             <!-- Topic -->
             <!--Working tests-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>

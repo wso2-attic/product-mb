@@ -40,14 +40,14 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
+           <!-- <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>
 
 
 
             <!--Not Working-->
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>
 
 
             <!-- Topic -->

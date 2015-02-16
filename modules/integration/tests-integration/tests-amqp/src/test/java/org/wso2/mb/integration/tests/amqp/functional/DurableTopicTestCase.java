@@ -19,6 +19,7 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -125,5 +126,15 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest{
 
         Assert.assertFalse(receivingSuccess3, "Message received from client 3 when no more messages should be received.");
 
+    }
+
+    /**
+     * Restore MB configurations after execute test
+     *
+     * @throws Exception
+     */
+    @AfterClass
+    public void cleanUp() throws Exception {
+        super.serverManager.restoreToLastConfiguration(true);
     }
 }
