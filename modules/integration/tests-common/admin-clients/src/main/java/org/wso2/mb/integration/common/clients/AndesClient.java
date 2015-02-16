@@ -8,7 +8,6 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AndesClient {
-    private static Logger log = Logger.getLogger(AndesJMSConsumer.class);
+    private static Logger log = Logger.getLogger(AndesClient.class);
     private long startDelay = 0L;
     List<AndesJMSConsumer> consumers = new ArrayList<AndesJMSConsumer>();
     List<AndesJMSPublisher> publishers = new ArrayList<AndesJMSPublisher>();
@@ -53,18 +52,21 @@ public class AndesClient {
     public void startClient() throws NamingException, JMSException, IOException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.startClient();
+            if (this.startDelay > 0L) {
+                AndesClientUtils.sleepForInterval(this.startDelay);
+            }
         }
         for (AndesJMSPublisher publisher : publishers) {
             publisher.startClient();
+            if (this.startDelay > 0L) {
+                AndesClientUtils.sleepForInterval(this.startDelay);
+            }
         }
     }
 
     public void stopClient() throws JMSException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.stopClient();
-            if(this.startDelay > 0L){
-                AndesClientUtils.sleepForInterval(this.startDelay);
-            }
         }
         for (AndesJMSPublisher publisher : publishers) {
             publisher.stopClient();
@@ -169,5 +171,9 @@ public class AndesClient {
 
     public void setStartDelay(long startDelay) {
         this.startDelay = startDelay;
+    }
+
+    public AndesJMSClientConfiguration getConfig() {
+        return this.consumers.get(0).getConfig();
     }
 }

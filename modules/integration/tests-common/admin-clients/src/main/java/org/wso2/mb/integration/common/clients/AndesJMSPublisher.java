@@ -56,12 +56,12 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
     @Override
     public void startClient() throws JMSException, NamingException, IOException {
         //reading message content from file
-        if(null != this.publisherConfig.getReadMessagesFromFilePath()){
+        if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
             this.getMessageContentFromFile();
         }
 
-            Thread subscriberThread = new Thread(this);
-            subscriberThread.start();
+        Thread subscriberThread = new Thread(this);
+        subscriberThread.start();
     }
 
     @Override
@@ -151,15 +151,15 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                     this.sentMessageCount.incrementAndGet();
                     if (0 == this.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount()) {
 
-                        if(null != this.publisherConfig.getReadMessagesFromFilePath()){
-                            log.info("(FROM FILE)" + "[SEND] ThreadID:" +
+                        if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
+                            log.info("[SEND]" + " (FROM FILE) ThreadID:" +
                                      threadID + " DestinationName:" +
                                      this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +
 
                                      this.publisherConfig.getNumberOfMessagesToSend());
-                        }else {
-                            log.info("(INBUILT MESSAGE) " + "[SEND] ThreadID:" +
+                        } else {
+                            log.info("[SEND]" + " (INBUILT MESSAGE) ThreadID:" +
                                      threadID + " DestinationName:" +
                                      this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +

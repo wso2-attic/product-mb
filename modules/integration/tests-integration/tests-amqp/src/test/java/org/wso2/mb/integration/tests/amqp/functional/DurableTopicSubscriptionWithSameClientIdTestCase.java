@@ -18,17 +18,25 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.testng.annotations.AfterClass;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import java.io.File;
+import java.io.IOException;
 
 import static org.testng.Assert.assertEquals;
 
@@ -36,8 +44,15 @@ import static org.testng.Assert.assertEquals;
 /**
  * This class holds test case to verify if shared durable topic subscriptions.
  * Shared durable topic subscriptions has enabled in broker.xml and tested in following test class.
+ *
  */
 public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrationBaseTest {
+
+    /**
+     * Expected amount set to more than what is received as the amount of messages received by the subscribers are unknown but the total should be the same amount as sent
+     */
+    private static final long EXPECTED_COUNT = 500L;
+    private static final long SEND_COUNT = 12L;
 
     /**
      * Prepare environment for durable topic subscription with same client Id tests
@@ -65,70 +80,96 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
 
     /**
-     * Restore MB configurations after execute test
-     *
-     * @throws Exception
-     */
-    @AfterClass
-    public void cleanUp() throws Exception {
-
-        super.serverManager.restoreToLastConfiguration(true);
-
-    }
-
-
-    /**
      * Start 3 durable subscribers. Start publisher which sends 12 messages.
      * Get the total count received by all durable subscribers and compare with sent message count of the publisher.
+     *
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDurableTopicWithSameClientIdTestCase() {
+    public void performDurableTopicWithSameClientIdTestCase()
+            throws AndesClientException, NamingException, JMSException, IOException,
+                   CloneNotSupportedException {
 
-        Integer sendCount = 12;
-        Integer runTime = 20;
-        Integer expectedCount = 500;
 
-        // Start subscription 1
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient1.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setDurable(true, "sameClientIDSub1");
 
-        // Start subscription 2
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient2.startWorking();
 
-        // Start subscription 3
-        AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subClient,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient3.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        // Start message publisher
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-        sendingClient.startWorking();
 
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount, runTime);
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount, runTime);
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount, runTime);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig);
+        consumerClient1.startClient();
 
-        int sendCountInt = (Integer) sendCount;
+        AndesClient consumerClient2 = new AndesClient(consumerConfig);
+        consumerClient2.startClient();
 
-        int receivingCountClient1 = receivingClient1.getReceivedTopicMessagecount();
-        int receivingCountClient2 = receivingClient2.getReceivedTopicMessagecount();
-        int receivingCountClient3 = receivingClient3.getReceivedTopicMessagecount();
+        AndesClient consumerClient3 = new AndesClient(consumerConfig);
+        consumerClient3.startClient();
 
-        int totalReceivingMessageCount = receivingCountClient1 + receivingCountClient2 + receivingCountClient3;
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        assertEquals(sendCountInt, totalReceivingMessageCount,
-                "Message receive count not equal to sent message count.");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed.");
+
+        long totalReceivingMessageCount = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() + consumerClient3.getReceivedMessageCount();
+        Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT, "Message receive count not equal to sent message count.");
+
+
+
+
+//        Integer sendCount = 12;
+//        Integer runTime = 20;
+//        Integer expectedCount = 500;
+//
+//        // Start subscription 1
+//        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//        receivingClient1.startWorking();
+//
+//        // Start subscription 2
+//        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//        receivingClient2.startWorking();
+//
+//        // Start subscription 3
+//        AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//        receivingClient3.startWorking();
+//
+//        // Start message publisher
+//        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//        sendingClient.startWorking();
+//
+//        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount, runTime);
+//        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount, runTime);
+//        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, expectedCount, runTime);
+//
+//        int sendCountInt = (Integer) sendCount;
+//
+//        int receivingCountClient1 = receivingClient1.getReceivedTopicMessagecount();
+//        int receivingCountClient2 = receivingClient2.getReceivedTopicMessagecount();
+//        int receivingCountClient3 = receivingClient3.getReceivedTopicMessagecount();
+//
+//        int totalReceivingMessageCount = receivingCountClient1 + receivingCountClient2 + receivingCountClient3;
+//
+//        assertEquals(sendCountInt,totalReceivingMessageCount,
+//                "Message receive count not equal to sent message count.");
 
 
     }

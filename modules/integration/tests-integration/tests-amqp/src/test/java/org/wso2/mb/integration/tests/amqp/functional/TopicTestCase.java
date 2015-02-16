@@ -115,34 +115,34 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         // Amount of message to receive
         adminConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         // Prints per message
-        adminConsumerConfig.setPrintsPerMessageCount(100L);
+        adminConsumerConfig.setPrintsPerMessageCount(expectedCount/10L);
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig = new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.TOPIC, "testtenant1.com/commontopic");
         // Amount of message to receive
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         // Prints per message
-        tenant1ConsumerConfig.setPrintsPerMessageCount(100L);
+        tenant1ConsumerConfig.setPrintsPerMessageCount(expectedCount/10L);
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig = new AndesJMSConsumerClientConfiguration("tenant2user1!testtenant2.com", "tenant2user1", "127.0.0.1", 5672, ExchangeType.TOPIC, "testtenant2.com/commontopic");
         // Amount of message to receive
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         // Prints per message
-        tenant2ConsumerConfig.setPrintsPerMessageCount(100L);
+        tenant2ConsumerConfig.setPrintsPerMessageCount(expectedCount/10L);
 
 
         AndesJMSPublisherClientConfiguration adminPublisherConfig = new AndesJMSPublisherClientConfiguration("admin", "admin", "127.0.0.1", 5672, ExchangeType.TOPIC, "commontopic");
-        adminPublisherConfig.setPrintsPerMessageCount(100L);
         adminPublisherConfig.setNumberOfMessagesToSend(sendCount);
+        adminPublisherConfig.setPrintsPerMessageCount(sendCount/10L);
 
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig = new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.TOPIC, "testtenant1.com/commontopic");
-        tenant1PublisherConfig.setPrintsPerMessageCount(100L);
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendCount);
+        tenant1PublisherConfig.setPrintsPerMessageCount(sendCount/10L);
 
         AndesJMSPublisherClientConfiguration tenant2PublisherConfig = new AndesJMSPublisherClientConfiguration("tenant2user1!testtenant2.com", "tenant2user1", "127.0.0.1", 5672, ExchangeType.TOPIC, "testtenant2.com/commontopic");
-        tenant2PublisherConfig.setPrintsPerMessageCount(100L);
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendCount);
+        tenant2PublisherConfig.setPrintsPerMessageCount(sendCount/10L);
 
 
         AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig);

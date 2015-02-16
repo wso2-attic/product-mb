@@ -275,7 +275,7 @@ class AndesJMSConsumer extends AndesJMSClient
                     redelivery = "ORIGINAL";
                 }
                 if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
-                    log.info("[DESTINATION RECEIVE] ThreadID:" + threadID + " Destination:" +
+                    log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" +
                              this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
                              this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
