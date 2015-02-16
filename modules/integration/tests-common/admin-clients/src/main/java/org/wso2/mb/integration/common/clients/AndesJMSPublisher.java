@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
 import javax.jms.Connection;
@@ -133,6 +134,34 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                 }
 
                 if (null != message) {
+                    if (null != this.publisherConfig.getMessageHeader()) {
+                        JMSMessageHeader messageHeader = this.publisherConfig.getMessageHeader();
+                        if (null != messageHeader.getJmsCorrelationID()) {
+                            message.setJMSCorrelationID(messageHeader.getJmsCorrelationID());
+                        }
+                        if (0 != messageHeader.getJmsDeliveryMode()) {
+                            message.setJMSDeliveryMode(messageHeader.getJmsDeliveryMode());
+                        }
+                        if (0L != messageHeader.getJmsExpiration()) {
+                            message.setJMSExpiration(messageHeader.getJmsExpiration());
+                        }
+                        if (null != messageHeader.getJmsMessageID()) {
+                            message.setJMSMessageID(messageHeader.getJmsMessageID());
+                        }
+                        if (0 != messageHeader.getJmsPriority()) {
+                            message.setJMSPriority(messageHeader.getJmsPriority());
+                        }
+                        if (messageHeader.isJmsRedelivered()) {
+                            message.setJMSRedelivered(messageHeader.isJmsRedelivered());
+                        }
+                        if (0L != messageHeader.getJmsTimestamp()) {
+                            message.setJMSTimestamp(messageHeader.getJmsTimestamp());
+                        }
+                        if (null != messageHeader.getJmsType()) {
+                            message.setJMSType(messageHeader.getJmsType());
+                        }
+                    }
+
                     synchronized (this.sentMessageCount.getClass()) {
                         if (this.sentMessageCount.get() >= this.publisherConfig.getNumberOfMessagesToSend()) {
                             break;
@@ -153,15 +182,14 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
 
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +
-                                     threadID + " DestinationName:" +
-                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
+                                     threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
+                                     "." + this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +
-
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         } else {
                             log.info("[SEND]" + " (INBUILT MESSAGE) ThreadID:" +
-                                     threadID + " DestinationName:" +
-                                     this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
+                                     threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
+                                     "." + this.publisherConfig.getDestinationName() + " TotalMessageCount:" +
                                      this.sentMessageCount.get() + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }

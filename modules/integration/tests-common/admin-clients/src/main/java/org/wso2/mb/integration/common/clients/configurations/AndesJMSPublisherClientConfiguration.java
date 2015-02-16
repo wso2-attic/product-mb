@@ -2,8 +2,10 @@ package org.wso2.mb.integration.common.clients.configurations;
 
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
+import javax.jms.Message;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -12,6 +14,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     private JMSMessageType jmsMessageType = JMSMessageType.TEXT;
     private long numberOfMessagesToSend = 10L;
     private long jmsMessageExpiryTime = 0L;
+    private JMSMessageHeader messageHeader = null;
 
     public AndesJMSPublisherClientConfiguration() {
         super();
@@ -26,6 +29,12 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(connectionString, exchangeType, destinationName);
+    }
+
+    public AndesJMSPublisherClientConfiguration(String hostName, int port,
+                                                ExchangeType exchangeType,
+                                                String destinationName) {
+        super(hostName, port, exchangeType, destinationName);
     }
 
     public AndesJMSPublisherClientConfiguration(String userName, String password,
@@ -89,6 +98,14 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
         }else{
             throw new AndesClientException("Message expiry time cannot be less than 0");
         }
+    }
+
+    public JMSMessageHeader getMessageHeader() {
+        return messageHeader;
+    }
+
+    public void setMessageHeader(JMSMessageHeader messageHeader) {
+        this.messageHeader = messageHeader;
     }
 
     @Override

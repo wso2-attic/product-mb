@@ -18,18 +18,39 @@
 
 package org.wso2.mb.integration.tests.jms.selectors;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.andes.client.message.JMSTextMessage;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesClientTemp;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.JMSTestConstants;
+
+import javax.jms.DeliveryMode;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import javax.naming.NamingException;
+
+import java.io.IOException;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class SelectorsTestCase extends MBIntegrationBaseTest {
+    private static final long SEND_COUNT = 10L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
@@ -41,85 +62,214 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * 3. Verify that 0 messages received by receiver
      */
     @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
-    public void performQueueSendWithoutConformingMsgTestCase() {
+    public void performQueueSendWithReceiverHavingSelectorsButNoModifiedPublisherSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                                                      JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(),
-                                                      "0", "1", "listener=true,ackMode=1,delayBetweenMsg=" +
-                                                                JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES +
-                                                                ",stopAfter=" + 0 + ",jMSSelector=JMSType='AAA'", "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("JMSType='AAA'");
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                                                    JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(),
-                                                    JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT.toString(), "1",
-                                                    "ackMode=1,delayBetweenMsg=" +
-                                                    JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES + ",stopAfter=" +
-                                                    JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT, "");
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 0, 20);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), 0, "Message receiving failed.");
 
-        boolean sendSuccess =
-                AndesClientUtils.getIfPublisherIsSuccess(sendingClient, JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT);
 
-        assertTrue(receiveSuccess, "Message receiving failed");
-        assertTrue(sendSuccess, "Message sending failed.");
+
+//        AndesClient receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
+//                                                      JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(),
+//                                                      "0", "1", "listener=true,ackMode=1,delayBetweenMsg=" +
+//                                                                JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES +
+//                                                                ",stopAfter=" + 0 + ",jMSSelector=JMSType='AAA'", "");
+//
+//        receivingClient.startWorking();
+//
+//        AndesClient sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
+//                                                    JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(),
+//                                                    JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT.toString(), "1",
+//                                                    "ackMode=1,delayBetweenMsg=" +
+//                                                    JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES + ",stopAfter=" +
+//                                                    JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 0, 20);
+//
+//        boolean sendSuccess =
+//                AndesClientUtils.getIfPublisherIsSuccess(sendingClient, JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT);
+//
+//        assertTrue(receiveSuccess, "Message receiving failed");
+//        assertTrue(sendSuccess, "Message sending failed.");
     }
 
-    /**
-     * 1. Subscribe to a queue without selectors.
-     * 2. Send messages without jms type as configured
-     * 3. Send messages without jms type
-     * 3. Verify that all the messages received by receiver
-     */
-    @Test(groups = "wso2.mb", description = "send-receive test case without selectors")
-    public void performQueueSendWithoutSelectorsTestCase() {
+    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+    public void performQueueSendWithModifiedPublisherSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
 
-        Integer messageCount = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT;
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("JMSType='AAA'");
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                                                      JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(),
-                                                      ((Integer) (2 *
-                                                                  JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT))
-                                                              .toString(), "1",
-                                                      "listener=true,ackMode=1,delayBetweenMsg=" +
-                                                      JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES + ",stopAfter=" +
-                                                      2 * JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT, "");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
+        jmsMessageHeader.setJmsType("AAA");
+        publisherConfig.setMessageHeader(jmsMessageHeader);
 
-        receivingClient.startWorking();
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                                                     JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(),
-                                                     JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT.toString(), "1",
-                                                     "ackMode=1,delayBetweenMsg=" +
-                                                     JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES + ",stopAfter=" +
-                                                     JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT +
-                                                     ",setJMSType=AAA", "");
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        sendingClient1.startWorking();
-
-        AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                                                     JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(),
-                                                     JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT.toString(), "1",
-                                                     "ackMode=1,delayBetweenMsg=" +
-                                                     JMSTestConstants.STANDARD_DELAY_BETWEEN_MESSAGES + ",stopAfter=" +
-                                                     JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT, "");
-
-        sendingClient2.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 2 * messageCount, 20);
-
-        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCount);
-        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCount);
-
-        //Sending messages with configured jmsType
-        assertTrue(receiveSuccess, "Message receiving failed");
-        //Sending message without jmsType
-        assertTrue(sendSuccess1, "Message sending failed in Sender1");
-        //receiving both sender's messages
-        assertTrue(sendSuccess2, "Message sending failed in Sender2");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
     }
+
+    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+    public void performQueueSendWithTimestampBasedSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("JMSTimestamp > " + Long.toString(System.currentTimeMillis() + 1000L));
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setRunningDelay(300L);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertTrue(consumerClient.getReceivedMessageCount() < EXPECTED_COUNT, "Message receiving failed.");
+    }
+
+    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+    public void performQueueReceiverPriorityBasedSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("JMSPriority=9");
+
+        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
+        jmsMessageHeader.setJmsPriority(9);
+        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+
+        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT/2L);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        initialPublisherClient.startClient();
+
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        secondaryPublisherClient.startClient();
+
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT/2L, "Message receiving failed.");
+
+    }
+
+    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+    public void performQueueReceiverDeliverTypeBasedSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("JMSDeliveryMode='NON_PERSISTENT'");
+
+        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
+        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+
+        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT/2L);
+        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.PERSISTENT);
+        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        initialPublisherClient.startClient();
+
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        secondaryPublisherClient.startClient();
+
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT/2L, "Message receiving failed.");
+
+    }
+
+//    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+//    public void performQueueReceiverDeliverTypeAndPriorityBasedSelectors()
+//            throws AndesClientException, NamingException, JMSException, IOException {
+//
+//        // Creating a initial JMS consumer client configuration
+//        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+//        // Amount of message to receive
+//        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+//        consumerConfig.setSelectors("JMSDeliveryMode = 2");
+//
+//        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+//        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+//        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
+//        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.NON_PERSISTENT);
+//        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+//
+//        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+//        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT/2L);
+//        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.PERSISTENT);
+//        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+//
+//        AndesClient consumerClient = new AndesClient(consumerConfig);
+//        consumerClient.startClient();
+//
+//        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+//        initialPublisherClient.startClient();
+//
+//        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+//        secondaryPublisherClient.startClient();
+//
+//        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+//        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+//        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
+//        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT/2L, "Message receiving failed.");
+//
+//    }
 }

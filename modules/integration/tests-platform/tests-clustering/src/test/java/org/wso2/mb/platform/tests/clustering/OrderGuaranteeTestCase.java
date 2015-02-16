@@ -26,8 +26,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
 /**
@@ -59,49 +63,84 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Same node ordered delivery test case")
     public void testSameNodeOrderedDelivery() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 1000;
+        long expectedCount = 1000L;
         // Number of messages send
-        int sendCount = 1000;
+        long sendCount = 1000L;
 
         String brokerUrl = getRandomAMQPBrokerUrl();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-                                                      "100", "false",
-                                                      String.valueOf(maxRunningTime),
-                                                      String.valueOf(expectedCount),
-                                                      "1",
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
-        receivingClient.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerUrl, ExchangeType.QUEUE, "singleQueueOrder1");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:singleQueue1", "100",
-                                                    "false",
-                                                    String.valueOf(maxRunningTime),
-                                                    String.valueOf(sendCount), "1",
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
-        sendingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerUrl, ExchangeType.QUEUE, "singleQueueOrder1");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed.");
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
-                          "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                            "All messages are not received.");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
-                          "Messages did not receive in order.");
-        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
-                "Messages are not duplicated.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
+
+
+
+
+//        // Max number of seconds to run the client
+//        int maxRunningTime = 20;
+//        // Expected message count
+//        int expectedCount = 1000;
+//        // Number of messages send
+//        int sendCount = 1000;
+//
+//        String brokerUrl = getRandomAMQPBrokerUrl();
+//
+//        AndesClient receivingClient = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
+//                                                      "100", "false",
+//                                                      String.valueOf(maxRunningTime),
+//                                                      String.valueOf(expectedCount),
+//                                                      "1",
+//                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
+//                                                      "stopAfter=" + expectedCount,
+//                                                      "");
+//        receivingClient.startWorking();
+//
+//        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:singleQueue1", "100",
+//                                                    "false",
+//                                                    String.valueOf(maxRunningTime),
+//                                                    String.valueOf(sendCount), "1",
+//                                                    "ackMode=1,delayBetweenMsg=0," +
+//                                                    "stopAfter=" + sendCount,
+//                                                    "");
+//        sendingClient.startWorking();
+//
+//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
+//                                                                        expectedCount,
+//                                                                        maxRunningTime),
+//                          "Message receiving failed.");
+//
+//        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
+//                          "Message sending failed.");
+//
+//        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
+//                            "All messages are not received.");
+//
+//        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
+//                          "Messages did not receive in order.");
+//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+//                "Messages are not duplicated.");
     }
 
     /**
@@ -112,49 +151,81 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Different node ordered delivery test case")
     public void testDifferentNodeOrderedDelivery() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 1000;
+        long expectedCount = 1000L;
         // Number of messages send
-        int sendCount = 1000;
+        long sendCount = 1000L;
 
-        AndesClient receivingClient = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                      "queue:singleQueue2",
-                                                      "100", "false",
-                                                      String.valueOf(maxRunningTime),
-                                                      String.valueOf(expectedCount),
-                                                      "1",
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
-        receivingClient.startWorking();
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueueOrder2");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        AndesClient sendingClient = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                    "queue:singleQueue2", "100",
-                                                    "false",
-                                                    String.valueOf(maxRunningTime),
-                                                    String.valueOf(sendCount), "1",
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
-        sendingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueueOrder2");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed.");
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
-                          "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                            "All messages are not received.");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
-                          "Messages did not receive in order.");
-        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
-                "Messages are not duplicated.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
+
+
+
+//        // Max number of seconds to run the client
+//        int maxRunningTime = 20;
+//        // Expected message count
+//        int expectedCount = 1000;
+//        // Number of messages send
+//        int sendCount = 1000;
+//
+//        AndesClient receivingClient = new AndesClient("receive", getRandomAMQPBrokerUrl(),
+//                                                      "queue:singleQueue2",
+//                                                      "100", "false",
+//                                                      String.valueOf(maxRunningTime),
+//                                                      String.valueOf(expectedCount),
+//                                                      "1",
+//                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
+//                                                      "stopAfter=" + expectedCount,
+//                                                      "");
+//        receivingClient.startWorking();
+//
+//        AndesClient sendingClient = new AndesClient("send", getRandomAMQPBrokerUrl(),
+//                                                    "queue:singleQueue2", "100",
+//                                                    "false",
+//                                                    String.valueOf(maxRunningTime),
+//                                                    String.valueOf(sendCount), "1",
+//                                                    "ackMode=1,delayBetweenMsg=0," +
+//                                                    "stopAfter=" + sendCount,
+//                                                    "");
+//        sendingClient.startWorking();
+//
+//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
+//                                                                        expectedCount,
+//                                                                        maxRunningTime),
+//                          "Message receiving failed.");
+//
+//        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
+//                          "Message sending failed.");
+//
+//        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
+//                            "All messages are not received.");
+//
+//        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
+//                          "Messages did not receive in order.");
+//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+//                "Messages are not duplicated.");
     }
 
     /**

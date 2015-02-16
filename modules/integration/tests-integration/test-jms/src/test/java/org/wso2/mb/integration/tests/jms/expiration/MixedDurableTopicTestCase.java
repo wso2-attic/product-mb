@@ -22,8 +22,17 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.tests.JMSTestConstants;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 
 /***
  * Unit tests to ensure jms expiration works as expected with durable topics.
@@ -46,57 +55,111 @@ public class MixedDurableTopicTestCase {
      * 6. Pass test case if and only if 600 messages in total have been received.
      */
     @Test(groups="wso2.mb", description = "Single durable topic send-receive test case with jms expiration")
-    public void performDurableTopicTestCase() {
+    public void performDurableTopicTestCase()
+            throws AndesClientException, NamingException, JMSException, IOException,
+                   CloneNotSupportedException {
 
         //Calculate 50% of the message count without expiry
-        Integer expectedMessageCountFromOneSubscriberSession = (JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY / 100))/2;
-        Integer messageCountWithExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITH_EXPIRY/2);
-        Integer messageCountWithoutExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY/2);
+        long expectedMessageCountFromOneSubscriberSession = (JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY / 100))/2;
+        long messageCountWithExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITH_EXPIRY/2);
+        long messageCountWithoutExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY/2);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,stopAfter="+expectedMessageCountFromOneSubscriberSession.toString(), "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "jmsSingleDurableTopic");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedMessageCountFromOneSubscriberSession);
+        // Prints per message
+        consumerConfig.setPrintsPerMessageCount(expectedMessageCountFromOneSubscriberSession/10L);
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "jmsSingleDurableTopic");
+        publisherConfigWithoutExpiration.setPrintsPerMessageCount(messageCountWithoutExpiration / 10L);
+        publisherConfigWithoutExpiration.setNumberOfMessagesToSend(messageCountWithoutExpiration);
 
-        AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false"
-                , JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(), messageCountWithoutExpiration.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+messageCountWithoutExpiration.toString(), "");
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "jmsSingleDurableTopic");
+        publisherConfigWithExpiration.setPrintsPerMessageCount(messageCountWithExpiration / 10L);
+        publisherConfigWithExpiration.setNumberOfMessagesToSend(messageCountWithExpiration);
+        publisherConfigWithExpiration.setJMSMessageExpiryTime(100L);
 
-        sendingClient1.startWorking();
 
-        AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
-                JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(), messageCountWithExpiration.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter="+messageCountWithExpiration +",jmsExpiration="+ JMSTestConstants.SAMPLE_JMS_EXPIRATION, "");
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig);
+        initialConsumerClient.startClient();
 
-        sendingClient2.startWorking();
+        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration);
+        publisherClientWithoutExpiration.startClient();
 
-        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedMessageCountFromOneSubscriberSession , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
+        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
+        publisherClientWithExpiration.startClient();
 
-        boolean sendingSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCountWithoutExpiration);
-        boolean sendingSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCountWithExpiration);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        //we just closed the subscription. Rest of messages should be delivered now.
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig.clone());
+        secondaryConsumerClient.startClient();
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedMessageCountFromOneSubscriberSession+",stopAfter="+expectedMessageCountFromOneSubscriberSession, "");
-        receivingClient2.startWorking();
+        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig.clone());
+        tertiaryConsumerClient.startClient();
 
-        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedMessageCountFromOneSubscriberSession , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        //now we have unsubscribed the topic subscriber no more messages should be received
-        AndesClientUtils.sleepForInterval(2000);
+        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), messageCountWithoutExpiration, "Message send failed");
+        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), messageCountWithExpiration, "Message send failed");
 
-        AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedMessageCountFromOneSubscriberSession+",stopAfter="+expectedMessageCountFromOneSubscriberSession, "");
-        receivingClient3.startWorking();
+        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), expectedMessageCountFromOneSubscriberSession, "Message receiving failed.");
+        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), expectedMessageCountFromOneSubscriberSession, "Message receiving failed.");
+        Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), 0L, "Message receiving failed.");
 
-        boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, 0 , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
 
-        Assert.assertEquals((sendingSuccess1 && sendingSuccess2 && receivingSuccess1 && receivingSuccess2 && !receivingSuccess3), true);
+
+
+
+
+
+
+//        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,stopAfter="+expectedMessageCountFromOneSubscriberSession.toString(), "");
+//
+//        receivingClient.startWorking();
+//
+//        AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false"
+//                , JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(), messageCountWithoutExpiration.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter="+messageCountWithoutExpiration.toString(), "");
+//
+//        sendingClient1.startWorking();
+//
+//        AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
+//                JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(), messageCountWithExpiration.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter="+messageCountWithExpiration +",jmsExpiration="+ JMSTestConstants.SAMPLE_JMS_EXPIRATION, "");
+//
+//        sendingClient2.startWorking();
+//
+//        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedMessageCountFromOneSubscriberSession , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
+//
+//        boolean sendingSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCountWithoutExpiration);
+//        boolean sendingSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCountWithExpiration);
+//
+//        //we just closed the subscription. Rest of messages should be delivered now.
+//
+//        AndesClientUtils.sleepForInterval(2000);
+//
+//        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedMessageCountFromOneSubscriberSession+",stopAfter="+expectedMessageCountFromOneSubscriberSession, "");
+//        receivingClient2.startWorking();
+//
+//        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedMessageCountFromOneSubscriberSession , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
+//
+//        //now we have unsubscribed the topic subscriber no more messages should be received
+//        AndesClientUtils.sleepForInterval(2000);
+//
+//        AndesClient receivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
+//                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(), expectedMessageCountFromOneSubscriberSession.toString(),
+//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0,unsubscribeAfter="+expectedMessageCountFromOneSubscriberSession+",stopAfter="+expectedMessageCountFromOneSubscriberSession, "");
+//        receivingClient3.startWorking();
+//
+//        boolean receivingSuccess3 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3, 0 , JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
+//
+//        Assert.assertEquals((sendingSuccess1 && sendingSuccess2 && receivingSuccess1 && receivingSuccess2 && !receivingSuccess3), true);
     }
 }

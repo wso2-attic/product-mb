@@ -63,7 +63,12 @@ class AndesJMSConsumer extends AndesJMSClient
             Queue queue = (Queue) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
             connection = queueConnection;
             session = queueSession;
-            receiver = queueSession.createReceiver(queue);
+
+            if (null != this.consumerConfig.getSelectors()) {
+                receiver = queueSession.createReceiver(queue, this.consumerConfig.getSelectors());
+            }else{
+                receiver = queueSession.createReceiver(queue);
+            }
         } else if (this.consumerConfig.getExchangeType() == ExchangeType.TOPIC) {
             TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
             TopicConnection topicConnection = connFactory.createTopicConnection();
@@ -82,9 +87,17 @@ class AndesJMSConsumer extends AndesJMSClient
             connection = topicConnection;
             session = topicSession;
             if (this.consumerConfig.isDurable()) {
-                receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID());
+                if (null != this.consumerConfig.getSelectors()) {
+                    receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID(), this.consumerConfig.getSelectors(), false);
+                } else {
+                    receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID());
+                }
             } else {
-                receiver = topicSession.createSubscriber(topic);
+                if (null != this.consumerConfig.getSelectors()) {
+                    receiver = topicSession.createSubscriber(topic, this.consumerConfig.getSelectors(), false);
+                } else {
+                    receiver = topicSession.createSubscriber(topic);
+                }
             }
         }
     }
@@ -275,8 +288,8 @@ class AndesJMSConsumer extends AndesJMSClient
                     redelivery = "ORIGINAL";
                 }
                 if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
-                    log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" +
-                             this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
+                    log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" + this.consumerConfig.getExchangeType().getType()
+                             + "." + this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
                              this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
 

@@ -18,16 +18,26 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -37,13 +47,16 @@ import static org.testng.Assert.assertEquals;
  */
 public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
 
-    private Integer sendCount = 100000;
-    private Integer runTime = 30 * 15; // 15 minutes
-    private Integer noOfSubscribers = 50;
-    private Integer noOfPublishers = 50;
+    private  static final long sendCount = 100000L;
+    private  static final long expectedCount = sendCount;
+    private static final int noOfSubscribers = 50;
+    private static final int noOfPublishers = 50;
+    private  static final long  noOfMessagesToReceiveByClosingSubscribers = 10;
+    private  static final int noOfSubscribersToClose = noOfSubscribers / 10;
+    private  static final long  noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
+    private  static final int noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
 
-    // Greater than send count to see if more than the sent amount is received
-    private Integer expectedCount = sendCount;
+
 
     /**
      * Initialize the test as super tenant user.
@@ -62,72 +75,135 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "50 subscriptions for a queue and 50 publishers. Then close " +
             "10% of the subscribers ", enabled = true)
-    public void performMillionMessageTenPercentSubscriberCloseTestCase() throws XPathExpressionException {
-        Integer noOfMessagesToReceiveByClosingSubscribers = 10;
-        Integer noOfSubscribersToClose = noOfSubscribers / 10;
-        Integer noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
-        Integer noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
-        Integer runTimeForClosingSubscribers = 10; // 10 seconds
-
-        String queueNameArg = "queue:TenPercentSubscriberCloseQueue";
+    public void performMillionMessageTenPercentSubscriberCloseTestCase()
+            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+                   IOException {
+        long noOfReturnMessages = sendCount / 10;
+        int noOfClientAckSubscribers = noOfSubscribers / 10;
+        int noOfAutoAckSubscribers = noOfSubscribers - noOfClientAckSubscribers;
 
         String randomInstanceKeyForReceiver = getRandomMBInstance();
 
         AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
 
-        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
-                tempContextForReceiver.getInstance().getPorts().get("amqp");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.QUEUE, "TenPercentSubscriberCloseQueue");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(noOfMessagesToExpect);
+        consumerConfig.setPrintsPerMessageCount(noOfMessagesToExpect / 10L);
 
-        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
-                "100", "false", runTime.toString(), noOfMessagesToExpect.toString(),
-                noOfNonClosingSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerClosingConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
+                                                                                                           Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
+                                                                                                           ExchangeType.QUEUE, "TenPercentSubscriberCloseQueue");
+        // Amount of message to receive
+        consumerClosingConfig.setMaximumMessagesToReceived(noOfMessagesToReceiveByClosingSubscribers);
+        consumerClosingConfig.setPrintsPerMessageCount(noOfMessagesToReceiveByClosingSubscribers / 10L);
 
-        AndesClient receivingClosingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
-                "100", "false", runTime.toString(), noOfMessagesToReceiveByClosingSubscribers.toString(),
-                noOfSubscribersToClose.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
 
-        receivingClient.startWorking();
-        receivingClosingClient.startWorking();
-
-        List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
-        List<QueueMessageReceiver> queueClosingListeners = receivingClosingClient.getQueueListeners();
-
-        log.info("Number of Subscriber ["+queueListeners.size()+"]");
-        log.info("Number of Closing Subscriber ["+queueClosingListeners.size()+"]");
 
         String randomInstanceKeyForSender = getRandomMBInstance();
-
         AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContextForSender.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(tempContextForSender.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.QUEUE, "TenPercentSubscriberCloseQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
-                tempContextForSender.getInstance().getPorts().get("amqp");
+        AndesClient consumerClient = new AndesClient(consumerConfig, noOfNonClosingSubscribers);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
-                runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient consumerClosingClient = new AndesClient(consumerClosingConfig, noOfSubscribersToClose);
+        consumerClosingClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClient publisherClient = new AndesClient(publisherConfig, noOfPublishers);
+        publisherClient.startClient();
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue", noOfMessagesToExpect,
-                runTime);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClosingClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+        log.info("Total Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
 
-        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient, "MillionTenPercentSubscriberCloseQueue",
-                noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);
+        long totalReceivedMessages = consumerClient.getReceivedMessageCount() + consumerClosingClient.getReceivedMessageCount();
 
-        receivingClosingClient.shutDownClient();
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(totalReceivedMessages, expectedCount, "Message receiving failed.");
 
-        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
-                .getReceivedqueueMessagecount();
 
-        log.info("Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]");
-        log.info("Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]");
-        log.info("Total Received Messages ["+actualReceivedCount+"]");
 
-        assertEquals(actualReceivedCount, sendCount);
-        assertEquals(actualReceivedCount, expectedCount);
+
+
+
+
+
+
+//        Integer noOfMessagesToReceiveByClosingSubscribers = 10;
+//        Integer noOfSubscribersToClose = noOfSubscribers / 10;
+//        Integer noOfMessagesToExpect = expectedCount - noOfMessagesToReceiveByClosingSubscribers;
+//        Integer noOfNonClosingSubscribers = noOfSubscribers - noOfSubscribersToClose;
+//        Integer runTimeForClosingSubscribers = 10; // 10 seconds
+//
+//        String queueNameArg = "queue:TenPercentSubscriberCloseQueue";
+//
+//        String randomInstanceKeyForReceiver = getRandomMBInstance();
+//
+//        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
+//
+//        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
+//                tempContextForReceiver.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
+//                "100", "false", runTime.toString(), noOfMessagesToExpect.toString(),
+//                noOfNonClosingSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//
+//        AndesClient receivingClosingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
+//                "100", "false", runTime.toString(), noOfMessagesToReceiveByClosingSubscribers.toString(),
+//                noOfSubscribersToClose.toString(), "listener=true,ackMode=1,delayBetweenMsg=0," +
+//                "stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//        receivingClosingClient.startWorking();
+//
+//        List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
+//        List<QueueMessageReceiver> queueClosingListeners = receivingClosingClient.getQueueListeners();
+//
+//        log.info("Number of Subscriber ["+queueListeners.size()+"]");
+//        log.info("Number of Closing Subscriber ["+queueClosingListeners.size()+"]");
+//
+//        String randomInstanceKeyForSender = getRandomMBInstance();
+//
+//        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+//
+//        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
+//                tempContextForSender.getInstance().getPorts().get("amqp");
+//
+//        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
+//                runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentSubscriberCloseQueue", noOfMessagesToExpect,
+//                runTime);
+//
+//        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingClosingClient, "MillionTenPercentSubscriberCloseQueue",
+//                noOfMessagesToReceiveByClosingSubscribers, runTimeForClosingSubscribers);
+//
+//        receivingClosingClient.shutDownClient();
+//
+//        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingClosingClient
+//                .getReceivedqueueMessagecount();
+//
+//        log.info("Total Non Closing Subscribers Received Messages ["+receivingClient.getReceivedqueueMessagecount()+"]");
+//        log.info("Total Closing Subscribers Received Messages ["+receivingClosingClient.getReceivedqueueMessagecount()+"]");
+//        log.info("Total Received Messages ["+actualReceivedCount+"]");
+//
+//        assertEquals(actualReceivedCount, sendCount);
+//        assertEquals(actualReceivedCount, expectedCount);
     }
 }

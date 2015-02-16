@@ -21,6 +21,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     private boolean durable = false;
     private JMSAcknowledgeMode acknowledgeMode = JMSAcknowledgeMode.AUTO_ACKNOWLEDGE;
     private boolean async = true;
+    private String selectors = null;
 
     public AndesJMSConsumerClientConfiguration() {
         super();
@@ -35,6 +36,12 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
                                                ExchangeType exchangeType,
                                                String destinationName) {
         super(connectionString, exchangeType, destinationName);
+    }
+
+    public AndesJMSConsumerClientConfiguration(String hostName, int port,
+                                                ExchangeType exchangeType,
+                                                String destinationName) {
+        super(hostName, port, exchangeType, destinationName);
     }
 
     public AndesJMSConsumerClientConfiguration(String userName, String password,
@@ -184,6 +191,14 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
 
     public void setAsync(boolean async) {
         this.async = async;
+    }
+
+    public String getSelectors() {
+        return selectors;
+    }
+
+    public void setSelectors(String selectors) {
+        this.selectors = selectors;
     }
 
     @Override

@@ -28,14 +28,19 @@ import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.topic.BasicTopicSubscriber;
 import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
  *
@@ -279,7 +284,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Create all kinds of subscriptions for same " +
             "topic/queue name", enabled = true)
-    public void allKindOfSubscriptionsTest() throws JMSException, NamingException, XPathExpressionException {
+    public void allKindOfSubscriptionsTest()
+            throws JMSException, NamingException, XPathExpressionException, AndesClientException {
 
         String topicName = "wso2";
         String queueName = "wso2";
@@ -310,17 +316,20 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             String randomInstanceKey = getRandomMBInstance();
             AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-            String hostInfo = tempContext.getInstance().getHosts().get("default") + ":" +
-                    tempContext.getInstance().getPorts().get("amqp");
+            // Creating a initial JMS consumer client configuration
+            AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                                                                                                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+                                                                                                         ExchangeType.QUEUE, queueName);
+            // Amount of message to receive
+            consumerConfig.setMaximumMessagesToReceived(expectedCount);
+            consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-            receivingClient = new AndesClient("receive", hostInfo
-                    , "queue:" + queueName,
-                    "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-            receivingClient.startWorking();
+            receivingClient = new AndesClient(consumerConfig);
+            receivingClient.startClient();
 
 
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (null != durableTopicsub1) {
                 durableTopicsub1.unsubscribe(subID1);
@@ -332,7 +341,7 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
                 nonDurableTopicsub.close();
             }
             if (null != receivingClient) {
-                receivingClient.shutDownClient();
+                receivingClient.stopClient();
             }
 
         }

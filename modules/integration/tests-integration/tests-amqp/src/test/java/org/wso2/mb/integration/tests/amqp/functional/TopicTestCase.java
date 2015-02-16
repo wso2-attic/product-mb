@@ -74,7 +74,7 @@ public class TopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message send failed");
 
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "TENANT 1 receive failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
 
 

@@ -64,6 +64,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = config.getRunningDelay();
     }
 
+    public AndesJMSClientConfiguration(String hostName, int port, ExchangeType exchangeType,
+                                       String destinationName) {
+        this("admin", "admin", hostName, port, exchangeType, destinationName);
+    }
+
     private void createConnectionString() {
         this.connectionString = "amqp://" + this.userName + ":" + this.password + "@" + AndesClientConstants.CARBON_CLIENT_ID +
                                 "/" + AndesClientConstants.CARBON_VIRTUAL_HOST_NAME + "?brokerlist='tcp://" +

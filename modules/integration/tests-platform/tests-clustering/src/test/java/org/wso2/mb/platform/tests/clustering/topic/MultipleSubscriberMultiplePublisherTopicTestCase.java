@@ -25,11 +25,23 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+
+import java.io.IOException;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -69,54 +81,107 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      */
     @Test(groups = "wso2.mb", description = "Single node single publisher two subscribers test " +
             "case" , enabled = true)
-    public void testMultipleSubscribers() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
+    public void testMultipleSubscribers()
+            throws AndesClientException, XPathExpressionException, NamingException, JMSException,
+                   IOException, TopicManagerAdminServiceEventAdminExceptionException {
+        long sendCount = 2000L;
+        long expectedCount = 2000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient1 = new AndesClient("receive", hostinfo
-                , "topic:mulSubTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, "mulSubTopic1");
+        // Amount of message to receive
+        initialConsumerConfig.setMaximumMessagesToReceived(expectedCount);
+        initialConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient1.startWorking();
 
-        AndesClient receivingClient2 = new AndesClient
-                ("receive", hostinfo
-                , "topic:mulSubTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration secondaryConsumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, "mulSubTopic1");
+        // Amount of message to receive
+        secondaryConsumerConfig.setMaximumMessagesToReceived(expectedCount);
+        secondaryConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient2.startWorking();
+
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, "mulSubTopic1");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig);
+        initialConsumerClient.startClient();
+
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        secondaryConsumerClient.startClient();
 
         TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic1");
-
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic1"), "Topic created in MB node 1 not exist");
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:mulSubTopic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccessInClient1 = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient1, expectedCount, runTime);
-        boolean receiveSuccessInClient2 = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient1, expectedCount, runTime);
-        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
-        Assert.assertTrue(receiveSuccessInClient1, "Did not receive all the messages by the " +
-                "receiving client 1");
-        Assert.assertTrue(receiveSuccessInClient2, "Did not receive all the messages by the " +
-                "receiving client 2");
-        Assert.assertTrue(sendSuccess,"Message sending failed");
+
+
+
+//        // Max number of seconds to run the client
+//        Integer runTime = 80;
+//        // Expected message count
+//        Integer expectedCount = 2000;
+//        // Number of messages send
+//        Integer sendCount = 2000;
+//
+//        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
+//                automationContext1.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient1 = new AndesClient("receive", hostinfo
+//                , "topic:mulSubTopic1",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient1.startWorking();
+//
+//        AndesClient receivingClient2 = new AndesClient
+//                ("receive", hostinfo
+//                , "topic:mulSubTopic1",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient2.startWorking();
+//
+//        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic1");
+//
+//        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic1"), "Topic created in MB node 1 not exist");
+//
+//        AndesClient sendingClient = new AndesClient("send", hostinfo
+//                , "topic:mulSubTopic1", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccessInClient1 = AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient1, expectedCount, runTime);
+//        boolean receiveSuccessInClient2 = AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient1, expectedCount, runTime);
+//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(receiveSuccessInClient1, "Did not receive all the messages by the " +
+//                "receiving client 1");
+//        Assert.assertTrue(receiveSuccessInClient2, "Did not receive all the messages by the " +
+//                "receiving client 2");
+//        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -129,41 +194,75 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node single publisher multiple subscribers " +
             "test case", enabled = true)
     public void testBulkSubscribers() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 100000;
-        // Number of messages send
-        Integer sendCount = 2000;
+        long sendCount = 2000L;
+        long expectedCount = 100000;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:mulSubTopic2",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                            Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                            ExchangeType.TOPIC, "mulSubTopic2");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, "mulSubTopic2");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        consumerClient.startClient();
 
         TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic2");
-
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:mulSubTopic2", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
-        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess,"Message sending failed");
+
+//        // Max number of seconds to run the client
+//        Integer runTime = 80;
+//        // Expected message count
+//        Integer expectedCount = 100000;
+//        // Number of messages send
+//        Integer sendCount = 2000;
+//
+//        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
+//                automationContext1.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient = new AndesClient("receive", hostinfo
+//                , "topic:mulSubTopic2",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//
+//        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic2");
+//
+//        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
+//
+//        AndesClient sendingClient = new AndesClient("send", hostinfo
+//                , "topic:mulSubTopic2", "100", "false",
+//                runTime.toString(), sendCount.toString(), "1",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient, expectedCount, runTime);
+//
+//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+//        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -176,41 +275,76 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node multiple publishers single subscriber " +
             "test case", enabled = true)
     public void testBulkPublishers() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 200;
-        // Expected message count
-        Integer expectedCount = 100000;
-        // Number of messages send
-        Integer sendCount = 100000;
+        long sendCount = 100000L;
+        long expectedCount = 100000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:mulSubTopic3",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, "mulSubTopic3");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, "mulSubTopic3");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic3");
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
 
-        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic3"), "Topic created in MB node 1 not exist");
+        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic2");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:mulSubTopic3", "100", "false",
-                runTime.toString(), sendCount.toString(), "50",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
-        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess,"Message sending failed");
+
+
+//        // Max number of seconds to run the client
+//        Integer runTime = 200;
+//        // Expected message count
+//        Integer expectedCount = 100000;
+//        // Number of messages send
+//        Integer sendCount = 100000;
+//
+//        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
+//                automationContext1.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient = new AndesClient("receive", hostinfo
+//                , "topic:mulSubTopic3",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//
+//        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic3");
+//
+//        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic3"), "Topic created in MB node 1 not exist");
+//
+//        AndesClient sendingClient = new AndesClient("send", hostinfo
+//                , "topic:mulSubTopic3", "100", "false",
+//                runTime.toString(), sendCount.toString(), "50",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient, expectedCount, runTime);
+//
+//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+//        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
     /**
@@ -222,42 +356,77 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node multiple publishers multiple " +
             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribers() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 200;
-        // Expected message count
-        Integer expectedCount = 100000;
-        // Number of messages send
-        Integer sendCount = 2000;
+        long sendCount = 2000L;
+        long expectedCount = 100000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:mulSubTopic4",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, "mulSubTopic4");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, "mulSubTopic4");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        consumerClient.startClient();
 
         TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic4");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic4"), "Topic created in MB node 1 not exist");
 
-        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic4"),
-                "Topic created in MB node 1 not exist");
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        publisherClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:mulSubTopic4", "100", "false",
-                runTime.toString(), sendCount.toString(), "50",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        sendingClient.startWorking();
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
-        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess,"Message sending failed");
+
+//        // Max number of seconds to run the client
+//        Integer runTime = 200;
+//        // Expected message count
+//        Integer expectedCount = 100000;
+//        // Number of messages send
+//        Integer sendCount = 2000;
+//
+//        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
+//                automationContext1.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient = new AndesClient("receive", hostinfo
+//                , "topic:mulSubTopic4",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//
+//        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic4");
+//
+//        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic4"),
+//                "Topic created in MB node 1 not exist");
+//
+//        AndesClient sendingClient = new AndesClient("send", hostinfo
+//                , "topic:mulSubTopic4", "100", "false",
+//                runTime.toString(), sendCount.toString(), "50",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient, expectedCount, runTime);
+//
+//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+//        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 
@@ -270,47 +439,83 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "multiple node multiple publishers multiple " +
             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribersDifferentNodes() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 50000;
-        // Number of messages send
-        Integer sendCount = 1000;
+        long sendCount = 2000L;
+        long expectedCount = 100000L;
 
-        String hostInfoReceiver = automationContext1.getInstance().getHosts().get("default") +
-                ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
 
-        AndesClient receivingClient = new AndesClient("receive", hostInfoReceiver
-                , "topic:mulSubTopic5",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext1.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, "mulSubTopic5");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext2.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext2.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, "mulSubTopic5");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        consumerClient.startClient();
 
         TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic5");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic5"), "Topic created in MB node 1 not exist");
 
-        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic5"),
-                "Topic created in MB node 1 not exist");
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        publisherClient.startClient();
 
-        String hostInfoSender = automationContext1.getInstance().getHosts().get("default") +
-                ":" +
-                automationContext2.getInstance().getPorts().get("amqp");
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClient sendingClient = new AndesClient("send", hostInfoSender
-                , "topic:mulSubTopic5", "100", "false",
-                runTime.toString(), sendCount.toString(), "50",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
-        sendingClient.startWorking();
 
-        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
 
-        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
 
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess,"Message sending failed");
+
+//        // Max number of seconds to run the client
+//        Integer runTime = 80;
+//        // Expected message count
+//        Integer expectedCount = 50000;
+//        // Number of messages send
+//        Integer sendCount = 1000;
+//
+//        String hostInfoReceiver = automationContext1.getInstance().getHosts().get("default") +
+//                ":" +
+//                automationContext1.getInstance().getPorts().get("amqp");
+//
+//        AndesClient receivingClient = new AndesClient("receive", hostInfoReceiver
+//                , "topic:mulSubTopic5",
+//                "100", "false", runTime.toString(), expectedCount.toString(),
+//                "50", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+//
+//        receivingClient.startWorking();
+//
+//        TopicNode topic = topicAdminClient1.getTopicByName("mulSubTopic5");
+//
+//        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic5"),
+//                "Topic created in MB node 1 not exist");
+//
+//        String hostInfoSender = automationContext1.getInstance().getHosts().get("default") +
+//                ":" +
+//                automationContext2.getInstance().getPorts().get("amqp");
+//
+//        AndesClient sendingClient = new AndesClient("send", hostInfoSender
+//                , "topic:mulSubTopic5", "100", "false",
+//                runTime.toString(), sendCount.toString(), "50",
+//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+//
+//        sendingClient.startWorking();
+//
+//        boolean receiveSuccess= AndesClientUtils.waitUntilMessagesAreReceived
+//                (receivingClient, expectedCount, runTime);
+//
+//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
+//
+//        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
+//        Assert.assertTrue(sendSuccess,"Message sending failed");
     }
 
 

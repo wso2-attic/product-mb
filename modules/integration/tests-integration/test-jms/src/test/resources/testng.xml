@@ -25,7 +25,7 @@
         <classes>
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedQueueTestCase" />-->
             <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedDurableTopicTestCase" />-->
-            <class name="org.wso2.mb.integration.tests.jms.expiration.MixedTopicTestCase" />
+            <!--<class name="org.wso2.mb.integration.tests.jms.expiration.MixedTopicTestCase" />-->
             <class name="org.wso2.mb.integration.tests.jms.selectors.SelectorsTestCase" />
         </classes>
     </test>
