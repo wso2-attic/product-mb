@@ -40,6 +40,7 @@
         <module>tests-integration</module>
         <module>tests-ui-integration</module>
         <module>tests-platform</module>
+        <module>tests-security</module>
     </modules>
 
     <dependencies>
