@@ -90,6 +90,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant1Send1Success, "Sending failed for tenant 1 user 2.");
+
         Assert.assertEquals(expectedMessageCount,tenant1ReceivingClient1.getReceivedTopicMessagecount(), "Expected message count is not received for user1 of tenant1");
         Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1.");
         Assert.assertEquals(expectedMessageCount, tenant1ReceivingClient2.getReceivedTopicMessagecount(), "Expected message count is not received for user2 of tenant1");
