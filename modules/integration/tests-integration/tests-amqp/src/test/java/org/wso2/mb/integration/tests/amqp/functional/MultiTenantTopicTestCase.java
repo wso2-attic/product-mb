@@ -42,39 +42,38 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
     @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
     public void performSingleTenantMultipleUserTopicTestCase() {
-        int sendMessageCount = 50;
+        int sendMessageCount = 100;
         int runTime = 40;
-        int expectedMessageCount = 100;
+        int expectedMessageCount = 200;
 
         // Start receiving clients (admin, user1, user2)
 
-        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:tenantTopic",
+        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=false,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
+                "admin!topictenant1.com", "admin");
         adminReceivingClient.startWorking();
 
-        AndesClient tenant1ReceivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:tenantTopic",
+        AndesClient tenant1ReceivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=false,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
+                "topictenantuser1!topictenant1.com", "topictenantuser1");
         tenant1ReceivingClient1.startWorking();
 
-        AndesClient tenant1ReceivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:tenantTopic",
+        AndesClient tenant1ReceivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
                 "100", "true", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=false,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "");
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
+                "topictenantuser2!topictenant1.com", "topictenantuser2");
         tenant1ReceivingClient2.startWorking();
 
-        AndesClient tenant1ReceivingClient3 = new AndesClient("receive", "127.0.0.1:5672", "topic:tenantTopic",
-                "100", "true", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=false,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "");
-        tenant1ReceivingClient3.startWorking();
         // Start sending clients (tenant1, tenant2 and admin)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:tenantTopic",
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
-                "ackMode=1,delayBetweenMsg=100,stopAfter=" + sendMessageCount, "");
+                "ackMode=1,delayBetweenMsg=100,stopAfter=" + sendMessageCount, "","topictenantuser1!topictenant1.com", "topictenantuser1");
 
         tenant1SendingClient.startWorking();
-        AndesClientUtils.sleepForInterval(1000);
-        AndesClient tenant1SendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:tenantTopic",
+
+        AndesClient tenant1SendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=100,stopAfter=" + sendMessageCount, "");
         tenant1SendingClient2.startWorking();
@@ -85,19 +84,16 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                 expectedMessageCount, runTime);
         boolean adminReceiveSuccess =  AndesClientUtils.waitUntilMessagesAreReceived(adminReceivingClient,
                 expectedMessageCount, runTime);
-        System.out.println("Count " + AndesClient.count);
+
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
         boolean tenant1Send1Success = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient2, sendMessageCount);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant1Send1Success, "Sending failed for tenant 1 user 2.");
-        Assert.assertEquals(expectedMessageCount, tenant1ReceivingClient1.getReceivedTopicMessagecount(), "Expected message count is not received for user1 of tenant1");
+        Assert.assertEquals(expectedMessageCount,tenant1ReceivingClient1.getReceivedTopicMessagecount(), "Expected message count is not received for user1 of tenant1");
         Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1.");
-        Assert.assertEquals(expectedMessageCount, tenant1ReceivingClient3.getReceivedTopicMessagecount(), "Expected message count is not received for user3 of tenant1" + AndesClient.count);
-
-        Assert.assertEquals(expectedMessageCount, tenant1ReceivingClient2.getReceivedTopicMessagecount(), "Expected message count is not received for user2 of tenant1" + AndesClient.count);
+        Assert.assertEquals(expectedMessageCount, tenant1ReceivingClient2.getReceivedTopicMessagecount(), "Expected message count is not received for user2 of tenant1");
         Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2.");
-
         Assert.assertEquals(expectedMessageCount, adminReceivingClient.getReceivedTopicMessagecount(), "Expected message count is not received for admin of tenant1");
         Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1.");
 
