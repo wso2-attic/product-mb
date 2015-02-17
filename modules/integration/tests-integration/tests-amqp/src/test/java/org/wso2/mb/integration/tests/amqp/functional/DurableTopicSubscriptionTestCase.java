@@ -37,21 +37,21 @@ public class DurableTopicSubscriptionTestCase {
             String subID = "wso2";
             Integer runTime = 10;
             Integer expectedCount = 10;
-            AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic,
+            AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
                     "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                     "unsubscribeAfter=" + expectedCount, "");
             receivingClient.startWorking();
             sleepForInterval(intervalBetSubscription);
-            receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic,
+            receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
                     "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                     "unsubscribeAfter=" + expectedCount, "");
             receivingClient.startWorking();
             sleepForInterval(intervalBetSubscription);
         } finally {
 
-            }
+        }
 
 
         /**
@@ -81,8 +81,8 @@ public class DurableTopicSubscriptionTestCase {
                 sub2.subscribe(topic, true, subID);
                 sleepForInterval(intervalBetSubscription);
             } catch (Exception e) {
-                    log.error("Error while subscribing. This is expected.", e);
-                    multipleSubsNotAllowed = false;
+                log.error("Error while subscribing. This is expected.", e);
+                multipleSubsNotAllowed = false;
 
             }
             Assert.assertFalse(multipleSubsNotAllowed, "Multiple subscriptions allowed for same client ID.");
@@ -103,11 +103,11 @@ public class DurableTopicSubscriptionTestCase {
         String topic = "myTopic3";
         String subID1 = "test1";
         String subID2 = "test2";
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-        sub1.subscribe(topic,true,subID1);
+        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
+        sub1.subscribe(topic, true, subID1);
         sleepForInterval(intervalBetSubscription);
-        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host,port,userName,password,topic);
-        sub2.subscribe(topic,true,subID2);
+        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
+        sub2.subscribe(topic, true, subID2);
         sleepForInterval(intervalBetSubscription);
 
         /**
@@ -129,26 +129,26 @@ public class DurableTopicSubscriptionTestCase {
         String topic2 = "myTopic5";
         String subID1 = "test3";
         boolean subscriptionAllowedForDifferentTopic = true;
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host,port,userName,password,topic1);
-        sub1.subscribe(topic1,true,subID1);
+        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic1);
+        sub1.subscribe(topic1, true, subID1);
         sleepForInterval(intervalBetSubscription);
         sub1.close();
         sleepForInterval(intervalBetSubscription);
         try {
-            BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host,port,userName,password,topic2);
-            sub2.subscribe(topic2,true,subID1);
+            BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic2);
+            sub2.subscribe(topic2, true, subID1);
             sleepForInterval(intervalBetSubscription);
         } catch (JMSException e) {
-            if(e.getMessage().contains("An Exclusive Bindings already exists for different topic. Not permitted")) {
-                log.error("Error while subscribing. This is expected.",e);
+            if (e.getMessage().contains("An Exclusive Bindings already exists for different topic. Not permitted")) {
+                log.error("Error while subscribing. This is expected.", e);
                 subscriptionAllowedForDifferentTopic = false;
             } else {
-                log.error("Error while subscribing." , e);
+                log.error("Error while subscribing.", e);
                 throw new JMSException("Error while subscribing");
             }
         }
         Assert.assertFalse(subscriptionAllowedForDifferentTopic, "Subscriptions to a different topic" +
-                                      " was allowed by same client Id without un-subscribing");
+                " was allowed by same client Id without un-subscribing");
     }
 
     @Test(groups = {"wso2.mb", "topic"})
@@ -163,12 +163,12 @@ public class DurableTopicSubscriptionTestCase {
         BasicTopicSubscriber sub1 = null;
         BasicTopicSubscriber sub2 = null;
         try {
-            sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub1.subscribe(topic,true,subID);
+            sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
+            sub1.subscribe(topic, true, subID);
             sleepForInterval(intervalBetSubscription);
 
-            sub2 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub2.subscribe(topic,false,"");
+            sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
+            sub2.subscribe(topic, false, "");
             sleepForInterval(intervalBetSubscription);
         } finally {
             if (null != sub1) {
@@ -191,20 +191,19 @@ public class DurableTopicSubscriptionTestCase {
         String subID = "test7";
 
 
-
         try {
-            AndesClient sub1= new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic,
+            AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
                     "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                     "unsubscribeAfter=" + expectedCount, "");
 
 
             sub1.startWorking();
             sleepForInterval(intervalBetSubscription);
 
-            AndesClient sub2 = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic,
+            AndesClient sub2 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
                     "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                     "unsubscribeAfter=" + expectedCount, "");
 
             sub2.startWorking();
@@ -282,16 +281,16 @@ public class DurableTopicSubscriptionTestCase {
         String subID = "test8";
 
 
-        AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic1,
+        AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                 "unsubscribeAfter=" + expectedCount, "");
         sub1.startWorking();
         sleepForInterval(intervalBetSubscription);
 
-        sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:"+topic1,
+        sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
                 "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID="+subID+",delayBetweenMsg=0," +
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
                 "unsubscribeAfter=" + expectedCount, "");
         sub1.startWorking();
     }

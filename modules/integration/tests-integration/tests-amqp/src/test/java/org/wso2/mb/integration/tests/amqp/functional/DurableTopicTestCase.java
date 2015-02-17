@@ -38,10 +38,10 @@ import java.io.File;
  * 4. subscribe again. after 500 messages were received unsubscribe
  * 5. subscribe again. Verify no more messages are coming
  */
-public class DurableTopicTestCase extends MBIntegrationBaseTest{
+public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
     @BeforeClass
-    public void prepare() throws Exception{
+    public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
 
@@ -84,7 +84,6 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest{
                 runTime);
 
 
-
         //we just closed the subscription. Rest of messages should be delivered now.
 
         AndesClientUtils.sleepForInterval(2000);
@@ -92,10 +91,9 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest{
         AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic1",
                 "100", "false", runTime.toString(), expectedCount.toString(),
                 "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
-                "unsubscribeAfter=" + expectedCount , "");
+                "unsubscribeAfter=" + expectedCount, "");
 
         receivingClient2.startWorking();
-
 
 
         boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,

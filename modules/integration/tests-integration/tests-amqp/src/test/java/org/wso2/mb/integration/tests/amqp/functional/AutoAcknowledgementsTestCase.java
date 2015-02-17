@@ -56,14 +56,14 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         //Create receiving client
         AndesClient receivingClient =
                 new AndesClient("receive", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false",
-                                runTime.toString(), expectedCount.toString(), "1",
-                                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+                        runTime.toString(), expectedCount.toString(), "1",
+                        "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
         //start receiving client
         receivingClient.startWorking();
         //Create sending client
         AndesClient sendingClient =
                 new AndesClient("send", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false", runTime.toString(),
-                                sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+                        sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
         //start sending client
         sendingClient.startWorking();
         AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
@@ -88,15 +88,15 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         Integer expectedCount = 1500;
         //Create receiving client
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:autoAckTestQueue",
-                                                      "100", "false", runTime.toString(), expectedCount.toString(),
-                                                      "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=1000",
-                                                      "");
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=1000",
+                "");
         //Start receiving client
         receivingClient.startWorking();
         //Create sending client
         AndesClient sendingClient =
                 new AndesClient("send", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false", runTime.toString(),
-                                sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=10,stopAfter=" + sendCount, "");
+                        sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=10,stopAfter=" + sendCount, "");
         //Start sending client
         sendingClient.startWorking();
         //Wait until messages receive
@@ -108,8 +108,8 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         //Create new receiving client
         AndesClient receivingClientAfterDrop =
                 new AndesClient("receive", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false",
-                                runTime.toString(), expectedCount.toString(), "1",
-                                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=2000", "");
+                        runTime.toString(), expectedCount.toString(), "1",
+                        "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=2000", "");
         //Start new receiving client
         receivingClientAfterDrop.startWorking();
         //Wait until messages receive
@@ -119,6 +119,6 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
         //To pass this test received number of messages equals to sent messages
         Assert.assertEquals(totalMessagesReceived, expectedCount,
-                            "Total number of received messages should be equal to total number of sent messages");
+                "Total number of received messages should be equal to total number of sent messages");
     }
 }

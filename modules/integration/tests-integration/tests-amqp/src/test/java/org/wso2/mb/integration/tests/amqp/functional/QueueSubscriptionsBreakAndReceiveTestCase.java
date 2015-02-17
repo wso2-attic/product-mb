@@ -105,7 +105,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
 
         Assert.assertEquals(totalMsgCountReceived, sendCount.intValue(), "Expected message count was not received.");
 
-       log.info(totalMsgCountReceived);
+        log.info(totalMsgCountReceived);
     }
 
 }

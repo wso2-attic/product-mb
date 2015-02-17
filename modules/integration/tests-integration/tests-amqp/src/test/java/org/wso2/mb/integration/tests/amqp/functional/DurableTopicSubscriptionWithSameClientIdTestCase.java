@@ -35,7 +35,6 @@ import static org.testng.Assert.assertEquals;
 /**
  * This class holds test case to verify if shared durable topic subscriptions.
  * Shared durable topic subscriptions has enabled in broker.xml and tested in following test class.
- *
  */
 public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrationBaseTest {
 
@@ -68,7 +67,6 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
     /**
      * Start 3 durable subscribers. Start publisher which sends 12 messages.
      * Get the total count received by all durable subscribers and compare with sent message count of the publisher.
-     *
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicWithSameClientIdTestCase() {
@@ -116,7 +114,7 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         int totalReceivingMessageCount = receivingCountClient1 + receivingCountClient2 + receivingCountClient3;
 
-        assertEquals(sendCountInt,totalReceivingMessageCount,
+        assertEquals(sendCountInt, totalReceivingMessageCount,
                 "Message receive count not equal to sent message count.");
 
 
