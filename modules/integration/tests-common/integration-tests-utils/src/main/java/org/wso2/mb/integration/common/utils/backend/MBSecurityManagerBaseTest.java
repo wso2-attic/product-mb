@@ -148,6 +148,7 @@ public class MBSecurityManagerBaseTest extends SecurityManager {
 
     @Override
     public void checkConnect(String host, int port) {
+
         super.checkConnect(host, port);
     }
 

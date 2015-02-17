@@ -35,6 +35,7 @@
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveSecurityManagerEnabledTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequencialAndDuplicateTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>-->
