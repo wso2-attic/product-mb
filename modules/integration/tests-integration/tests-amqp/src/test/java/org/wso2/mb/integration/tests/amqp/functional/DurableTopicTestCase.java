@@ -32,11 +32,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import java.io.File;
 
 /**
- * 1. start a durable topic subscription
- * 2. send 1500 messages
- * 3. after 500 messages were received close the subscriber
- * 4. subscribe again. after 500 messages were received unsubscribe
- * 5. subscribe again. Verify no more messages are coming
+ * Checking Durable subscriber shared subscription ID option
  */
 public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
@@ -59,6 +55,13 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
     }
 
+    /**
+     * 1. start a durable topic subscription
+     * 2. send 1500 messages
+     * 3. after 500 messages were received close the subscriber
+     * 4. subscribe again. after 500 messages were received unsubscribe
+     * 5. subscribe again. Verify no more messages are coming
+     */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase() {
 

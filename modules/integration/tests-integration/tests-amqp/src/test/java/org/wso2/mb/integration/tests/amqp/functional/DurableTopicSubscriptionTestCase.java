@@ -25,6 +25,13 @@ public class DurableTopicSubscriptionTestCase {
     private Integer expectedCount = 10;
     private long intervalBetSubscription = 1000;
 
+    /**
+     * Creating a client with a subscription ID and unsubscribe it and
+     * create another client with the same subscription ID
+     *
+     * @throws JMSException
+     * @throws NamingException
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void basicSubscriptionTest() throws JMSException, NamingException {
 
@@ -61,12 +68,14 @@ public class DurableTopicSubscriptionTestCase {
 
     }
 
+
+    /**
+     * create with sub id= x topic=y. try another subscription with same params.
+     * should rejects the subscription
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithSameIdTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y. try another subscription with same params.
-         * should rejects the subscription
-         */
+
         String topic = "myTopic2";
         String subID = "sriLanka";
         BasicTopicSubscriber sub1 = null;
@@ -95,11 +104,12 @@ public class DurableTopicSubscriptionTestCase {
 
     }
 
+    /**
+     * create with sub id= x topic=y. try another with sub id=z topic=y. Allowed
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDifferentIdTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y. try another with sub id=z topic=y. Allowed
-         */
+
         String topic = "myTopic3";
         String subID1 = "test1";
         String subID2 = "test2";
@@ -117,14 +127,15 @@ public class DurableTopicSubscriptionTestCase {
         sub2.close();
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * close it.
+     * Then try with sub id= x topic=z.
+     * Should reject the subscription
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsToDifferentTopicsWithSameSubIdTest() throws JMSException, NamingException {
-        /**
-         *  create with sub id= x topic=y.
-         *  close it.
-         *  Then try with sub id= x topic=z.
-         *  Should reject the subscription
-         */
+
         String topic1 = "myTopic4";
         String topic2 = "myTopic5";
         String subID1 = "test3";
@@ -151,12 +162,13 @@ public class DurableTopicSubscriptionTestCase {
                 " was allowed by same client Id without un-subscribing");
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Create a normal topic subscription topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void durableTopicWithNormalTopicTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Create a normal topic subscription topic=y
-         */
+
         String topic = "myTopic5";
         String subID = "test5";
 
@@ -180,13 +192,14 @@ public class DurableTopicSubscriptionTestCase {
         }
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= x topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeUnSuscribeAndSubscribeAgainTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= x topic=y
-         */
+
         String topic = "myTopic7";
         String subID = "test7";
 
@@ -216,13 +229,13 @@ public class DurableTopicSubscriptionTestCase {
 
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= z topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDiffIDsToSameTopicTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= z topic=y
-         */
         String topic = "multiSubTopic";
         String subID1 = "new1";
         String subID2 = "new2";
@@ -267,14 +280,15 @@ public class DurableTopicSubscriptionTestCase {
         }
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= x topic=z
+     */
+
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeUnsubscribeAndTryDifferentTopicTest()
             throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= x topic=z
-         */
 
         String topic1 = "myTopic8";
         String topic2 = "myTopic9";
