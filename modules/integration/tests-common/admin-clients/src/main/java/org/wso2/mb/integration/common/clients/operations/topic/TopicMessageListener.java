@@ -20,6 +20,7 @@ package org.wso2.mb.integration.common.clients.operations.topic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
 
 import javax.jms.*;
@@ -76,6 +77,7 @@ public class TopicMessageListener implements MessageListener {
     public void onMessage(Message message) {
         messageCount.incrementAndGet();
         localMessageCount++;
+        AndesClient.count.incrementAndGet();
         TextMessage receivedMessage = (TextMessage) message;
         try {
             String redelivery = "";
