@@ -62,6 +62,7 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         consumerConfig.setMaximumMessagesToReceived(SEND_COUNT);
         // Prints per message
         consumerConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleTopic");

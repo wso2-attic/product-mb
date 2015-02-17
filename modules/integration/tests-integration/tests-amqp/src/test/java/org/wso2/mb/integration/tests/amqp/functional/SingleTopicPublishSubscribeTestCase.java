@@ -38,8 +38,8 @@ import java.io.IOException;
  */
 public class SingleTopicPublishSubscribeTestCase {
 
-    private static final long EXPECTED_COUNT = 5000L;
     private static final long SEND_COUNT = 1000L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
 
     @BeforeClass
     public void prepare() {
@@ -55,12 +55,12 @@ public class SingleTopicPublishSubscribeTestCase {
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        consumerConfig.setPrintsPerMessageCount(1000L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "hasitha");
-        publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
 
 
         AndesClient consumerClient = new AndesClient(consumerConfig);

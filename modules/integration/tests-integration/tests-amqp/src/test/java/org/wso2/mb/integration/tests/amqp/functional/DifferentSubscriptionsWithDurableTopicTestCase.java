@@ -38,7 +38,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableTopicConsumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableTopicConsumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableTopicConsumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig1.setDurable(true, "diffSub1");
 
         // Creating a initial JMS consumer client configuration
@@ -48,7 +48,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableTopicConsumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableTopicConsumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableTopicConsumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig2.setDurable(true, "diffSub2");
 
 
@@ -59,7 +59,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         normalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        normalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        normalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
 
         // Creating a initial JMS consumer client configuration
@@ -69,7 +69,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         normalHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
 
         // Creating a initial JMS consumer client configuration
@@ -79,7 +79,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         durableHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableHierarchicalTopicConsumerConfig.setDurable(true, "diffSub3");
 
 
@@ -90,11 +90,12 @@ public class DifferentSubscriptionsWithDurableTopicTestCase {
         // Amount of message to receive
         queueConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        queueConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        queueConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
 
 //        log.info(durableTopicConsumerConfig1.toString());

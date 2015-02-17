@@ -114,7 +114,7 @@ public class DurableMultipleTopicSubscriberTestCase {
         // Amount of message to receive
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-//        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
         consumerConfig1.setDurable(true, "multipleSub1");
 
         // Creating a initial JMS consumer client configuration
@@ -122,12 +122,12 @@ public class DurableMultipleTopicSubscriberTestCase {
         // Amount of message to receive
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-//        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
         consumerConfig2.setDurable(true, "multipleSub2");
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+            publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
 
 
         AndesClient consumerClient1 = new AndesClient(consumerConfig1);

@@ -68,13 +68,13 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         // AUTO_ACKNOWLEDGE = 1;
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(consumerConfig);
         // Amount of messages to send
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
         AndesClient receivingClient = new AndesClient(consumerConfig);
@@ -98,7 +98,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * 4. Start a another queue receiver in client ack mode
      * 5. Check whether total received messages were equal to send messages
      */
-    @Test(groups = "wso2.mb", description = "Single queue send-receive test case with droping the receiving client")
+    @Test(groups = "wso2.mb", description = "Single queue send-receive test case with dropping the receiving client")
     public void autoAcknowledgementsDropReceiverTestCase()
             throws AndesClientException, CloneNotSupportedException, JMSException, NamingException,
                    IOException {
@@ -107,13 +107,14 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
         initialConsumerConfig.setMaximumMessagesToReceived(1000L);
         // Prints per message
-        initialConsumerConfig.setPrintsPerMessageCount(100L);
+        initialConsumerConfig.setPrintsPerMessageCount(1000L / 10L);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
         //publisherConfig.setRunningDelay(10L);
         // Amount of messages to send
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
         AndesClient initialReceivingClient = new AndesClient(initialConsumerConfig);
@@ -125,14 +126,12 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         //Wait until messages receive
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
         long totalMessagesReceived = initialReceivingClient.getReceivedMessageCount();
-        log.info("INITIAL : " + totalMessagesReceived);
 
-        initialReceivingClient.stopClient();
-
+        log.info("Messages received by initialClient so far : " + totalMessagesReceived);
 
         // Creating a secondary JMS publisher client configuration
         AndesJMSConsumerClientConfiguration consumerConfigForClientAfterDrop = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
-        consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(SEND_COUNT-totalMessagesReceived);
+        consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(EXPECTED_COUNT - 1000L);
 
 
         // Creating clients
@@ -140,16 +139,11 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         secondaryReceivingClient.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        log.info("SECONDARY : " + secondaryReceivingClient.getReceivedMessageCount());
         totalMessagesReceived = totalMessagesReceived + secondaryReceivingClient.getReceivedMessageCount();
 
         //To pass this test received number of messages equals to sent messages
         Assert.assertEquals(sendingClient.getSentMessageCount(), SEND_COUNT, "Messaging sending failed");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Total number of received messages should be equal to total number of sent messages");
-
-
-
-
 
 
 //        //Create receiving client

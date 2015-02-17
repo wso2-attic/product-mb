@@ -89,9 +89,8 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");
-
-        Assert.assertNotEquals(consumerClient.getReceivedMessageCount(), 0, "Message receiving failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected message count");
+
 
 
 //        int defaultMaxRedeliveryAttempts = 10;

@@ -85,7 +85,6 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), 0, "Message receiving failed.");
 
 
-
 //        AndesClient receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
 //                                                      JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(),
 //                                                      "0", "1", "listener=true,ackMode=1,delayBetweenMsg=" +
@@ -165,23 +164,27 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     }
 
     @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
-    public void performQueueReceiverPriorityBasedSelectors()
+    public void performQueueReceiverCustomPropertyBasedSelectors()
             throws AndesClientException, NamingException, JMSException, IOException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setSelectors("JMSPriority=9");
+        consumerConfig.setSelectors("location = 'wso2.trace'");
 
-        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
+        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
         initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
-        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
-        jmsMessageHeader.setJmsPriority(9);
-        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+        JMSMessageHeader jmsMessageHeaderForInitialPublisher = new JMSMessageHeader();
+        jmsMessageHeaderForInitialPublisher.getStringProperties().put("location", "wso2.trace");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderForInitialPublisher);
 
-        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSPriority");
-        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT/2L);
+        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeaderSecondaryPublisher = new JMSMessageHeader();
+        jmsMessageHeaderSecondaryPublisher.getStringProperties().put("location", "wso2.palmgrove");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
+
 
         AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
@@ -193,32 +196,36 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         secondaryPublisherClient.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
-        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT/2L, "Message receiving failed.");
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT / 2L, "Message receiving failed.");
 
     }
 
     @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
-    public void performQueueReceiverDeliverTypeBasedSelectors()
+    public void performQueueReceiverCustomPropertyAndJMSTypeBasedSelectors()
             throws AndesClientException, NamingException, JMSException, IOException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setSelectors("JMSDeliveryMode='NON_PERSISTENT'");
+        consumerConfig.setSelectors("location = 'wso2.trace' AND JMSType='myMessage'");
 
-        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
+        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
         initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
-        JMSMessageHeader jmsMessageHeader = new JMSMessageHeader();
-        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+        JMSMessageHeader jmsMessageHeaderForInitialPublisher = new JMSMessageHeader();
+        jmsMessageHeaderForInitialPublisher.setJmsType("myMessage");
+        jmsMessageHeaderForInitialPublisher.getStringProperties().put("location", "wso2Trace");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderForInitialPublisher);
 
-        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSDelivery");
-        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT/2L);
-        jmsMessageHeader.setJmsDeliveryMode(DeliveryMode.PERSISTENT);
-        initialPublisherConfig.setMessageHeader(jmsMessageHeader);
+        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeaderSecondaryPublisher = new JMSMessageHeader();
+        jmsMessageHeaderForInitialPublisher.setJmsType("otherMessage");
+        jmsMessageHeaderSecondaryPublisher.getStringProperties().put("location", "wso2PalmGrove");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
+
 
         AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
@@ -230,11 +237,51 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         secondaryPublisherClient.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
-        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT/2L, "Message sending failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT/2L, "Message receiving failed.");
-
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT / 2L, "Message receiving failed.");
     }
+
+    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
+    public void performQueueReceiverCustomPropertyOrJMSTypeBasedSelectors()
+            throws AndesClientException, NamingException, JMSException, IOException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+        // Amount of message to receive
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setSelectors("location = 'wso2.palmgrove' OR JMSType='myMessage'");
+
+        AndesJMSPublisherClientConfiguration initialPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeaderForInitialPublisher = new JMSMessageHeader();
+        jmsMessageHeaderForInitialPublisher.setJmsType("myMessage");
+        jmsMessageHeaderForInitialPublisher.getStringProperties().put("location", "wso2Trace");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderForInitialPublisher);
+
+        AndesJMSPublisherClientConfiguration secondaryPublisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        JMSMessageHeader jmsMessageHeaderSecondaryPublisher = new JMSMessageHeader();
+        jmsMessageHeaderForInitialPublisher.setJmsType("otherMessage");
+        jmsMessageHeaderSecondaryPublisher.getStringProperties().put("location", "wso2PalmGrove");
+        initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
+
+
+        AndesClient consumerClient = new AndesClient(consumerConfig);
+        consumerClient.startClient();
+
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        initialPublisherClient.startClient();
+
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        secondaryPublisherClient.startClient();
+
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT, "Message receiving failed.");
+    }
+
 
 //    @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
 //    public void performQueueReceiverDeliverTypeAndPriorityBasedSelectors()

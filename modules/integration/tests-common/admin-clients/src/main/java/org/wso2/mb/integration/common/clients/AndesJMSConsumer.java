@@ -208,8 +208,8 @@ class AndesJMSConsumer extends AndesJMSClient
                                 redelivery = "ORIGINAL";
                             }
                             if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
-                                log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" +
-                                         this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
+                                log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" + this.consumerConfig.getExchangeType().getType()
+                                         + "." + this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                                          this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
                                          this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + redelivery);
 
@@ -276,7 +276,6 @@ class AndesJMSConsumer extends AndesJMSClient
             }
 
             this.lastMessageConsumedTimestamp.set(currentTimeStamp);
-
             if (message instanceof TextMessage) {
                 this.receivedMessageCount.incrementAndGet();
                 long threadID = Thread.currentThread().getId();
@@ -291,7 +290,7 @@ class AndesJMSConsumer extends AndesJMSClient
                     log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" + this.consumerConfig.getExchangeType().getType()
                              + "." + this.consumerConfig.getDestinationName() + " TotalMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
-                             this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered :" + redelivery);
+                             this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + redelivery);
 
                 }
                 if (null != this.consumerConfig.getFilePathToWriteReceivedMessages()) {

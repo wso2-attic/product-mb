@@ -59,16 +59,16 @@ public class MultipleTopicPublishSubscribeTestCase {
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
         // Amount of message to receive
-        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_4010);
         // Prints per message
-        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT_1010 / 10);
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
+
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic1");
-        // Amount of message to receive
-        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_4010);
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
         // Prints per message
-        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
+        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_1010 / 10);
 
         AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
         publisherConfig1.setPrintsPerMessageCount(100L);
@@ -93,12 +93,12 @@ public class MultipleTopicPublishSubscribeTestCase {
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT_2000, "Publisher publisherClient1 failed to publish messages");
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT_2000 * 2L, "Publisher publisherClient1 failed to publish messages");
         Assert.assertEquals(publisherClient2.getSentMessageCount(), SEND_COUNT_1000, "Publisher publisherClient2 failed to publish messages");
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), EXPECTED_COUNT_4010 - ADDITIONAL,
-                            "Did not receive expected message count for multipleTopic1.");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), (EXPECTED_COUNT_4010 - ADDITIONAL) * 2L,
+                            "Did not receive expected message count for consumerClient1.");
         Assert.assertEquals(consumerClient2.getReceivedMessageCount(), EXPECTED_COUNT_1010 - ADDITIONAL,
-                            "Did not receive expected message count for multipleTopic2.");
+                            "Did not receive expected message count for consumerClient2.");
 
 
 //        Integer sendCount1 = 1000;

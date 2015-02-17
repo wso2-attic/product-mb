@@ -1,17 +1,20 @@
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  */
 public class JMSMessageHeader {
     private String jmsCorrelationID;
-    private int jmsDeliveryMode;
-    private long jmsExpiration;
     private String jmsMessageID;
-    private int jmsPriority;
-    private boolean jmsRedelivered;
     private long jmsTimestamp;
     private String jmsType;
+    Map<String, String> stringProperties = new HashMap<String, String>();
+    Map<String, Integer> integerProperties = new HashMap<String, Integer>();
 
     public String getJmsCorrelationID() {
         return jmsCorrelationID;
@@ -21,44 +24,12 @@ public class JMSMessageHeader {
         this.jmsCorrelationID = jmsCorrelationID;
     }
 
-    public int getJmsDeliveryMode() {
-        return jmsDeliveryMode;
-    }
-
-    public void setJmsDeliveryMode(int jmsDeliveryMode) {
-        this.jmsDeliveryMode = jmsDeliveryMode;
-    }
-
-    public long getJmsExpiration() {
-        return jmsExpiration;
-    }
-
-    public void setJmsExpiration(long jmsExpiration) {
-        this.jmsExpiration = jmsExpiration;
-    }
-
     public String getJmsMessageID() {
         return jmsMessageID;
     }
 
     public void setJmsMessageID(String jmsMessageID) {
         this.jmsMessageID = jmsMessageID;
-    }
-
-    public int getJmsPriority() {
-        return jmsPriority;
-    }
-
-    public void setJmsPriority(int jmsPriority) {
-        this.jmsPriority = jmsPriority;
-    }
-
-    public boolean isJmsRedelivered() {
-        return jmsRedelivered;
-    }
-
-    public void setJmsRedelivered(boolean jmsRedelivered) {
-        this.jmsRedelivered = jmsRedelivered;
     }
 
     public long getJmsTimestamp() {
@@ -75,5 +46,21 @@ public class JMSMessageHeader {
 
     public void setJmsType(String jmsType) {
         this.jmsType = jmsType;
+    }
+
+    public Map<String, String> getStringProperties() {
+        return stringProperties;
+    }
+
+    public void setStringProperties(Map<String, String> stringProperties) {
+        this.stringProperties =  stringProperties;
+    }
+
+    public Map<String, Integer> getIntegerProperties() {
+        return integerProperties;
+    }
+
+    public void setIntegerProperties(Map<String, Integer> integerProperties) {
+        this.integerProperties = integerProperties;
     }
 }

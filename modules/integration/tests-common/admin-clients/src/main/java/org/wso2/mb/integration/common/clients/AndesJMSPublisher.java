@@ -139,26 +139,24 @@ class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                         if (null != messageHeader.getJmsCorrelationID()) {
                             message.setJMSCorrelationID(messageHeader.getJmsCorrelationID());
                         }
-                        if (0 != messageHeader.getJmsDeliveryMode()) {
-                            message.setJMSDeliveryMode(messageHeader.getJmsDeliveryMode());
-                        }
-                        if (0L != messageHeader.getJmsExpiration()) {
-                            message.setJMSExpiration(messageHeader.getJmsExpiration());
-                        }
-                        if (null != messageHeader.getJmsMessageID()) {
-                            message.setJMSMessageID(messageHeader.getJmsMessageID());
-                        }
-                        if (0 != messageHeader.getJmsPriority()) {
-                            message.setJMSPriority(messageHeader.getJmsPriority());
-                        }
-                        if (messageHeader.isJmsRedelivered()) {
-                            message.setJMSRedelivered(messageHeader.isJmsRedelivered());
-                        }
                         if (0L != messageHeader.getJmsTimestamp()) {
                             message.setJMSTimestamp(messageHeader.getJmsTimestamp());
                         }
                         if (null != messageHeader.getJmsType()) {
                             message.setJMSType(messageHeader.getJmsType());
+                        }
+
+                        if(0< messageHeader.getStringProperties().size())
+                        {
+                            for (String key : messageHeader.getStringProperties().keySet()) {
+                                message.setStringProperty(key, messageHeader.getStringProperties().get(key));
+                            }
+                        }
+                        if(0< messageHeader.getIntegerProperties().size())
+                        {
+                            for (String key : messageHeader.getIntegerProperties().keySet()) {
+                                message.setIntProperty(key, messageHeader.getIntegerProperties().get(key));
+                            }
                         }
                     }
 

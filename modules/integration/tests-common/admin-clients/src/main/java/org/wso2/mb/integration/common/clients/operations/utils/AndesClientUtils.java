@@ -45,7 +45,7 @@ public class AndesClientUtils {
     }
 
     public static void sleepForInterval(long milliseconds) {
-        if (1 < milliseconds) {
+        if (0 < milliseconds) {
             try {
                 Thread.sleep(milliseconds);
             } catch (InterruptedException ignore) {
