@@ -63,7 +63,7 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 
-    @Test(groups = "wso2.mb", description = "")
+    @Test(groups = "wso2.mb", description = "Multiple tenant topic send and receive test case")
     public void perform() {
         int sendMessageCount = 100;
         int runTime = 20;
