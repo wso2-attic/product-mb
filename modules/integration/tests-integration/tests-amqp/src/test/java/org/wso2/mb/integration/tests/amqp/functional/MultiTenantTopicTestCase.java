@@ -73,10 +73,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         tenant1SendingClient.startWorking();
 
-        AndesClient tenant1SendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "");
-        tenant1SendingClient2.startWorking();
+
 
         boolean tenant1ReceiveSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient1,
                 expectedMessageCount, runTime);
@@ -86,10 +83,8 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                 expectedMessageCount, runTime);
 
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
-        boolean tenant1Send1Success = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient2, sendMessageCount);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertTrue(tenant1Send1Success, "Sending failed for tenant 1 user 2.");
         Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1.");
         Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2.");
         Assert.assertEquals(expectedMessageCount,adminReceivingClient.getReceivedTopicMessagecount());
