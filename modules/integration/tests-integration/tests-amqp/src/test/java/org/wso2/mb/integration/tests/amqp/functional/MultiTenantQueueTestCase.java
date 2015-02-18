@@ -29,10 +29,10 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 /**
- * Testing for multi tenant topics - topic specific test case
+ * Testing for multi tenant - queues specific test case
  */
-public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
-    private static final Log log = LogFactory.getLog(MultiTenantTopicTestCase.class);
+public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
+    private static final Log log = LogFactory.getLog(MultiTenantQueueTestCase.class);
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
@@ -40,7 +40,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    /*@Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
+/*    @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
     public void performSingleTenantMultipleUserTopicTestCase() {
         int sendMessageCount = 200;
         int runTime = 40;
@@ -48,26 +48,26 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         // Start receiving clients (admin, user1, user2)
 
-        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
+        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
                 "admin!topictenant1.com", "admin");
         adminReceivingClient.startWorking();
 
-        AndesClient tenant1ReceivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
+        AndesClient tenant1ReceivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "queue:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
                 "topictenantuser1!topictenant1.com", "topictenantuser1");
         tenant1ReceivingClient1.startWorking();
 
-        AndesClient tenant1ReceivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
+        AndesClient tenant1ReceivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "queue:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
                 "topictenantuser2!topictenant1.com", "topictenantuser2");
         tenant1ReceivingClient2.startWorking();
 
         // Start sending clients (tenant1, tenant2 and admin)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:topictenant1.com/tenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "","topictenantuser1!topictenant1.com", "topictenantuser1");
 
@@ -90,39 +90,39 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(expectedMessageCount,adminReceivingClient.getReceivedTopicMessagecount());
         Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1.");
 
-    }*/
-
+    }
+*/
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
-    public void performMultipleTenantTopicTestCase() {
+    public void performMultipleTenantQueueTestCase() {
         int sendMessageCount = 100;
         int runTime = 20;
         int expectedMessageCount = 200;
 
         // Start receiving clients (tenant1, tenant2 and admin)
-        AndesClient tenant1ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
+        AndesClient tenant1ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:topictenant1.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
                 "topictenantuser1!topictenant1.com", "topictenantuser1");
         tenant1ReceivingClient.startWorking();
 
-        AndesClient tenant2ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
+        AndesClient tenant2ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:topictenant2.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
                 "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
                 "topictenantuser1!topictenant2.com", "topictenantuser1");
         tenant2ReceivingClient.startWorking();
 
         // Start sending clients (tenant1, tenant2 and admin)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:topictenant2.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
-                "topictenantuser1!topictenant1.com", "topictenantuser1");
+                "topictenantuser1!topictenant2.com", "topictenantuser1");
 
         tenant1SendingClient.startWorking();
 
-        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
+        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:topictenant1.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
-                "topictenantuser2!topictenant2.com", "topictenantuser2");
+                "topictenantuser1!topictenant1.com", "topictenantuser1");
         tenant2SendingClient.startWorking();
 
         boolean tenet1ReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient,
@@ -135,8 +135,8 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(sendMessageCount,tenant1ReceivingClient.getReceivedTopicMessagecount(),"Tenant 1 client received the message published to Tenant2");
-        Assert.assertEquals(sendMessageCount,tenant2ReceivingClient.getReceivedTopicMessagecount(),"Tenant 2 client received the message published to Tenant1");
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(),sendMessageCount,"Tenant 2 client received the message published to Tenant1");
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(),sendMessageCount,"Tenant 1 client received the message published to Tenant2");
 
 
     }

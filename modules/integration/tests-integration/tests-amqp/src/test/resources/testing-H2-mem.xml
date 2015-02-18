@@ -24,7 +24,7 @@
 
         <classes>
             <!-- Restart the server in H2 in-memory mode -->
-            <class name="org.wso2.mb.integration.tests.amqp.functional.StartH2MemMode"/>
+          <!--  <class name="org.wso2.mb.integration.tests.amqp.functional.StartH2MemMode"/>-->
 
             <!-- functional test cases -->
 

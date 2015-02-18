@@ -43,10 +43,15 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
+
 -->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantQueueTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantTopicTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>-->
+
 
             <!-- Topic -->
-           <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
+           <!--<class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantTopicTestCase"/>-->
    <!--         <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
