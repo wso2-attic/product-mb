@@ -117,6 +117,6 @@ public class QueueMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
 //
 //        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order");
 //
-//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate message are available.");
+//        Assert.assertEquals(receivingClient.getDuplicatedMessages().keySet().size(), 0, "Duplicate message are available.");
     }
 }

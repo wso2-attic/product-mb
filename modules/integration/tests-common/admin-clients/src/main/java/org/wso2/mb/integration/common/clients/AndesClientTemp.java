@@ -477,7 +477,7 @@ public class AndesClientTemp {
             } else if (operation.equals("checkOrder")) {
                 log.info("MESSAGE ORDER PRESERVED: " + andesClientOutputParser.checkIfMessagesAreInOrder());
             } else if (operation.equals("clearFile")) {
-                andesClientOutputParser.clearFile();
+//                andesClientOutputParser.clearFile();
             } else {
                 log.info("analyse operation not found...");
             }
@@ -543,7 +543,7 @@ public class AndesClientTemp {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return andesClientOutputParser.checkIfMessagesAreDuplicated();
+        return andesClientOutputParser.getDuplicatedMessages();
     }
 
     public boolean checkIfMessagesAreInOrder() {

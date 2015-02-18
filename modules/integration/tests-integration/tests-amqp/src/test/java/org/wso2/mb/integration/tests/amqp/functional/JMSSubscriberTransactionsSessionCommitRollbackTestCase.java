@@ -150,7 +150,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
 //
 //        AndesClientUtils.sleepForInterval(1000);
 //
-//        Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
+//        Map<Long, Integer> duplicateMessages = receivingClient.getDuplicatedMessages();
 //
 //        boolean expectedCountDelivered = false;
 //        if (duplicateMessages != null) {

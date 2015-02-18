@@ -116,6 +116,6 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
 //
 //        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(), "Messages are not in order.");
 //
-//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().keySet().size(), 0, "Duplicate messages received.");
+//        Assert.assertEquals(receivingClient.getDuplicatedMessages().keySet().size(), 0, "Duplicate messages received.");
     }
 }

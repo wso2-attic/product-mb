@@ -16,14 +16,13 @@
  *   under the License.
  */
 
-package org.wso2.mb.integration.tests.jms.expiration;
+package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -31,20 +30,22 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientExcept
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
-import org.wso2.mb.integration.tests.JMSTestConstants;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
-
 import java.io.IOException;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * This class includes unit tests to verify that messages with JMS expiration are properly removed when delivering to
  * non-durable topics.
  */
 public class MixedTopicTestCase extends MBIntegrationBaseTest {
+
+    private static final long SEND_COUNT = 1000L;
+    private static final long SEND_COUNT_WITHOUT_EXPIRATION = 600L;
+    private static final long SEND_COUNT_WITH_EXPIRATION = SEND_COUNT - SEND_COUNT_WITHOUT_EXPIRATION;
+    private static final long EXPECTED_COUNT = SEND_COUNT_WITHOUT_EXPIRATION;
+    private static final long EXPIRATION_TIME = 5L;
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
@@ -58,34 +59,25 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
      * 3. Verify that only messages without expiry have been received and that both types of messages have been sent.
      */
     @Test(groups = "wso2.mb", description = "Single topic send-receive test case with jms expiration")
-    public void performSingleTopicSendReceiveTestCase()
+    public void performSingleExpiryTopicSendReceiveTestCase()
             throws AndesClientException, NamingException, JMSException, IOException {
-
-        long expectedMessageCountFromSubscriberSession = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT *
-                (JMSTestConstants.SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY / 100);
-
-        long messageCountWithExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants
-                .SEND_MESSAGE_PERCENTAGE_WITH_EXPIRY / 100);
-
-        long messageCountWithoutExpiration = JMSTestConstants.DEFAULT_TOTAL_SEND_MESSAGE_COUNT * (JMSTestConstants
-                .SEND_MESSAGE_PERCENTAGE_WITHOUT_EXPIRY / 100);
 
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "jmsSingleTopic");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
         // Amount of message to receive
-        consumerConfig.setMaximumMessagesToReceived(expectedMessageCountFromSubscriberSession);
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
-        consumerConfig.setPrintsPerMessageCount(expectedMessageCountFromSubscriberSession/10L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "jmsSingleTopic");
-        publisherConfigWithoutExpiration.setPrintsPerMessageCount(messageCountWithoutExpiration / 10L);
-        publisherConfigWithoutExpiration.setNumberOfMessagesToSend(messageCountWithoutExpiration);
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
+        publisherConfigWithoutExpiration.setPrintsPerMessageCount(SEND_COUNT_WITHOUT_EXPIRATION / 10L);
+        publisherConfigWithoutExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITHOUT_EXPIRATION);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "jmsSingleTopic");
-        publisherConfigWithExpiration.setPrintsPerMessageCount(messageCountWithExpiration / 10L);
-        publisherConfigWithExpiration.setNumberOfMessagesToSend(messageCountWithExpiration);
-        publisherConfigWithExpiration.setJMSMessageExpiryTime(100L);
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
+        publisherConfigWithExpiration.setPrintsPerMessageCount(SEND_COUNT_WITH_EXPIRATION / 10L);
+        publisherConfigWithExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITH_EXPIRATION);
+        publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME);
 
 
         AndesClient consumerClient = new AndesClient(consumerConfig);
@@ -99,10 +91,10 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), messageCountWithoutExpiration, "Message send failed");
-        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), messageCountWithExpiration, "Message send failed");
+        Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), SEND_COUNT_WITHOUT_EXPIRATION, "Message send failed for publisherClientWithoutExpiration");
+        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), SEND_COUNT_WITH_EXPIRATION, "Message send failed for publisherClientWithExpiration");
 
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedMessageCountFromSubscriberSession, "Message receiving failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for consumerClient");
 
 
 

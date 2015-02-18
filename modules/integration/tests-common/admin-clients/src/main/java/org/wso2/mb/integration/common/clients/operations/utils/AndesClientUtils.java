@@ -1,3 +1,20 @@
+/*
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.wso2.mb.integration.common.clients.operations.utils;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,35 +32,65 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class provides functionality to evaluate Andes Client consumers and publishers.
+ */
 public class AndesClientUtils {
+    /**
+     * The print writer to print received messages to a file.
+     */
     private static PrintWriter receivedMessagePrintWriter;
+
+    /**
+     * The print write to print statistics such as TPS and etc to a file.
+     */
     private static PrintWriter statisticsPrintWriter;
     private static Logger log = Logger.getLogger(AndesClientUtils.class);
 
-    // TODO : check for missing flushers
+    /**
+     * Waits until no messages are received. The waiting is done by using a loop checking whether
+     * any new messages are received than the previous iteration. In each iteration it will wait for
+     * a certain time to make sure that message counter changes until no change is detected in the
+     * message counters.
+     *
+     * @param client The consumer client
+     * @param waitTimeTillMessageCounterChanges The amount of milliseconds to wait for new messages
+     *                                          are received.
+     * @throws JMSException
+     */
     public static void waitUntilNoMessagesAreReceivedAndShutdownClients(AndesClient client,
                                                                         long waitTimeTillMessageCounterChanges)
             throws JMSException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
 
-        // Check each 10 second if new messages have been received, if not shutdown clients.
-        // If no message are received this will wait for 20 seconds before shutting down clients.
+        /**
+         * At each iteration it will check whether the message count has changed than the previous
+         * iteration
+         */
         while (currentMessageCount != previousMessageCount) {
             try {
+                // Waits till the consumer client received more messages.
                 TimeUnit.MILLISECONDS.sleep(waitTimeTillMessageCounterChanges);
             } catch (InterruptedException e) {
                 log.error("Error waiting for receiving messages.", e);
             }
+            // Updating message counters
             previousMessageCount = currentMessageCount;
             currentMessageCount = client.getReceivedMessageCount();
         }
 
         log.info("Message count received by consumer : " + Long.toString(client.getReceivedMessageCount()));
+        // Stopping the consumer client
         client.stopClient();
+        // Prints print writer contents to files.
         flushPrintWriters();
     }
 
+    /**
+     * Sleeps for a certain time.
+     * @param milliseconds Sleep time in milliseconds.
+     */
     public static void sleepForInterval(long milliseconds) {
         if (0 < milliseconds) {
             try {
@@ -54,7 +101,12 @@ public class AndesClientUtils {
         }
     }
 
-
+    /**
+     * Creates a file.
+     * @param filePathToRead File path to read content.
+     * @param filePathToCreate File path to store content
+     * @param sizeInKB Size of the file in KB.
+     */
     public static void createTestFileToSend(String filePathToRead, String filePathToCreate,
                                             int sizeInKB) {
         String sampleKB10StringToWrite = "";
@@ -112,6 +164,11 @@ public class AndesClientUtils {
         }
     }
 
+    /**
+     * Writes received messages to a file.
+     * @param content Message content to write.
+     * @param filePath File path where the message content should be written.
+     */
     public static void writeReceivedMessagesToFile(String content, String filePath) {
         if (receivedMessagePrintWriter == null) {
             initializeReceivedMessagesPrintWriter(filePath);
@@ -120,6 +177,11 @@ public class AndesClientUtils {
 
     }
 
+    /**
+     * Writes statistics to a file.
+     * @param content Statistic content.
+     * @param filePath File path where the statistics should be written.
+     */
     public static void writeStatisticsToFile(String content, String filePath) {
         if (statisticsPrintWriter == null) {
             initializeStatisticsPrintWriter(filePath);
@@ -130,7 +192,7 @@ public class AndesClientUtils {
     }
 
     /**
-     * Initialize the print writer. This needs to be invoked before each test case.
+     * Initialize the message content print writer. This needs to be invoked before each test case.
      *
      * @param filePath The file path to write to.
      */
@@ -149,7 +211,7 @@ public class AndesClientUtils {
     }
 
     /**
-     * Initialize the print writer. This needs to be invoked before each test case.
+     * Initialize the statistics print writer. This needs to be invoked before each test case.
      *
      * @param filePath The file path to write to.
      */
@@ -168,6 +230,9 @@ public class AndesClientUtils {
         }
     }
 
+    /**
+     * Prints print writers to file paths.
+     */
     public static void flushPrintWriters() {
         if (receivedMessagePrintWriter != null) {
             receivedMessagePrintWriter.flush();

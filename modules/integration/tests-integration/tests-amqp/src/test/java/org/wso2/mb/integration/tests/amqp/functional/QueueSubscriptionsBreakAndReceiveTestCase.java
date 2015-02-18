@@ -58,7 +58,8 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
 
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueueSubscriptionsBreakAndReceiveTestCase()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws AndesClientException, NamingException, JMSException, IOException,
+                   CloneNotSupportedException {
 
 
         // Creating a initial JMS consumer client configuration
@@ -67,37 +68,66 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // Prints per message
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "breakSubscriberQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig);
-        consumerClient.startClient();
+        AndesClientUtils.initializeReceivedMessagesPrintWriter((consumerConfig.getFilePathToWriteReceivedMessages()));
+
+        AndesClient firstConsumerClient = new AndesClient(consumerConfig);
+        firstConsumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(firstConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
 
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for initial consumer.");
+        Assert.assertEquals(firstConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for first consumer.");
 
-        long totalMessageCountReceived = consumerClient.getReceivedMessageCount();
+        long totalMessageCountReceived = firstConsumerClient.getReceivedMessageCount();
+
+        AndesClient secondsConsumerClient = new AndesClient(consumerConfig.clone());
+        secondsConsumerClient.startClient();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondsConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(secondsConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for seconds consumer.");
+        totalMessageCountReceived = totalMessageCountReceived + secondsConsumerClient.getReceivedMessageCount();
+
+        AndesClient thirdConsumerClient = new AndesClient(consumerConfig.clone());
+        thirdConsumerClient.startClient();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(thirdConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(thirdConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for third consumer.");
+        totalMessageCountReceived = totalMessageCountReceived + thirdConsumerClient.getReceivedMessageCount();
+
+        AndesClient forthConsumerClient = new AndesClient(consumerConfig.clone());
+        forthConsumerClient.startClient();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(forthConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(forthConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for forth consumer.");
+        totalMessageCountReceived = totalMessageCountReceived + forthConsumerClient.getReceivedMessageCount();
+
+        AndesClient fifthConsumerClient = new AndesClient(consumerConfig.clone());
+        fifthConsumerClient.startClient();
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(fifthConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        Assert.assertEquals(fifthConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for fifth consumer.");
+        totalMessageCountReceived = totalMessageCountReceived + fifthConsumerClient.getReceivedMessageCount();
+
 
         //anyway wait one more iteration to verify no more messages are delivered
-        for (int count = 1; count < NUMBER_OF_SUBSCRIPTION_BREAKS; count++) {
-
-            AndesClient newConsumerClient = new AndesClient(consumerConfig);
-            newConsumerClient.startClient();
-//            long waitingFactor = 4L;
-//            log.info("Waiting for " + (AndesClientConstants.DEFAULT_RUN_TIME * waitingFactor) / 1000 + " seconds to see updates on received message counter.");
-            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
-            totalMessageCountReceived = totalMessageCountReceived + newConsumerClient.getReceivedMessageCount();
+//        for (int count = 1; count < NUMBER_OF_SUBSCRIPTION_BREAKS; count++) {
+//
 //            AndesClientUtils.sleepForInterval(1000L);
-//            Assert.assertEquals(newConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-        }
+//            AndesClient newConsumerClient = new AndesClient(consumerConfig);
+//            newConsumerClient.startClient();
+////            long waitingFactor = 4L;
+////            log.info("Waiting for " + (AndesClientConstants.DEFAULT_RUN_TIME * waitingFactor) / 1000 + " seconds to see updates on received message counter.");
+//            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
+//            totalMessageCountReceived = totalMessageCountReceived + newConsumerClient.getReceivedMessageCount();
+////            AndesClientUtils.sleepForInterval(1000L);
+////            Assert.assertEquals(secondsConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+//        }
 
         Assert.assertEquals(totalMessageCountReceived, SEND_COUNT, "Expected message count was not received.");
 

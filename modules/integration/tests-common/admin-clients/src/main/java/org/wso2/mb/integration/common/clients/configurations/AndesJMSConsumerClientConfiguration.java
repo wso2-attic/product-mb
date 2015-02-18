@@ -1,3 +1,20 @@
+/*
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.wso2.mb.integration.common.clients.configurations;
 
 import org.apache.commons.lang.StringUtils;
@@ -6,44 +23,131 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientExcept
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
+/**
+ * This class represents the Andes client consumer configuration. The class contains properties
+ * related to JMS message consuming.
+ */
 public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfiguration {
+    /**
+     * The logger used in logging information, warnings, errors and etc.
+     */
     private static Logger log = Logger.getLogger(AndesJMSConsumerClientConfiguration.class);
+
+    /**
+     * Message count at which the consumer un-subscribes.
+     */
     private long unSubscribeAfterEachMessageCount = Long.MAX_VALUE;
+
+    /**
+     * Message count at which the session is rolled back.
+     */
     private long rollbackAfterEachMessageCount = Long.MAX_VALUE;
+
+    /**
+     * Message count at which the session is committed.
+     */
     private long commitAfterEachMessageCount = Long.MAX_VALUE;
+
+    /**
+     * Message count at which a message is acknowledge.
+     */
     private long acknowledgeAfterEachMessageCount = Long.MAX_VALUE;
+
+    /**
+     * The file path to write received messages.
+     */
     private String filePathToWriteReceivedMessages = null;
+
+    /**
+     * Maximum messages to receiver.
+     */
     private long maximumMessagesToReceived = Long.MAX_VALUE;
+
+    /**
+     * Subscription ID for durable topics.
+     */
     private String subscriptionID = null;
+
+    /**
+     * Whether the subscriber is durable.
+     */
     private boolean durable = false;
+
+    /**
+     * The acknowledge mode for messages.
+     */
     private JMSAcknowledgeMode acknowledgeMode = JMSAcknowledgeMode.AUTO_ACKNOWLEDGE;
+
+    /**
+     * Whether the consumer is asynchronously reading messages. Asynchronous message reading implies
+     * that it uses {@link javax.jms.MessageListener} to listen to receiving messages. Synchronous
+     * message reading will use a while loop inside a thread.
+     */
     private boolean async = true;
+
+    /**
+     * JMS selectors string for filtering.
+     */
     private String selectors = null;
 
+    /**
+     * Creates a consumer configuration with default values.
+     */
     public AndesJMSConsumerClientConfiguration() {
         super();
     }
 
+    /**
+     * Creates a consumer with a given exchange type and destination with default connection string.
+     *
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
     public AndesJMSConsumerClientConfiguration(
             ExchangeType exchangeType, String destinationName) {
         super(exchangeType, destinationName);
     }
 
+    /**
+     * Creates a consumer with a given AMQP transport connection string and a given exchange type
+     * and destination.
+     *
+     * @param connectionString The AMQP connection string.
+     * @param exchangeType     The exchange type.
+     * @param destinationName  The destination name.
+     */
     public AndesJMSConsumerClientConfiguration(String connectionString,
                                                ExchangeType exchangeType,
                                                String destinationName) {
         super(connectionString, exchangeType, destinationName);
     }
 
+    /**
+     * Creates a consumer with a given host name, port for connection string and exchange type and
+     * destination name.
+     *
+     * @param hostName        The host name for connection string.
+     * @param port            The port for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
     public AndesJMSConsumerClientConfiguration(String hostName, int port,
-                                                ExchangeType exchangeType,
-                                                String destinationName) {
+                                               ExchangeType exchangeType,
+                                               String destinationName) {
         super(hostName, port, exchangeType, destinationName);
     }
 
+    /**
+     * Creates a consumer with a given user name, password, host name, password for connection
+     * string and exchange type and destination name.
+     *
+     * @param userName        The user name for the connection string.
+     * @param password        The password for the connection string.
+     * @param hostName        The host name for the connection string.
+     * @param port            The port for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
     public AndesJMSConsumerClientConfiguration(String userName, String password,
                                                String hostName, int port,
                                                ExchangeType exchangeType,
@@ -61,10 +165,21 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         super(config);
     }
 
+    /**
+     * Gets the message count to un-subscribe the consumer.
+     *
+     * @return The message count to un-subscribe the consumer.
+     */
     public long getUnSubscribeAfterEachMessageCount() {
         return unSubscribeAfterEachMessageCount;
     }
 
+    /**
+     * Sets message count to un-subscribe the consumer.
+     *
+     * @param unSubscribeAfterEachMessageCount The message count to un-subscribe the consumer.
+     * @throws AndesClientException
+     */
     public void setUnSubscribeAfterEachMessageCount(long unSubscribeAfterEachMessageCount)
             throws AndesClientException {
         if (0 < unSubscribeAfterEachMessageCount) {
@@ -74,10 +189,22 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         }
     }
 
+    /**
+     * Gets the message count at which the session should be rolled-back.
+     *
+     * @return The message count at which the session should be rolled-back.
+     */
     public long getRollbackAfterEachMessageCount() {
         return rollbackAfterEachMessageCount;
     }
 
+    /**
+     * Sets message count at which the session should be rolled-back.
+     *
+     * @param rollbackAfterEachMessageCount The message count at which the session should be
+     *                                      rolled-back.
+     * @throws AndesClientException
+     */
     public void setRollbackAfterEachMessageCount(long rollbackAfterEachMessageCount)
             throws AndesClientException {
         if (0 < rollbackAfterEachMessageCount) {
@@ -87,10 +214,22 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         }
     }
 
+    /**
+     * Gets the message count at which the session should be committed.
+     *
+     * @return The message count at which the session should be committed.
+     */
     public long getCommitAfterEachMessageCount() {
         return commitAfterEachMessageCount;
     }
 
+    /**
+     * Sets the message count at which the session should be committed.
+     *
+     * @param commitAfterEachMessageCount The message count at which the session should be
+     *                                    committed.
+     * @throws AndesClientException
+     */
     public void setCommitAfterEachMessageCount(long commitAfterEachMessageCount)
             throws AndesClientException {
         if (0 < commitAfterEachMessageCount) {
@@ -100,10 +239,22 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         }
     }
 
+    /**
+     * Gets the message count at which a message should be acknowledged after.
+     *
+     * @return The the message count at which a message should be acknowledged after.
+     */
     public long getAcknowledgeAfterEachMessageCount() {
         return acknowledgeAfterEachMessageCount;
     }
 
+    /**
+     * Sets the message count at which a message should be acknowledged after.
+     *
+     * @param acknowledgeAfterEachMessageCount The the message count at which a message should be
+     *                                         acknowledged after.
+     * @throws AndesClientException
+     */
     public void setAcknowledgeAfterEachMessageCount(long acknowledgeAfterEachMessageCount)
             throws AndesClientException {
         if (0 < acknowledgeAfterEachMessageCount) {
@@ -113,94 +264,170 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         }
     }
 
+    /**
+     * Gets the file path where the received messages should be written to,
+     *
+     * @return The file path where the received messages should be written to,
+     */
     public String getFilePathToWriteReceivedMessages() {
         return filePathToWriteReceivedMessages;
     }
 
-    public void setFilePathToWriteReceivedMessages(String filePathToWriteReceivedMessages){
-            this.filePathToWriteReceivedMessages = filePathToWriteReceivedMessages;
+    /**
+     * Sets the file path where the received messages should be written to,
+     *
+     * @param filePathToWriteReceivedMessages The file path where the received messages should be
+     *                                        written to,
+     */
+    public void setFilePathToWriteReceivedMessages(String filePathToWriteReceivedMessages) {
+        this.filePathToWriteReceivedMessages = filePathToWriteReceivedMessages;
     }
 
+    /**
+     * Gets the maximum number of messages to received.
+     *
+     * @return The maximum number of messages to received.
+     */
     public long getMaximumMessagesToReceived() {
         return this.maximumMessagesToReceived;
     }
 
+    /**
+     * Sets the maximum number of messages to received.
+     *
+     * @param maximumMessagesToReceived The maximum number of messages to received.
+     * @throws AndesClientException
+     */
     public void setMaximumMessagesToReceived(long maximumMessagesToReceived)
             throws AndesClientException {
         if (0 < maximumMessagesToReceived) {
             this.maximumMessagesToReceived = maximumMessagesToReceived;
         } else {
-            throw new AndesClientException("The maximum number of messages to receive cannot be less than 1");
+            throw new AndesClientException("The maximum number of messages to receive cannot be " +
+                                           "less than 1");
         }
     }
 
+    /**
+     * Gets the subscription ID.
+     *
+     * @return The subscription ID.
+     */
     public String getSubscriptionID() {
         return subscriptionID;
     }
 
+    /**
+     * Sets the subscription ID
+     *
+     * @param subscriptionID The subscription ID
+     * @throws AndesClientException
+     */
     public void setSubscriptionID(String subscriptionID) throws AndesClientException {
-        if(this.durable){
-            if(StringUtils.isNotEmpty(subscriptionID)){
+        if (this.durable) {
+            if (StringUtils.isNotEmpty(subscriptionID)) {
                 this.subscriptionID = subscriptionID;
-            }else{
-                throw new AndesClientException("Subscription ID cannot be null or empty for an durable topic");
+            } else {
+                throw new AndesClientException("Subscription ID cannot be null or empty for an " +
+                                               "durable topic");
             }
-        }else{
+        } else {
             this.subscriptionID = subscriptionID;
             log.warn("Setting subscription ID is not necessary for non-durable topics or queues");
         }
     }
 
+    /**
+     * Checks whether the subscriber/consumer is durable.
+     *
+     * @return true if subscriber/consumer is durable, false otherwise.
+     */
     public boolean isDurable() {
         return durable;
     }
 
+    /**
+     * Sets values for a durable subscription
+     *
+     * @param durable        True if subscription is durable, false otherwise.
+     * @param subscriptionID The subscription ID.
+     * @throws AndesClientException
+     */
     public void setDurable(boolean durable, String subscriptionID) throws AndesClientException {
-
-        if(durable){
-            if(StringUtils.isNotEmpty(subscriptionID)){
+        if (durable) {
+            if (StringUtils.isNotEmpty(subscriptionID)) {
                 this.subscriptionID = subscriptionID;
-            }else{
-                throw new AndesClientException("Subscription ID cannot be null or empty for an durable topic");
+            } else {
+                throw new AndesClientException("Subscription ID cannot be null or empty for an " +
+                                               "durable topic");
             }
         }
 
         this.durable = durable;
     }
 
+    /**
+     * Gets acknowledge mode for messages.
+     *
+     * @return The acknowledge mode for messages.
+     */
     public JMSAcknowledgeMode getAcknowledgeMode() {
         return acknowledgeMode;
     }
 
     /**
-     * int AUTO_ACKNOWLEDGE = 1;
-     * int CLIENT_ACKNOWLEDGE = 2;
-     * int DUPS_OK_ACKNOWLEDGE = 3;
-     * int SESSION_TRANSACTED = 0;
+     * Sets acknowledge mode for messages.
      *
-     * @param acknowledgeMode
+     * @param acknowledgeMode The acknowledge mode for messages.
      * @throws AndesClientException
      */
     public void setAcknowledgeMode(JMSAcknowledgeMode acknowledgeMode) throws AndesClientException {
         this.acknowledgeMode = acknowledgeMode;
     }
 
+    /**
+     * Checks whether consumer is asynchronously reading messages.
+     *
+     * @return true if messages are read asynchronously, false otherwise. Asynchronously message
+     * reading implies that it uses {@link javax.jms.MessageListener} to listen to receiving
+     * messages.
+     */
     public boolean isAsync() {
         return async;
     }
 
+    /**
+     * Sets the consumer to read message asynchronously. Asynchronously message
+     * reading implies that it uses {@link javax.jms.MessageListener} to listen to receiving
+     * messages.
+     *
+     * @param async true if messages should be read asynchronously, false otherwise.
+     */
     public void setAsync(boolean async) {
         this.async = async;
     }
 
+    /**
+     * Gets the selectors query used by the consumer for filtering.
+     *
+     * @return The selectors query used by the consumer for filtering.
+     */
     public String getSelectors() {
         return selectors;
     }
 
+    /**
+     * Sets the selectors query used by the consumer for filtering.
+     *
+     * @param selectors The selectors query used by the consumer for filtering.
+     */
     public void setSelectors(String selectors) {
         this.selectors = selectors;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder toStringVal = new StringBuilder();
@@ -218,6 +445,9 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         return toStringVal.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AndesJMSConsumerClientConfiguration clone() throws CloneNotSupportedException {
         return (AndesJMSConsumerClientConfiguration) super.clone();

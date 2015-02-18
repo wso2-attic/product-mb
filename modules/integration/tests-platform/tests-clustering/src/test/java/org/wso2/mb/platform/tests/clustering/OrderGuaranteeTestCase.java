@@ -139,7 +139,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
 //
 //        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
 //                          "Messages did not receive in order.");
-//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+//        Assert.assertEquals(receivingClient.getDuplicatedMessages().size(), 0,
 //                "Messages are not duplicated.");
     }
 
@@ -224,7 +224,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
 //
 //        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
 //                          "Messages did not receive in order.");
-//        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
+//        Assert.assertEquals(receivingClient.getDuplicatedMessages().size(), 0,
 //                "Messages are not duplicated.");
     }
 

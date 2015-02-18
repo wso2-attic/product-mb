@@ -96,7 +96,7 @@ public class AndesClientUtilsTemp {
                 log.info("SUCCESS: Received expected " + messageCountExpected + ". Received q=" + client
                         .getReceivedqueueMessagecount() + " t=" + client.getReceivedTopicMessagecount());
                 flushPrintWriter();
-                log.info("SHUTTING DOWN AT UTILSTEMP");
+//                log.info("SHUTTING DOWN AT UTILSTEMP");
                 client.shutDownClient();
                 return true;
             } else if (client.getReceivedqueueMessagecount() > messageCountExpected || client

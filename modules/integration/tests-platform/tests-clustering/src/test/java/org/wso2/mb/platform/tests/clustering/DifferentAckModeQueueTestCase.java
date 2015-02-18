@@ -24,7 +24,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
@@ -33,11 +32,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * This class includes test cases to test different ack modes for queues
@@ -62,7 +56,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * @throws Exception
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for queue")
-    public void testSessionTransactedAckModeForQueue() throws Exception {
+    public void testSessionTransactedAckModeForQueueTestCase() throws Exception {
         // Expected message count
         int expectedCount = 2000;
         // Number of messages send

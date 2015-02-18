@@ -39,8 +39,15 @@ import java.io.IOException;
  */
 public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * The amount of messages to be sent.
+     */
     private static final long SEND_COUNT = 1500L;
-    private static final long EXPECTED_COUNT = 1500L;
+
+    /**
+     * The amount of messages to be expected.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
 
     /**
      * Prepare environment for tests
@@ -65,7 +72,6 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueue");
-        // AUTO_ACKNOWLEDGE = 1;
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
@@ -145,40 +151,5 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(sendingClient.getSentMessageCount(), SEND_COUNT, "Messaging sending failed");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Total number of received messages should be equal to total number of sent messages");
 
-
-//        //Create receiving client
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:autoAckTestQueue",
-//                                                              "100", "false", RUN_TIME.toString(), EXPECTED_COUNT.toString(),
-//                                                              "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=1000",
-//                                                              "");
-//        //Start receiving client
-//        receivingClient.startWorking();
-//        //Create sending client
-//        AndesClientTemp sendingClient =
-//                new AndesClientTemp("send", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false", RUN_TIME.toString(),
-//                                    SEND_COUNT.toString(), "1", "ackMode=1,delayBetweenMsg=10,stopAfter=" + SEND_COUNT, "");
-//        //Start sending client
-//        sendingClient.startWorking();
-//        //Wait until messages receive
-//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, EXPECTED_COUNT, RUN_TIME);
-//        Integer totalMessagesReceived = receivingClient.getReceivedqueueMessagecount();
-//        receivingClient.shutDownClient();
-//        //Stop receiving client
-//        receivingClient.shutDownClient();
-//        //Create new receiving client
-//        AndesClientTemp receivingClientAfterDrop =
-//                new AndesClientTemp("receive", "127.0.0.1:5672", "queue:autoAckTestQueue", "100", "false",
-//                                    RUN_TIME.toString(), EXPECTED_COUNT.toString(), "1",
-//                                    "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=2000", "");
-////        Start new receiving client
-//        receivingClientAfterDrop.startWorking();
-//        //Wait until messages receive
-//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClientAfterDrop, EXPECTED_COUNT, 15);
-//        totalMessagesReceived = totalMessagesReceived + receivingClientAfterDrop.getReceivedqueueMessagecount();
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfPublisherIsSuccess(sendingClient, SEND_COUNT);
-//        Assert.assertTrue(sendSuccess, "Messaging sending failed");
-//        //To pass this test received number of messages equals to sent messages
-//        Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT,
-//                            "Total number of received messages should be equal to total number of sent messages");
     }
 }
