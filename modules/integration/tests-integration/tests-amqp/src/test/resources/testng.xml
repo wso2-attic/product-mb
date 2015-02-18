@@ -46,7 +46,7 @@
 -->
 
             <!-- Topic -->
-            <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
+           <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantTopicTestCase"/>-->
    <!--         <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
