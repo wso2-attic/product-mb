@@ -69,31 +69,9 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
 
         int totalMsgCountReceived = receivingClient.getReceivedqueueMessagecount();
 
-        success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
 
-        Assert.assertTrue(success, "Message receiving failed.");
 
-        totalMsgCountReceived = totalMsgCountReceived + receivingClient.getReceivedqueueMessagecount();
-
-        success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        Assert.assertTrue(success, "Message receiving failed.");
-
-        totalMsgCountReceived = totalMsgCountReceived + receivingClient.getReceivedqueueMessagecount();
-
-        success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        Assert.assertTrue(success, "Message receiving failed.");
-
-        totalMsgCountReceived = totalMsgCountReceived + receivingClient.getReceivedqueueMessagecount();
-
-        success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        Assert.assertTrue(success, "Message receiving failed.");
-
-        totalMsgCountReceived = totalMsgCountReceived + receivingClient.getReceivedqueueMessagecount();
-
-       /* //anyway wait one more iteration to verify no more messages are delivered
+        //anyway wait one more iteration to verify no more messages are delivered
         for (int count = 1; count < numberOfSubscriptionBreaks; count++) {
 
             receivingClient.startWorking();
@@ -101,7 +79,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase {
             AndesClientUtils.sleepForInterval(2000);
             totalMsgCountReceived += receivingClient.getReceivedqueueMessagecount();
            // AndesClientUtils.sleepForInterval(1000);
-        }*/
+        }
 
         Assert.assertEquals(totalMsgCountReceived, sendCount.intValue(), "Expected message count was not received.");
 
