@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AndesClient {
-    public static AtomicInteger count  =new AtomicInteger(0);
     private final Log log = LogFactory.getLog(AndesClient.class);
 
     private AtomicInteger queueMessageCounter = new AtomicInteger(0);

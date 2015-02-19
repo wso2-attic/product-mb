@@ -20,7 +20,6 @@ package org.wso2.mb.integration.common.clients.operations.topic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.*;
 
 import javax.jms.*;
@@ -193,18 +192,11 @@ public class TopicMessageReceiver implements Runnable {
                         isToPrintEachMessage, fileToWriteReceivedMessages, stopAfter, unSubscribeAfter, ackAfterEach,
                         rollbackAfterEach, commitAfterEach);
                 topicSubscriber.setMessageListener(messageListener);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             } else {
 
                 int localMessageCount = 0;
                 while (true) {
                     Message message = topicSubscriber.receive();
-                    log.info("Message Received subs " + message);
-                    AndesClient.count.incrementAndGet();
                     if (message != null && message instanceof TextMessage) {
                         messageCounter.incrementAndGet();
                         localMessageCount++;
@@ -226,7 +218,6 @@ public class TopicMessageReceiver implements Runnable {
                             AndesClientUtils.writeToFile(textMessage.getText(), fileToWriteReceivedMessages);
                         }
                     }
-
 
                     if (messageCounter.get() % ackAfterEach == 0) {
                         if (topicSession.getAcknowledgeMode() == QueueSession.CLIENT_ACKNOWLEDGE) {
@@ -252,7 +243,6 @@ public class TopicMessageReceiver implements Runnable {
                         stopListening();
                         break;
                     }
-
 
                     if (delayBetweenMessages != 0) {
                         try {
