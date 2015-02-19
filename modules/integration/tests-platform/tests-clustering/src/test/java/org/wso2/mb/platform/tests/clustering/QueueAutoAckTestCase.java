@@ -40,7 +40,7 @@ import java.io.IOException;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Load test in MB clustering.
+ * Load test in MB clustering for queues with auto acknowledge.
  */
 public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
@@ -63,6 +63,12 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
     /**
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
     public void performMillionMessageTestCase()
@@ -72,11 +78,9 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
         AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
 
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
                                                                                                      Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
                                                                                                      ExchangeType.QUEUE, "platformQueueAutoAck");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
@@ -101,52 +105,5 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-
-
-
-
-
-//        String queueNameArg = "queue:LoadTestQueue";
-//
-//        String randomInstanceKeyForReceiver = getRandomMBInstance();
-//
-//        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
-//
-//        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
-//                tempContextForReceiver.getInstance().getPorts().get("amqp");
-//
-//        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                noOfSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
-//
-//        log.info("Number of Subscriber ["+queueListeners.size()+"]");
-//
-//        String randomInstanceKeyForSender = getRandomMBInstance();
-//
-//        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
-//
-//        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
-//                tempContextForSender.getInstance().getPorts().get("amqp");
-//
-//        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
-//                runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
-//
-//        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
-//
-//        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
-//
-//        log.info("Total Received Messages ["+actualReceivedCount+"]");
-//
-//        assertEquals(actualReceivedCount, sendCount);
-//        assertEquals(actualReceivedCount, expectedCount);
     }
 }

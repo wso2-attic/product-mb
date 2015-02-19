@@ -18,8 +18,6 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -44,13 +42,18 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Test class to test queues in clusters
+ */
 public class QueueClusterTestCase extends MBPlatformBaseTest {
 
-    private static final Log log = LogFactory.getLog(QueueClusterTestCase.class);
-
+    /**
+     * Prepare environment for tests.
+     *
+     * @throws Exception
+     */
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
 
@@ -58,6 +61,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         super.initAndesAdminClients();
     }
 
+    /**
+     * Send and receive messages in a single node for a queue
+     *
+     * @throws XPathExpressionException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     */
     @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case")
     public void testSingleQueueSingleNodeSendReceive() throws XPathExpressionException,
                                                               AndesAdminServiceBrokerManagerAdminException,
@@ -65,18 +78,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                                                               AndesClientException, NamingException,
                                                               JMSException {
 
-        int sendCount = 1000;
-        int expectedCount = 1000;
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
 
         String randomInstanceKey = getRandomMBInstance();
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                                                                                      Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
                                                                                                      ExchangeType.QUEUE, "clusterSingleQueue1");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -101,48 +112,17 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
-
-
-//        Integer sendCount = 1000;
-//        Integer runTime = 20;
-//        Integer expectedCount = 1000;
-//
-//        String randomInstanceKey = getRandomMBInstance();
-//
-//        AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
-//
-//        String hostInfo = tempContext.getInstance().getHosts().get("default") + ":" +
-//                tempContext.getInstance().getPorts().get("amqp");
-//
-//        AndesClient receivingClient = new AndesClient("receive", hostInfo
-//                , "queue:singleQueue1",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        randomInstanceKey = getRandomMBInstance();
-//
-//        Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("singleQueue1");
-//
-//        assertTrue(queue.getQueueName().equalsIgnoreCase("singleQueue1"), "Queue created in MB node 1 not exist");
-//
-//        AndesClient sendingClient = new AndesClient("send", hostInfo
-//                , "queue:singleQueue1", "100", "false",
-//                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
-//
-//        assertEquals((receiveSuccess && sendSuccess), true);
     }
 
-
+    /**
+     * Creating the same queue in 2 different nodes.
+     *
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
     @Test(groups = "wso2.mb", description = "Single queue replication")
-    public void testSingleQueueReplication() throws Exception {
+    public void testSingleQueueReplication()
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         String queueName = "singleQueue2";
 
         String randomInstanceKey = getRandomMBInstance();
@@ -172,23 +152,31 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
     }
 
+    /**
+     * Send messages from one node and received messages from another node.
+     *
+     * @throws XPathExpressionException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     */
     @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case")
     public void testSingleQueueMultiNodeSendReceive() throws XPathExpressionException,
                                                              AndesAdminServiceBrokerManagerAdminException,
                                                              IOException, AndesClientException,
                                                              NamingException, JMSException {
-        int sendCount = 1000;
-        int expectedCount = 1000;
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
 
         String randomInstanceKey = getRandomMBInstance();
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                                                                                      Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
                                                                                                      ExchangeType.QUEUE, "clusterSingleQueue3");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -212,48 +200,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
-
-
-//
-//        Integer sendCount = 1000;
-//        Integer runTime = 20;
-//        Integer expectedCount = 1000;
-//
-//        String randomInstanceKey = getRandomMBInstance();
-//        AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
-//
-//        String hostInfo1 = tempContext.getInstance().getHosts().get("default") + ":" +
-//                tempContext.getInstance().getPorts().get("amqp");
-//
-//        AndesClient receivingClient = new AndesClient("receive", hostInfo1
-//                , "queue:singleQueue3",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter="+expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        randomInstanceKey = getRandomMBInstance();
-//        tempContext = getAutomationContextWithKey(randomInstanceKey);
-//
-//        String hostInfo2 = tempContext.getInstance().getHosts().get("default") + ":" +
-//                tempContext.getInstance().getPorts().get("amqp");
-//
-//        AndesClient sendingClient = new AndesClient("send", hostInfo2
-//                , "queue:singleQueue3", "100", "false",
-//                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter="+sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//        boolean sendSuccess = AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount);
-//
-//        assertEquals((receiveSuccess && sendSuccess), true);
     }
 
-
+    /**
+     * Cleanup after running tests.
+     *
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
+     */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy() throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
 
         String randomInstanceKey = getRandomMBInstance();
 

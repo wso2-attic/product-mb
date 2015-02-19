@@ -41,18 +41,20 @@ import java.io.IOException;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Load test in MB clustering.
+ * Load test in MB clustering for queues with different acknowledge modes with the dropping of a
+ * receiver.
  */
 public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
-    private  static final long SEND_COUNT = 100000L;
-    private  static final long EXPECTED_COUNT = SEND_COUNT;
+    private static final long SEND_COUNT = 100000L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
     private static final int NO_OF_SUBSCRIBERS = 50;
     private static final int NO_OF_PUBLISHERS = 50;
 
     private static final long NO_OF_RETURN_MESSAGES = SEND_COUNT / 10;
     private static final int NO_OF_CLIENT_ACK_SUBSCRIBERS = NO_OF_SUBSCRIBERS / 10;
     private static final int NO_OF_AUTO_ACK_SUBSCRIBERS = NO_OF_SUBSCRIBERS - NO_OF_CLIENT_ACK_SUBSCRIBERS;
+
     /**
      * Initialize the test as super tenant user.
      *
@@ -68,6 +70,12 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
      * Send million messages via 50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10
      * CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages and check if AUTO_ACKNOWLEDGE subscribers
      * receive all the messages.
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10 " +
                                             "CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages", enabled = true)
@@ -80,20 +88,17 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
         AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
 
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
                                                                                                      Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
                                                                                                      ExchangeType.QUEUE, "TenPercentReturnQueue");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(NO_OF_RETURN_MESSAGES);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
 
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerReturnConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.QUEUE, "TenPercentReturnQueue");
-        // Amount of message to receive
+                                                                                                           Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
+                                                                                                           ExchangeType.QUEUE, "TenPercentReturnQueue");
         consumerReturnConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerReturnConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerReturnConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
@@ -125,68 +130,5 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-
-
-
-
-
-
-
-
-
-//        Integer noOfReturnMessages = sendCount / 10;
-//        Integer noOfClientAckSubscribers = noOfSubscribers / 10;
-//        Integer noOfAutoAckSubscribers = NO_OF_SUBSCRIBERS - NO_OF_CLIENT_ACK_SUBSCRIBERS;
-//
-//        String queueNameArg = "queue:TenPercentReturnQueue";
-//
-//        String randomInstanceKeyForReceiver = getRandomMBInstance();
-//
-//        AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
-//
-//        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
-//                                  tempContextForReceiver.getInstance().getPorts().get("amqp");
-//
-//        AndesClient receivingClient = new AndesClientTemp("receive", receiverHostInfo, queueNameArg,
-//                                                          "100", "false", runTime.toString(), expectedCount.toString(),
-//                                                          noOfAutoAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.AUTO_ACKNOWLEDGE + ",delayBetweenMsg=0,stopAfter=" + EXPECTED_COUNT, "");
-//
-//        AndesClient receivingReturnClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
-//                                                            "100", "false", runTime.toString(), NO_OF_RETURN_MESSAGES.toString(),
-//                                                            NO_OF_CLIENT_ACK_SUBSCRIBERS.toString(), "listener=true,ackMode=" + QueueSession.CLIENT_ACKNOWLEDGE + ",delayBetweenMsg=0,stopAfter=" + NO_OF_RETURN_MESSAGES, "");
-//
-//        receivingClient.startWorking();
-//        receivingReturnClient.startWorking();
-//
-//        List<QueueMessageReceiver> autoAckListeners = receivingClient.getQueueListeners();
-//        List<QueueMessageReceiver> clientAckListeners = receivingReturnClient.getQueueListeners();
-//        log.info("Number of AUTO ACK Subscriber [" + autoAckListeners.size() + "]");
-//        log.info("Number of CLIENT ACK Subscriber [" + clientAckListeners.size() + "]");
-//
-//        String randomInstanceKeyForSender = getRandomMBInstance();
-//
-//        AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
-//
-//        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
-//                                tempContextForSender.getInstance().getPorts().get("amqp");
-//
-//        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
-//                                                    runTime.toString(), SEND_COUNT.toString(), noOfPublishers.toString(),
-//                                                    "ackMode=1,delayBetweenMsg=0,stopAfter=" + SEND_COUNT, "");
-//
-//        sendingClient.startWorking();
-//
-//        AndesClientUtilsTemp.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentReturnQueue", EXPECTED_COUNT, runTime);
-//
-//        AndesClientUtils.waitUntilExactNumberOfMessagesReceived(receivingReturnClient, "MillionTenPercentReturnQueue", NO_OF_RETURN_MESSAGES, (runTime / 10));
-//
-//        AndesClientUtils.getIfPublisherIsSuccess(sendingClient, SEND_COUNT);
-//
-//        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
-//
-//        log.info("Total Received Messages [" + actualReceivedCount + "]");
-//
-//        assertEquals(actualReceivedCount, SEND_COUNT);
-//        assertEquals(actualReceivedCount, EXPECTED_COUNT);
     }
 }

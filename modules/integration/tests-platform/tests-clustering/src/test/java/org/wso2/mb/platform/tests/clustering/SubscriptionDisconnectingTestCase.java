@@ -18,35 +18,32 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.andes.stub.admin.types.Queue;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
-import static org.testng.Assert.assertTrue;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * This class includes subscription disconnecting and reconnecting tests
  */
 public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
-
-    /**
-     * Class Logger
-     */
-    private static final Log log = LogFactory.getLog(SubscriptionDisconnectingTestCase.class);
 
     /**
      * Prepare environment for tests.
@@ -62,20 +59,23 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
     /**
      * Publish messages to a single node and receive from the same node while reconnecting 4 times.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Same node subscription reconnecting test")
-    public void testSameNodeSubscriptionReconnecting() throws Exception {
+    public void testSameNodeSubscriptionReconnecting()
+            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+                   IOException {
 
         int sendCount = 1000;
-        int expectedCount = sendCount/4;
+        int expectedCount = sendCount / 4;
 
         String brokerUrl = getRandomAMQPBrokerUrl();
 
-
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerUrl, ExchangeType.QUEUE, "singleQueueSubscription1");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -118,120 +118,29 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
                                      consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(totalMessagesReceived, expectedCount*4, "Message receiving failed.");
-
-//        // Max number of seconds to run the client
-//        int maxRunningTime = 20;
-//        // Expected message count for a receiver
-//        int expectedCount = 250;
-//        // Number of messages send
-//        int sendCount = 1000;
-//
-//        String brokerUrl = getRandomAMQPBrokerUrl();
-//
-//        AndesClient receivingClient1 = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-//                                                       "100", "false",
-//                                                       String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient1.startWorking();
-//
-//        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:singleQueue1", "100",
-//                                                    "false",
-//                                                    String.valueOf(maxRunningTime),
-//                                                    String.valueOf(sendCount), "1",
-//                                                    "ackMode=1,delayBetweenMsg=0," +
-//                                                    "stopAfter=" + sendCount,
-//                                                    "");
-//        sendingClient.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 1.");
-//
-//        /** Start 2nd subscriber */
-//        AndesClient receivingClient2 = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-//                                                       "100", "false",
-//                                                       String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient2.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 2.");
-//
-//        /** Start 3rd subscriber */
-//        AndesClient receivingClient3 = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-//                                                       "100", "false",
-//                                                       String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient3.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 3.");
-//
-//        /** Start 4th subscriber */
-//        AndesClient receivingClient4 = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-//                                                       "100", "false",
-//                                                       String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient4.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 4.");
-//
-//        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
-//                          "Message sending failed.");
-//
-//        int allMessagesRecieved = receivingClient1.getReceivedqueueMessagecount()
-//                                  + receivingClient2.getReceivedqueueMessagecount()
-//                                  + receivingClient3.getReceivedqueueMessagecount()
-//                                  + receivingClient4.getReceivedqueueMessagecount();
-//        Assert.assertEquals(allMessagesRecieved, sendCount,
-//                            "All messages are not received.");
+        Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");
     }
 
     /**
      * Publish messages to a single node and receive from random nodes while reconnecting 4 times.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws CloneNotSupportedException
      */
     @Test(groups = "wso2.mb", description = "Random node subscription reconnecting test")
-    public void testDifferentNodeSubscriptionReconnecting() throws Exception {
+    public void testDifferentNodeSubscriptionReconnecting()
+            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+                   IOException, CloneNotSupportedException {
         int sendCount = 1000;
-        int expectedCount = sendCount/4;
+        int expectedCount = sendCount / 4;
 
         String brokerUrl = getRandomAMQPBrokerUrl();
 
-
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerUrl, ExchangeType.QUEUE, "singleQueueSubscription2");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -280,113 +189,17 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
                                      consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(totalMessagesReceived, expectedCount*4, "Message receiving failed.");
-
-
-
-
-
-
-
-//        // Max number of seconds to run the client
-//        int maxRunningTime = 20;
-//        // Expected message count for a receiver
-//        int expectedCount = 250;
-//        // Number of messages send
-//        int sendCount = 1000;
-//
-//        String brokerUrl = getRandomAMQPBrokerUrl();
-//
-//        AndesClient receivingClient1 = new AndesClient("receive", brokerUrl, "queue:singleQueue2",
-//                                                       "100", "false", String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient1.startWorking();
-//
-//        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:singleQueue2", "100",
-//                                                    "false",
-//                                                    String.valueOf(maxRunningTime),
-//                                                    String.valueOf(sendCount), "1",
-//                                                    "ackMode=1,delayBetweenMsg=0," +
-//                                                    "stopAfter=" + sendCount,
-//                                                    "");
-//        sendingClient.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 1.");
-//
-//        /** Start 2nd subscriber */
-//        AndesClient receivingClient2 = new AndesClient("receive", getRandomAMQPBrokerUrl(), "queue:singleQueue2",
-//                                                       "100", "false", String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient2.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 2.");
-//
-//        /** Start 3rd subscriber */
-//        AndesClient receivingClient3 = new AndesClient("receive", getRandomAMQPBrokerUrl(), "queue:singleQueue2",
-//                                                       "100", "false", String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient3.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 3.");
-//
-//        /** Start 4th subscriber */
-//        AndesClient receivingClient4 = new AndesClient("receive", getRandomAMQPBrokerUrl(), "queue:singleQueue2",
-//                                                       "100", "false", String.valueOf(maxRunningTime),
-//                                                       String.valueOf(expectedCount),
-//                                                       "1",
-//                                                       "listener=true,ackMode=1," +
-//                                                       "delayBetweenMsg=0," +
-//                                                       "stopAfter=" + expectedCount,
-//                                                       "");
-//        receivingClient4.startWorking();
-//
-//        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,
-//                                                                        expectedCount,
-//                                                                        maxRunningTime),
-//                          "Message receiving failed for client 4.");
-//
-//        Assert.assertTrue(AndesClientUtils.getIfPublisherIsSuccess(sendingClient, sendCount),
-//                          "Message sending failed.");
-//
-//        int allMessagesRecieved = receivingClient1.getReceivedqueueMessagecount()
-//                                  + receivingClient2.getReceivedqueueMessagecount()
-//                                  + receivingClient3.getReceivedqueueMessagecount()
-//                                  + receivingClient4.getReceivedqueueMessagecount();
-//        Assert.assertEquals(allMessagesRecieved, sendCount,
-//                            "All messages are not received.");
+        Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");
     }
 
     /**
      * Cleanup after running tests.
      *
-     * @throws Exception
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy() throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
 
         String randomInstanceKey = getRandomMBInstance();
 
