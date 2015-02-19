@@ -31,25 +31,26 @@
 
             <!-- Queue -->
 
-            <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequencialAndDuplicateTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/> -->
-            <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequencialAndDuplicateTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>-->
+            <!--&lt;!&ndash;<class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/> &ndash;&gt;-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveSecurityManagerEnabledTestCase"/>
 
 
-            <!-- Topic -->
+            <!--&lt;!&ndash; Topic &ndash;&gt;-->
 
-            <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>-->
             <!--class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/-->
