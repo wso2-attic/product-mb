@@ -1,5 +1,6 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import junit.framework.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -98,13 +99,15 @@ public class SSLSendReceiveSecurityEnabledTestCase extends MBSecurityManagerBase
         /**
          * Install all the all-trusting trusting manager
          */
-        log.info("I am here");
+
         try {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
         } catch (GeneralSecurityException e) {
             log.error("GeneralSecurityException");
+            Assert.assertTrue(false);
 
         }
         // Now you can access an https URL without having the certificate in the truststore
@@ -112,9 +115,10 @@ public class SSLSendReceiveSecurityEnabledTestCase extends MBSecurityManagerBase
             URL url = new URL(sslConnectionURL);
         } catch (MalformedURLException e) {
             log.error("MalformedURLException");
+            Assert.assertTrue(false);
         }
 
-        log.info("I am here Finally");
+
     }
 
     /**
