@@ -439,6 +439,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         toStringVal.append("Durable=").append(this.durable).append("\n");
         toStringVal.append("AcknowledgeMode=").append(this.acknowledgeMode).append("\n");
         toStringVal.append("Async=").append(this.async).append("\n");
+        toStringVal.append("Selectors=").append(this.selectors).append("\n");
         return toStringVal.toString();
     }
 

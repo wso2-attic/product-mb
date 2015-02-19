@@ -29,7 +29,7 @@ import java.io.FileNotFoundException;
  * This class represents the Andes client publisher configuration. The class contains properties
  * related to JMS message publishing/sending.
  */
-public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration{
+public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration {
     /**
      * File path to read a string content which would be used to as message content when publishing.
      */
@@ -135,6 +135,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     /**
      * Gets the file path to read a string content which would be used to as message content when
      * publishing.
+     *
      * @return The file path.
      */
     public String getReadMessagesFromFilePath() {
@@ -144,6 +145,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     /**
      * Sets the file path to read a string content which would be used to as message content when
      * publishing.
+     *
      * @param readMessagesFromFilePath The file path.
      * @throws AndesClientException
      * @throws FileNotFoundException
@@ -153,13 +155,14 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
         File messagesFilePath = new File(readMessagesFromFilePath);
         if (messagesFilePath.exists() && !messagesFilePath.isDirectory()) {
             this.readMessagesFromFilePath = readMessagesFromFilePath;
-        }else{
+        } else {
             throw new FileNotFoundException("File is missing : " + messagesFilePath);
         }
     }
 
     /**
      * Gets JMS message type.
+     *
      * @return JMS message type.
      */
     public JMSMessageType getJMSMessageType() {
@@ -168,6 +171,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     /**
      * Sets JMS message type.
+     *
      * @param jmsMessageType JMS message type
      */
     public void setJMSMessageType(JMSMessageType jmsMessageType) {
@@ -176,6 +180,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     /**
      * Gets the number of messages to be sent by the publisher.
+     *
      * @return The number of messages.
      */
     public long getNumberOfMessagesToSend() {
@@ -184,19 +189,21 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     /**
      * Sets the number of messages to be sent by the publisher
+     *
      * @param numberOfMessagesToSend The number of messages.
      * @throws AndesClientException
      */
     public void setNumberOfMessagesToSend(long numberOfMessagesToSend) throws AndesClientException {
         if (0 < numberOfMessagesToSend) {
             this.numberOfMessagesToSend = numberOfMessagesToSend;
-        }else{
+        } else {
             throw new AndesClientException("The number of messages to send cannot be less than 1");
         }
     }
 
     /**
      * Gets the messages expiry time.
+     *
      * @return The message expiry time.
      */
     public long getJMSMessageExpiryTime() {
@@ -205,19 +212,21 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     /**
      * Sets the message expiry time.
+     *
      * @param jmsMessageExpiryTime The message expiry time.
      * @throws AndesClientException
      */
     public void setJMSMessageExpiryTime(long jmsMessageExpiryTime) throws AndesClientException {
         if (0 <= jmsMessageExpiryTime) {
             this.jmsMessageExpiryTime = jmsMessageExpiryTime;
-        }else{
+        } else {
             throw new AndesClientException("Message expiry time cannot be less than 0");
         }
     }
 
     /**
      * Gets the message header which can be used by selectors.
+     *
      * @return The message header properties.
      */
     public JMSMessageHeader getMessageHeader() {
@@ -226,6 +235,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     /**
      * Sets the message header which can be used by selectors.
+     *
      * @param messageHeader The message header properties..
      */
     public void setMessageHeader(JMSMessageHeader messageHeader) {
@@ -236,7 +246,21 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * {@inheritDoc}
      */
     @Override
+    public String toString() {
+        StringBuilder toStringVal = new StringBuilder();
+        toStringVal.append(super.toString());
+        toStringVal.append("ReadMessagesFromFilePath=").append(this.readMessagesFromFilePath).append("\n");
+        toStringVal.append("JmsMessageType=").append(this.jmsMessageType).append("\n");
+        toStringVal.append("NumberOfMessagesToSend=").append(this.numberOfMessagesToSend).append("\n");
+        toStringVal.append("JmsMessageExpiryTime=").append(this.jmsMessageExpiryTime).append("\n");
+        return toStringVal.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public AndesJMSPublisherClientConfiguration clone() throws CloneNotSupportedException {
-        return (AndesJMSPublisherClientConfiguration)super.clone();
+        return (AndesJMSPublisherClientConfiguration) super.clone();
     }
 }

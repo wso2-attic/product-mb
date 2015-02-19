@@ -85,6 +85,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
     private String filePathToWriteStatistics;
 
     /**
+     * XML file path for conifguration
+     */
+    private String xmlConfigFilePath;
+
+    /**
      * The empty constructor which will create a queue related test case.
      */
     public AndesJMSClientConfiguration() {
@@ -115,7 +120,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
      */
     public AndesJMSClientConfiguration(String hostName, int port, ExchangeType exchangeType,
                                        String destinationName) {
-        this("admin", "admin", hostName, port, exchangeType, destinationName);
+        this(AndesClientConstants.ADMIN_USERNAME, AndesClientConstants.ADMIN_PASSWORD, hostName,
+             port, exchangeType, destinationName);
     }
 
     /**
@@ -148,7 +154,6 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = 0L;
     }
 
-    // TODO : set username, etc
     public AndesJMSClientConfiguration(String connectionString,
                                        ExchangeType exchangeType,
                                        String destinationName) {
@@ -157,12 +162,10 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.destinationName = destinationName;
     }
 
-    // TODO : implement
     public AndesJMSClientConfiguration(String xmlConfigFilePath) {
-
+        this.xmlConfigFilePath = xmlConfigFilePath;
     }
 
-    // TODO : set username, password, etc
     public AndesJMSClientConfiguration(
             AndesJMSClientConfiguration config) {
         this.connectionString = config.getConnectionString();

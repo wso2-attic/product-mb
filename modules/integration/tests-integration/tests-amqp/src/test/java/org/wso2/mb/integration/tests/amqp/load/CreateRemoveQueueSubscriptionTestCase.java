@@ -19,19 +19,31 @@
 package org.wso2.mb.integration.tests.amqp.load;
 
 import org.testng.annotations.Test;
-import org.wso2.mb.integration.common.clients.AndesQueueSubscriber;
+import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+
+/**
+ * Test case to create and remove a topic subscriber.
+ */
 public class CreateRemoveQueueSubscriptionTestCase {
-    @Test
-    public void testCreateRemoveSubscription() throws Exception {
-        AndesQueueSubscriber queueClient = new AndesQueueSubscriber.Builder("admin", "admin",
-                "TestQueue").build();
-        queueClient.connect();
 
-        // TODO Check the number of subscribers in broker
+    /**
+     * Creating and removing of a topic subscription
+     *
+     * @throws NamingException
+     * @throws JMSException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void testCreateRemoveSubscription() throws JMSException, NamingException {
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "TestQueue");
 
-        queueClient.disconnect();
+        AndesClient consumerClient = new AndesClient(consumerConfig);
 
-        // TODO Check the number of subscribers in broker
+        consumerClient.stopClient();
     }
 }

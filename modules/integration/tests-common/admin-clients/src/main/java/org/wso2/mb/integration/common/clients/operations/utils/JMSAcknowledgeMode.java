@@ -22,9 +22,25 @@ package org.wso2.mb.integration.common.clients.operations.utils;
  */
 public enum JMSAcknowledgeMode {
     /**
-     * Acknowledge types.
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/jms/Session.html#SESSION_TRANSACTED">SESSION_TRANSACTED</a>
      */
-    SESSION_TRANSACTED(0), AUTO_ACKNOWLEDGE(1), CLIENT_ACKNOWLEDGE(2), DUPS_OK_ACKNOWLEDGE(3);
+    SESSION_TRANSACTED(0),
+
+    /**
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/jms/Session.html#AUTO_ACKNOWLEDGE">AUTO_ACKNOWLEDGE</a>
+     */
+    AUTO_ACKNOWLEDGE(1),
+
+    /**
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/jms/Session.html#CLIENT_ACKNOWLEDGE">CLIENT_ACKNOWLEDGE</a>
+     */
+    CLIENT_ACKNOWLEDGE(2),
+
+    /**
+     * @see <a href="http://docs.oracle.com/javaee/7/api/javax/jms/Session.html#DUPS_OK_ACKNOWLEDGE">DUPS_OK_ACKNOWLEDGE</a>
+     */
+    DUPS_OK_ACKNOWLEDGE(3);
+
     private int type;
 
     /**
