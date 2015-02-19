@@ -18,8 +18,6 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -32,15 +30,13 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
  * Testing for multi tenant topics - topic specific test case
  */
 public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
-    private static final Log log = LogFactory.getLog(MultiTenantTopicTestCase.class);
-
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
         super.init(TestUserMode.TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    /*@Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
+    @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
     public void performSingleTenantMultipleUserTopicTestCase() {
         int sendMessageCount = 200;
         int runTime = 40;
@@ -87,10 +83,10 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1.");
         Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2.");
-        Assert.assertEquals(expectedMessageCount,adminReceivingClient.getReceivedTopicMessagecount());
+        Assert.assertEquals(adminReceivingClient.getReceivedTopicMessagecount(), expectedMessageCount);
         Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1.");
 
-    }*/
+    }
 
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantTopicTestCase() {
@@ -135,8 +131,8 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(sendMessageCount,tenant1ReceivingClient.getReceivedTopicMessagecount(),"Tenant 1 client received the message published to Tenant2");
-        Assert.assertEquals(sendMessageCount,tenant2ReceivingClient.getReceivedTopicMessagecount(),"Tenant 2 client received the message published to Tenant1");
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(),sendMessageCount,"Tenant 1 client received the message published to Tenant2");
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(),sendMessageCount,"Tenant 2 client received the message published to Tenant1");
 
 
     }
