@@ -20,7 +20,7 @@ import java.security.cert.X509Certificate;
 import static org.testng.Assert.assertTrue;
 
 
-public class SSLSendReceiveSecurityManagerEnabledTestCase extends MBSecurityManagerBaseTest {
+public class SSLSendReceiveSecurityEnabledTestCase extends MBSecurityManagerBaseTest {
 
     private static int SSL_CONNECTION_PORT_NUMBER = 8672;
 
