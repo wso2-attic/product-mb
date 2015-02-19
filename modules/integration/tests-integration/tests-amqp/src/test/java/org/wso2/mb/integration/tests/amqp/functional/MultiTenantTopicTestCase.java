@@ -27,7 +27,17 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 /**
- * Testing for multi tenant topics - topic specific test case
+ * Testing for multi tenant - Topic specific test case
+ *
+ * Test case 1
+ * 1. Start a 3 subscribers in same tenant(Normal tenant) who listens to the same topic
+ * 2. Send 200 messages to the topic
+ * 3. All 3 subscribers should receive all 200 messages
+ *
+ * Test case 2
+ * 1. Start 2 subscribers from different tenant for the same topic
+ * 2. Start 2 publishers from different tenant for the same topic
+ * 3. Subscribers should receive the message from their tenant only
  */
 public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
@@ -36,6 +46,12 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * Test case 1
+     * 1. Start a 3 subscribers in same tenant(Normal tenant) who listens to the same topic
+     * 2. Send 200 messages to the topic
+     * 3. All 3 subscribers should receive all 200 messages
+     */
     @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
     public void performSingleTenantMultipleUserTopicTestCase() {
         int sendMessageCount = 200;
@@ -87,6 +103,13 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
     }
 
+    /**
+     *
+     * Test case 2
+     * 1. Start 2 subscribers from different tenant for the same topic
+     * 2. Start 2 publishers from different tenant for the same topic
+     * 3. Subscribers should receive the message from their tenant only
+     */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantTopicTestCase() {
         int sendMessageCount = 100;

@@ -29,6 +29,16 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 /**
  * Testing for multi tenant - Durable subscriber specific test case
+ *
+ * Test case 1
+ * 1. Start a Durable subscriber from a normal tenant (Not super tenant) (Topic - topictenant1.com/durableTenantTopic)
+ * 2. Send 200 messages to the the topic
+ * 3. Durable subscriber should receive all 200 messages
+ *
+ * Test case 2
+ * 1. Start 2 Durable subscribers from different tenant for the same topic
+ * 2. Start 2 publishers from different tenant for the same topic
+ * 3. Durable subscribers should receive the message from their tenant only.
  */
 public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
@@ -38,6 +48,12 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * Test case 1
+     * 1. Start a Durable subscriber from a normal tenant (Not super tenant) (Topic - topictenant1.com/durableTenantTopic)
+     * 2. Send 200 messages to the the topic
+     * 3. Durable subscriber should receive all 200 messages
+     */
     @Test(groups = "wso2.mb", description = "Single Tenant Test case")
     public void performSingleTenantMultipleUserQueueTestCase() {
         int sendMessageCount = 200;
@@ -70,7 +86,13 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
     }
 
-
+    /**
+     *
+     * Test case 2
+     * 1. Start 2 Durable subscribers from different tenant for the same topic
+     * 2. Start 2 publishers from different tenant for the same topic
+     * 3. Durable subscribers should receive the message from their tenant only.
+     */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantQueueTestCase() {
         int sendMessageCount = 100;

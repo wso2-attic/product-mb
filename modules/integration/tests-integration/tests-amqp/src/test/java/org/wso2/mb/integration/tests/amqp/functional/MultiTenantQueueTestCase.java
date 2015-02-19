@@ -26,8 +26,19 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+
 /**
- * Testing for multi tenant - queues specific test case
+ * Testing for multi tenant - Queue specific test case
+ *
+ * Test case 1
+ * 1. Start a client in a tenant(Normal tenant) which listens to a queue
+ * 2. Send 200 messages to the queue
+ * 3. Client should receive all 200 messages
+ *
+ * Test case 2
+ * 1. Start 2 receiving clients from different tenant for the same queue
+ * 2. Start 2 sending clients from different tenant for the same queue
+ * 3. Receiving clients should receive the message from their tenant only
  */
 public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
@@ -37,7 +48,13 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.sleepForInterval(15000);
     }
 
-    @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
+    /**
+     * Test case 1
+     * 1. Start a client in a tenant(Normal tenant) which listens to a queue
+     * 2. Send 200 messages to the queue
+     * 3. Client should receive all 200 messages
+     */
+    @Test(groups = "wso2.mb", description = "Single Tenant Test")
     public void performSingleTenantMultipleUserQueueTestCase() {
         int sendMessageCount = 200;
         int runTime = 40;
@@ -70,6 +87,13 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
     }
 
 
+    /**
+     *
+     * Test case 2
+     * 1. Start 2 receiving clients from different tenant for the same queue
+     * 2. Start 2 sending clients from different tenant for the same queue
+     * 3. Receiving clients should receive the message from their tenant only
+     */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantQueueTestCase() {
         int sendMessageCount = 100;
