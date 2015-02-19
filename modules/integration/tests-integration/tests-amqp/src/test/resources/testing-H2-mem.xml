@@ -29,7 +29,7 @@
             <!-- functional test cases -->
 
             <!-- Queue -->
-            <!--Working tests-->
+<!--Working tests-->
 
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>

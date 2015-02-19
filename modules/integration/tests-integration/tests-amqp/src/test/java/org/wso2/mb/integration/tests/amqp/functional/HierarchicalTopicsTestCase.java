@@ -41,6 +41,9 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * Testing on subscribers without wildcard characters
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsTopicOnlyTestCase() {
 
