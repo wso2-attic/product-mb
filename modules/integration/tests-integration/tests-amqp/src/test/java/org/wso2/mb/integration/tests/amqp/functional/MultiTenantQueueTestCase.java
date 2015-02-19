@@ -33,7 +33,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
-        super.init(TestUserMode.TENANT_USER);
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 

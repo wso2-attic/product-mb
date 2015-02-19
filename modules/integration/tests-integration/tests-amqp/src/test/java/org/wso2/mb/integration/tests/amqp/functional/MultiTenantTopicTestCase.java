@@ -32,7 +32,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws Exception {
-        super.init(TestUserMode.TENANT_USER);
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
@@ -108,14 +108,14 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         tenant2ReceivingClient.startWorking();
 
         // Start sending clients (tenant1, tenant2 and admin)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
                 "topictenantuser1!topictenant1.com", "topictenantuser1");
 
         tenant1SendingClient.startWorking();
 
-        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
+        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
                 "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
                 "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
                 "topictenantuser2!topictenant2.com", "topictenantuser2");
