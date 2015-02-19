@@ -38,18 +38,23 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 1. start a queue receiver with trasacted sessions
- * 2. send 10 messages
- * 3. after 10 messages are received rollback session
- * 4. do same 5 times.After 50 messages received commit the session and close subscriber
- * 5. analyse and see if each message is duplicated five times
- * 6. do another subscription to verify no more messages are received
+ * Tests
  */
 public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIntegrationBaseTest {
 
-
+    /**
+     * Message send count.
+     */
     private static final long SEND_COUNT = 10L;
+
+    /**
+     * Number of rollback iterations.
+     */
     private static final int ROLLBACK_ITERATIONS = 5;
+
+    /**
+     * Total expected message count after rollback.
+     */
     private static final long EXPECTED_COUNT = SEND_COUNT * ROLLBACK_ITERATIONS;
 
     @BeforeClass
@@ -58,6 +63,20 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Start a queue receiver with transacted sessions.
+     * 2. Send 10 messages.
+     * 3. After 10 messages are received rollback session.
+     * 4. Do same 5 times. After 50 messages received commit the session and close subscriber.
+     * 5. Analyse and see if each message is duplicated five times.
+     * 6. Do another subscription to verify no more messages are received.
+     *
+     * @throws AndesClientException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     */
     @Test(groups = {"wso2.mb", "queue", "transactions"})
     public void performJMSSubscriberTransactionsSessionCommitRollbackTestCase()
             throws AndesClientException, JMSException, NamingException, IOException,
@@ -71,11 +90,9 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         consumerConfig.setRollbackAfterEachMessageCount(SEND_COUNT);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(5L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactionQueue");
-        publisherConfig.setPrintsPerMessageCount(150L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -92,6 +109,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         Map<Long, Integer> duplicateMessages = initialConsumerClient.checkIfMessagesAreDuplicated();
 
         boolean expectedCountDelivered = false;
+        // waiting till the number of deliveries is equal to {@link #ROLLBACK_ITERATIONS}.
         if (duplicateMessages != null) {
             for (Long messageIdentifier : duplicateMessages.keySet()) {
                 int numberOfTimesDelivered = duplicateMessages.get(messageIdentifier);
@@ -104,82 +122,17 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
             }
         }
 
-        //verify no more messages are delivered
-
         AndesClientUtils.sleepForInterval(2000);
 
-        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig.clone());
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
         Assert.assertNotEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received after the test.");
-
-
-
-
-
-
-
-
-
-//        Integer sendCount = 10;
-//        Integer runTime = 40;
-//        int numberOfRollbackIterations = 5;
-//        Integer expectedCount = sendCount * numberOfRollbackIterations;
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:transactionQueue",
-//                "10", "true", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=0,delayBetweenMsg=0,rollbackAfterEach=" + sendCount + "," +
-//                "commitAfterEach=" + expectedCount + ",stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:transactionQueue", "100", "false",
-//                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        AndesClientUtils.sleepForInterval(1000);
-//
-//        Map<Long, Integer> duplicateMessages = receivingClient.getDuplicatedMessages();
-//
-//        boolean expectedCountDelivered = false;
-//        if (duplicateMessages != null) {
-//            for (Long messaggeIdentifier : duplicateMessages.keySet()) {
-//                int numberOfTimesDelivered = duplicateMessages.get(messaggeIdentifier);
-//                if (numberOfRollbackIterations == numberOfTimesDelivered) {
-//                    expectedCountDelivered = true;
-//                } else {
-//                    expectedCountDelivered = false;
-//                    break;
-//                }
-//            }
-//        }
-//
-//        //verify no more messages are delivered
-//
-//        AndesClientUtils.sleepForInterval(2000);
-//
-//        receivingClient.startWorking();
-//
-//        boolean areMessagesReceivedAfterwars = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient,
-//                expectedCount, 20);
-//
-//        Assert.assertEquals(sendSuccess && receiveSuccess && expectedCountDelivered && !areMessagesReceivedAfterwars, true);
-//
-//        Assert.assertTrue(sendSuccess, "Message sending failed.");
-//        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
-//        Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
-//        Assert.assertFalse(areMessagesReceivedAfterwars, "Messages received after the test.");
     }
-
 }

@@ -18,16 +18,15 @@
 
 package org.wso2.mb.integration.common.utils.backend;
 
-import java.io.File;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
 
 /**
  * Base class of all MB integration tests
@@ -43,7 +42,7 @@ public class MBIntegrationBaseTest {
      * Initialize the base test by initializing the automation context.
      *
      * @param userMode The testing user mode
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     protected void init(TestUserMode userMode) throws XPathExpressionException {
         automationContext = new AutomationContext("MB", userMode);
@@ -76,8 +75,6 @@ public class MBIntegrationBaseTest {
      */
     protected void restartServer() throws Exception {
         serverManager = new ServerConfigurationManager(automationContext);
-
         serverManager.restartGracefully();
     }
-
 }

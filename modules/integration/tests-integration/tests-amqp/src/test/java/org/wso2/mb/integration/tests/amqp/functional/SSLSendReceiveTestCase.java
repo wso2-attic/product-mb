@@ -33,88 +33,84 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 
 
 /**
- * send messages using SSL and receive messages using SSL
+ * Send messages using SSL and receive messages using SSL
  */
 public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
 
-    private static final long EXPECTED_COUNT = 100L;
+    /**
+     * Message count to send
+     */
     private static final long SEND_COUNT = 100L;
 
+    /**
+     * Message count expected
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
+     * Initializes test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Creates a queue named "SSLSingleQueue".
+     * 2. Consumer listens to receiving messages using an ssl connection.
+     * 3. Publisher publishes messages using an ssl connection.
+     * 4. Consumer should receive all messages sent.
+     *
+     * @throws AndesClientException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     */
     @Test(groups = {"wso2.mb", "queue", "security"})
     public void performSingleQueueSendReceiveTestCase()
             throws AndesClientException, JMSException, NamingException, IOException {
-//        Integer sendCount = 100;
-//        Integer runTime = 20;
-//        Integer expectedCount = 100;
+        // Creating ssl connection string
         String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
-                + "resources" + File.separator + "security" + File.separator + "wso2carbon.jks";
+                              + "resources" + File.separator + "security" + File.separator + "wso2carbon.jks";
         String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
-                + "resources" + File.separator + "security" + File.separator + "client-truststore.jks";
+                                + "resources" + File.separator + "security" + File.separator + "client-truststore.jks";
         String keyStorePassword = "wso2carbon";
         String trustStorePassword = "wso2carbon";
         String sslConnectionURL = "amqp://admin:admin@carbon/carbon?brokerlist='tcp://localhost:8672?ssl='true'" +
-                "&ssl_cert_alias='RootCA'&trust_store='" + trustStorePath + "'&trust_store_password='" +
-                trustStorePassword
-                + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "''";
+                                  "&ssl_cert_alias='RootCA'&trust_store='" + trustStorePath + "'&trust_store_password='" +
+                                  trustStorePassword
+                                  + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "''";
 
-
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
-        // Use a listener
-        consumerConfig.setAsync(true);
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(10L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
+        // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
-        publisherConfig.setPrintsPerMessageCount(10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-
-
+        // Creating consumer client
         AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
-
-
-//
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:8672", "queue:SSLSingleQueue",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, sslConnectionURL);
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:SSLSingleQueue", "100", "false",
-//                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, sslConnectionURL);
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        assertTrue(sendSuccess, "Message sending failed.");
-//        assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

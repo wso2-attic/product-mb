@@ -33,6 +33,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,21 +45,33 @@ import java.io.IOException;
  */
 public class MessageContentTestCase extends MBIntegrationBaseTest {
 
-    String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
-                                         "MessageContentInput.txt";
+    /**
+     * File path to read message content for publishing
+     */
+    private static final String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
+                                                              "MessageContentInput.txt";
 
-    // 300KB size. This is to create more than 3 message content chunks to check chunk data retrieval.
-    public static final int SIZE_TO_READ = 300 * 1024;
-    public static final long SEND_COUNT = 1L;
-    public static final long EXPECTED_COUNT = 1L;
+    /**
+     * 300KB size. This is to create more than 3 message content chunks to check chunk data retrieval.
+     */
+    private static final int SIZE_TO_READ = 300 * 1024;
+    /**
+     * Message sent count.
+     */
+    private static final long SEND_COUNT = 1L;
+
+    /**
+     * Message expected count.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
 
     /**
      * Initialize the test as super tenant user.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
@@ -71,8 +84,8 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     public void performQueueContentSendReceiveTestCase()
             throws AndesClientException, IOException, JMSException, NamingException {
 
+        // Reading message content
         char[] inputContent = new char[SIZE_TO_READ];
-
         try {
             BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
             inputFileReader.read(inputContent);
@@ -83,16 +96,18 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
         }
 
 
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
 
+        // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath);
+        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath); // message content will be read from this path and published
 
+        // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
@@ -101,7 +116,7 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-
+        // Reading received message content
         char[] outputContent = new char[SIZE_TO_READ];
 
         try {
@@ -113,67 +128,9 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
             log.warn("Error reading output content from file : " + messageContentInputFilePath);
         }
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
-
-
-
-
-
-
-
-
-
-//        Integer sendCount = 1;
-//        Integer runTime = 20;
-//        Integer expectedCount = 1;
-//        String queueNameArg = "queue:QueueContentSendReceive";
-//
-//        char[] inputContent = new char[SIZE_TO_READ];
-//
-//        try {
-//            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
-//            inputFileReader.read(inputContent);
-//        } catch (FileNotFoundException e) {
-//            log.warn("Error locating input content from file : " + messageContentInputFilePath);
-//        } catch (IOException e) {
-//            log.warn("Error reading input content from file : " + messageContentInputFilePath);
-//        }
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
-//                                                              "100", "true", runTime.toString(), expectedCount.toString(),
-//                                                              "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//        AndesClientUtilsTemp.writeToFile("POINT 1", receivingClient.filePathToWriteReceivedMessages);
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "true",
-//                                                            runTime.toString(), sendCount.toString(), "1",
-//                                                            "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//        AndesClientUtilsTemp.writeToFile("POINT 2", receivingClient.filePathToWriteReceivedMessages);
-//
-//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//        AndesClientUtilsTemp.writeToFile("POINT 3", receivingClient.filePathToWriteReceivedMessages);
-//
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        char[] outputContent = new char[SIZE_TO_READ];
-//        AndesClientUtilsTemp.writeToFile("POINT 4", receivingClient.filePathToWriteReceivedMessages);
-//
-//        try {
-//            BufferedReader inputFileReader = new BufferedReader(new FileReader(receivingClient.filePathToWriteReceivedMessages));
-//            inputFileReader.read(outputContent);
-//        } catch (FileNotFoundException e) {
-//            log.warn("Error locating output content from file : " + messageContentInputFilePath);
-//        } catch (IOException e) {
-//            log.warn("Error reading output content from file : " + messageContentInputFilePath);
-//        }
-//
-//        Assert.assertTrue(sendSuccess, "Message sending failed.");
-//        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
-//
-//        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
     }
 }

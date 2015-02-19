@@ -33,6 +33,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 /**
@@ -41,14 +42,38 @@ import java.io.IOException;
  */
 public class MixedTopicTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * Total message count sent
+     */
     private static final long SEND_COUNT = 1000L;
+
+    /**
+     * Message count sent without expiration
+     */
     private static final long SEND_COUNT_WITHOUT_EXPIRATION = 600L;
+
+    /**
+     * Message count sent with expiration
+     */
     private static final long SEND_COUNT_WITH_EXPIRATION = SEND_COUNT - SEND_COUNT_WITHOUT_EXPIRATION;
+
+    /**
+     * Expected message count
+     */
     private static final long EXPECTED_COUNT = SEND_COUNT_WITHOUT_EXPIRATION;
+
+    /**
+     * Expiration time for messages with expiration time
+     */
     private static final long EXPIRATION_TIME = 5L;
 
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
@@ -57,18 +82,20 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
      * 1. Subscribe to a topic.
      * 2. Send messages with and without expiry as configured
      * 3. Verify that only messages without expiry have been received and that both types of messages have been sent.
+     *
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Single topic send-receive test case with jms expiration")
     public void performSingleExpiryTopicSendReceiveTestCase()
             throws AndesClientException, NamingException, JMSException, IOException {
 
-
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
         publisherConfigWithoutExpiration.setPrintsPerMessageCount(SEND_COUNT_WITHOUT_EXPIRATION / 10L);
@@ -77,9 +104,9 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
         publisherConfigWithExpiration.setPrintsPerMessageCount(SEND_COUNT_WITH_EXPIRATION / 10L);
         publisherConfigWithExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITH_EXPIRATION);
-        publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME);
+        publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME); // Setting expiry time
 
-
+        // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig);
         consumerClient.startClient();
 
@@ -89,48 +116,13 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
         publisherClientWithExpiration.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient,  AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), SEND_COUNT_WITHOUT_EXPIRATION, "Message send failed for publisherClientWithoutExpiration");
         Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), SEND_COUNT_WITH_EXPIRATION, "Message send failed for publisherClientWithExpiration");
 
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for consumerClient");
-
-
-
-
-
-//        AndesClient receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:singleTopic",
-//                "100", "false", JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS.toString(),
-//                expectedMessageCountFromSubscriberSession.toString(),
-//                "1", "listener=true,ackMode=1,delayBetweenMsg=0," +
-//                "stopAfter=" + expectedMessageCountFromSubscriberSession, "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "topic:singleTopic", "100", "false",
-//                JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(),
-//                messageCountWithoutExpiration.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + messageCountWithoutExpiration, "");
-//
-//        sendingClient1.startWorking();
-//
-//        AndesClient sendingClient2 = new AndesClientTemp("send", "127.0.0.1:5672", "topic:singleTopic", "100", "false",
-//                JMSTestConstants.DEFAULT_SENDER_RUN_TIME_IN_SECONDS.toString(), messageCountWithExpiration.toString()
-//                , "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + messageCountWithExpiration + "," +
-//                        "jmsExpiration=" + JMSTestConstants.SAMPLE_JMS_EXPIRATION, "");
-//
-//        sendingClient2.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-//                expectedMessageCountFromSubscriberSession, JMSTestConstants.DEFAULT_RECEIVER_RUN_TIME_IN_SECONDS);
-//
-//        boolean sendSuccess1 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient1, messageCountWithoutExpiration);
-//
-//        boolean sendSuccess2 = AndesClientUtils.getIfPublisherIsSuccess(sendingClient2, messageCountWithExpiration);
-//
-//        assertEquals((receiveSuccess && sendSuccess1 && sendSuccess2), true);
     }
 
 }

@@ -35,6 +35,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 
 import java.io.IOException;
 
@@ -44,18 +45,34 @@ import static org.testng.Assert.assertEquals;
  * This class contains tests for receiving messages through a large number of subscribers.
  */
 public class ManySubscribersTestCase extends MBIntegrationBaseTest {
+
+    /**
+     * Message count to send
+     */
     private static final long SEND_COUNT = 100000L;
+
+    /**
+     * Expected message count
+     */
     private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
+     * Number of subscribers
+     */
     private static final int NUMBER_OF_SUBSCRIBERS = 1000;
+
+    /**
+     * Number of publishers
+     */
     private static final int NUMBER_OF_PUBLISHERS = 1;
 
     /**
      * Initialize the test as super tenant user.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
@@ -67,20 +84,18 @@ public class ManySubscribersTestCase extends MBIntegrationBaseTest {
     public void performMillionMessageTestCase()
             throws AndesClientException, NamingException, JMSException, IOException {
 
-
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
+        // Creating a consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS);
-        consumerClient.setStartDelay(100L);
+        consumerClient.setStartDelay(100L); // Use a starting delay between consumers
         consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS);
@@ -88,39 +103,9 @@ public class ManySubscribersTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_SUBSCRIBERS, "Message sending failed");
-
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT* NUMBER_OF_SUBSCRIBERS, "Message receiving failed.");
 
-
-//        Integer sendCount = 100000;
-//        Integer runTime = 60 * 15; // 15 minutes
-//        Integer noOfSubscribers = 1000;
-//        Integer noOfPublishers = 1;
-//
-//        Integer expectedCount = sendCount;
-//        String queueNameArg = "queue:ThousandSubscribers";
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                noOfSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "false",
-//                runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
-//
-//        Assert.assertEquals(sendSuccess,"Message sending failed.");
-//        Assert.assertEquals(receiveSuccess,"Message receiving failed.");
-//        assertEquals(actualReceivedCount, sendCount, "Did not receive expected message count.");
     }
 }

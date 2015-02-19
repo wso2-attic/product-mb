@@ -35,42 +35,58 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 /**
- * 1. start a queue receiver in client ack mode
- * 2. receive messages acking message bunch to bunch
- * 3. after all messages are received subscribe again and verify n more messages come
+ * This class includes test cases to test client acknowledgements modes for queues
  */
 public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
-    private static final long EXPECTED_COUNT = 1000L;
+    /**
+     * Amount of messages sent.
+     */
     private static final long SEND_COUNT = 1000L;
 
+    /**
+     * Amount of messages expected.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * In this test it will check functionality of client acknowledgement by acknowledging bunch by
+     * bunch.
+     * 1. Start queue receiver in client acknowledge mode.
+     * 2. Publisher sends {@link #SEND_COUNT} messages.
+     * 3. Consumer receives messages and only acknowledge after each 200 messages.
+     * 4. Consumer should receive {@link #EXPECTED_COUNT} messages.
+     */
     @Test(groups = {"wso2.mb", "queue"})
     public void performClientAcknowledgementsTestCase()
             throws AndesClientException, JMSException, NamingException, IOException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(100L);
-        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
-        consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-
+        // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
-        publisherConfig.setPrintsPerMessageCount(100L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         AndesClient consumerClient1 = new AndesClient(consumerConfig);
         consumerClient1.startClient();
@@ -89,38 +105,5 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
-
-//        Integer sendCount = 1000;
-//        Integer runTime = 20;
-//        Integer expectedCount = 1000;
-
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "queue:clientAckTestQueue",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=2,delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "queue:clientAckTestQueue", "100",
-//                "false",
-//                runTime.toString(), sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount,
-//                "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean success = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//
-//        Integer totalMsgsReceived = receivingClient.getReceivedqueueMessagecount();
-//
-//        AndesClientUtilsTemp.sleepForInterval(2000);
-//
-//        receivingClient.startWorking();
-//        AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount, 15);
-//
-//        totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
-//
-//        Assert.assertTrue(success, "Message receiving failed.");
-//
-//        Assert.assertEquals(totalMsgsReceived, expectedCount, "Expected message count not received.");
     }
-
 }

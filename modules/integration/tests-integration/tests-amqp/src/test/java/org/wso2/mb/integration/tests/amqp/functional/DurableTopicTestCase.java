@@ -21,6 +21,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -28,28 +29,45 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 /**
- * 1. start a durable topic subscription
- * 2. send 1500 messages
- * 3. after 500 messages were received close the subscriber
- * 4. subscribe again. after 500 messages were received unsubscribe
- * 5. subscribe again. Verify no more messages are coming
+ * Test class for durable topics. Tests include the testing of durability properties by
+ * un-subscribing and resubscribing.
  */
-public class DurableTopicTestCase {
+public class DurableTopicTestCase  extends MBIntegrationBaseTest {
 
+    /**
+     * Message count to send.
+     */
     private static final long SEND_COUNT = 1500L;
+
+    /**
+     * Message count expected.
+     */
     private static final long EXPECTED_COUNT = 500L;
 
+    /**
+     * Initializing test case
+     */
     @BeforeClass
-    public void prepare() {
+    public void prepare() throws XPathExpressionException {
+        init(TestUserMode.SUPER_TENANT_ADMIN);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Start a durable topic subscription.
+     * 2. Send {@link #SEND_COUNT} messages.
+     * 3. After {@link #EXPECTED_COUNT} messages were received close the subscriber.
+     * 4. Subscribe again. After {@link #EXPECTED_COUNT} messages were received un-subscribe.
+     * 5. Subscribe again. Verify no more messages are coming.
+     */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase()
             throws AndesClientException, JMSException, NamingException, IOException,
@@ -59,7 +77,6 @@ public class DurableTopicTestCase {
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
         consumerConfig1.setDurable(true, "durableSub1");
 
@@ -77,7 +94,7 @@ public class DurableTopicTestCase {
         //Wait until messages receive
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Creating a initial JMS consumer client configuration
+        // Creating a second consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
         consumerConfig2.setUnSubscribeAfterEachMessageCount(EXPECTED_COUNT);
 
@@ -87,7 +104,7 @@ public class DurableTopicTestCase {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Creating a initial JMS consumer client configuration
+        // Creating a third JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
 
         // Creating clients
@@ -96,81 +113,13 @@ public class DurableTopicTestCase {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClientUtils.sleepForInterval(5000);
+        AndesClientUtils.sleepForInterval(5000L);
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-
-        // TODO : issue with the earlier implementation
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 1.");
         Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 2.");
         Assert.assertNotEquals(tertiaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 3.");
         Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), 0L, "Messages received for client 3.");
-
-
-
-
-
-
-
-
-//        Integer sendCount = 1500;
-//        Integer runTime = 20;
-//        Integer expectedCount = 500;
-//
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:durableTopic",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
-//                "stopAfter=" + expectedCount, "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
-//                runTime.toString(), sendCount.toString(), "1",
-//                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receivingSuccess1 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient, expectedCount,
-//                                                                                      runTime);
-//
-//        boolean sendingSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        //we just closed the subscription. Rest of messages should be delivered now.
-//
-//        AndesClientUtils.sleepForInterval(2000);
-//
-//        AndesClientTemp receivingClient2 = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:durableTopic",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
-//                "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
-//        receivingClient2.startWorking();
-//
-//        boolean receivingSuccess2 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
-//                runTime);
-//
-//
-//        //now we have unsubscribed the topic subscriber no more messages should be received
-//
-//
-//        AndesClientTemp receivingClient3 = new AndesClientTemp("receive", "127.0.0.1:5672", "topic:durableTopic",
-//                "100", "false", runTime.toString(), expectedCount.toString(),
-//                "1", "listener=true,ackMode=1,durable=true,subscriptionID=sub1,delayBetweenMsg=0," +
-//                "unsubscribeAfter=" + expectedCount + ",stopAfter=" + expectedCount, "");
-//        receivingClient3.startWorking();
-//
-//        AndesClientUtils.sleepForInterval(5000);
-//
-//        boolean receivingSuccess3 = AndesClientUtilsTemp.waitUntilMessagesAreReceived(receivingClient3, expectedCount,
-//                runTime);
-//
-//        Assert.assertTrue(sendingSuccess, "Message sending failed.");
-//
-//        Assert.assertTrue(receivingSuccess1, "Message receiving failed for client 1.");
-//
-//        Assert.assertTrue(receivingSuccess2, "Message receiving failed for client 2.");
-//
-//        Assert.assertFalse(receivingSuccess3, "Message received from client 3 when no more messages should be received.");
-
     }
 }

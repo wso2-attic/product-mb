@@ -38,16 +38,16 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import javax.jms.JMSException;
 import javax.jms.QueueSession;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
 /**
- * Load test for standalone MB.
+ * Load test for standalone MB with consumers having auto and client ack modes when receiving messages
  */
 public class QueueAckMixTestCase extends MBIntegrationBaseTest {
-
     private static final long SEND_COUNT = 100000L;
     private static final long EXPECTED_COUNT = SEND_COUNT;
     private static final int NUMBER_OF_SUBSCRIBERS = 7;
@@ -56,52 +56,50 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
     private static final int NUMBER_OF_CLIENT_ACK_SUBSCRIBERS = 1;
     private static final int NUMBER_OF_AUTO_ACK_SUBSCRIBERS = NUMBER_OF_SUBSCRIBERS - NUMBER_OF_CLIENT_ACK_SUBSCRIBERS;
 
-    // Greater than send count to see if more than the sent amount is received
-//    private Integer expectedCount = sendCount;
-
     /**
      * Initialize the test as super tenant user.
      *
-     * @throws Exception
+     * @throws javax.xml.xpath.XPathExpressionException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
-     * Send million messages and Receive them via AUTO_ACKNOWLEDGE subscribers and CLIENT_ACKNOWLEDGE subscribers and
+     * Send million messages and receive them via AUTO_ACKNOWLEDGE subscribers and CLIENT_ACKNOWLEDGE subscribers and
      * check if AUTO_ACKNOWLEDGE subscribers receive all the messages.
+     *
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Send million messages and Receive them via AUTO_ACKNOWLEDGE subscribers " +
                                             "and CLIENT_ACKNOWLEDGE", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase()
             throws AndesClientException, NamingException, JMSException, IOException {
 
-
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "MillionTenPercentAckMixReturnQueue");
-        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
-        consumerConfig.setAcknowledgeAfterEachMessageCount(200);
-        // Amount of message to receive
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE); // Consumer uses auto acknowledge mode
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200);    // Acknowledging messages only after message count
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerReturnedConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "MillionTenPercentAckMixReturnQueue");
-        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
-        consumerConfig.setAcknowledgeAfterEachMessageCount(100000);
-        // Amount of message to receive
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);   // Consumer uses client acknowledge mode
+        consumerConfig.setAcknowledgeAfterEachMessageCount(100000);     // Acknowledge messages only after message count
         consumerReturnedConfig.setMaximumMessagesToReceived(NUMBER_OF_RETURNED_MESSAGES);
-        // Prints per message
         consumerReturnedConfig.setPrintsPerMessageCount(NUMBER_OF_RETURNED_MESSAGES / 10L);
 
+        // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "MillionTenPercentAckMixReturnQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
+        // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_AUTO_ACK_SUBSCRIBERS);
         consumerClient.startClient();
 
@@ -114,6 +112,7 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerReturnedClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluation
         long totalReceivedMessageCount = consumerClient.getReceivedMessageCount() + consumerReturnedClient.getReceivedMessageCount();
 
         log.info("Total Non Returning Subscribers Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
@@ -122,67 +121,5 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_PUBLISHERS, "Message sending failed");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT, "Did not receive expected message count.");
-
-
-
-
-//         Integer sendCount = 100000;
-//         Integer runTime = 30 * 15; // 15 minutes
-//         Integer noOfSubscribers = 7;
-//         Integer noOfPublishers = 7;
-//
-//        // Greater than send count to see if more than the sent amount is received
-//         Integer expectedCount = sendCount;
-//
-//
-//        Integer noOfReturnMessages = sendCount / 100;
-//        Integer noOfClientAckSubscribers = 1;
-//        Integer noOfAutoAckSubscribers = noOfSubscribers - noOfClientAckSubscribers;
-//
-//        String queueNameArg = "queue:MillionTenPercentReturnQueue";
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
-//                                                              "100", "false", runTime.toString(), expectedCount.toString(),
-//                                                              noOfAutoAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.AUTO_ACKNOWLEDGE + "," +
-//                                                                                                 "delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
-//
-//        AndesClientTemp receivingReturnClient = new AndesClientTemp("receive", "127.0.0.1:5672", queueNameArg,
-//                                                                    "100", "false", runTime.toString(), noOfReturnMessages.toString(),
-//                                                                    noOfClientAckSubscribers.toString(), "listener=true,ackMode=" + QueueSession.CLIENT_ACKNOWLEDGE + "," +
-//                                                                                                         "ackAfterEach=100000,delayBetweenMsg=0,stopAfter=" + noOfReturnMessages, "");
-//
-//        receivingClient.startWorking();
-//        receivingReturnClient.startWorking();
-//
-//        List<QueueMessageReceiver> autoAckListeners = receivingClient.getQueueListeners();
-//        List<QueueMessageReceiver> clientAckListeners = receivingReturnClient.getQueueListeners();
-//        log.info("Number of AUTO ACK Subscriber [" + autoAckListeners.size() + "]");
-//        log.info("Number of CLIENT ACK Subscriber [" + clientAckListeners.size() + "]");
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672", queueNameArg, "100", "false",
-//                                                            runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
-//                                                            "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-//
-//        sendingClient.startWorking();
-//
-//        AndesClientUtilsTemp.waitUntilAllMessagesReceived(receivingClient, "MillionTenPercentReturnQueue", expectedCount,
-//                                                          runTime);
-//
-//        AndesClientUtilsTemp.waitUntilExactNumberOfMessagesReceived(receivingReturnClient,
-//                                                                    "MillionTenPercentReturnQueue", noOfReturnMessages, runTime);
-//
-//        AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount() + receivingReturnClient
-//                .getReceivedqueueMessagecount();
-//
-//        log.info("Total AUTO ACK Subscriber Received Messages [" + receivingClient.getReceivedqueueMessagecount() +
-//                 "]");
-//        log.info("Total CLIENT ACK Subscriber Received Messages [" + receivingReturnClient
-//                .getReceivedqueueMessagecount() + "]");
-//        log.info("Total Received Messages [" + actualReceivedCount + "]");
-//
-//        assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount.intValue(),
-//                     "Did not receive expected message count.");
     }
 }

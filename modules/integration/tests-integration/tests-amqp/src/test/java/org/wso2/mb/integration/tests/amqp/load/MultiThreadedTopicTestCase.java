@@ -21,6 +21,7 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -30,41 +31,57 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientExcept
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 /**
- * 1. send 2000 messages to a topic by 10 threads
- * 2. At the same time create 20 subscribers and collaboratively receive 2000X20 messages
+ * Test class for multiple publishers running parallel for queues.
  */
-public class MultiThreadedTopicTestCase {
+public class MultiThreadedTopicTestCase extends MBIntegrationBaseTest{
     private static final long SEND_COUNT = 2000;
     private static final int NUMBER_OF_SUBSCRIBERS = 20;
     private static final int NUMBER_OF_PUBLISHERS = 10;
     private static final long EXPECTED_COUNT = SEND_COUNT * NUMBER_OF_SUBSCRIBERS;
 
-    @BeforeClass
-    public void init() throws Exception {
+    /**
+     * Initialize the test as super tenant user.
+     *
+     * @throws javax.xml.xpath.XPathExpressionException
+     */
+    @BeforeClass(alwaysRun = true)
+    public void init() throws XPathExpressionException {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Send 2000 messages to a topic by 10 threads
+     * 2. At the same time create 20 subscribers and collaboratively receive 2000 X 20 messages
+     *
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     */
     @Test(groups = "wso2.mb",
-          description = "Multiple topic publishers - multiple topic receivers test case")
+            description = "Multiple topic publishers - multiple topic receivers test case")
     public void performMultiThreadedTopicTestCase()
             throws AndesClientException, NamingException, JMSException, IOException {
-        // Creating a initial JMS consumer client configuration
+        // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiThreadTopic");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // Prints per message
-        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
+        // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multiThreadTopic");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
+        // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS);
         consumerClient.startClient();
 
@@ -73,47 +90,8 @@ public class MultiThreadedTopicTestCase {
 
         AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_PUBLISHERS, "Message sending failed");
-
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), SEND_COUNT * NUMBER_OF_SUBSCRIBERS, "Message receiving failed.");
-
-
-
-
-//        Integer sendCount = 2000;
-//        Integer numberOfPublisherThreads = 10;
-//        Integer numberOfSubscriberThreads = 20;
-//        Integer runTime = 200;
-//        Integer expectedCount = 2000 * numberOfSubscriberThreads;
-//
-//        AndesClientTemp receivingClient = new AndesClientTemp("receive", "127.0.0.1:5672",
-//                                                      "topic:multiThreadTopic",
-//                                                      "100", "false", runTime.toString(),
-//                                                      expectedCount.toString(),
-//                                                      numberOfSubscriberThreads.toString(),
-//                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-//                                                      "stopAfter=" + expectedCount,
-//                                                      "");
-//
-//        receivingClient.startWorking();
-//
-//        AndesClientTemp sendingClient = new AndesClientTemp("send", "127.0.0.1:5672",
-//                                                    "topic:multiThreadTopic",
-//                                                    "100", "false",
-//                                                    runTime.toString(), sendCount.toString(),
-//                                                    numberOfPublisherThreads.toString(),
-//                                                    "ackMode=1,delayBetweenMsg=0," +
-//                                                    "stopAfter=" + sendCount,
-//                                                    "");
-//
-//        sendingClient.startWorking();
-//
-//        boolean receiveSuccess = AndesClientUtilsTemp
-//                .waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-//
-//        boolean sendSuccess = AndesClientUtilsTemp.getIfSenderIsSuccess(sendingClient, sendCount);
-//
-//        Assert.assertTrue(sendSuccess, "Message sending failed.");
-//        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
     }
 }

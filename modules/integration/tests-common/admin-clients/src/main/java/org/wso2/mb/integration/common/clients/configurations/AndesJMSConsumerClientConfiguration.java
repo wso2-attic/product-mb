@@ -400,7 +400,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets the consumer to read message asynchronously. Asynchronously message
      * reading implies that it uses {@link javax.jms.MessageListener} to listen to receiving
      * messages.
-     *
      * @param async true if messages should be read asynchronously, false otherwise.
      */
     public void setAsync(boolean async) {
@@ -409,7 +408,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
 
     /**
      * Gets the selectors query used by the consumer for filtering.
-     *
      * @return The selectors query used by the consumer for filtering.
      */
     public String getSelectors() {
@@ -418,7 +416,6 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
 
     /**
      * Sets the selectors query used by the consumer for filtering.
-     *
      * @param selectors The selectors query used by the consumer for filtering.
      */
     public void setSelectors(String selectors) {

@@ -75,7 +75,10 @@ public class AndesClient {
     public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads)
             throws JMSException, NamingException, AndesClientException {
         if (0 < numberOfThreads) {
-            AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
+            if (config instanceof AndesJMSConsumerClientConfiguration) {
+                AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
+            }
+
             for (int i = 0; i < numberOfThreads; i++) {
                 if (config instanceof AndesJMSConsumerClientConfiguration) {
                     consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config));
@@ -86,8 +89,6 @@ public class AndesClient {
         } else {
             throw new AndesClientException("The amount of subscribers cannot be less than 1");
         }
-
-
     }
 
     /**
@@ -98,7 +99,10 @@ public class AndesClient {
      * @throws NamingException
      */
     public AndesClient(AndesJMSClientConfiguration config) throws JMSException, NamingException {
-        AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
+        if (config instanceof AndesJMSConsumerClientConfiguration) {
+            AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
+        }
+
         if (config instanceof AndesJMSConsumerClientConfiguration) {
             consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config));
         } else if (config instanceof AndesJMSPublisherClientConfiguration) {
@@ -273,6 +277,7 @@ public class AndesClient {
 
     /**
      * Gets the starting delay when starting publishers or consumers.
+     *
      * @return The starting delay.
      */
     public long getStartDelay() {
@@ -281,6 +286,7 @@ public class AndesClient {
 
     /**
      * Sets the starting delay when starting publishers or consumers.
+     *
      * @param startDelay The starting delay
      */
     public void setStartDelay(long startDelay) {
@@ -289,6 +295,7 @@ public class AndesClient {
 
     /**
      * Gets the configuration file used in creating the publisher(s) or consumer(s)
+     *
      * @return The configuration
      */
     public AndesJMSClientConfiguration getConfig() {
