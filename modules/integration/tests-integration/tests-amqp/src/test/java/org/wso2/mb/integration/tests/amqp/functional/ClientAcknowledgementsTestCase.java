@@ -28,7 +28,6 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -99,7 +98,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient2 = new AndesClient(consumerConfig);
         consumerClient2.startClient();
 
-        AndesClientUtilsTemp.sleepForInterval(2000);
+        AndesClientUtils.sleepForInterval(2000);
 
         long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount();
 

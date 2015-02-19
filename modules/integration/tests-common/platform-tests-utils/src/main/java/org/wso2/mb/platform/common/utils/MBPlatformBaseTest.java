@@ -26,8 +26,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.Instance;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.xml.sax.SAXException;
 
 import javax.xml.stream.XMLStreamException;

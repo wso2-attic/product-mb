@@ -27,7 +27,7 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;

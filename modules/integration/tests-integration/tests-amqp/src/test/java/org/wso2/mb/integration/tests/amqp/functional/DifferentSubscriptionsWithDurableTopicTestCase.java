@@ -10,7 +10,6 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -148,7 +147,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), 0L,
                             "Message received from queue subscriber. This should not happen");
 
-        AndesClientUtilsTemp.sleepForInterval(2000L);
+        AndesClientUtils.sleepForInterval(2000L);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT,
                             "Message send error");

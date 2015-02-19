@@ -23,14 +23,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.AndesClientTemp;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtilsTemp;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -38,9 +35,6 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * Load test for standalone MB for an auto acknowledging consumer for queues

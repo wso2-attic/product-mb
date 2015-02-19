@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.mb.integration.common.clients.operations.topic;
+package org.wso2.mb.integration.common.clients.operations.clients;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;

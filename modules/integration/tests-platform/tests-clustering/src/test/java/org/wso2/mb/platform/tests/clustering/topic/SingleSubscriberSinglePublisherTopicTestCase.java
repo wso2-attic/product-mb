@@ -31,7 +31,7 @@ import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
