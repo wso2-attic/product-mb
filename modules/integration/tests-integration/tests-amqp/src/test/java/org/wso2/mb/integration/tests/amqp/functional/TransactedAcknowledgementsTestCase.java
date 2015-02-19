@@ -57,16 +57,16 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         //Create receiving client
         AndesClient receivingClient =
                 new AndesClient("receive", "127.0.0.1:5672", "queue:transactedAckTestQueue", "100", "true",
-                                runTime.toString(), String.valueOf(expectedCount), "1",
-                                "listener=true,ackMode=0,delayBetweenMsg=100,stopAfter=100,rollbackAfterEach=10,commitAfterEach=30",
-                                "");
+                        runTime.toString(), String.valueOf(expectedCount), "1",
+                        "listener=true,ackMode=0,delayBetweenMsg=100,stopAfter=100,rollbackAfterEach=10,commitAfterEach=30",
+                        "");
         //Start receiving client
         receivingClient.startWorking();
         //Create sending client
         AndesClient sendingClient =
                 new AndesClient("send", "127.0.0.1:5672", "queue:transactedAckTestQueue", "100", "false",
-                                runTime.toString(), sendCount.toString(), "1",
-                                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+                        runTime.toString(), sendCount.toString(), "1",
+                        "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
         //Start sending client
         sendingClient.startWorking();
         AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
@@ -77,8 +77,8 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         int duplicateCount = receivingClient.getTotalNumberOfDuplicates();
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
         Assert.assertEquals(totalMessagesReceived, (expectedCount + duplicateCount),
-                            "Total number of received message should be equal sum of expected and duplicate message count ");
+                "Total number of received message should be equal sum of expected and duplicate message count ");
         Assert.assertTrue(receivingClient.transactedOperation(10),
-                          "After rollback next message need to equal first message of batch");
+                "After rollback next message need to equal first message of batch");
     }
 }

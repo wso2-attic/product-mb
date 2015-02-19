@@ -56,16 +56,16 @@ public class DuplicatesOkAcknowledgementsTestCase extends MBIntegrationBaseTest 
         Integer duplicateCount;
         //Create receiving client
         AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:dupOkAckTestQueue",
-                                                      "100", "false", runTime.toString(), expectedCount.toString(),
-                                                      "1", "listener=true,ackMode=3,delayBetweenMsg=10,stopAfter=500",
-                                                      "");
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=3,delayBetweenMsg=10,stopAfter=500",
+                "");
         //Start receiving client
         receivingClient.startWorking();
 
         //Create sending client
         AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:dupOkAckTestQueue", "100", "false",
-                                                    runTime.toString(), sendCount.toString(), "1",
-                                                    "ackMode=1,delayBetweenMsg=10,stopAfter=" + sendCount, "");
+                runTime.toString(), sendCount.toString(), "1",
+                "ackMode=1,delayBetweenMsg=10,stopAfter=" + sendCount, "");
         //Start sending client
         sendingClient.startWorking();
         AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 3 * expectedCount, runTime);
@@ -77,6 +77,6 @@ public class DuplicatesOkAcknowledgementsTestCase extends MBIntegrationBaseTest 
         duplicateCount = receivingClient.getTotalNumberOfDuplicates();
         Assert.assertTrue(sendSuccess, "Messaging sending failed");
         Assert.assertEquals(totalMessagesReceived, (Integer) (expectedCount + duplicateCount),
-                            "Total number of received message should be equal sum of expected and duplicate message count ");
+                "Total number of received message should be equal sum of expected and duplicate message count ");
     }
 }

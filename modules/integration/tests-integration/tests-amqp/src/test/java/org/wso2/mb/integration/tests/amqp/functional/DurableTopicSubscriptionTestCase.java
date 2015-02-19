@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.topic.BasicTopicSubscriber;
 
 import javax.jms.JMSException;
@@ -20,31 +21,45 @@ public class DurableTopicSubscriptionTestCase {
     private String port = "5672";
     private String userName = "admin";
     private String password = "admin";
-    private long intervalBetSubscription = 100;
+    private Integer runTime = 10;
+    private Integer expectedCount = 10;
+    private long intervalBetSubscription = 1000;
 
+    /**
+     * Creating a client with a subscription ID and unsubscribe it and
+     * create another client with the same subscription ID
+     *
+     * @throws JMSException
+     * @throws NamingException
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void basicSubscriptionTest() throws JMSException, NamingException {
 
         /**
          * create with sub id= x topic=y. disconnect and try to connect again
          */
-        BasicTopicSubscriber sub1 = null;
+
         try {
             String topic = "myTopic1";
             String subID = "wso2";
-            sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub1.subscribe(topic,true,subID);
+            Integer runTime = 10;
+            Integer expectedCount = 10;
+            AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
+                    "100", "false", runTime.toString(), expectedCount.toString(),
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                    "unsubscribeAfter=" + expectedCount, "");
+            receivingClient.startWorking();
             sleepForInterval(intervalBetSubscription);
-            sub1.close();
-            sleepForInterval(intervalBetSubscription);
-            sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub1.subscribe(topic,true,subID);
+            receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
+                    "100", "false", runTime.toString(), expectedCount.toString(),
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                    "unsubscribeAfter=" + expectedCount, "");
+            receivingClient.startWorking();
             sleepForInterval(intervalBetSubscription);
         } finally {
-            if(null != sub1) {
-                sub1.close();
-            }
+
         }
+
 
         /**
          * create with sub id= x topic=y. kill subscription and try to connect again
@@ -53,12 +68,14 @@ public class DurableTopicSubscriptionTestCase {
 
     }
 
+
+    /**
+     * create with sub id= x topic=y. try another subscription with same params.
+     * should rejects the subscription
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithSameIdTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y. try another subscription with same params.
-         * should rejects the subscription
-         */
+
         String topic = "myTopic2";
         String subID = "sriLanka";
         BasicTopicSubscriber sub1 = null;
@@ -72,14 +89,10 @@ public class DurableTopicSubscriptionTestCase {
                 sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
                 sub2.subscribe(topic, true, subID);
                 sleepForInterval(intervalBetSubscription);
-            } catch (JMSException e) {
-                if (e.getMessage().contains("as it already has an existing exclusive consumer")) {
-                    log.error("Error while subscribing. This is expected.", e);
-                    multipleSubsNotAllowed = false;
-                } else {
-                    log.error("Error while subscribing", e);
-                    throw new JMSException("Error while subscribing");
-                }
+            } catch (Exception e) {
+                log.error("Error while subscribing. This is expected.", e);
+                multipleSubsNotAllowed = false;
+
             }
             Assert.assertFalse(multipleSubsNotAllowed, "Multiple subscriptions allowed for same client ID.");
         } finally {
@@ -87,21 +100,24 @@ public class DurableTopicSubscriptionTestCase {
                 sub1.close();
             }
         }
+        Assert.assertFalse(multipleSubsNotAllowed, "Multiple subscriptions allowed for same client ID.");
+
     }
 
+    /**
+     * create with sub id= x topic=y. try another with sub id=z topic=y. Allowed
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDifferentIdTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y. try another with sub id=z topic=y. Allowed
-         */
+
         String topic = "myTopic3";
         String subID1 = "test1";
         String subID2 = "test2";
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-        sub1.subscribe(topic,true,subID1);
+        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
+        sub1.subscribe(topic, true, subID1);
         sleepForInterval(intervalBetSubscription);
-        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host,port,userName,password,topic);
-        sub2.subscribe(topic,true,subID2);
+        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
+        sub2.subscribe(topic, true, subID2);
         sleepForInterval(intervalBetSubscription);
 
         /**
@@ -111,58 +127,60 @@ public class DurableTopicSubscriptionTestCase {
         sub2.close();
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * close it.
+     * Then try with sub id= x topic=z.
+     * Should reject the subscription
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsToDifferentTopicsWithSameSubIdTest() throws JMSException, NamingException {
-        /**
-         *  create with sub id= x topic=y.
-         *  close it.
-         *  Then try with sub id= x topic=z.
-         *  Should reject the subscription
-         */
+
         String topic1 = "myTopic4";
         String topic2 = "myTopic5";
         String subID1 = "test3";
         boolean subscriptionAllowedForDifferentTopic = true;
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host,port,userName,password,topic1);
-        sub1.subscribe(topic1,true,subID1);
+        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic1);
+        sub1.subscribe(topic1, true, subID1);
         sleepForInterval(intervalBetSubscription);
         sub1.close();
         sleepForInterval(intervalBetSubscription);
         try {
-            BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host,port,userName,password,topic2);
-            sub2.subscribe(topic2,true,subID1);
+            BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic2);
+            sub2.subscribe(topic2, true, subID1);
             sleepForInterval(intervalBetSubscription);
         } catch (JMSException e) {
-            if(e.getMessage().contains("An Exclusive Bindings already exists for different topic. Not permitted")) {
-                log.error("Error while subscribing. This is expected.",e);
+            if (e.getMessage().contains("An Exclusive Bindings already exists for different topic. Not permitted")) {
+                log.error("Error while subscribing. This is expected.", e);
                 subscriptionAllowedForDifferentTopic = false;
             } else {
-                log.error("Error while subscribing." , e);
+                log.error("Error while subscribing.", e);
                 throw new JMSException("Error while subscribing");
             }
         }
         Assert.assertFalse(subscriptionAllowedForDifferentTopic, "Subscriptions to a different topic" +
-                                      " was allowed by same client Id without un-subscribing");
+                " was allowed by same client Id without un-subscribing");
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Create a normal topic subscription topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void durableTopicWithNormalTopicTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Create a normal topic subscription topic=y
-         */
+
         String topic = "myTopic5";
         String subID = "test5";
 
         BasicTopicSubscriber sub1 = null;
         BasicTopicSubscriber sub2 = null;
         try {
-            sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub1.subscribe(topic,true,subID);
+            sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
+            sub1.subscribe(topic, true, subID);
             sleepForInterval(intervalBetSubscription);
 
-            sub2 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub2.subscribe(topic,false,"");
+            sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
+            sub2.subscribe(topic, false, "");
             sleepForInterval(intervalBetSubscription);
         } finally {
             if (null != sub1) {
@@ -174,46 +192,50 @@ public class DurableTopicSubscriptionTestCase {
         }
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= x topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeUnSuscribeAndSubscribeAgainTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= x topic=y
-         */
+
         String topic = "myTopic7";
         String subID = "test7";
 
-        BasicTopicSubscriber sub1 = null;
-        BasicTopicSubscriber sub2 = null;
 
         try {
-            sub1 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub1.subscribe(topic,true,subID);
+            AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
+                    "100", "false", runTime.toString(), expectedCount.toString(),
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                    "unsubscribeAfter=" + expectedCount, "");
+
+
+            sub1.startWorking();
             sleepForInterval(intervalBetSubscription);
 
-            sub1.unsubscribe(subID);
-            sleepForInterval(intervalBetSubscription);
+            AndesClient sub2 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
+                    "100", "false", runTime.toString(), expectedCount.toString(),
+                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                    "unsubscribeAfter=" + expectedCount, "");
 
-            sub2 = new BasicTopicSubscriber(host,port,userName,password,topic);
-            sub2.subscribe(topic,true,subID);
+            sub2.startWorking();
             sleepForInterval(intervalBetSubscription);
 
         } finally {
-            if(null != sub2) {
-                sub2.close();
-            }
+
+
         }
 
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= z topic=y
+     */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDiffIDsToSameTopicTest() throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= z topic=y
-         */
         String topic = "multiSubTopic";
         String subID1 = "new1";
         String subID2 = "new2";
@@ -258,32 +280,33 @@ public class DurableTopicSubscriptionTestCase {
         }
     }
 
+    /**
+     * create with sub id= x topic=y.
+     * Unsubscribe.
+     * Now try sub id= x topic=z
+     */
+
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeUnsubscribeAndTryDifferentTopicTest()
             throws JMSException, NamingException {
-        /**
-         * create with sub id= x topic=y.
-         * Unsubscribe.
-         * Now try sub id= x topic=z
-         */
 
         String topic1 = "myTopic8";
         String topic2 = "myTopic9";
         String subID = "test8";
 
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic1);
-        sub1.subscribe(topic1, true,subID);
+
+        AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                "unsubscribeAfter=" + expectedCount, "");
+        sub1.startWorking();
         sleepForInterval(intervalBetSubscription);
 
-        sub1.unsubscribe(subID);
-        sleepForInterval(intervalBetSubscription);
-
-        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic2);
-        sub2.subscribe(topic2, true,subID);
-        sleepForInterval(intervalBetSubscription);
-
-        sub2.close();
-
+        sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
+                "100", "false", runTime.toString(), expectedCount.toString(),
+                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
+                "unsubscribeAfter=" + expectedCount, "");
+        sub1.startWorking();
     }
 
     private void sleepForInterval(long timeToSleep) {
