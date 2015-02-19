@@ -31,6 +31,9 @@ import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
 
+/**
+ * MBSecurityManagerBaseTest is a SecurityManager
+ */
 public class MBSecurityManagerBaseTest extends SecurityManager {
     protected Log log = LogFactory.getLog(MBSecurityManagerBaseTest.class);
     protected AutomationContext automationContext;
