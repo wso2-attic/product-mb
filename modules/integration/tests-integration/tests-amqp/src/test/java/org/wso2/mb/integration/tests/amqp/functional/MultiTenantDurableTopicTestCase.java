@@ -95,7 +95,8 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantQueueTestCase() {
-        int sendMessageCount = 100;
+        int sendMessageCount1 = 80;
+        int sendMessageCount2 = 120;
         int runTime = 20;
         int expectedMessageCount = 200;
 
@@ -113,17 +114,17 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         tenant2ReceivingClient.startWorking();
 
         // Start sending clients (tenant1, tenant2)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopicDurable",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
-                "topictenantuser1!topictenant2.com", "topictenantuser1");
+        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopicDurable",
+                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount1), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount1, "",
+                "topictenantuser1!topictenant1.com", "topictenantuser1");
 
         tenant1SendingClient.startWorking();
 
-        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopicDurable",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "",
-                "topictenantuser1!topictenant1.com", "topictenantuser1");
+        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopicDurable",
+                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount2), "1",
+                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount2, "",
+                "topictenantuser1!topictenant2.com", "topictenantuser1");
         tenant2SendingClient.startWorking();
 
         AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient,
@@ -131,12 +132,12 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitUntilMessagesAreReceived(tenant2ReceivingClient,
                 expectedMessageCount, runTime);
 
-        boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
-        boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient, sendMessageCount);
+        boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount1);
+        boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient, sendMessageCount2);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount, "Tenant 2 Durable subscriber received the message published to Tenant 1 Durable Subscriber");
-        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount, "Tenant 1 Durable subscriber received the message published to Tenant 2 Durable Subscriber");
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 Durable subscriber received the message published to Tenant 1 Durable Subscriber");
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 Durable subscriber received the message published to Tenant 2 Durable Subscriber");
     }
 }
