@@ -96,7 +96,7 @@ public class ManySubscribersTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_SUBSCRIBERS, "Message sending failed");

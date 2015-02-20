@@ -113,8 +113,8 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClosingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClosingClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         log.info("Total Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
 

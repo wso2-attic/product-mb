@@ -247,13 +247,11 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      */
     @Override
     public String toString() {
-        StringBuilder toStringVal = new StringBuilder();
-        toStringVal.append(super.toString());
-        toStringVal.append("ReadMessagesFromFilePath=").append(this.readMessagesFromFilePath).append("\n");
-        toStringVal.append("JmsMessageType=").append(this.jmsMessageType).append("\n");
-        toStringVal.append("NumberOfMessagesToSend=").append(this.numberOfMessagesToSend).append("\n");
-        toStringVal.append("JmsMessageExpiryTime=").append(this.jmsMessageExpiryTime).append("\n");
-        return toStringVal.toString();
+        return super.toString() +
+               "ReadMessagesFromFilePath=" + this.readMessagesFromFilePath + "\n" +
+               "JmsMessageType=" + this.jmsMessageType + "\n" +
+               "NumberOfMessagesToSend=" + this.numberOfMessagesToSend + "\n" +
+               "JmsMessageExpiryTime=" + this.jmsMessageExpiryTime + "\n";
     }
 
     /**

@@ -115,7 +115,7 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
         publisherClientWithExpiration.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating second subscriber client configuration
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig = consumerConfig.clone();
@@ -126,13 +126,13 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating third subscriber
         AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig);
         tertiaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), SEND_COUNT_WITHOUT_EXPIRATION, "Message send failed for publisher client without expiration");

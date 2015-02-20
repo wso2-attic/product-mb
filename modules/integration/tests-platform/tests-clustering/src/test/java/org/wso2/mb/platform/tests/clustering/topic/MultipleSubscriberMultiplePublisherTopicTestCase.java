@@ -135,8 +135,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
@@ -188,7 +188,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
@@ -239,7 +239,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         AndesClient publisherClient = new AndesClient(publisherConfig, 50);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
@@ -291,7 +291,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         AndesClient publisherClient = new AndesClient(publisherConfig, 50);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
@@ -342,7 +342,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         AndesClient publisherClient = new AndesClient(publisherConfig, 50);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");

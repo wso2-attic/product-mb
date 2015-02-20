@@ -116,7 +116,7 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
         publisherClientWithExpiration.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), SEND_COUNT_WITHOUT_EXPIRATION, "Message send failed for publisherClientWithoutExpiration");

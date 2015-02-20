@@ -143,16 +143,16 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         sendingClient9.startClient();
         sendingClient10.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient3, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient4, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient5, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient6, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient7, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient8, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient9, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient10, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient5, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient6, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient7, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient8, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient9, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient10, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(sendingClient1.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 1");

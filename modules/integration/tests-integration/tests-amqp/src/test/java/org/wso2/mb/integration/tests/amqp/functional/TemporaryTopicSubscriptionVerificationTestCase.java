@@ -65,7 +65,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
 
         // Creating a second consumer client configuration
@@ -76,7 +76,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message send failed");
@@ -135,8 +135,8 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message send failed");
@@ -175,7 +175,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
             AndesClient newConsumerClient = new AndesClient(newConsumerConfig);
             newConsumerClient.startClient();
 
-            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
             return newConsumerClient.getReceivedMessageCount() == 1L;
         }

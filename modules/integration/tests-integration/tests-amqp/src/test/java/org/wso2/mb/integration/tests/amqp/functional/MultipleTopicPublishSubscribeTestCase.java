@@ -105,8 +105,8 @@ public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest
         AndesClient publisherClient2 = new AndesClient(publisherConfig2);
         publisherClient2.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT_2000 * 2L, "Publisher publisherClient1 failed to publish messages");

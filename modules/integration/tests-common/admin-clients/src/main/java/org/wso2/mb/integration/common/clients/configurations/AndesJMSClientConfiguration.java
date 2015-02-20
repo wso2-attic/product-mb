@@ -85,7 +85,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
     private String filePathToWriteStatistics;
 
     /**
-     * XML file path for conifguration
+     * XML file path for configuration
      */
     private String xmlConfigFilePath;
 
@@ -104,7 +104,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * @param destinationName The destination name.
      */
     public AndesJMSClientConfiguration(ExchangeType exchangeType, String destinationName) {
-        this(AndesClientConstants.ADMIN_USERNAME, AndesClientConstants.ADMIN_PASSWORD,
+        this(AndesClientConstants.DEFAULT_USERNAME, AndesClientConstants.DEFAULT_PASSWORD,
              AndesClientConstants.DEFAULT_HOST_NAME, AndesClientConstants.DEFAULT_PORT,
              exchangeType, destinationName);
     }
@@ -120,7 +120,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
      */
     public AndesJMSClientConfiguration(String hostName, int port, ExchangeType exchangeType,
                                        String destinationName) {
-        this(AndesClientConstants.ADMIN_USERNAME, AndesClientConstants.ADMIN_PASSWORD, hostName,
+        this(AndesClientConstants.DEFAULT_USERNAME, AndesClientConstants.DEFAULT_PASSWORD, hostName,
              port, exchangeType, destinationName);
     }
 
@@ -385,11 +385,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuilder toStringVal = new StringBuilder();
-        toStringVal.append("ConnectionString=").append(this.connectionString).append("\n");
-        toStringVal.append("ExchangeType=").append(this.exchangeType).append("\n");
-        toStringVal.append("PrintsPerMessageCount=").append(this.printsPerMessageCount).append("\n");
-        toStringVal.append("RunningDelay=").append(this.runningDelay).append("\n");
-        return toStringVal.toString();
+        return "ConnectionString=" + this.connectionString + "\n" + "ExchangeType=" +
+               this.exchangeType + "\n" + "PrintsPerMessageCount=" + this.printsPerMessageCount +
+               "\n" + "RunningDelay=" + this.runningDelay + "\n";
     }
 }

@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -41,6 +41,7 @@ import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 import javax.naming.NamingException;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -117,63 +118,72 @@ public class AndesJMSConsumer extends AndesJMSClient
         this.consumerConfig = config;
 
         if (this.consumerConfig.getExchangeType() == ExchangeType.QUEUE) {
-            // Creates a queue connection, sessions and receiver
-            QueueConnectionFactory connFactory = (QueueConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
-            QueueConnection queueConnection = connFactory.createQueueConnection();
-            queueConnection.start();
-            QueueSession queueSession;
+            this.createQueueConnection();
 
-            // Sets acknowledgement mode
-            if (this.consumerConfig.getAcknowledgeMode().getType() == QueueSession.SESSION_TRANSACTED) {
-                queueSession = queueConnection.createQueueSession(true, this.consumerConfig.getAcknowledgeMode().getType());
-            } else {
-                queueSession = queueConnection.createQueueSession(false, this.consumerConfig.getAcknowledgeMode().getType());
-            }
+        } else if (this.consumerConfig.getExchangeType() == ExchangeType.TOPIC) {
+            this.createTopicConnection();
+        }
+    }
 
-            Queue queue = (Queue) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
-            connection = queueConnection;
-            session = queueSession;
+    private void createTopicConnection() throws NamingException, JMSException {
+        // Creates a topic connection, sessions and receiver
+        TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
+        TopicConnection topicConnection = connFactory.createTopicConnection();
+        topicConnection.setClientID(this.consumerConfig.getSubscriptionID());
+        topicConnection.start();
+        TopicSession topicSession;
+        // Sets acknowledgement mode
+        if (this.consumerConfig.getAcknowledgeMode().getType() == TopicSession.SESSION_TRANSACTED) {
+            topicSession = topicConnection.createTopicSession(true, this.consumerConfig.getAcknowledgeMode().getType());
+        } else {
+            topicSession = topicConnection.createTopicSession(false, this.consumerConfig.getAcknowledgeMode().getType());
+        }
 
+        Topic topic = (Topic) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
+
+        connection = topicConnection;
+        session = topicSession;
+        // If topic is durable
+        if (this.consumerConfig.isDurable()) {
             // If selectors exists
             if (null != this.consumerConfig.getSelectors()) {
-                receiver = queueSession.createReceiver(queue, this.consumerConfig.getSelectors());
+                receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID(), this.consumerConfig.getSelectors(), false);
             } else {
-                receiver = queueSession.createReceiver(queue);
+                receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID());
             }
-        } else if (this.consumerConfig.getExchangeType() == ExchangeType.TOPIC) {
-            // Creates a topic connection, sessions and receiver
-            TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
-            TopicConnection topicConnection = connFactory.createTopicConnection();
-            topicConnection.setClientID(this.consumerConfig.getSubscriptionID());
-            topicConnection.start();
-            TopicSession topicSession;
-            // Sets acknowledgement mode
-            if (this.consumerConfig.getAcknowledgeMode().getType() == TopicSession.SESSION_TRANSACTED) {
-                topicSession = topicConnection.createTopicSession(true, this.consumerConfig.getAcknowledgeMode().getType());
+        } else {
+            // If selectors exists
+            if (null != this.consumerConfig.getSelectors()) {
+                receiver = topicSession.createSubscriber(topic, this.consumerConfig.getSelectors(), false);
             } else {
-                topicSession = topicConnection.createTopicSession(false, this.consumerConfig.getAcknowledgeMode().getType());
+                receiver = topicSession.createSubscriber(topic);
             }
+        }
+    }
 
-            Topic topic = (Topic) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
+    private void createQueueConnection() throws NamingException, JMSException {
+        // Creates a queue connection, sessions and receiver
+        QueueConnectionFactory connFactory = (QueueConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
+        QueueConnection queueConnection = connFactory.createQueueConnection();
+        queueConnection.start();
+        QueueSession queueSession;
 
-            connection = topicConnection;
-            session = topicSession;
-            // If topic is durable
-            if (this.consumerConfig.isDurable()) {
-                // If selectors exists
-                if (null != this.consumerConfig.getSelectors()) {
-                    receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID(), this.consumerConfig.getSelectors(), false);
-                } else {
-                    receiver = topicSession.createDurableSubscriber(topic, this.consumerConfig.getSubscriptionID());
-                }
-            } else {
-                // If selectors exists
-                if (null != this.consumerConfig.getSelectors()) {
-                    receiver = topicSession.createSubscriber(topic, this.consumerConfig.getSelectors(), false);
-                } else {
-                    receiver = topicSession.createSubscriber(topic);
-                }
-            }
+        // Sets acknowledgement mode
+        if (this.consumerConfig.getAcknowledgeMode().getType() == QueueSession.SESSION_TRANSACTED) {
+            queueSession = queueConnection.createQueueSession(true, this.consumerConfig.getAcknowledgeMode().getType());
+        } else {
+            queueSession = queueConnection.createQueueSession(false, this.consumerConfig.getAcknowledgeMode().getType());
+        }
+
+        Queue queue = (Queue) super.getInitialContext().lookup(this.consumerConfig.getDestinationName());
+        connection = queueConnection;
+        session = queueSession;
+
+        // If selectors exists
+        if (null != this.consumerConfig.getSelectors()) {
+            receiver = queueSession.createReceiver(queue, this.consumerConfig.getSelectors());
+        } else {
+            receiver = queueSession.createReceiver(queue);
         }
     }
 
@@ -359,6 +369,9 @@ public class AndesJMSConsumer extends AndesJMSClient
         } catch (JMSException e) {
             log.error("Error while listening to messages", e);
             throw new RuntimeException("JMSException : Error while listening to messages", e);
+        } catch (IOException e) {
+            log.error("Error while writing message to file", e);
+            throw new RuntimeException("IOException : Error while writing message to file\"", e);
         }
     }
 
@@ -383,6 +396,7 @@ public class AndesJMSConsumer extends AndesJMSClient
                 String deliveryStatus;
                 TextMessage textMessage = (TextMessage) message;
                 // Gets whether the message is original or redelivered
+                // TODO : use enum
                 if (message.getJMSRedelivered()) {
                     deliveryStatus = "REDELIVERED";
                 } else {
@@ -428,9 +442,11 @@ public class AndesJMSConsumer extends AndesJMSClient
             if (receivedMessageCount.get() >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
                 // Un-Subscribing consumer
                 unSubscribe();
+                // TODO : revisit sleep
                 AndesClientUtils.sleepForInterval(500L);
             } else if (this.receivedMessageCount.get() >= consumerConfig.getMaximumMessagesToReceived()) {
                 // Stopping the consumer
+                // TODO : revisit sleep
                 stopClient();
                 AndesClientUtils.sleepForInterval(500L);
             }
@@ -446,6 +462,9 @@ public class AndesJMSConsumer extends AndesJMSClient
         } catch (JMSException e) {
             log.error("Error while listening to messages", e);
             throw new RuntimeException("JMSException : Error while listening to messages", e);
+        } catch (IOException e) {
+            log.error("Error while writing message to file", e);
+            throw new RuntimeException("IOException : Error while writing message to file", e);
         }
     }
 

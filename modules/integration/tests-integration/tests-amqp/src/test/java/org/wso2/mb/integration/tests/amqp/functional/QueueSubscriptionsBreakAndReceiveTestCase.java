@@ -103,7 +103,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
         AndesClient publisherClient = new AndesClient(publisherConfig);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(firstConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(firstConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
@@ -116,7 +116,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
             AndesClient newConsumerClient = new AndesClient(consumerConfig);
             newConsumerClient.startClient();
 
-            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
+            AndesClientUtils.waitForMessagesAndShutdown(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
 
             totalMessageCountReceived = totalMessageCountReceived + newConsumerClient.getReceivedMessageCount();
             AndesClientUtils.sleepForInterval(1000L);

@@ -102,8 +102,8 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerReturnedClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerReturnedClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluation
         long totalReceivedMessageCount = consumerClient.getReceivedMessageCount() + consumerReturnedClient.getReceivedMessageCount();

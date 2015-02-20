@@ -26,6 +26,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import java.io.IOException;
 
 /**
  * Test case to create and remove a topic subscriber.
@@ -39,7 +40,7 @@ public class CreateRemoveQueueSubscriptionTestCase {
      * @throws JMSException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void testCreateRemoveSubscription() throws JMSException, NamingException {
+    public void testCreateRemoveSubscription() throws JMSException, NamingException, IOException {
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "TestQueue");
 
         AndesClient consumerClient = new AndesClient(consumerConfig);

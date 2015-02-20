@@ -134,7 +134,7 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
         }
 
         for (AndesClient consumer : consumers) {
-            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumer, AndesClientConstants.DEFAULT_RUN_TIME * 3L);
+            AndesClientUtils.waitForMessagesAndShutdown(consumer, AndesClientConstants.DEFAULT_RUN_TIME * 3L);
         }
 
         // Evaluating

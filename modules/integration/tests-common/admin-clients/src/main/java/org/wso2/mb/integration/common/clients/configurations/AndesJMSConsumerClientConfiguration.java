@@ -427,20 +427,18 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      */
     @Override
     public String toString() {
-        StringBuilder toStringVal = new StringBuilder();
-        toStringVal.append(super.toString());
-        toStringVal.append("UnSubscribeAfterEachMessageCount=").append(this.unSubscribeAfterEachMessageCount).append("\n");
-        toStringVal.append("RollbackAfterEachMessageCount=").append(this.rollbackAfterEachMessageCount).append("\n");
-        toStringVal.append("CommitAfterEachMessageCount=").append(this.commitAfterEachMessageCount).append("\n");
-        toStringVal.append("AcknowledgeAfterEachMessageCount=").append(this.acknowledgeAfterEachMessageCount).append("\n");
-        toStringVal.append("FilePathToWriteReceivedMessages=").append(this.filePathToWriteReceivedMessages).append("\n");
-        toStringVal.append("MaximumMessagesToReceived=").append(this.maximumMessagesToReceived).append("\n");
-        toStringVal.append("SubscriptionID=").append(this.subscriptionID).append("\n");
-        toStringVal.append("Durable=").append(this.durable).append("\n");
-        toStringVal.append("AcknowledgeMode=").append(this.acknowledgeMode).append("\n");
-        toStringVal.append("Async=").append(this.async).append("\n");
-        toStringVal.append("Selectors=").append(this.selectors).append("\n");
-        return toStringVal.toString();
+        return super.toString() +
+               "UnSubscribeAfterEachMessageCount=" + this.unSubscribeAfterEachMessageCount + "\n" +
+               "RollbackAfterEachMessageCount=" + this.rollbackAfterEachMessageCount + "\n" +
+               "CommitAfterEachMessageCount=" + this.commitAfterEachMessageCount + "\n" +
+               "AcknowledgeAfterEachMessageCount=" + this.acknowledgeAfterEachMessageCount + "\n" +
+               "FilePathToWriteReceivedMessages=" + this.filePathToWriteReceivedMessages + "\n" +
+               "MaximumMessagesToReceived=" + this.maximumMessagesToReceived + "\n" +
+               "SubscriptionID=" + this.subscriptionID + "\n" +
+               "Durable=" + this.durable + "\n" +
+               "AcknowledgeMode=" + this.acknowledgeMode + "\n" +
+               "Async=" + this.async + "\n" +
+               "Selectors=" + this.selectors + "\n";
     }
 
     /**

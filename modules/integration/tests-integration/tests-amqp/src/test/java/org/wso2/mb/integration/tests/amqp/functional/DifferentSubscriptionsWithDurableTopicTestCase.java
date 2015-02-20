@@ -126,24 +126,24 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         AndesClientUtils.sleepForInterval(4000L);
 
         // Evaluation
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(durableTopicConsumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(durableTopicConsumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(durableTopicConsumerClient1.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from durable subscriber 1");
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(durableTopicConsumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(durableTopicConsumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(durableTopicConsumerClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from durable subscriber 2");
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(normalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(normalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(normalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from normal topic subscriber");
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(normalHierarchicalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(normalHierarchicalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(normalHierarchicalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
                             "Message receive error from normal hierarchical topic subscriber");
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(durableHierarchicalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(durableHierarchicalTopicConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(durableHierarchicalTopicConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT,
                             "Message receive error from durable hierarchical topic subscriber");
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(queueConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(queueConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), 0L,
                             "Message received from queue subscriber. This should not happen");
 

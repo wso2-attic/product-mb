@@ -89,7 +89,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient sendingClient = new AndesClient(publisherConfig);
         sendingClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(receivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating results
         Assert.assertEquals(sendingClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
@@ -129,7 +129,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         sendingClient.startClient();
 
         // Wait until messages are received by first consumer client.
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
         long totalMessagesReceived = initialReceivingClient.getReceivedMessageCount();
 
         log.info("Messages received by first client : " + totalMessagesReceived);
@@ -143,7 +143,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         secondaryReceivingClient.startClient();
 
         // Wait until messages are received by second consumer client.
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryReceivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         totalMessagesReceived = totalMessagesReceived + secondaryReceivingClient.getReceivedMessageCount();
 

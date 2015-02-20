@@ -92,7 +92,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         publisherClient.startClient();
 
         //Wait until messages receive
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a second consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
@@ -102,7 +102,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a third JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
@@ -111,7 +111,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3);
         tertiaryConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(5000L);
 

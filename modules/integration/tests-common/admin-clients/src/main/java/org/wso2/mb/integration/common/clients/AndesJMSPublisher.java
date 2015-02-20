@@ -243,13 +243,14 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                     }
 
                     // Sending messages
+                    // TODO : revisit synchronize block
                     synchronized (this.sentMessageCount.getClass()) {
                         if (this.sentMessageCount.get() >= this.publisherConfig.getNumberOfMessagesToSend()) {
                             break;
                         }
                         this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
-
                         this.sentMessageCount.incrementAndGet();
+
                     }
 
                     // TPS calculation
@@ -296,6 +297,9 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
         } catch (JMSException e) {
             log.error("Error while publishing messages", e);
             throw new RuntimeException("JMSException : Error while publishing messages", e);
+        } catch (IOException e) {
+            log.error("Error while writing statistics", e);
+            throw new RuntimeException("IOException : Error while writing statistics", e);
         }
     }
 

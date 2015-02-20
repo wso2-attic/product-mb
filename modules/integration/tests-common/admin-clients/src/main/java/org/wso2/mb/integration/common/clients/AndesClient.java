@@ -73,7 +73,7 @@ public class AndesClient {
      * @throws AndesClientException
      */
     public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads)
-            throws JMSException, NamingException, AndesClientException {
+            throws JMSException, NamingException, AndesClientException, IOException {
         if (0 < numberOfThreads) {
             if (config instanceof AndesJMSConsumerClientConfiguration) {
                 AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
@@ -98,7 +98,9 @@ public class AndesClient {
      * @throws JMSException
      * @throws NamingException
      */
-    public AndesClient(AndesJMSClientConfiguration config) throws JMSException, NamingException {
+    public AndesClient(AndesJMSClientConfiguration config)
+            throws JMSException, NamingException, IOException {
+        // TODO : can use other constructor
         if (config instanceof AndesJMSConsumerClientConfiguration) {
             AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
         }

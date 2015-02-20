@@ -53,13 +53,13 @@ public class AndesClientUtils {
      * a certain time to make sure that message counter changes until no change is detected in the
      * message counters.
      *
-     * @param client The consumer client
+     * @param client                            The consumer client
      * @param waitTimeTillMessageCounterChanges The amount of milliseconds to wait for new messages
      *                                          are received.
      * @throws JMSException
      */
-    public static void waitUntilNoMessagesAreReceivedAndShutdownClients(AndesClient client,
-                                                                        long waitTimeTillMessageCounterChanges)
+    public static void waitForMessagesAndShutdown(AndesClient client,
+                                                  long waitTimeTillMessageCounterChanges)
             throws JMSException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
@@ -89,6 +89,7 @@ public class AndesClientUtils {
 
     /**
      * Sleeps for a certain time.
+     *
      * @param milliseconds Sleep time in milliseconds.
      */
     public static void sleepForInterval(long milliseconds) {
@@ -96,16 +97,19 @@ public class AndesClientUtils {
             try {
                 Thread.sleep(milliseconds);
             } catch (InterruptedException ignore) {
+                // TODO : ignoring thread sleep exception
                 //ignore
             }
         }
     }
 
     /**
+     * //TODO : Check usage
      * Creates a file.
-     * @param filePathToRead File path to read content.
+     *
+     * @param filePathToRead   File path to read content.
      * @param filePathToCreate File path to store content
-     * @param sizeInKB Size of the file in KB.
+     * @param sizeInKB         Size of the file in KB.
      */
     public static void createTestFileToSend(String filePathToRead, String filePathToCreate,
                                             int sizeInKB) {
@@ -166,10 +170,12 @@ public class AndesClientUtils {
 
     /**
      * Writes received messages to a file.
-     * @param content Message content to write.
+     *
+     * @param content  Message content to write.
      * @param filePath File path where the message content should be written.
      */
-    public static void writeReceivedMessagesToFile(String content, String filePath) {
+    public static void writeReceivedMessagesToFile(String content, String filePath)
+            throws IOException {
         if (receivedMessagePrintWriter == null) {
             initializeReceivedMessagesPrintWriter(filePath);
         }
@@ -179,10 +185,11 @@ public class AndesClientUtils {
 
     /**
      * Writes statistics to a file.
-     * @param content Statistic content.
+     *
+     * @param content  Statistic content.
      * @param filePath File path where the statistics should be written.
      */
-    public static void writeStatisticsToFile(String content, String filePath) {
+    public static void writeStatisticsToFile(String content, String filePath) throws IOException {
         if (statisticsPrintWriter == null) {
             initializeStatisticsPrintWriter(filePath);
         }
@@ -196,17 +203,13 @@ public class AndesClientUtils {
      *
      * @param filePath The file path to write to.
      */
-    public static void initializeReceivedMessagesPrintWriter(String filePath) {
-        try {
-            if (StringUtils.isNotEmpty(filePath)) {
-                File writerFile = new File(filePath);
-                if (writerFile.exists() || writerFile.createNewFile()) {
-                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
-                    receivedMessagePrintWriter = new PrintWriter(bufferedWriter);
-                }
+    public static void initializeReceivedMessagesPrintWriter(String filePath) throws IOException {
+        if (StringUtils.isNotEmpty(filePath)) {
+            File writerFile = new File(filePath);
+            if (writerFile.exists() || writerFile.createNewFile()) {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+                receivedMessagePrintWriter = new PrintWriter(bufferedWriter);
             }
-        } catch (IOException e) {
-            log.error("Error initializing Print Writer.", e);
         }
     }
 
@@ -215,18 +218,14 @@ public class AndesClientUtils {
      *
      * @param filePath The file path to write to.
      */
-    public static void initializeStatisticsPrintWriter(String filePath) {
-        try {
-            if (StringUtils.isNotEmpty(filePath)) {
-                File writerFile = new File(filePath);
-                if (writerFile.exists() || writerFile.createNewFile()) {
-                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
-                    statisticsPrintWriter = new PrintWriter(bufferedWriter);
-                    statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
-                }
+    public static void initializeStatisticsPrintWriter(String filePath) throws IOException {
+        if (StringUtils.isNotEmpty(filePath)) {
+            File writerFile = new File(filePath);
+            if (writerFile.exists() || writerFile.createNewFile()) {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+                statisticsPrintWriter = new PrintWriter(bufferedWriter);
+                statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
             }
-        } catch (IOException e) {
-            log.error("Error initializing Print Writer.", e);
         }
     }
 

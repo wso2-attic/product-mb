@@ -105,7 +105,7 @@ public class MultiThreadedMultipleTopicTestCase extends MBIntegrationBaseTest {
         }
 
         for (AndesClient consumer : consumers) {
-            AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumer, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
+            AndesClientUtils.waitForMessagesAndShutdown(consumer, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
         }
 
         // Evaluating

@@ -74,12 +74,12 @@ public class AndesClientConstants {
     /**
      * Admin user name for AMQP connection string
      */
-    public static final String ADMIN_USERNAME = "admin";
+    public static final String DEFAULT_USERNAME = "admin";
 
     /**
      * Admin password for AMQP connection string
      */
-    public static final String ADMIN_PASSWORD = "admin";
+    public static final String DEFAULT_PASSWORD = "admin";
 
     /**
      * Default host name for AMQP connection string

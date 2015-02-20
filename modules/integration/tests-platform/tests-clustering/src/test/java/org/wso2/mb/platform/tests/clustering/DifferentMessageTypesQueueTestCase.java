@@ -286,7 +286,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, numberOfPublishers);
         publisherClient.startClient();
 
-        AndesClientUtils.waitUntilNoMessagesAreReceivedAndShutdownClients(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
