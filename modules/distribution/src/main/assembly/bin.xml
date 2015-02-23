@@ -122,6 +122,19 @@
             <directory>../../modules/samples/product/jms_selectors</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/jms_selectors</outputDirectory>
         </fileSet>
+        <!-- MQTT Samples -->
+        <fileSet>
+            <directory>../../modules/samples/product/simple_mqtt_client</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/simple_mqtt_client</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../../modules/samples/product/mqtt_chat_client</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/mqtt_chat_client</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../../modules/samples/product/mqtt_IoTSample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/mqtt_IoTSample</outputDirectory>
+        </fileSet>
         <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/

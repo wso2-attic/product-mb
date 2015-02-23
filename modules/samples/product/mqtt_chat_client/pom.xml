@@ -24,12 +24,13 @@
 
     <groupId>org.wso2.mb</groupId>
     <artifactId>org.wso2.mb.sample.mqtt.chat</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>${product.mb.version}</version>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>mqtt-client</artifactId>
+            <version>${eclipse.paho.version}</version>
         </dependency>
     </dependencies>
 
@@ -38,7 +39,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>${maven.exec.version}</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -53,4 +54,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>Eclipse Paho Repo</id>
+            <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
+        <eclipse.paho.version>0.4.0</eclipse.paho.version>
+        <maven.exec.version>1.2.1</maven.exec.version>
+    </properties>
+
 </project>
