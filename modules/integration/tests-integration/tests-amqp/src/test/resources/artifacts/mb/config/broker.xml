@@ -236,6 +236,7 @@ expression of the property. -->
             <contentRemovalTimeDifference>600000</contentRemovalTimeDifference>
 
         </messageDeletion>
+        <topicMatching>SIMPLE</topicMatching>
     </performanceTuning>
 
     <!-- This section is about how you want to view messaging statistics from the admin console and how you plan to interact with it. -->
