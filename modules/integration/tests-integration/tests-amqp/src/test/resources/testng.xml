@@ -63,7 +63,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicMessageSequencialAndDuplicateTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DifferentSubscriptionsWithDurableTopicTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
 
