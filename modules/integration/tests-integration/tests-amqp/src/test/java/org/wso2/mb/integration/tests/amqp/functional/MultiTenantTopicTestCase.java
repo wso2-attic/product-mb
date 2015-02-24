@@ -96,10 +96,10 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1.");
-        Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2.");
+        Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1. Received message count : "+tenant1ReceivingClient1.getReceivedTopicMessagecount());
+        Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2. Received message count : " + tenant1ReceivingClient2.getReceivedTopicMessagecount());
         Assert.assertEquals(adminReceivingClient.getReceivedTopicMessagecount(), expectedMessageCount);
-        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1.");
+        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1. Received message count : " + adminReceivingClient.getReceivedTopicMessagecount());
 
     }
 
@@ -154,8 +154,8 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 client received the message published to Tenant2");
-        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 client received the message published to Tenant1");
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 client received incorrect number of message count. Received message count : " + tenant1ReceivingClient.getReceivedTopicMessagecount());
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 client received incorrect number of message count. Received message count : " + tenant2ReceivingClient.getReceivedTopicMessagecount());
 
 
     }

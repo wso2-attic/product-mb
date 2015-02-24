@@ -81,8 +81,8 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertEquals(expectedMessageCount, adminReceivingClient.getReceivedTopicMessagecount());
-        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1.");
+        Assert.assertEquals(adminReceivingClient.getReceivedqueueMessagecount(),expectedMessageCount);
+        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1. Received message count : " + adminReceivingClient.getReceivedqueueMessagecount());
 
     }
 
@@ -139,7 +139,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(tenant2ReceivingClient.getReceivedqueueMessagecount(), sendMessageCount2, "Tenant 2 client received the message published to Tenant1");
-        Assert.assertEquals(tenant1ReceivingClient.getReceivedqueueMessagecount(), sendMessageCount1, "Tenant 1 client received the message published to Tenant2");
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedqueueMessagecount(), sendMessageCount2, "Tenant 2 client received incorrect number of message count. Received message count : " + tenant2ReceivingClient.getReceivedqueueMessagecount());
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedqueueMessagecount(), sendMessageCount1, "Tenant 1 client received incorrect number of message count. Received message count : " + tenant1ReceivingClient.getReceivedqueueMessagecount());
     }
 }

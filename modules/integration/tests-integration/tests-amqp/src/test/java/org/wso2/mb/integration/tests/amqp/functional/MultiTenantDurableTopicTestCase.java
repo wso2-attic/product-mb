@@ -81,8 +81,8 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertEquals(expectedMessageCount, adminReceivingClient.getReceivedTopicMessagecount());
-        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for durable topic subscriber of tenant 1.");
+        Assert.assertEquals(adminReceivingClient.getReceivedTopicMessagecount(), expectedMessageCount);
+        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for durable topic subscriber of tenant 1. Received Message Count : " + adminReceivingClient.getReceivedTopicMessagecount());
 
     }
 
@@ -137,7 +137,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
         Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 Durable subscriber received the message published to Tenant 1 Durable Subscriber");
-        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 Durable subscriber received the message published to Tenant 2 Durable Subscriber");
+        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 Durable subscriber received incorrect number of message count. Received Message Count : " + tenant2ReceivingClient.getReceivedTopicMessagecount());
+        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 Durable subscriber received incorrect number of message count. Received Message Count : " + tenant1ReceivingClient.getReceivedTopicMessagecount());
     }
 }
