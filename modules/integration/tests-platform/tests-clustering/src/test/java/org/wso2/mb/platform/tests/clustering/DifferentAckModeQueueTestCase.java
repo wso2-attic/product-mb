@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -62,14 +62,14 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * ack mode
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for queue")
     public void testSessionTransactedAckModeForQueueTestCase()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
         // Expected message count
         int expectedCount = 2000;
@@ -106,14 +106,14 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * ack mode
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "AUTO_ACKNOWLEDGE ack mode test case for queue")
     public void testAutoAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
         // Expected message count
         int expectedCount = 2000;
@@ -148,14 +148,14 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * ack mode
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "CLIENT_ACKNOWLEDGE ack mode test case for queue")
     public void testClientAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
         // Expected message count
         int expectedCount = 2000;
@@ -193,14 +193,14 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * ack mode
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "DUPS_OK_ACKNOWLEDGE ack mode test case for queue")
     public void testDupOkAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientException, JMSException, NamingException,
+            throws XPathExpressionException, ClientConfigurationException, JMSException, NamingException,
                    IOException {
         // Expected message count
         int expectedCount = 2000;

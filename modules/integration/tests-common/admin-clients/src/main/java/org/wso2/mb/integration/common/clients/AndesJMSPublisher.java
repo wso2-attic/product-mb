@@ -138,7 +138,7 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void stopClient() throws JMSException {
+    public void stopClient() throws JMSException {
         try {
             long threadID = Thread.currentThread().getId();
             log.info("Closing publisher | ThreadID : " + threadID);

@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
@@ -68,14 +68,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * 2. Publish messages that does not have JMSType value as AAA
      * 3. Verify that no messages are received by receiver.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
     public void performQueueSendWithReceiverHavingSelectorsButNoModifiedPublisherSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
@@ -105,14 +105,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * 2. Publish messages that does have JMSType value as AAA
      * 3. Verify that all sent messages received by receiver.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb")
     public void performQueueSendWithModifiedPublisherSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
@@ -145,14 +145,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * 2. Publisher sends messages with a delay.
      * 3. Consumer will receive a certain amount of messages. But will not receive all messages.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb")
     public void performQueueSendWithTimestampBasedSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
@@ -184,14 +184,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * "wso2.palmgrove".
      * 3. Consumer should only receive messages having "wso2.trace".
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyBasedSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
@@ -237,14 +237,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * and "JMSType" as "otherMessage" in message header.
      * 3. Consumer should only receive messages having header "location" as "wso2.trace" and "JMSType" as "MyMessage".
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyAndJMSTypeBasedSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
@@ -291,14 +291,14 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
      * and "JMSType" as "otherMessage" in message header.
      * 3. Consumer should receive all sent messages.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyOrJMSTypeBasedSelectors()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");

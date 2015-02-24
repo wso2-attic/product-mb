@@ -27,7 +27,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -65,14 +65,14 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
     public void performMillionMessageTestCase()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
         String randomInstanceKeyForReceiver = getRandomMBInstance();
 

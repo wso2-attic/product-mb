@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -59,7 +59,7 @@ public class MultiThreadedQueueTestCase extends MBIntegrationBaseTest {
     /**
      * Send 10,000 messages collaboratively by 7 threads and receive collaboratively by 7 threads and see if all messages are received.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -67,7 +67,7 @@ public class MultiThreadedQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb",
             description = "Multiple queue senders - multiple queue receivers test case")
     public void performMultiThreadedQueueTestCase()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "multiThreadQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);

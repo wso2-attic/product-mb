@@ -21,7 +21,7 @@ package org.wso2.mb.integration.common.clients.operations.utils;
  * Exception class for andes client and its configuration.
  * // TODO : Rename
  */
-public class AndesClientException extends Exception {
+public class ClientConfigurationException extends Exception {
 
     /**
      * Error message for exception
@@ -31,7 +31,7 @@ public class AndesClientException extends Exception {
     /**
      * Creates Andes excpetion
      */
-    public AndesClientException() {
+    public ClientConfigurationException() {
     }
 
     /**
@@ -39,7 +39,7 @@ public class AndesClientException extends Exception {
      *
      * @param message Error message
      */
-    public AndesClientException(String message) {
+    public ClientConfigurationException(String message) {
         super(message);
         errorMessage = message;
     }
@@ -50,7 +50,7 @@ public class AndesClientException extends Exception {
      * @param message Error message
      * @param cause   The throwable
      */
-    public AndesClientException(String message, Throwable cause) {
+    public ClientConfigurationException(String message, Throwable cause) {
         super(message, cause);
         errorMessage = message;
     }
@@ -60,7 +60,7 @@ public class AndesClientException extends Exception {
      *
      * @param cause The throwable
      */
-    public AndesClientException(Throwable cause) {
+    public ClientConfigurationException(Throwable cause) {
         super(cause);
     }
 

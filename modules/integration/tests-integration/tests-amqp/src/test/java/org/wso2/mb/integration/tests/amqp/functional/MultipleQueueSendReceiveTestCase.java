@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -66,7 +66,7 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
      * 2. Use two publishers for q1 and one for q2.
      * 3. Check if messages were received correctly.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws CloneNotSupportedException
      * @throws JMSException
      * @throws NamingException
@@ -74,7 +74,7 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void performMultipleQueueSendReceiveTestCase()
-            throws AndesClientException, CloneNotSupportedException, JMSException, NamingException,
+            throws ClientConfigurationException, CloneNotSupportedException, JMSException, NamingException,
                    IOException {
 
         // Creating a consumer client configurations

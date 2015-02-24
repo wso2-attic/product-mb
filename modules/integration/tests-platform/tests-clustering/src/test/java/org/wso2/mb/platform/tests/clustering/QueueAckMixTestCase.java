@@ -27,7 +27,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -72,7 +72,7 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
      * receive all the messages.
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -80,7 +80,7 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
     @Test(groups = "wso2.mb", description = "50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10 " +
                                             "CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
 
 

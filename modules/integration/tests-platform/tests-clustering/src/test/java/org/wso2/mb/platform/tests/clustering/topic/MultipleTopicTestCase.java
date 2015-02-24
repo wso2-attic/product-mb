@@ -32,7 +32,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -86,14 +86,14 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in a single node and receive from the same node
      *
      * @throws JMSException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case")
     public void testMultipleTopicSingleNode()
-            throws JMSException, AndesClientException, XPathExpressionException, NamingException,
+            throws JMSException, ClientConfigurationException, XPathExpressionException, NamingException,
                    IOException {
         // Creating receiver clients
         AndesClient receivingClient1 = getAndesReceiverClient("topic1", EXPECTED_COUNT);
@@ -187,11 +187,11 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @return AndesClient object to receive messages
      * @throws NamingException
      * @throws JMSException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      */
     private AndesClient getAndesReceiverClient(String topicName, long expectedCount)
-            throws NamingException, JMSException, AndesClientException, XPathExpressionException {
+            throws NamingException, JMSException, ClientConfigurationException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),
@@ -211,12 +211,12 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @param sendCount Message count to be sent
      * @return An andes client
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      */
     private AndesClient getAndesSenderClient(String topicName, long sendCount)
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException {
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException {
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts().get("default"),
                                                                                                         Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
                                                                                                         ExchangeType.TOPIC, topicName);

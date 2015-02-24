@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -70,7 +70,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException,
+            throws ClientConfigurationException, JMSException, NamingException, IOException,
                    CloneNotSupportedException {
 
 

@@ -33,7 +33,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -86,7 +86,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * Publish message to a single topic in a single node by one publisher and subscribe to
      * that topic with two subscribers
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -96,7 +96,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node single publisher two subscribers test " +
                                             "case", enabled = true)
     public void testMultipleSubscribers()
-            throws AndesClientException, XPathExpressionException, NamingException, JMSException,
+            throws ClientConfigurationException, XPathExpressionException, NamingException, JMSException,
                    IOException, TopicManagerAdminServiceEventAdminExceptionException {
         long sendCount = 2000L;
         long expectedCount = 2000L;
@@ -148,7 +148,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * Publish message to a single topic in a single node by one publisher and subscribe to
      * that topic with many subscribers
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
@@ -158,7 +158,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node single publisher multiple subscribers " +
                                             "test case", enabled = true)
     public void testBulkSubscribers()
-            throws AndesClientException, NamingException, JMSException, XPathExpressionException,
+            throws ClientConfigurationException, NamingException, JMSException, XPathExpressionException,
                    TopicManagerAdminServiceEventAdminExceptionException, IOException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
@@ -200,7 +200,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * that topic with one subscribers
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
@@ -209,7 +209,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node multiple publishers single subscriber " +
                                             "test case", enabled = true)
     public void testBulkPublishers()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    TopicManagerAdminServiceEventAdminExceptionException, IOException {
         long sendCount = 100000L;
         long expectedCount = 100000L;
@@ -254,14 +254,15 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws IOException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Single node multiple publishers multiple " +
                                             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribers() throws XPathExpressionException, JMSException,
                                                            TopicManagerAdminServiceEventAdminExceptionException,
-                                                           IOException, AndesClientException,
+                                                           IOException,
+                                                           ClientConfigurationException,
                                                            NamingException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
@@ -303,7 +304,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * that topic with multiple subscribers from another node
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
@@ -312,7 +313,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "multiple node multiple publishers multiple " +
                                             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribersDifferentNodes()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    TopicManagerAdminServiceEventAdminExceptionException, IOException {
         long sendCount = 2000L;
         long expectedCount = 100000L;

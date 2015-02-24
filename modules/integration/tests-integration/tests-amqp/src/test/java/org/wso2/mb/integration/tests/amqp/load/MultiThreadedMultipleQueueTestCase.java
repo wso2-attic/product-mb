@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -68,14 +68,14 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
      * 3. Receive messages from 15 queues by 45 threads.
      * 4. Verify that all messages are received and no more messages are received.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void performMultiThreadedMultipleQueueTestCase()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
 
         for (String DESTINATION : DESTINATIONS) {
             // Creating a consumer client configuration

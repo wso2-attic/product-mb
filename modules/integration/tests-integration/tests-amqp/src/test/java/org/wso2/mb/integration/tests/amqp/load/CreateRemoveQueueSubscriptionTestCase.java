@@ -22,6 +22,7 @@ import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
@@ -40,7 +41,8 @@ public class CreateRemoveQueueSubscriptionTestCase {
      * @throws JMSException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void testCreateRemoveSubscription() throws JMSException, NamingException, IOException {
+    public void testCreateRemoveSubscription()
+            throws JMSException, NamingException, IOException, ClientConfigurationException {
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "TestQueue");
 
         AndesClient consumerClient = new AndesClient(consumerConfig);

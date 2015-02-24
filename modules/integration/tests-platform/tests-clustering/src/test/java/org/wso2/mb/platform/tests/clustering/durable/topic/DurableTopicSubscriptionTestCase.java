@@ -32,7 +32,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.topic.BasicTopicSubscriber;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 
@@ -284,7 +284,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     @Test(groups = "wso2.mb", description = "Create all kinds of subscriptions for same " +
             "topic/queue name", enabled = true)
     public void allKindOfSubscriptionsTest()
-            throws JMSException, NamingException, XPathExpressionException, AndesClientException {
+            throws JMSException, NamingException, XPathExpressionException,
+                   ClientConfigurationException {
 
         String topicName = "wso2";
         String queueName = "wso2";

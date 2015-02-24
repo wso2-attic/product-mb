@@ -19,7 +19,7 @@
 package org.wso2.mb.integration.common.clients.configurations;
 
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 /**
@@ -89,6 +89,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
      */
     private String xmlConfigFilePath;
 
+    private String queryStringForConnection = "";
+
     /**
      * The empty constructor which will create a queue related test case.
      */
@@ -154,14 +156,6 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = 0L;
     }
 
-    public AndesJMSClientConfiguration(String connectionString,
-                                       ExchangeType exchangeType,
-                                       String destinationName) {
-        this.connectionString = connectionString;
-        this.exchangeType = exchangeType;
-        this.destinationName = destinationName;
-    }
-
     public AndesJMSClientConfiguration(String xmlConfigFilePath) {
         this.xmlConfigFilePath = xmlConfigFilePath;
     }
@@ -175,6 +169,32 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = config.getRunningDelay();
     }
 
+    public AndesJMSClientConfiguration(String userName, String password, String hostName, int port,
+                                       ExchangeType exchangeType, String destinationName,
+                                       String sslAlias,
+                                       String trustStorePath, String trustStorePassword,
+                                       String keyStorePath, String keyStorePassword) {
+        // Setting values for exchange type and destination name
+        this.exchangeType = exchangeType;
+        this.destinationName = destinationName;
+
+        // Creating connection string
+        this.userName = userName;
+        this.password = password;
+        this.hostName = hostName;
+        this.port = port;
+        this.queryStringForConnection = "?ssl='true'" +
+                                   "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath + "'&trust_store_password='" +
+                                   trustStorePassword
+                                   + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "'";
+
+        this.createConnectionString();
+
+        // Setting default values
+        this.printsPerMessageCount = 1L;
+        this.runningDelay = 0L;
+    }
+
     /**
      * Creates an AMQP connection string.
      */
@@ -183,7 +203,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
                                 AndesClientConstants.CARBON_CLIENT_ID + "/" +
                                 AndesClientConstants.CARBON_VIRTUAL_HOST_NAME +
                                 "?brokerlist='tcp://" +
-                                this.hostName + ":" + this.port + "'";
+                                this.hostName + ":" + this.port + this.queryStringForConnection + "'";
     }
 
     /**
@@ -329,13 +349,14 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the number of console logging per message count
      *
      * @param printsPerMessageCount The number of console logging per message count
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      */
-    public void setPrintsPerMessageCount(long printsPerMessageCount) throws AndesClientException {
+    public void setPrintsPerMessageCount(long printsPerMessageCount) throws
+                                                                     ClientConfigurationException {
         if (0 < printsPerMessageCount) {
             this.printsPerMessageCount = printsPerMessageCount;
         } else {
-            throw new AndesClientException("Prints per message count cannot be less than one");
+            throw new ClientConfigurationException("Prints per message count cannot be less than one");
         }
     }
 
@@ -352,13 +373,13 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the delay used in publishing/consuming messages in milliseconds.
      *
      * @param runningDelay The delay used in publishing/consuming messages in milliseconds.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      */
-    public void setRunningDelay(long runningDelay) throws AndesClientException {
+    public void setRunningDelay(long runningDelay) throws ClientConfigurationException {
         if (0 <= runningDelay) {
             this.runningDelay = runningDelay;
         } else {
-            throw new AndesClientException("Running delay cannot be less than 0");
+            throw new ClientConfigurationException("Running delay cannot be less than 0");
         }
     }
 

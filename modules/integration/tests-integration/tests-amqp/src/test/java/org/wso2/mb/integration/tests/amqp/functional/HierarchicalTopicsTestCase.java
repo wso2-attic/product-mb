@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -70,14 +70,14 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 6. Publish messages to "games.cricket".
      * 7. Messages should receive for second subscriber.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsTopicOnlyTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
 
         /**
          * topic only option. Here we subscribe to games.cricket and verify that only messages
@@ -126,14 +126,14 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 10. Publish messages to "games.cricket.sl".
      * 11. No messages should be received for the first subscription.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsImmediateChildrenTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
 
         // Creating clients
         AndesClient consumerClient3 = getConsumerClientForTopic("games.*");
@@ -192,14 +192,14 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 6. Publish messages to "games.football.sl".
      * 7. Messages should receive for second subscriber.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsChildrenTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
 
         //we should  get any message here
         AndesClient consumerClient6 = getConsumerClientForTopic("games.#");
@@ -235,12 +235,12 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      *
      * @param topicName Topic name
      * @return The andes client.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      */
     private AndesClient getConsumerClientForTopic(String topicName)
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
@@ -254,12 +254,12 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      *
      * @param topicName Topic name
      * @return The andes client.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      */
     private AndesClient getPublishingClientForTopic(String topicName)
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);

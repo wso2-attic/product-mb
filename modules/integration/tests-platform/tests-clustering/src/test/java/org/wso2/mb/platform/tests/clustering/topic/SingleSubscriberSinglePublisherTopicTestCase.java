@@ -33,7 +33,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -86,7 +86,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node and receive from the same node.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -95,7 +95,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case",
             enabled = true)
     public void testSameNodePubSub()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1");
     }
@@ -104,7 +105,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a node and receive from the same node at a slow rate.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -113,7 +114,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Same node publisher, slow subscriber test case",
             enabled = true)
     public void testSameNodeSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2");
     }
@@ -123,7 +125,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * same node.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -132,7 +134,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Same node slow publisher test case",
             enabled = true)
     public void testSameNodeSlowPublisher()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3");
     }
@@ -142,7 +145,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * node at a slow rate.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -151,7 +154,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Single node slow publisher slow subscriber test case",
             enabled = true)
     public void testSingleNodeSlowPublisherSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8");
     }
@@ -160,7 +164,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node and receive from a different node
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -169,7 +173,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Different node publisher subscriber test case",
             enabled = true)
     public void testDifferentNodePubSub()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10");
     }
@@ -179,7 +184,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * rate.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -188,7 +193,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Different node slow subscriber test case",
             enabled = true)
     public void testDifferentNodeSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5");
     }
@@ -198,7 +204,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * rate.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -207,7 +213,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Different node slow publisher test case",
             enabled = true)
     public void testDifferentNodeSlowPublisher()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6");
     }
@@ -217,7 +224,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * node at a slow rate.
      *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -226,7 +233,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     @Test(groups = "wso2.mb", description = "Different node slow publisher slow subscriber test " +
                                             "case", enabled = true)
     public void testDifferentNodeSlowPublisherSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+            throws TopicManagerAdminServiceEventAdminExceptionException,
+                   ClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7");
     }
@@ -260,7 +268,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * @param consumerDelay       Message reading delay for consumer.
      * @param publisherDelay      Message publishing delay for publisher.
      * @param destinationName     Destination for publisher and consumer.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -271,7 +279,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             AutomationContext contextForConsumer,
             AutomationContext contextForPublisher, long consumerDelay,
             long publisherDelay, String destinationName)
-            throws AndesClientException, NamingException, JMSException, IOException,
+            throws ClientConfigurationException, NamingException, JMSException, IOException,
                    XPathExpressionException, TopicManagerAdminServiceEventAdminExceptionException {
         // Number of messages expected
         long expectedCount = 2000L;

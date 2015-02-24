@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -60,14 +60,14 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from the same node while reconnecting 4 times.
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Same node subscription reconnecting test")
     public void testSameNodeSubscriptionReconnecting()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException {
 
         int sendCount = 1000;
@@ -125,7 +125,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from random nodes while reconnecting 4 times.
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -133,7 +133,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Random node subscription reconnecting test")
     public void testDifferentNodeSubscriptionReconnecting()
-            throws XPathExpressionException, AndesClientException, NamingException, JMSException,
+            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
                    IOException, CloneNotSupportedException {
         int sendCount = 1000;
         int expectedCount = sendCount / 4;

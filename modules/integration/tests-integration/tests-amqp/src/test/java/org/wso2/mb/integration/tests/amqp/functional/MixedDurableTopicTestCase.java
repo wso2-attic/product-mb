@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -86,7 +86,7 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single durable topic send-receive test case with jms expiration")
     public void performExpiryDurableTopicTestCase()
-            throws AndesClientException, NamingException, JMSException, IOException,
+            throws ClientConfigurationException, NamingException, JMSException, IOException,
                    CloneNotSupportedException {
 
         // Creating a subscriber client configuration

@@ -17,7 +17,7 @@
 */
 package org.wso2.mb.integration.common.clients.configurations;
 
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
@@ -76,20 +76,6 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     }
 
     /**
-     * Creates a publisher with a given AMQP transport connection string and a given exchange type
-     * and destination.
-     *
-     * @param connectionString The AMQP connection string.
-     * @param exchangeType     The exchange type.
-     * @param destinationName  The destination name.
-     */
-    public AndesJMSPublisherClientConfiguration(String connectionString,
-                                                ExchangeType exchangeType,
-                                                String destinationName) {
-        super(connectionString, exchangeType, destinationName);
-    }
-
-    /**
      * Creates a consumer with a given host name, port for connection string and exchange type and
      * destination name.
      *
@@ -133,6 +119,32 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     }
 
     /**
+     * Creates a consumer with a given AMQP transport connection string for SSL and a given
+     * exchange type and destination.
+     *
+     * @param userName        The user name for the connection string.
+     * @param password        The password for the connection string.
+     * @param hostName        The host name for the connection string.
+     * @param port            The port for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     * @param sslAlias
+     * @param trustStorePath
+     * @param trustStorePassword
+     * @param keyStorePath
+     * @param keyStorePassword
+     */
+    public AndesJMSPublisherClientConfiguration(String userName, String password, String hostName,
+                                                int port,
+                                                ExchangeType exchangeType, String destinationName,
+                                                String sslAlias, String trustStorePath,
+                                                String trustStorePassword, String keyStorePath,
+                                                String keyStorePassword) {
+        super(userName, password, hostName, port, exchangeType, destinationName, sslAlias,
+              trustStorePath, trustStorePassword, keyStorePath, keyStorePassword);
+    }
+
+    /**
      * Gets the file path to read a string content which would be used to as message content when
      * publishing.
      *
@@ -147,11 +159,11 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * publishing.
      *
      * @param readMessagesFromFilePath The file path.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws FileNotFoundException
      */
     public void setReadMessagesFromFilePath(String readMessagesFromFilePath)
-            throws AndesClientException, FileNotFoundException {
+            throws ClientConfigurationException, FileNotFoundException {
         File messagesFilePath = new File(readMessagesFromFilePath);
         if (messagesFilePath.exists() && !messagesFilePath.isDirectory()) {
             this.readMessagesFromFilePath = readMessagesFromFilePath;
@@ -191,13 +203,15 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * Sets the number of messages to be sent by the publisher
      *
      * @param numberOfMessagesToSend The number of messages.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      */
-    public void setNumberOfMessagesToSend(long numberOfMessagesToSend) throws AndesClientException {
+    public void setNumberOfMessagesToSend(long numberOfMessagesToSend)
+            throws ClientConfigurationException {
         if (0 < numberOfMessagesToSend) {
             this.numberOfMessagesToSend = numberOfMessagesToSend;
         } else {
-            throw new AndesClientException("The number of messages to send cannot be less than 1");
+            throw new ClientConfigurationException("The number of messages to send cannot be less" +
+                                                   " than 1");
         }
     }
 
@@ -214,13 +228,14 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * Sets the message expiry time.
      *
      * @param jmsMessageExpiryTime The message expiry time.
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      */
-    public void setJMSMessageExpiryTime(long jmsMessageExpiryTime) throws AndesClientException {
+    public void setJMSMessageExpiryTime(long jmsMessageExpiryTime) throws
+                                                                   ClientConfigurationException {
         if (0 <= jmsMessageExpiryTime) {
             this.jmsMessageExpiryTime = jmsMessageExpiryTime;
         } else {
-            throw new AndesClientException("Message expiry time cannot be less than 0");
+            throw new ClientConfigurationException("Message expiry time cannot be less than 0");
         }
     }
 

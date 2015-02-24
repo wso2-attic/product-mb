@@ -22,6 +22,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSDeliveryStatus;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -202,9 +203,9 @@ public class AndesJMSConsumer extends AndesJMSClient
      */
     @Override
     public void stopClient() throws JMSException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 try {
                     log.info("Closing Consumer");
                     if (ExchangeType.TOPIC == consumerConfig.getExchangeType()) {
@@ -246,8 +247,8 @@ public class AndesJMSConsumer extends AndesJMSClient
                     log.error("Error in stopping client.", e);
                     throw new RuntimeException("JMSException : Error in stopping client.", e);
                 }
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     /**
@@ -256,9 +257,9 @@ public class AndesJMSConsumer extends AndesJMSClient
      * @throws JMSException
      */
     public void unSubscribe() throws JMSException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 try {
                     log.info("Un-subscribing Subscriber");
                     session.unsubscribe(consumerConfig.getSubscriptionID());
@@ -269,8 +270,8 @@ public class AndesJMSConsumer extends AndesJMSClient
                     log.error("Error in removing subscription(un-subscribing).", e);
                     throw new RuntimeException("JMSException : Error in removing subscription(un-subscribing).", e);
                 }
-            }
-        }).start();
+//            }
+//        }).start();
     }
 
     /**
@@ -393,21 +394,20 @@ public class AndesJMSConsumer extends AndesJMSClient
             if (message instanceof TextMessage) {
                 this.receivedMessageCount.incrementAndGet();
                 long threadID = Thread.currentThread().getId();
-                String deliveryStatus;
+                JMSDeliveryStatus deliveryStatus;
                 TextMessage textMessage = (TextMessage) message;
                 // Gets whether the message is original or redelivered
-                // TODO : use enum
                 if (message.getJMSRedelivered()) {
-                    deliveryStatus = "REDELIVERED";
+                    deliveryStatus = JMSDeliveryStatus.REDELIVERED;
                 } else {
-                    deliveryStatus = "ORIGINAL";
+                    deliveryStatus = JMSDeliveryStatus.ORIGINAL;
                 }
                 // Logging the received message
                 if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
                     log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" + this.consumerConfig.getExchangeType().getType()
                              + "." + this.consumerConfig.getDestinationName() + " ReceivedMessageCount:" +
                              this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
-                             this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + deliveryStatus);
+                             this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + deliveryStatus.getStatus());
 
                 }
                 // Writes the received messages
@@ -443,12 +443,13 @@ public class AndesJMSConsumer extends AndesJMSClient
                 // Un-Subscribing consumer
                 unSubscribe();
                 // TODO : revisit sleep
-                AndesClientUtils.sleepForInterval(500L);
+//                AndesClientUtils.sleepForInterval(500L);
             } else if (this.receivedMessageCount.get() >= consumerConfig.getMaximumMessagesToReceived()) {
                 // Stopping the consumer
                 // TODO : revisit sleep
+                AndesClientUtils.sleepForInterval(1000L);
                 stopClient();
-                AndesClientUtils.sleepForInterval(500L);
+//                AndesClientUtils.sleepForInterval(500L);
             }
 
             // Delaying reading of messages

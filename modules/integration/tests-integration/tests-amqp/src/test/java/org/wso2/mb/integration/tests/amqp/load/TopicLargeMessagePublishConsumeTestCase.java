@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -57,14 +57,14 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
     /**
      * Send 10 messages of 1MB value and check 10 messages are received by the consumer.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws IOException
      * @throws NamingException
      * @throws JMSException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicOneMBSizeMessageSendReceiveTestCase()
-            throws AndesClientException, IOException, NamingException, JMSException {
+            throws ClientConfigurationException, IOException, NamingException, JMSException {
         long sendCount = 10;
 
         String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
@@ -99,14 +99,14 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
     /**
      * Send 10 messages of 10MB value and check 10 messages are received by the consumer.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicTenMBSizeMessageSendReceiveTestCase()
-            throws AndesClientException, NamingException, JMSException, IOException {
+            throws ClientConfigurationException, NamingException, JMSException, IOException {
         long sendCount = 10L;
 
         String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";

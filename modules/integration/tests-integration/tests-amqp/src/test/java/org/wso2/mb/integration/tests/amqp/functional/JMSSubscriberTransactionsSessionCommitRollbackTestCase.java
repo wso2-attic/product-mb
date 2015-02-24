@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -71,7 +71,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
      * 5. Analyse and see if each message is duplicated five times.
      * 6. Do another subscription to verify no more messages are received.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
@@ -79,7 +79,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
      */
     @Test(groups = {"wso2.mb", "queue", "transactions"})
     public void performJMSSubscriberTransactionsSessionCommitRollbackTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException,
+            throws ClientConfigurationException, JMSException, NamingException, IOException,
                    CloneNotSupportedException {
 
 

@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -61,14 +61,14 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * order delivery and message duplication.
      *
      * @throws XPathExpressionException
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Same node ordered delivery test case")
     public void testSameNodeOrderedDelivery() throws XPathExpressionException,
-                                                     AndesClientException, NamingException,
+                                                     ClientConfigurationException, NamingException,
                                                      JMSException, IOException {
         // Number of messages expected
         long expectedCount = 1000L;
@@ -109,7 +109,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * Publish message to a single node and receive from another node and check for any out of order
      * delivery and message duplication.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws XPathExpressionException
      * @throws JMSException
      * @throws NamingException
@@ -117,7 +117,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Different node ordered delivery test case")
     public void testDifferentNodeOrderedDelivery()
-            throws AndesClientException, XPathExpressionException, JMSException, NamingException,
+            throws ClientConfigurationException, XPathExpressionException, JMSException, NamingException,
                    IOException {
         // Number of messages expected
         long expectedCount = 1000L;

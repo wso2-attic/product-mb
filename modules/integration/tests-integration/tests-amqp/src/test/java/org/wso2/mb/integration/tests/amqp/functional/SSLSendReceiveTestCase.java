@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -70,33 +70,40 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
      * 3. Publisher publishes messages using an ssl connection.
      * 4. Consumer should receive all messages sent.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "queue", "security"})
     public void performSingleQueueSendReceiveTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException {
-        // Creating ssl connection string
-        String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
-                              + "resources" + File.separator + "security" + File.separator + "wso2carbon.jks";
-        String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" + File.separator
-                                + "resources" + File.separator + "security" + File.separator + "client-truststore.jks";
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
+        // Creating ssl connection string elements
+        String keyStorePath = System.getProperty("carbon.home") + File.separator + "repository" +
+                              File.separator + "resources" + File.separator + "security" +
+                              File.separator + "wso2carbon.jks";
+        String trustStorePath = System.getProperty("carbon.home") + File.separator + "repository" +
+                                File.separator + "resources" + File.separator + "security" +
+                                File.separator + "client-truststore.jks";
         String keyStorePassword = "wso2carbon";
         String trustStorePassword = "wso2carbon";
-        String sslConnectionURL = "amqp://admin:admin@carbon/carbon?brokerlist='tcp://localhost:8672?ssl='true'" +
-                                  "&ssl_cert_alias='RootCA'&trust_store='" + trustStorePath + "'&trust_store_password='" +
-                                  trustStorePassword
-                                  + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "''";
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(
+                        "admin", "admin", "127.0.0.1", 8672, ExchangeType.QUEUE, "SSLSingleQueue",
+                        "RootCA", trustStorePath, trustStorePassword, keyStorePath,
+                        keyStorePassword);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(sslConnectionURL, ExchangeType.QUEUE, "SSLSingleQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(
+                        "admin", "admin", "127.0.0.1", 8672, ExchangeType.QUEUE, "SSLSingleQueue",
+                        "RootCA", trustStorePath, trustStorePassword, keyStorePath,
+                        keyStorePassword);
+
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -57,14 +57,14 @@ public class TopicTestCase extends MBIntegrationBaseTest {
      * 2. Publisher sends messages to topic "singleTopic".
      * 3. Consumer receives all sent messages.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Single topic send-receive test case")
     public void performSingleTopicSendReceiveTestCase()
-            throws AndesClientException, JMSException, NamingException, IOException {
+            throws ClientConfigurationException, JMSException, NamingException, IOException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 
@@ -105,7 +105,7 @@ public class TopicTestCase extends MBIntegrationBaseTest {
      *      - "commontopic" topic for tenant2user1
      * 3. Each consumer will receive the sent count.
      *
-     * @throws AndesClientException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      * @throws CloneNotSupportedException
      * @throws JMSException
      * @throws NamingException
@@ -113,7 +113,7 @@ public class TopicTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = "wso2.mb", description = "")
     public void performMultipleTenantTopicSendReceiveTestCase()
-            throws AndesClientException, CloneNotSupportedException, JMSException, NamingException,
+            throws ClientConfigurationException, CloneNotSupportedException, JMSException, NamingException,
                    IOException {
         long sendCount = 100L;
         long expectedCount = 100L;
