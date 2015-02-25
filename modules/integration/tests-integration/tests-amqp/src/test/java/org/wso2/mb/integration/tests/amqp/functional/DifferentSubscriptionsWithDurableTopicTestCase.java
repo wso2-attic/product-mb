@@ -102,25 +102,25 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient durableTopicConsumerClient1 = new AndesClient(durableTopicConsumerConfig1);
+        AndesClient durableTopicConsumerClient1 = new AndesClient(durableTopicConsumerConfig1, true);
         durableTopicConsumerClient1.startClient();
 
-        AndesClient durableTopicConsumerClient2 = new AndesClient(durableTopicConsumerConfig2);
+        AndesClient durableTopicConsumerClient2 = new AndesClient(durableTopicConsumerConfig2, true);
         durableTopicConsumerClient2.startClient();
 
-        AndesClient normalTopicConsumerClient = new AndesClient(normalTopicConsumerConfig);
+        AndesClient normalTopicConsumerClient = new AndesClient(normalTopicConsumerConfig, true);
         normalTopicConsumerClient.startClient();
 
-        AndesClient normalHierarchicalTopicConsumerClient = new AndesClient(normalHierarchicalTopicConsumerConfig);
+        AndesClient normalHierarchicalTopicConsumerClient = new AndesClient(normalHierarchicalTopicConsumerConfig, true);
         normalHierarchicalTopicConsumerClient.startClient();
 
-        AndesClient durableHierarchicalTopicConsumerClient = new AndesClient(durableHierarchicalTopicConsumerConfig);
+        AndesClient durableHierarchicalTopicConsumerClient = new AndesClient(durableHierarchicalTopicConsumerConfig, true);
         durableHierarchicalTopicConsumerClient.startClient();
 
-        AndesClient queueConsumerClient = new AndesClient(queueConsumerConfig);
+        AndesClient queueConsumerClient = new AndesClient(queueConsumerConfig, true);
         queueConsumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(4000L);

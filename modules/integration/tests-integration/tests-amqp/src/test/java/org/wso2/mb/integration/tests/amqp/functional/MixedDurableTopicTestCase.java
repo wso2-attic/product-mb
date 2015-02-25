@@ -106,13 +106,13 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
         publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME); // Setting expiry time
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(consumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration);
+        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration, true);
         publisherClientWithoutExpiration.startClient();
 
-        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
+        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration, true);
         publisherClientWithExpiration.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -123,13 +123,13 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
         secondaryConsumerConfig.setMaximumMessagesToReceived(Long.MAX_VALUE);
 
         // Creating second subscriber
-        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating third subscriber
-        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig);
+        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig, true);
         tertiaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

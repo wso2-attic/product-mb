@@ -91,13 +91,13 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         publisherConfigWithExpiration.setJMSMessageExpiryTime(expirationTime); // setting expiration time
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration);
+        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration, true);
         publisherClientWithoutExpiration.startClient();
 
-        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
+        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration, true);
         publisherClientWithExpiration.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -153,16 +153,16 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         publisherConfigWithExpiration.setJMSMessageExpiryTime(expirationTime);
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
-        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration);
+        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration, true);
         publisherClientWithoutExpiration.startClient();
 
-        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
+        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration, true);
         publisherClientWithExpiration.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

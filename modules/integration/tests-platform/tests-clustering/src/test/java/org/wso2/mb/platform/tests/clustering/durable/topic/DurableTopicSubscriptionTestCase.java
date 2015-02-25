@@ -324,7 +324,7 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             consumerConfig.setMaximumMessagesToReceived(expectedCount);
             consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-            receivingClient = new AndesClient(consumerConfig);
+            receivingClient = new AndesClient(consumerConfig, true);
             receivingClient.startClient();
 
 

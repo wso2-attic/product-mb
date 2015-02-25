@@ -246,7 +246,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        return new AndesClient(consumerConfig);
+        return new AndesClient(consumerConfig, true);
     }
 
     /**
@@ -265,6 +265,6 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        return new AndesClient(publisherConfig);
+        return new AndesClient(publisherConfig, true);
     }
 }

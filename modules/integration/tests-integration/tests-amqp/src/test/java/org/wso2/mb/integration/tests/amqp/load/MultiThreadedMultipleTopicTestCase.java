@@ -82,7 +82,7 @@ public class MultiThreadedMultipleTopicTestCase extends MBIntegrationBaseTest {
             consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
             // Creating consumer
-            consumers.add(new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS / DESTINATIONS.length));
+            consumers.add(new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS / DESTINATIONS.length, true));
         }
 
         for (String DESTINATION : DESTINATIONS) {
@@ -92,7 +92,7 @@ public class MultiThreadedMultipleTopicTestCase extends MBIntegrationBaseTest {
             publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
             // Creating publisher
-            publishers.add(new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS / DESTINATIONS.length));
+            publishers.add(new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS / DESTINATIONS.length, true));
         }
 
         // Starting up clients

@@ -108,10 +108,10 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating consumer client
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

@@ -59,10 +59,10 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -73,7 +73,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         secondaryConsumerConfig.setMaximumMessagesToReceived(1L);
 
         // Creating a seconds publisher client configuration
-        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -121,10 +121,10 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating consumer clients
-        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
         // Schedule another subscriber to run after 'first client is closed'
@@ -132,7 +132,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         Future<Boolean> future = service.submit(receiverTask);
 
         // Creating publisher client
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -172,7 +172,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
             newConsumerConfig.setMaximumMessagesToReceived(1L);
 
             // Creating clients
-            AndesClient newConsumerClient = new AndesClient(newConsumerConfig);
+            AndesClient newConsumerClient = new AndesClient(newConsumerConfig, true);
             newConsumerClient.startClient();
 
             AndesClientUtils.waitForMessagesAndShutdown(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

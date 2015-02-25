@@ -82,13 +82,13 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient consumerClient1 = new AndesClient(consumerConfig1);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
         consumerClient1.startClient();
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(4000);

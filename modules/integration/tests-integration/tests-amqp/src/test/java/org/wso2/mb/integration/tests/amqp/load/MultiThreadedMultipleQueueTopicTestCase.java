@@ -90,7 +90,7 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
             consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
             // Creating client
-            consumers.add(new AndesClient(consumerConfig, QUEUE_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length));
+            consumers.add(new AndesClient(consumerConfig, QUEUE_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length, true));
         }
 
         for (String topicDestination : TOPIC_DESTINATIONS) {
@@ -100,7 +100,7 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
             consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
             // Creating client
-            consumers.add(new AndesClient(consumerConfig, TOPIC_NUMBER_OF_SUBSCRIBERS / TOPIC_DESTINATIONS.length));
+            consumers.add(new AndesClient(consumerConfig, TOPIC_NUMBER_OF_SUBSCRIBERS / TOPIC_DESTINATIONS.length, true));
         }
 
         // Creating publishers
@@ -111,7 +111,7 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
             publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
             // Creating client
-            publishers.add(new AndesClient(publisherConfig, QUEUE_NUMBER_OF_PUBLISHERS / QUEUE_DESTINATIONS.length));
+            publishers.add(new AndesClient(publisherConfig, QUEUE_NUMBER_OF_PUBLISHERS / QUEUE_DESTINATIONS.length, true));
         }
 
         for (String topicDestination : TOPIC_DESTINATIONS) {
@@ -121,7 +121,7 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
             publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
             // Creating client
-            publishers.add(new AndesClient(publisherConfig, TOPIC_NUMBER_OF_PUBLISHERS / TOPIC_DESTINATIONS.length));
+            publishers.add(new AndesClient(publisherConfig, TOPIC_NUMBER_OF_PUBLISHERS / TOPIC_DESTINATIONS.length, true));
         }
 
         // Starting up clients

@@ -93,16 +93,16 @@ public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest
         publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_1000);
 
         // Creating clients
-        AndesClient consumerClient1 = new AndesClient(consumerConfig1, 2);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, 2, true);
         consumerClient1.startClient();
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
-        AndesClient publisherClient1 = new AndesClient(publisherConfig1, 2);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, 2, true);
         publisherClient1.startClient();
 
-        AndesClient publisherClient2 = new AndesClient(publisherConfig2);
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
         publisherClient2.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);

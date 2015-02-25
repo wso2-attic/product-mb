@@ -81,10 +81,10 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         //Thread sleep until messages sent to DLC after breaching maximum number of retrying

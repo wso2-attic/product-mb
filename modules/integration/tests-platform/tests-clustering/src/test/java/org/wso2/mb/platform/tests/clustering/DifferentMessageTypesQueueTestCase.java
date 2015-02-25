@@ -280,10 +280,10 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
         publisherConfig.setJMSMessageType(messageType);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, numberOfPublishers);
+        AndesClient publisherClient = new AndesClient(publisherConfig, numberOfPublishers, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

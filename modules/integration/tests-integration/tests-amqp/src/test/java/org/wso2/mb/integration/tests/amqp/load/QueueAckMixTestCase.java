@@ -93,13 +93,13 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_AUTO_ACK_SUBSCRIBERS);
+        AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_AUTO_ACK_SUBSCRIBERS, true);
         consumerClient.startClient();
 
-        AndesClient consumerReturnedClient = new AndesClient(consumerReturnedConfig, NUMBER_OF_CLIENT_ACK_SUBSCRIBERS);
+        AndesClient consumerReturnedClient = new AndesClient(consumerReturnedConfig, NUMBER_OF_CLIENT_ACK_SUBSCRIBERS, true);
         consumerReturnedClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS);
+        AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

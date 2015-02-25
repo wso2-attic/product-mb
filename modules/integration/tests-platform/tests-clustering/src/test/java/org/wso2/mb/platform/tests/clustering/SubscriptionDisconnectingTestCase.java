@@ -83,31 +83,31 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        AndesClient consumerClient1 = new AndesClient(consumerConfig);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient1");
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
         consumerClient2.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient2");
 
-        AndesClient consumerClient3 = new AndesClient(consumerConfig);
+        AndesClient consumerClient3 = new AndesClient(consumerConfig, true);
         consumerClient3.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient3");
 
-        AndesClient consumerClient4 = new AndesClient(consumerConfig);
+        AndesClient consumerClient4 = new AndesClient(consumerConfig, true);
         consumerClient4.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -148,10 +148,10 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        AndesClient consumerClient1 = new AndesClient(consumerConfig);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -160,7 +160,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
         consumerConfig2.setConnectionString(getRandomAMQPBrokerUrl());
-        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -169,7 +169,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig.clone();
         consumerConfig3.setConnectionString(getRandomAMQPBrokerUrl());
-        AndesClient consumerClient3 = new AndesClient(consumerConfig3);
+        AndesClient consumerClient3 = new AndesClient(consumerConfig3, true);
         consumerClient3.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -178,7 +178,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
         consumerConfig4.setConnectionString(getRandomAMQPBrokerUrl());
-        AndesClient consumerClient4 = new AndesClient(consumerConfig4);
+        AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
         consumerClient4.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);

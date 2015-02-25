@@ -84,10 +84,10 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

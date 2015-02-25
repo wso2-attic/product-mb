@@ -95,16 +95,16 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient consumerClient1 = new AndesClient(consumerConfig);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
         consumerClient2.startClient();
 
-        AndesClient consumerClient3 = new AndesClient(consumerConfig);
+        AndesClient consumerClient3 = new AndesClient(consumerConfig, true);
         consumerClient3.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);

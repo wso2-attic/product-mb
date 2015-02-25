@@ -122,17 +122,17 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(initialConsumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic1");
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic1"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -178,14 +178,14 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50, true);
         consumerClient.startClient();
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic2");
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -229,14 +229,14 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic2");
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -282,14 +282,14 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50, true);
         consumerClient.startClient();
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic4");
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic4"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -333,14 +333,14 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, 50);
+        AndesClient consumerClient = new AndesClient(consumerConfig, 50, true);
         consumerClient.startClient();
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic5");
         assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic5"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, 50);
+        AndesClient publisherClient = new AndesClient(publisherConfig, 50, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

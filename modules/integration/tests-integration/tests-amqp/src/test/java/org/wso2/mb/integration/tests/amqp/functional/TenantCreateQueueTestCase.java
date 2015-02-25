@@ -88,10 +88,10 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(10000);

@@ -81,10 +81,10 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -145,13 +145,13 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         tenant2PublisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig);
-        AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig);
-        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig);
+        AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig, true);
+        AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig, true);
+        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig, true);
 
-        AndesClient adminPublisherClient = new AndesClient(adminPublisherConfig);
-        AndesClient tenant1PublisherClient = new AndesClient(tenant1PublisherConfig);
-        AndesClient tenant2PublisherClient = new AndesClient(tenant2PublisherConfig);
+        AndesClient adminPublisherClient = new AndesClient(adminPublisherConfig, true);
+        AndesClient tenant1PublisherClient = new AndesClient(tenant1PublisherConfig, true);
+        AndesClient tenant2PublisherClient = new AndesClient(tenant2PublisherConfig, true);
 
         adminConsumerClient.startClient();
         tenant1ConsumerClient.startClient();

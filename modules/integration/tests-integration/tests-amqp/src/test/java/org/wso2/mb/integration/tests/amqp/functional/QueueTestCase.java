@@ -80,10 +80,10 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -123,10 +123,10 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -168,13 +168,13 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(100L);
 
         // Creating clients
-        AndesClient consumerClient1 = new AndesClient(consumerConfig1);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
         consumerClient1.startClient();
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig2);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.sleepForInterval(5000);

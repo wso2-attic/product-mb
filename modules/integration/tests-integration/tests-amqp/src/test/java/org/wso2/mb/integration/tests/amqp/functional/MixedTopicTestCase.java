@@ -107,13 +107,13 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
         publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME); // Setting expiry time
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration);
+        AndesClient publisherClientWithoutExpiration = new AndesClient(publisherConfigWithoutExpiration, true);
         publisherClientWithoutExpiration.startClient();
 
-        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration);
+        AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration, true);
         publisherClientWithExpiration.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

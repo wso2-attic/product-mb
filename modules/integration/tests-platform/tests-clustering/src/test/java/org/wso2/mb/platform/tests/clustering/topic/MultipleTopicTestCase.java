@@ -201,7 +201,7 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        return new AndesClient(consumerConfig);
+        return new AndesClient(consumerConfig, true);
     }
 
     /**
@@ -223,7 +223,7 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        return new AndesClient(publisherConfig);
+        return new AndesClient(publisherConfig, true);
     }
 
     /**

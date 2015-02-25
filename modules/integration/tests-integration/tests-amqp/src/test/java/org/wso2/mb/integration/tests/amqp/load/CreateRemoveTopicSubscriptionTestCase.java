@@ -44,7 +44,7 @@ public class CreateRemoveTopicSubscriptionTestCase {
             throws NamingException, JMSException, IOException, ClientConfigurationException {
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "TestTopic");
 
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
 
         consumerClient.stopClient();
     }

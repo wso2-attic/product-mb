@@ -87,10 +87,10 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -127,10 +127,10 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setMessageHeader(jmsMessageHeader);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -165,10 +165,10 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setRunningDelay(300L);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -212,13 +212,13 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
         initialPublisherClient.startClient();
 
-        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
         secondaryPublisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -267,13 +267,13 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
         initialPublisherClient.startClient();
 
-        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
         secondaryPublisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -321,13 +321,13 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         initialPublisherConfig.setMessageHeader(jmsMessageHeaderSecondaryPublisher);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig);
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
         initialPublisherClient.startClient();
 
-        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig);
+        AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
         secondaryPublisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

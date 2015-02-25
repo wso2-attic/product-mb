@@ -97,10 +97,10 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient firstConsumerClient = new AndesClient(consumerConfig);
+        AndesClient firstConsumerClient = new AndesClient(consumerConfig, true);
         firstConsumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(firstConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -113,7 +113,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
 
         // Using a loop to create consumers and receive expected messages
         for (int count = 1; count < NUMBER_OF_SUBSCRIPTION_BREAKS; count++) {
-            AndesClient newConsumerClient = new AndesClient(consumerConfig);
+            AndesClient newConsumerClient = new AndesClient(consumerConfig, true);
             newConsumerClient.startClient();
 
             AndesClientUtils.waitForMessagesAndShutdown(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);

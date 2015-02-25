@@ -104,13 +104,13 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic1");
         assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -173,13 +173,13 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic1");
         assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in MB node 1 not exist");
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

@@ -91,11 +91,12 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
     /**
      * Creates a new JMS publisher with a given configuration.
      *
-     * @param config The configuration
+     * @param config          The configuration
+     * @param createPublisher Creates connection, session and sender.
      * @throws NamingException
      * @throws JMSException
      */
-    public AndesJMSPublisher(AndesJMSPublisherClientConfiguration config)
+    public AndesJMSPublisher(AndesJMSPublisherClientConfiguration config, boolean createPublisher)
             throws NamingException, JMSException {
         super(config);
 
@@ -110,13 +111,15 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
         this.publisherConfig = config;
 
         // Creates a JMS connection, sessions and sender
-        ConnectionFactory connFactory = (ConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
-        connection = connFactory.createConnection();
-        connection.start();
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        if (createPublisher) {
+            ConnectionFactory connFactory = (ConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
+            connection = connFactory.createConnection();
+            connection.start();
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        Destination destination = (Destination) super.getInitialContext().lookup(this.publisherConfig.getDestinationName());
-        this.sender = this.session.createProducer(destination);
+            Destination destination = (Destination) super.getInitialContext().lookup(this.publisherConfig.getDestinationName());
+            this.sender = this.session.createProducer(destination);
+        }
 
     }
 
@@ -305,6 +308,7 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
 
     /**
      * Gets the published message count.
+     *
      * @return The published message count.
      */
     public long getSentMessageCount() {
@@ -313,6 +317,7 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
 
     /**
      * Gets the transactions per seconds for publisher.
+     *
      * @return The transactions per second.
      */
     public double getPublisherTPS() {
@@ -329,5 +334,29 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
     @Override
     public AndesJMSPublisherClientConfiguration getConfig() {
         return this.publisherConfig;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    public MessageProducer getSender() {
+        return sender;
+    }
+
+    public void setSender(MessageProducer sender) {
+        this.sender = sender;
     }
 }

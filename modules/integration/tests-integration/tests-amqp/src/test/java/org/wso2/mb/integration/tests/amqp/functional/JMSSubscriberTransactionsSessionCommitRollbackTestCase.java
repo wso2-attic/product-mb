@@ -96,10 +96,10 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(consumerConfig);
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
         initialConsumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -124,7 +124,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
 
         AndesClientUtils.sleepForInterval(2000);
 
-        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig);
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

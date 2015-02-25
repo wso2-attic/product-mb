@@ -87,15 +87,15 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient consumerClient1 = new AndesClient(consumerConfig);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
         consumerClient2.startClient();
 
         AndesClientUtils.sleepForInterval(2000);

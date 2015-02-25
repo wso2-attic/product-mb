@@ -109,10 +109,10 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating andes client
-        AndesClient consumerClient = new AndesClient(consumerConfig);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

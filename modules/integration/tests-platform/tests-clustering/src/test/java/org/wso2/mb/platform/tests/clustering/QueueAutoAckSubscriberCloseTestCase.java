@@ -104,13 +104,13 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig, NO_OF_NON_CLOSING_SUBSCRIBERS);
+        AndesClient consumerClient = new AndesClient(consumerConfig, NO_OF_NON_CLOSING_SUBSCRIBERS, true);
         consumerClient.startClient();
 
-        AndesClient consumerClosingClient = new AndesClient(consumerClosingConfig, NO_OF_SUBSCRIBERS_TO_CLOSE);
+        AndesClient consumerClosingClient = new AndesClient(consumerClosingConfig, NO_OF_SUBSCRIBERS_TO_CLOSE, true);
         consumerClosingClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS);
+        AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

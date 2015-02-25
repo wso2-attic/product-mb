@@ -85,10 +85,10 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient initialConsumerClient = new AndesClient(consumerConfig1);
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig1, true);
         initialConsumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         //Wait until messages receive
@@ -99,7 +99,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         consumerConfig2.setUnSubscribeAfterEachMessageCount(EXPECTED_COUNT);
 
         // Creating clients
-        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2);
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2, true);
         secondaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -108,7 +108,7 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
 
         // Creating clients
-        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3);
+        AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3, true);
         tertiaryConsumerClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);

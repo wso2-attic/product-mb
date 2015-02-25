@@ -65,12 +65,13 @@ public class AndesClient {
      * Creates a single consumer or publisher based on the configuration passed
      *
      * @param config The configuration
+     * @param createConsumersAndProducers
      * @throws JMSException
      * @throws NamingException
      */
-    public AndesClient(AndesJMSClientConfiguration config)
+    public AndesClient(AndesJMSClientConfiguration config, boolean createConsumersAndProducers)
             throws JMSException, NamingException, IOException, ClientConfigurationException {
-        this(config, 1);
+        this(config, 1, createConsumersAndProducers);
     }
 
     /**
@@ -80,11 +81,13 @@ public class AndesClient {
      * @param config          The configuration.
      * @param numberOfThreads The amount of publishers or consumers. This amount of threads will be
      *                        started.
+     * @param createConsumersAndProducers
      * @throws JMSException
      * @throws NamingException
      * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
      */
-    public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads)
+    public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads,
+                       boolean createConsumersAndProducers)
             throws JMSException, NamingException, ClientConfigurationException, IOException {
         if (0 < numberOfThreads) {
             if (config instanceof AndesJMSConsumerClientConfiguration) {
@@ -93,9 +96,9 @@ public class AndesClient {
 
             for (int i = 0; i < numberOfThreads; i++) {
                 if (config instanceof AndesJMSConsumerClientConfiguration) {
-                    consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config));
+                    consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config, createConsumersAndProducers));
                 } else if (config instanceof AndesJMSPublisherClientConfiguration) {
-                    publishers.add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config));
+                    publishers.add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config, createConsumersAndProducers));
                 }
             }
         } else {
@@ -297,5 +300,13 @@ public class AndesClient {
      */
     public AndesJMSClientConfiguration getConfig() {
         return this.consumers.get(0).getConfig();
+    }
+
+    public List<AndesJMSConsumer> getConsumers() {
+        return consumers;
+    }
+
+    public List<AndesJMSPublisher> getPublishers() {
+        return publishers;
     }
 }

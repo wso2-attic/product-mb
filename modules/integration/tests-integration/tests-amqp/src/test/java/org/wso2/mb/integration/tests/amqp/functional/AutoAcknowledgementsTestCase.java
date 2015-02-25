@@ -83,10 +83,10 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient receivingClient = new AndesClient(consumerConfig);
+        AndesClient receivingClient = new AndesClient(consumerConfig, true);
         receivingClient.startClient();
 
-        AndesClient sendingClient = new AndesClient(publisherConfig);
+        AndesClient sendingClient = new AndesClient(publisherConfig, true);
         sendingClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(receivingClient, AndesClientConstants.DEFAULT_RUN_TIME);
@@ -122,10 +122,10 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
         // Creating clients
-        AndesClient initialReceivingClient = new AndesClient(initialConsumerConfig);
+        AndesClient initialReceivingClient = new AndesClient(initialConsumerConfig, true);
         initialReceivingClient.startClient();
 
-        AndesClient sendingClient = new AndesClient(publisherConfig);
+        AndesClient sendingClient = new AndesClient(publisherConfig, true);
         sendingClient.startClient();
 
         // Wait until messages are received by first consumer client.
@@ -139,7 +139,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(EXPECTED_COUNT - 1000L);
 
         // Creating clients
-        AndesClient secondaryReceivingClient = new AndesClient(consumerConfigForClientAfterDrop);
+        AndesClient secondaryReceivingClient = new AndesClient(consumerConfigForClientAfterDrop, true);
         secondaryReceivingClient.startClient();
 
         // Wait until messages are received by second consumer client.

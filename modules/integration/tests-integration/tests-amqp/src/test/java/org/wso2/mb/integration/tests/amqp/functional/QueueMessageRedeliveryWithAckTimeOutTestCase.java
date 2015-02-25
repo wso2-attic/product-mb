@@ -99,10 +99,10 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, 3);
+        AndesClient consumerClient = new AndesClient(consumerConfig, 3, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);

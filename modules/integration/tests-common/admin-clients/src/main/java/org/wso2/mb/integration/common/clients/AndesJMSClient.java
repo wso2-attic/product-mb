@@ -31,7 +31,7 @@ import java.util.Properties;
  * The base class for JMS publishers and consumers. This class creates the initial context which
  * is required in creating the publishers and consumers.
  */
-public abstract class AndesJMSClient{
+public abstract class AndesJMSClient {
     /**
      * The configuration file used in creating the JMS publishers and consumers.
      */
@@ -44,6 +44,7 @@ public abstract class AndesJMSClient{
 
     /**
      * Creates the initial context.
+     *
      * @param config The configuration.
      * @throws NamingException
      */
@@ -60,14 +61,16 @@ public abstract class AndesJMSClient{
 
     /**
      * Gets the initial context.
+     *
      * @return The initial context.
      */
-    protected InitialContext getInitialContext() {
+    public InitialContext getInitialContext() {
         return initialContext;
     }
 
     /**
      * Starts up the publisher or consumer.
+     *
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
@@ -76,12 +79,14 @@ public abstract class AndesJMSClient{
 
     /**
      * Stops the publisher or consumer
+     *
      * @throws JMSException
      */
     public abstract void stopClient() throws JMSException;
 
     /**
      * Gets the configuration.
+     *
      * @return The configuration.
      */
     public abstract AndesJMSClientConfiguration getConfig();

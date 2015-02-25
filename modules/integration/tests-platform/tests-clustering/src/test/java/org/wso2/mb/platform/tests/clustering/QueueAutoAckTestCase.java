@@ -93,10 +93,10 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig, NO_OF_SUBSCRIBERS);
+        AndesClient consumerClient = new AndesClient(consumerConfig, NO_OF_SUBSCRIBERS, true);
         consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS);
+        AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
