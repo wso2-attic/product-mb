@@ -18,11 +18,80 @@
 
 package org.wso2.mb.integration.common.utils.backend;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.wso2.andes.configuration.enums.AndesConfiguration;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
+
+import java.io.File;
+
 /**
- * This class allows a test case to edit the main server configuration (currently broker.xml) and apply it to the server before execution.
+ * This class allows a test case to edit the main server configuration (currently broker.xml) and apply it to the
+ * server before execution.
  */
 public class ConfigurationEditor {
 
-    //public XMLConfiguration
+    public static final String ORIGINAL_CONFIG_BACKUP_PREFIX = "original_";
+
+    public static final String UPDATED_CONFIG_FILE_PREFIX = "updated_";
+
+    public XMLConfiguration configuration;
+
+    public String originalConfigFilePath;
+
+    public ConfigurationEditor(String originalConfigFilePath) throws ConfigurationException {
+        this.originalConfigFilePath = originalConfigFilePath;
+
+        configuration = new XMLConfiguration(this.originalConfigFilePath);
+
+        // Support XPath queries.
+        configuration.setExpressionEngine(new XPathExpressionEngine());
+
+        configuration.setDelimiterParsingDisabled(true); // If we don't do this,
+        // we can't add a new configuration to the compositeConfiguration by code.
+    }
+
+    /**
+     * Update a property in loaded original configuration
+     * @param property
+     * @param value
+     * @return
+     */
+    public String updateProperty(AndesConfiguration property, String value) {
+        configuration.setProperty(property.get().getKeyInFile(),value);
+        return value;
+    }
+
+    /**
+     * Apply modified configuration and restart server
+     * @param serverConfigurationManager
+     * @return
+     * @throws Exception
+     */
+    public boolean applyUpdatedConfigurationAndRestartServer(ServerConfigurationManager serverConfigurationManager) throws Exception {
+
+        //Rename original configuration file to original_broker.xml
+        String originalConfigFileDirectory = originalConfigFilePath.substring(0,originalConfigFilePath.lastIndexOf(File.separator));
+        String originalConfigFileName = originalConfigFilePath.substring(originalConfigFilePath.lastIndexOf(File.separator));
+
+        /*File originalConfigFile = new File(originalConfigFilePath);
+        File renamedOriginalConfigFile = new File(originalConfigFileDirectory + ORIGINAL_CONFIG_BACKUP_PREFIX + originalConfigFile.getName());
+        originalConfigFile.renameTo(renamedOriginalConfigFile);*/
+
+        //Save updated Configuration as updated_broker.xml in same path
+
+        String updatedConfigFilePath = originalConfigFileDirectory + UPDATED_CONFIG_FILE_PREFIX + originalConfigFileName;
+        configuration.save(updatedConfigFilePath);
+
+        serverConfigurationManager.applyConfiguration(new File(updatedConfigFilePath), new File(originalConfigFilePath), true, true);
+
+        return true;
+    }
+
+    public boolean revertConfigurationAndRestartServer() {
+        return false;
+    }
+
 
 }

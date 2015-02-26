@@ -39,7 +39,6 @@ import static org.testng.Assert.assertEquals;
  */
 public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrationBaseTest {
 
-
     /**
      * Prepare environment for durable topic subscription with same client Id tests
      *
