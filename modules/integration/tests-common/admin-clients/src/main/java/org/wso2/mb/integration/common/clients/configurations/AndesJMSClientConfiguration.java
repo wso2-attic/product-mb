@@ -18,8 +18,11 @@
 
 package org.wso2.mb.integration.common.clients.configurations;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 /**
@@ -28,6 +31,11 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
  * JMS only.
  */
 public class AndesJMSClientConfiguration implements Cloneable {
+    /**
+     * The logger used in logging information, warnings, errors and etc.
+     */
+    private static Logger log = Logger.getLogger(AndesJMSClientConfiguration.class);
+
     /**
      * The destination name to be used when a configuration is not passed to the client.
      */
@@ -85,10 +93,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
     private String filePathToWriteStatistics;
 
     /**
-     * XML file path for configuration
+     * The query string for the amqp connection string. Used during SSL connections.
      */
-    private String xmlConfigFilePath;
-
     private String queryStringForConnection = "";
 
     /**
@@ -156,19 +162,71 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.runningDelay = 0L;
     }
 
-    public AndesJMSClientConfiguration(String xmlConfigFilePath) {
-        this.xmlConfigFilePath = xmlConfigFilePath;
+    /**
+     * Creates a connection string using an xml file.
+     *
+     * @param xmlConfigFilePath The file path for the xml configuration file.
+     * @throws AndesClientConfigurationException
+     */
+    public AndesJMSClientConfiguration(String xmlConfigFilePath)
+            throws AndesClientConfigurationException {
+        try {
+            XMLConfiguration config = new XMLConfiguration(xmlConfigFilePath);
+
+            // Setting values for exchange type and destination name
+            this.exchangeType = ExchangeType.valueOf(config.getString("base.exchangeType"));
+            this.destinationName = config.getString("base.destinationName", TEMP_DESTINATION_NAME);
+
+            // Creating connection string
+            this.userName = config.getString("base.userName", AndesClientConstants.DEFAULT_USERNAME);
+            this.password = config.getString("base.password", AndesClientConstants.DEFAULT_PASSWORD);
+            this.hostName = config.getString("base.hostName", AndesClientConstants.CARBON_VIRTUAL_HOST_NAME);
+            this.port = config.getInt("base.port", AndesClientConstants.DEFAULT_PORT);
+            this.queryStringForConnection = config.getString("base.queryStringForConnection", "");
+            this.createConnectionString();
+
+            // Setting default values
+            this.printsPerMessageCount = config.getLong("base.printsPerMessageCount", 1L);
+            this.runningDelay = config.getLong("base.runningDelay", 0L);
+        } catch (ConfigurationException e) {
+            log.error("Error in reading xml configuration file. Make sure the file exists.", e);
+            throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid exchange type used. Use either 'queue' or 'topic'.", e);
+            throw new AndesClientConfigurationException("Invalid exchange type used. Use either 'queue' or 'topic'.", e);
+        }
     }
 
+    /**
+     * Copy constructor for the client.
+     *
+     * @param config The configuration file.
+     */
     public AndesJMSClientConfiguration(
             AndesJMSClientConfiguration config) {
         this.connectionString = config.getConnectionString();
         this.exchangeType = config.getExchangeType();
-        this.destinationName = config.destinationName;
+        this.destinationName = config.getDestinationName();
         this.printsPerMessageCount = config.getPrintsPerMessageCount();
         this.runningDelay = config.getRunningDelay();
     }
 
+    /**
+     * Creates an SSL connection string with a given username, password, hostname, port, exchange
+     * type and destination name.
+     *
+     * @param userName           The username to be used in creating the connection string.
+     * @param password           The password to be used in creating the connection string.
+     * @param hostName           The host name to be used in creating the connection string.
+     * @param port               The AMQP transport port used in creating the connection string
+     * @param exchangeType       The exchange type.
+     * @param destinationName    The destination name.
+     * @param sslAlias           The ssl alias to use in ssl connection.
+     * @param trustStorePath     The file path for trust store to use in ssl connection.
+     * @param trustStorePassword The trust store password to use in ssl connection.
+     * @param keyStorePath       The file path for key store to use in ssl connection.
+     * @param keyStorePassword   The key store password to use in ssl connection.
+     */
     public AndesJMSClientConfiguration(String userName, String password, String hostName, int port,
                                        ExchangeType exchangeType, String destinationName,
                                        String sslAlias,
@@ -184,9 +242,9 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.hostName = hostName;
         this.port = port;
         this.queryStringForConnection = "?ssl='true'" +
-                                   "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath + "'&trust_store_password='" +
-                                   trustStorePassword
-                                   + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "'";
+                                        "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath + "'&trust_store_password='" +
+                                        trustStorePassword
+                                        + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "'";
 
         this.createConnectionString();
 
@@ -349,14 +407,14 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the number of console logging per message count
      *
      * @param printsPerMessageCount The number of console logging per message count
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setPrintsPerMessageCount(long printsPerMessageCount) throws
-                                                                     ClientConfigurationException {
+                                                                     AndesClientConfigurationException {
         if (0 < printsPerMessageCount) {
             this.printsPerMessageCount = printsPerMessageCount;
         } else {
-            throw new ClientConfigurationException("Prints per message count cannot be less than one");
+            throw new AndesClientConfigurationException("Prints per message count cannot be less than one");
         }
     }
 
@@ -373,13 +431,13 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the delay used in publishing/consuming messages in milliseconds.
      *
      * @param runningDelay The delay used in publishing/consuming messages in milliseconds.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
-    public void setRunningDelay(long runningDelay) throws ClientConfigurationException {
+    public void setRunningDelay(long runningDelay) throws AndesClientConfigurationException {
         if (0 <= runningDelay) {
             this.runningDelay = runningDelay;
         } else {
-            throw new ClientConfigurationException("Running delay cannot be less than 0");
+            throw new AndesClientConfigurationException("Running delay cannot be less than 0");
         }
     }
 

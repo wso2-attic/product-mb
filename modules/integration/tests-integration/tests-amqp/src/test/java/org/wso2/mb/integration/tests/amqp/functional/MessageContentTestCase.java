@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -82,7 +82,7 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case")
     public void performQueueContentSendReceiveTestCase()
-            throws ClientConfigurationException, IOException, JMSException, NamingException {
+            throws AndesClientConfigurationException, IOException, JMSException, NamingException {
 
         // Reading message content
         char[] inputContent = new char[SIZE_TO_READ];

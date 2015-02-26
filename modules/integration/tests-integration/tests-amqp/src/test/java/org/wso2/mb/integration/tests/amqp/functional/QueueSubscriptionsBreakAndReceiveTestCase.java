@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -75,7 +75,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
      * 3. Close and resubscribe 5 times to the queue. Each subscriber should get 200 messages each.
      * 4. Verify message count is equal to the sent total
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -83,7 +83,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueueSubscriptionsBreakAndReceiveTestCase()
-            throws ClientConfigurationException, NamingException, JMSException, IOException,
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
                    CloneNotSupportedException {
 
         // Creating a consumer client configuration

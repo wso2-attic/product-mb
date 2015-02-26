@@ -32,5 +32,9 @@
             <groupId>org.eclipse.paho</groupId>
             <artifactId>mqtt-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-configuration.wso2</groupId>
+            <artifactId>commons-configuration</artifactId>
+        </dependency>
     </dependencies>
 </project>

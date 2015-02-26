@@ -83,6 +83,7 @@ public class AndesClientUtils {
         log.info("Message count received by consumer : " + Long.toString(client.getReceivedMessageCount()));
         // Stopping the consumer client
         client.stopClient();
+//        client.getConsumers().get(0).countDownLatch.countDown();
         // Prints print writer contents to files.
         flushPrintWriters();
     }

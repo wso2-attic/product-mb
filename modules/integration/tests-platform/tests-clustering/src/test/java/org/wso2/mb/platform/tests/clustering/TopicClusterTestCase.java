@@ -32,7 +32,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -78,7 +78,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send and receive messages in a single node for a topic
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
@@ -87,7 +87,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case")
     public void testSingleTopicSingleNodeSendReceive()
-            throws ClientConfigurationException, JMSException, NamingException, IOException,
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
@@ -146,7 +146,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send messages from one node and received messages from another node.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
@@ -155,7 +155,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case")
     public void testSingleTopicMultiNodeSendReceive()
-            throws ClientConfigurationException, JMSException, NamingException, IOException,
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException {
         long sendCount = 1000L;
         long expectedCount = 1000L;

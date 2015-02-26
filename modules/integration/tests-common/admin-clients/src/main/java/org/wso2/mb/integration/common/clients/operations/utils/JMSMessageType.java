@@ -29,6 +29,7 @@ public enum JMSMessageType {
 
     /**
      * Initializes JMS message type.
+     *
      * @param type Message type.
      */
     JMSMessageType(String type) {
@@ -37,6 +38,7 @@ public enum JMSMessageType {
 
     /**
      * Gets JMS message type.
+     *
      * @return The message type.
      */
     public String getType() {

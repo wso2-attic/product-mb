@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -67,14 +67,14 @@ public class SingleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest {
      * 2. Subscriber subscribes to "hasitha" topic.
      * 3. Publisher publishes messages to "hasitha" topic.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performSingleTopicPublishSubscribeTestCase()
-            throws ClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "hasitha");

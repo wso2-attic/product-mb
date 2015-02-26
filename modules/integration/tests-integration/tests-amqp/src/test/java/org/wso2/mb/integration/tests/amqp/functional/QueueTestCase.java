@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -57,14 +57,14 @@ public class QueueTestCase extends MBIntegrationBaseTest {
      * 2. Publish 1000 messages to queue.
      * 3. Consumer should receive 1000 messages.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case")
     public void performSingleQueueSendReceiveTestCase()
-            throws ClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
 
         long sendCount = 1000L;
         long expectedCount = 1000L;
@@ -100,7 +100,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
      * 3. Publish messages to a queue that has the same name as "subTopicPubQueue".
      * 4. Subscriber should not receive any messages.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
@@ -108,7 +108,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name" +
                                             " as queue", enabled = false)
     public void performSubTopicPubQueueTestCase()
-            throws ClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 
@@ -141,14 +141,14 @@ public class QueueTestCase extends MBIntegrationBaseTest {
      * 2. Publish 3000 message to queue name "queueManyConsumers"
      * 3. Total messages received by both consumers should be 3000 messages.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "send large number of messages to a queue which has two consumers")
     public void performManyConsumersTestCase()
-            throws ClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
 
         long sendCount = 3000L;
         long expectedCount = 3000L;

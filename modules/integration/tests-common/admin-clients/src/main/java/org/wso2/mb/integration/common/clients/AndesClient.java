@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
@@ -64,13 +64,14 @@ public class AndesClient {
     /**
      * Creates a single consumer or publisher based on the configuration passed
      *
-     * @param config The configuration
-     * @param createConsumersAndProducers
+     * @param config                      The configuration.
+     * @param createConsumersAndProducers True if the client needs to create connections, sessions
+     *                                    and respecting receivers or consumers. False otherwise.
      * @throws JMSException
      * @throws NamingException
      */
     public AndesClient(AndesJMSClientConfiguration config, boolean createConsumersAndProducers)
-            throws JMSException, NamingException, IOException, ClientConfigurationException {
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
         this(config, 1, createConsumersAndProducers);
     }
 
@@ -78,17 +79,18 @@ public class AndesClient {
      * The constructor used for creating multiple consumer or publishers based on the configuration
      * passed.
      *
-     * @param config          The configuration.
-     * @param numberOfThreads The amount of publishers or consumers. This amount of threads will be
-     *                        started.
-     * @param createConsumersAndProducers
+     * @param config                      The configuration.
+     * @param numberOfThreads             The amount of publishers or consumers. This amount of
+     *                                    threads will be started.
+     * @param createConsumersAndProducers True if the client needs to create connections, sessions
+     *                                    and respecting receivers or consumers. False otherwise.
      * @throws JMSException
      * @throws NamingException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads,
                        boolean createConsumersAndProducers)
-            throws JMSException, NamingException, ClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
         if (0 < numberOfThreads) {
             if (config instanceof AndesJMSConsumerClientConfiguration) {
                 AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
@@ -102,7 +104,7 @@ public class AndesClient {
                 }
             }
         } else {
-            throw new ClientConfigurationException("The amount of subscribers cannot be less than 1");
+            throw new AndesClientConfigurationException("The amount of subscribers cannot be less than 1");
         }
     }
 

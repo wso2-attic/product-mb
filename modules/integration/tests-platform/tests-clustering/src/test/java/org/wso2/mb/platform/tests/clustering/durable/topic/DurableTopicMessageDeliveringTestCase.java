@@ -32,7 +32,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -81,7 +81,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
     /**
      * Subscribe to a durable topic and publish messages to that topic
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
@@ -89,7 +89,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void pubSubDurableTopicTestCase()
-            throws ClientConfigurationException, NamingException, JMSException, XPathExpressionException,
+            throws AndesClientConfigurationException, NamingException, JMSException, XPathExpressionException,
                    IOException {
 
         // Creating a consumer client configuration

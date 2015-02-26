@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -61,13 +61,13 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws XPathExpressionException
      */
     @Test(groups = "wso2.mb", description = "Same node slow subscriber test case")
     public void testSameNodeSlowSubscriber()
-            throws IOException, JMSException, ClientConfigurationException, NamingException,
+            throws IOException, JMSException, AndesClientConfigurationException, NamingException,
                    XPathExpressionException {
         String brokerUrl = getRandomAMQPBrokerUrl();
 
@@ -80,13 +80,13 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Same node slow publisher test case")
     public void testSameNodeSlowPublisher()
             throws XPathExpressionException, IOException, JMSException,
-                   ClientConfigurationException,
+                   AndesClientConfigurationException,
                    NamingException {
         String brokerUrl = getRandomAMQPBrokerUrl();
         this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, brokerUrl, brokerUrl);
@@ -99,13 +99,13 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Different node slow subscriber test case")
     public void testDifferentNodeSlowSubscriber()
             throws XPathExpressionException, IOException, JMSException,
-                   ClientConfigurationException,
+                   AndesClientConfigurationException,
                    NamingException {
 
         this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, getRandomAMQPBrokerUrl(), getRandomAMQPBrokerUrl());
@@ -117,13 +117,13 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Different node slow publisher test case")
     public void testDifferentNodeSlowPublisher()
             throws XPathExpressionException, IOException, JMSException,
-                   ClientConfigurationException,
+                   AndesClientConfigurationException,
                    NamingException {
         this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, getRandomAMQPBrokerUrl(), getRandomAMQPBrokerUrl());
     }
@@ -166,7 +166,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @param publisherDelay     The delay in which the publisher received messages
      * @param consumerBrokerUrl  The amqp connection string for consumer
      * @param publisherBrokerUrl The amqp connection string for publisher
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -175,7 +175,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                     long publisherDelay,
                                                     String consumerBrokerUrl,
                                                     String publisherBrokerUrl)
-            throws ClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
         // Number of messages expected
         long expectedCount = 500L;
         // Number of messages send

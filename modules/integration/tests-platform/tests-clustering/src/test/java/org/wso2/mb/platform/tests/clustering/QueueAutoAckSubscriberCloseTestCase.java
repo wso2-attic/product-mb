@@ -27,7 +27,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -69,7 +69,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
      * messages are retrieving and check if all the messages are received by other subscribers.
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -77,7 +77,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
     @Test(groups = "wso2.mb", description = "50 subscriptions for a queue and 50 publishers. Then close " +
             "10% of the subscribers ", enabled = true)
     public void performMillionMessageTenPercentSubscriberCloseTestCase()
-            throws XPathExpressionException, ClientConfigurationException, NamingException, JMSException,
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
                    IOException {
 
         String randomInstanceKeyForReceiver = getRandomMBInstance();

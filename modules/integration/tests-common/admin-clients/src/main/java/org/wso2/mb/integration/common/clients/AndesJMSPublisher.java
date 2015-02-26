@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageHeader;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
 import javax.jms.Connection;
@@ -37,12 +36,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The JMS message publisher used for creating a publisher and for publishing JMS messages.
  */
-public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
+public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
     /**
      * The logger used in logging information, warnings, errors and etc.
      */
@@ -56,17 +54,17 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
     /**
      * The amount of messages sent by the publisher
      */
-    private AtomicLong sentMessageCount;
+    private long sentMessageCount;
 
     /**
      * The timestamp at which the first message was published
      */
-    private AtomicLong firstMessagePublishTimestamp;
+    private long firstMessagePublishTimestamp;
 
     /**
      * The timestamp at which the last message was published
      */
-    private AtomicLong lastMessagePublishTimestamp;
+    private long lastMessagePublishTimestamp;
 
     /**
      * The connection which is used to create the JMS session
@@ -100,13 +98,6 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
             throws NamingException, JMSException {
         super(config);
 
-        // Initializing statistics calculation variable
-        firstMessagePublishTimestamp = new AtomicLong();
-        lastMessagePublishTimestamp = new AtomicLong();
-
-        // Initializing message count variable.
-        sentMessageCount = new AtomicLong();
-
         // Sets the configuration
         this.publisherConfig = config;
 
@@ -128,13 +119,17 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
      */
     @Override
     public void startClient() throws JMSException, NamingException, IOException {
-        //reading message content from file
-        if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
-            this.getMessageContentFromFile();
-        }
+        if (null != connection && null != session && null != sender) {
+            //reading message content from file
+            if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
+                this.getMessageContentFromFile();
+            }
 
-        Thread subscriberThread = new Thread(this);
-        subscriberThread.start();
+            Thread subscriberThread = new Thread(this);
+            subscriberThread.start();
+        } else {
+            throw new NullPointerException("The connection, session and message sender is not assigned.");
+        }
     }
 
     /**
@@ -142,24 +137,28 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
      */
     @Override
     public void stopClient() throws JMSException {
-        try {
-            long threadID = Thread.currentThread().getId();
-            log.info("Closing publisher | ThreadID : " + threadID);
-            if (this.sender != null) {
-                this.sender.close();
-                this.sender = null;
+        if (null != connection && null != session && null != sender) {
+            try {
+                long threadID = Thread.currentThread().getId();
+                log.info("Closing publisher | ThreadID : " + threadID);
+                if (this.sender != null) {
+                    this.sender.close();
+                    this.sender = null;
+                }
+                if (this.session != null) {
+                    this.session.close();
+                    this.session = null;
+                }
+                if (this.connection != null) {
+                    this.connection.close();
+                    this.connection = null;
+                }
+                log.info("Publisher closed | ThreadID : " + threadID);
+            } catch (JMSException e) {
+                log.error("Error while stopping the publisher.", e);
             }
-            if (this.session != null) {
-                this.session.close();
-                this.session = null;
-            }
-            if (this.connection != null) {
-                this.connection.close();
-                this.connection = null;
-            }
-            log.info("Publisher closed | ThreadID : " + threadID);
-        } catch (JMSException e) {
-            log.error("Error while stopping the publisher.", e);
+        } else {
+            throw new NullPointerException("The connection, session and message sender is not assigned.");
         }
     }
 
@@ -199,14 +198,13 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
         try {
             Message message = null;
             long threadID = Thread.currentThread().getId();
-            while (this.sentMessageCount.get() < this.publisherConfig.getNumberOfMessagesToSend()) {
+            while (this.sentMessageCount < this.publisherConfig.getNumberOfMessagesToSend()) {
                 // Creating a JMS message
                 if (JMSMessageType.TEXT == this.publisherConfig.getJMSMessageType()) {
                     if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                         message = this.session.createTextMessage(this.messageContentFromFile);
                     } else {
-                        message = this.session.createTextMessage(MessageFormat.format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount.get(), threadID));
-
+                        message = this.session.createTextMessage(MessageFormat.format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
                     }
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
@@ -219,63 +217,33 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
                 }
 
                 if (null != message) {
-
-                    // Creates JMS message headers if needed. Used in JMS selectors
-                    if (null != this.publisherConfig.getMessageHeader()) {
-                        JMSMessageHeader messageHeader = this.publisherConfig.getMessageHeader();
-                        if (null != messageHeader.getJmsCorrelationID()) {
-                            message.setJMSCorrelationID(messageHeader.getJmsCorrelationID());
-                        }
-                        if (0L != messageHeader.getJmsTimestamp()) {
-                            message.setJMSTimestamp(messageHeader.getJmsTimestamp());
-                        }
-                        if (null != messageHeader.getJmsType()) {
-                            message.setJMSType(messageHeader.getJmsType());
-                        }
-
-                        if (0 < messageHeader.getStringProperties().size()) {
-                            for (String key : messageHeader.getStringProperties().keySet()) {
-                                message.setStringProperty(key, messageHeader.getStringProperties().get(key));
-                            }
-                        }
-                        if (0 < messageHeader.getIntegerProperties().size()) {
-                            for (String key : messageHeader.getIntegerProperties().keySet()) {
-                                message.setIntProperty(key, messageHeader.getIntegerProperties().get(key));
-                            }
-                        }
-                    }
-
                     // Sending messages
-                    // TODO : revisit synchronize block
-                    synchronized (this.sentMessageCount.getClass()) {
-                        if (this.sentMessageCount.get() >= this.publisherConfig.getNumberOfMessagesToSend()) {
-                            break;
-                        }
-                        this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
-                        this.sentMessageCount.incrementAndGet();
-
+                    if (this.sentMessageCount >= this.publisherConfig.getNumberOfMessagesToSend()) {
+                        break;
                     }
+                    this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
+                    this.sentMessageCount++;
 
                     // TPS calculation
                     long currentTimeStamp = System.currentTimeMillis();
-                    if (this.firstMessagePublishTimestamp.get() == 0) {
-                        this.firstMessagePublishTimestamp.set(currentTimeStamp);
+                    if (0 == this.firstMessagePublishTimestamp) {
+                        this.firstMessagePublishTimestamp = currentTimeStamp;
                     }
 
-                    this.lastMessagePublishTimestamp.set(currentTimeStamp);
-                    if (0 == this.sentMessageCount.get() % this.publisherConfig.getPrintsPerMessageCount()) {
+                    this.lastMessagePublishTimestamp = currentTimeStamp;
+                    if (0 == this.sentMessageCount % this.publisherConfig.getPrintsPerMessageCount()) {
                         // Logging the sent message details.
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +
                                      threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
                                      "." + this.publisherConfig.getDestinationName() + " SentMessageCount:" +
-                                     this.sentMessageCount.get() + " CountToSend:" +
+                                     this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         } else {
                             log.info("[SEND]" + " (INBUILT MESSAGE) ThreadID:" +
                                      threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
                                      "." + this.publisherConfig.getDestinationName() + " SentMessageCount:" +
-                                     this.sentMessageCount.get() + " CountToSend:" +
+                                     this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }
                     }
@@ -312,7 +280,7 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
      * @return The published message count.
      */
     public long getSentMessageCount() {
-        return this.sentMessageCount.get();
+        return this.sentMessageCount;
     }
 
     /**
@@ -321,10 +289,10 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
      * @return The transactions per second.
      */
     public double getPublisherTPS() {
-        if (0 == this.lastMessagePublishTimestamp.get() - this.firstMessagePublishTimestamp.get()) {
-            return this.sentMessageCount.doubleValue() / (1D / 1000);
+        if (0 == this.lastMessagePublishTimestamp - this.firstMessagePublishTimestamp) {
+            return ((double)this.sentMessageCount) / (1D / 1000);
         } else {
-            return this.sentMessageCount.doubleValue() / ((this.lastMessagePublishTimestamp.doubleValue() - this.firstMessagePublishTimestamp.doubleValue()) / 1000);
+            return ((double)this.sentMessageCount) / (((double)(this.lastMessagePublishTimestamp - this.firstMessagePublishTimestamp)) / 1000);
         }
     }
 
@@ -336,26 +304,56 @@ public class AndesJMSPublisher extends AndesJMSClient implements Runnable {
         return this.publisherConfig;
     }
 
+    /**
+     * Gets the JMS message sending connection ({@link javax.jms.Connection}).
+     *
+     * @return A {@link javax.jms.Connection}
+     */
     public Connection getConnection() {
-        return connection;
+        return this.connection;
     }
 
+    /**
+     * Sets the JMS message sending connection ({@link javax.jms.Connection}).
+     *
+     * @param connection A {@link javax.jms.Connection}.
+     */
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
 
+    /**
+     * Gets the JMS message sending session ({@link javax.jms.Session}).
+     *
+     * @return A {@link javax.jms.Session}.
+     */
     public Session getSession() {
-        return session;
+        return this.session;
     }
 
+    /**
+     * Sets the JMS message sending session ({@link javax.jms.Session}).
+     *
+     * @param session A {@link javax.jms.Session}.
+     */
     public void setSession(Session session) {
         this.session = session;
     }
 
+    /**
+     * Gets the JMS message producer ({@link javax.jms.MessageProducer}).
+     *
+     * @return A {@link javax.jms.MessageProducer}.
+     */
     public MessageProducer getSender() {
-        return sender;
+        return this.sender;
     }
 
+    /**
+     * Sets the JMS message producer ({@link javax.jms.MessageProducer}).
+     *
+     * @param sender A {@link javax.jms.MessageProducer}.
+     */
     public void setSender(MessageProducer sender) {
         this.sender = sender;
     }

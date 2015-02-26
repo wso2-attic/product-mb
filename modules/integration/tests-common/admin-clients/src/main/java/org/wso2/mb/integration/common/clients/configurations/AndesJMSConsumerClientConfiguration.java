@@ -17,9 +17,11 @@
 */
 package org.wso2.mb.integration.common.clients.configurations;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 
@@ -141,16 +143,65 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         super(userName, password, hostName, port, exchangeType, destinationName);
     }
 
-    // TODO : implement
-    public AndesJMSConsumerClientConfiguration(String xmlConfigFilePath) {
+    /**
+     * Creates a configuration for a consumer using an xml file.
+     *
+     * @param xmlConfigFilePath The file path for the xml configuration file path.
+     * @throws AndesClientConfigurationException
+     */
+    public AndesJMSConsumerClientConfiguration(String xmlConfigFilePath)
+            throws AndesClientConfigurationException {
         super(xmlConfigFilePath);
+        try {
+            XMLConfiguration config = new XMLConfiguration(xmlConfigFilePath);
+
+            this.unSubscribeAfterEachMessageCount = config.getLong("base.consumer.unSubscribeAfterEachMessageCount", Long.MAX_VALUE);
+            this.rollbackAfterEachMessageCount = config.getLong("base.consumer.rollbackAfterEachMessageCount", Long.MAX_VALUE);
+            this.commitAfterEachMessageCount = config.getLong("base.consumer.commitAfterEachMessageCount", Long.MAX_VALUE);
+            this.acknowledgeAfterEachMessageCount = config.getLong("base.consumer.acknowledgeAfterEachMessageCount", Long.MAX_VALUE);
+            this.filePathToWriteReceivedMessages = config.getString("base.consumer.filePathToWriteReceivedMessages", null);
+            this.maximumMessagesToReceived = config.getLong("base.consumer.maximumMessagesToReceived", Long.MAX_VALUE);
+            this.subscriptionID = config.getString("base.consumer.subscriptionID", null);
+            this.durable = config.getBoolean("base.consumer.durable", false);
+            this.async = config.getBoolean("base.consumer.async", true);
+            this.selectors = config.getString("base.consumer.selectors", null);
+            this.acknowledgeMode = JMSAcknowledgeMode.valueOf(config.getString("base.consumer.selectors", "1"));
+        } catch (ConfigurationException e) {
+            log.error("Error in reading xml configuration file. Make sure the file exists.", e);
+            throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid acknowledge mode used. Use a value from range 0-3", e);
+            throw new AndesClientConfigurationException("Invalid acknowledge mode used. Use a value from range 0-3", e);
+        }
     }
 
+    /**
+     * The copy constructor for the JMS base class. This will copy all attributes defined in another
+     * configuration only for the base client.
+     *
+     * @param config The configuration to be copied.
+     */
     public AndesJMSConsumerClientConfiguration(
             AndesJMSClientConfiguration config) {
         super(config);
     }
 
+    /**
+     * Creates a JMS message consumer with a given AMQP transport connection string for SSL and a
+     * given exchange type and destination.
+     *
+     * @param userName           The user name for the connection string.
+     * @param password           The password for the connection string.
+     * @param hostName           The host name for the connection string.
+     * @param port               The port for the connection string.
+     * @param exchangeType       The exchange type.
+     * @param destinationName    The destination name.
+     * @param sslAlias           The ssl alias to use in ssl connection.
+     * @param trustStorePath     The file path for trust store to use in ssl connection.
+     * @param trustStorePassword The trust store password to use in ssl connection.
+     * @param keyStorePath       The file path for key store to use in ssl connection.
+     * @param keyStorePassword   The key store password to use in ssl connection.
+     */
     public AndesJMSConsumerClientConfiguration(String userName, String password, String hostName,
                                                int port,
                                                ExchangeType exchangeType, String destinationName,
@@ -175,14 +226,14 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets message count to un-subscribe the consumer.
      *
      * @param unSubscribeAfterEachMessageCount The message count to un-subscribe the consumer.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setUnSubscribeAfterEachMessageCount(long unSubscribeAfterEachMessageCount)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         if (0 < unSubscribeAfterEachMessageCount) {
             this.unSubscribeAfterEachMessageCount = unSubscribeAfterEachMessageCount;
         } else {
-            throw new ClientConfigurationException("Value cannot be less than 0");
+            throw new AndesClientConfigurationException("Value cannot be less than 0");
         }
     }
 
@@ -200,14 +251,14 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      *
      * @param rollbackAfterEachMessageCount The message count at which the session should be
      *                                      rolled-back.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setRollbackAfterEachMessageCount(long rollbackAfterEachMessageCount)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         if (0 < rollbackAfterEachMessageCount) {
             this.rollbackAfterEachMessageCount = rollbackAfterEachMessageCount;
         } else {
-            throw new ClientConfigurationException("Value cannot be less than 0");
+            throw new AndesClientConfigurationException("Value cannot be less than 0");
         }
     }
 
@@ -225,14 +276,14 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      *
      * @param commitAfterEachMessageCount The message count at which the session should be
      *                                    committed.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setCommitAfterEachMessageCount(long commitAfterEachMessageCount)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         if (0 < commitAfterEachMessageCount) {
             this.commitAfterEachMessageCount = commitAfterEachMessageCount;
         } else {
-            throw new ClientConfigurationException("Value cannot be less than 0");
+            throw new AndesClientConfigurationException("Value cannot be less than 0");
         }
     }
 
@@ -250,14 +301,14 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      *
      * @param acknowledgeAfterEachMessageCount The the message count at which a message should be
      *                                         acknowledged after.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setAcknowledgeAfterEachMessageCount(long acknowledgeAfterEachMessageCount)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         if (0 < acknowledgeAfterEachMessageCount) {
             this.acknowledgeAfterEachMessageCount = acknowledgeAfterEachMessageCount;
         } else {
-            throw new ClientConfigurationException("Value cannot be less than 0");
+            throw new AndesClientConfigurationException("Value cannot be less than 0");
         }
     }
 
@@ -293,15 +344,15 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets the maximum number of messages to received.
      *
      * @param maximumMessagesToReceived The maximum number of messages to received.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setMaximumMessagesToReceived(long maximumMessagesToReceived)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         if (0 < maximumMessagesToReceived) {
             this.maximumMessagesToReceived = maximumMessagesToReceived;
         } else {
-            throw new ClientConfigurationException("The maximum number of messages to receive " +
-                                                   "cannot be less than 1");
+            throw new AndesClientConfigurationException("The maximum number of messages to receive " +
+                                                        "cannot be less than 1");
         }
     }
 
@@ -318,15 +369,15 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets the subscription ID
      *
      * @param subscriptionID The subscription ID
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
-    public void setSubscriptionID(String subscriptionID) throws ClientConfigurationException {
+    public void setSubscriptionID(String subscriptionID) throws AndesClientConfigurationException {
         if (this.durable) {
             if (StringUtils.isNotEmpty(subscriptionID)) {
                 this.subscriptionID = subscriptionID;
             } else {
-                throw new ClientConfigurationException("Subscription ID cannot be null or empty " +
-                                                       "for an durable topic");
+                throw new AndesClientConfigurationException("Subscription ID cannot be null or empty " +
+                                                            "for an durable topic");
             }
         } else {
             this.subscriptionID = subscriptionID;
@@ -349,16 +400,16 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      *
      * @param durable        True if subscription is durable, false otherwise.
      * @param subscriptionID The subscription ID.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setDurable(boolean durable, String subscriptionID) throws
-                                                                   ClientConfigurationException {
+                                                                   AndesClientConfigurationException {
         if (durable) {
             if (StringUtils.isNotEmpty(subscriptionID)) {
                 this.subscriptionID = subscriptionID;
             } else {
-                throw new ClientConfigurationException("Subscription ID cannot be null or empty " +
-                                                       "for an durable topic");
+                throw new AndesClientConfigurationException("Subscription ID cannot be null or empty " +
+                                                            "for an durable topic");
             }
         }
 
@@ -378,10 +429,10 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets acknowledge mode for messages.
      *
      * @param acknowledgeMode The acknowledge mode for messages.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      */
     public void setAcknowledgeMode(JMSAcknowledgeMode acknowledgeMode)
-            throws ClientConfigurationException {
+            throws AndesClientConfigurationException {
         this.acknowledgeMode = acknowledgeMode;
     }
 

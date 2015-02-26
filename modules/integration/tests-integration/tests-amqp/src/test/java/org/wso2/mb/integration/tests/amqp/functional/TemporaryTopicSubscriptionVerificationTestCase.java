@@ -8,7 +8,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -43,7 +43,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
     @Test(groups = {"wso2.mb", "topic"},
             description = "Single topic subscriber subscribe-close-re-subscribe test case")
     public void performSingleTopicSubscribeCloseResubscribeTest()
-            throws ClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
 
         long sendCount = 1000L;
         long expectedCount = 200L;
@@ -95,7 +95,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
                                                        "re-subscribe test case with multiple " +
                                                        "subscriptions")
     public void performMultipleTopicSubscribeCloseResubscribeTest()
-            throws ExecutionException, ClientConfigurationException, NamingException, JMSException,
+            throws ExecutionException, AndesClientConfigurationException, NamingException, JMSException,
                    IOException {
 
         long sendCount = 1000L;

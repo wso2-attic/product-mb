@@ -29,7 +29,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -60,7 +60,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
      * Multiple subscribers and publishers in same node for a single queue
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -69,7 +69,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                             "publisher test case")
     public void testSameNodeSingleQueueMultipleSubscriberPublisher() throws
                                                                      XPathExpressionException,
-                                                                     ClientConfigurationException,
+                                                                     AndesClientConfigurationException,
                                                                      NamingException, JMSException,
                                                                      IOException {
         // Number of messages expected
@@ -128,7 +128,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for a single queue
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
@@ -137,7 +137,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     @Test(groups = "wso2.mb", description = "Multiple node single queue multiple subscriber " +
                                             "publisher test case")
     public void testMultiNodeSingleQueueMultipleSubscriberPublisher()
-            throws ClientConfigurationException, XPathExpressionException, NamingException, JMSException,
+            throws AndesClientConfigurationException, XPathExpressionException, NamingException, JMSException,
                    IOException {
         // Number of messages expected
         long expectedCount = 250L;
@@ -205,7 +205,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for Multiple queues
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.ClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
@@ -215,7 +215,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     @Test(groups = "wso2.mb", description = "Multiple node Multiple queue multiple subscriber " +
                                             "publisher test case")
     public void testMultiNodeMultipleQueueMultipleSubscriberPublisher() throws
-                                                                        ClientConfigurationException,
+                                                                        AndesClientConfigurationException,
                                                                         NamingException,
                                                                         JMSException,
                                                                         XPathExpressionException,

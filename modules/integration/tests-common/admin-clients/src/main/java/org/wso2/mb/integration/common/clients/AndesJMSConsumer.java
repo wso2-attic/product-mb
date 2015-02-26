@@ -43,13 +43,13 @@ import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The JMS message consumer used for creating a consumer, reading messages synchronously and also
  * asynchronously.
  */
-public class AndesJMSConsumer extends AndesJMSClient
+public class AndesJMSConsumer extends AndesJMSBase
         implements Runnable, MessageListener {
     /**
      * The logger used in logging information, warnings, errors and etc.
@@ -64,23 +64,23 @@ public class AndesJMSConsumer extends AndesJMSClient
     /**
      * Timestamp for the first message consumed
      */
-    private AtomicLong firstMessageConsumedTimestamp;
+    private long firstMessageConsumedTimestamp;
 
     /**
      * Timestamp of the last message consumes
      */
-    private AtomicLong lastMessageConsumedTimestamp;
+    private long lastMessageConsumedTimestamp;
 
     /**
      * The amount of messages received by the the consumer
      */
-    private AtomicLong receivedMessageCount;
+    private long receivedMessageCount;
 
     /**
      * The addition of the time differences between the timestamp at which it got published and the
      * timestamp at which it got consumed for each message consumed.
      */
-    private AtomicLong totalLatency;
+    private long totalLatency;
 
     /**
      * The JMS connection used to create the JMS sessions
@@ -100,7 +100,7 @@ public class AndesJMSConsumer extends AndesJMSClient
     /**
      * Creates a new JMS consumer with a given configuration.
      *
-     * @param config The configuration.
+     * @param config         The configuration.
      * @param createConsumer Creates the connection, session and receiver.
      * @throws NamingException
      * @throws JMSException
@@ -108,27 +108,26 @@ public class AndesJMSConsumer extends AndesJMSClient
     public AndesJMSConsumer(AndesJMSConsumerClientConfiguration config, boolean createConsumer)
             throws NamingException, JMSException {
         super(config);
-        // Initializes variables used statistics calculations
-        firstMessageConsumedTimestamp = new AtomicLong();
-        lastMessageConsumedTimestamp = new AtomicLong();
-        totalLatency = new AtomicLong();
-
-        // Initializing message count variable.
-        receivedMessageCount = new AtomicLong();
 
         // Sets the configuration
         this.consumerConfig = config;
 
         if (createConsumer) {
-            if (this.consumerConfig.getExchangeType() == ExchangeType.QUEUE) {
+            if (ExchangeType.QUEUE == this.consumerConfig.getExchangeType()) {
                 this.createQueueConnection();
 
-            } else if (this.consumerConfig.getExchangeType() == ExchangeType.TOPIC) {
+            } else if (ExchangeType.TOPIC == this.consumerConfig.getExchangeType()) {
                 this.createTopicConnection();
             }
         }
     }
 
+    /**
+     * Creates a topic connection, session and receiver.
+     *
+     * @throws NamingException
+     * @throws JMSException
+     */
     private void createTopicConnection() throws NamingException, JMSException {
         // Creates a topic connection, sessions and receiver
         TopicConnectionFactory connFactory = (TopicConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
@@ -137,7 +136,7 @@ public class AndesJMSConsumer extends AndesJMSClient
         topicConnection.start();
         TopicSession topicSession;
         // Sets acknowledgement mode
-        if (this.consumerConfig.getAcknowledgeMode().getType() == TopicSession.SESSION_TRANSACTED) {
+        if (TopicSession.SESSION_TRANSACTED == this.consumerConfig.getAcknowledgeMode().getType()) {
             topicSession = topicConnection.createTopicSession(true, this.consumerConfig.getAcknowledgeMode().getType());
         } else {
             topicSession = topicConnection.createTopicSession(false, this.consumerConfig.getAcknowledgeMode().getType());
@@ -165,6 +164,12 @@ public class AndesJMSConsumer extends AndesJMSClient
         }
     }
 
+    /**
+     * Creates a queue connection, session and receiver.
+     *
+     * @throws NamingException
+     * @throws JMSException
+     */
     private void createQueueConnection() throws NamingException, JMSException {
         // Creates a queue connection, sessions and receiver
         QueueConnectionFactory connFactory = (QueueConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
@@ -173,7 +178,7 @@ public class AndesJMSConsumer extends AndesJMSClient
         QueueSession queueSession;
 
         // Sets acknowledgement mode
-        if (this.consumerConfig.getAcknowledgeMode().getType() == QueueSession.SESSION_TRANSACTED) {
+        if (QueueSession.SESSION_TRANSACTED == this.consumerConfig.getAcknowledgeMode().getType()) {
             queueSession = queueConnection.createQueueSession(true, this.consumerConfig.getAcknowledgeMode().getType());
         } else {
             queueSession = queueConnection.createQueueSession(false, this.consumerConfig.getAcknowledgeMode().getType());
@@ -196,13 +201,18 @@ public class AndesJMSConsumer extends AndesJMSClient
      */
     @Override
     public void startClient() throws JMSException, NamingException {
-        log.info("Starting Consumer");
-        if (this.consumerConfig.isAsync()) {
-            // Use an asynchronous message listener
-            receiver.setMessageListener(this);
+        if (null != connection && null != session && null != receiver) {
+            log.info("Starting Consumer");
+            if (this.consumerConfig.isAsync()) {
+                // Use an asynchronous message listener
+                receiver.setMessageListener(this);
+            } else {
+                // Uses a thread to listen to messages
+                Thread consumerThread = new Thread(this);
+                consumerThread.start();
+            }
         } else {
-            Thread consumerThread = new Thread(this);
-            consumerThread.start();
+            throw new NullPointerException("The connection, session and message receiver is not assigned.");
         }
     }
 
@@ -214,47 +224,56 @@ public class AndesJMSConsumer extends AndesJMSClient
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
-                try {
-                    log.info("Closing Consumer");
-                    if (ExchangeType.TOPIC == consumerConfig.getExchangeType()) {
-                        if (null != receiver) {
-                            TopicSubscriber topicSubscriber = (TopicSubscriber) receiver;
-                            topicSubscriber.close();
-                        }
-
-                        if (null != session) {
-                            TopicSession topicSession = (TopicSession) session;
-                            topicSession.close();
-                        }
-
-                        if (null != connection) {
-                            TopicConnection topicConnection = (TopicConnection) connection;
-                            //topicConnection.stop();
-                            topicConnection.close();
-                        }
-                    } else if (ExchangeType.QUEUE == consumerConfig.getExchangeType()) {
-                        if (null != receiver) {
-                            QueueReceiver queueReceiver = (QueueReceiver) receiver;
-                            queueReceiver.close();
-                        }
-
-                        if (null != session) {
-                            QueueSession queueSession = (QueueSession) session;
-                            queueSession.close();
-                        }
-
-                        if (null != connection) {
-                            QueueConnection queueConnection = (QueueConnection) connection;
-                            queueConnection.close();
-                        }
+        if (null != connection && null != session && null != receiver) {
+            try {
+                log.info("Closing Consumer");
+                if (ExchangeType.TOPIC == consumerConfig.getExchangeType()) {
+                    if (null != receiver) {
+                        TopicSubscriber topicSubscriber = (TopicSubscriber) receiver;
+                        topicSubscriber.close();
                     }
 
-                    log.info("Consumer Closed");
+                    if (null != session) {
+                        TopicSession topicSession = (TopicSession) session;
+                        topicSession.close();
+                    }
 
-                } catch (JMSException e) {
-                    log.error("Error in stopping client.", e);
-                    throw new RuntimeException("JMSException : Error in stopping client.", e);
+                    if (null != connection) {
+                        TopicConnection topicConnection = (TopicConnection) connection;
+                        topicConnection.close();
+                    }
+                } else if (ExchangeType.QUEUE == consumerConfig.getExchangeType()) {
+                    if (null != receiver) {
+                        QueueReceiver queueReceiver = (QueueReceiver) receiver;
+//                        queueReceiver.setMessageListener(null);
+                        queueReceiver.close();
+                    }
+
+                    if (null != session) {
+                        QueueSession queueSession = (QueueSession) session;
+                        queueSession.close();
+                    }
+
+                    if (null != connection) {
+                        QueueConnection queueConnection = (QueueConnection) connection;
+                        queueConnection.stop();
+                        queueConnection.close();
+                    }
                 }
+
+                receiver = null;
+                session = null;
+                connection = null;
+
+                log.info("Consumer Closed");
+
+            } catch (JMSException e) {
+                log.error("Error in stopping client.", e);
+                throw new RuntimeException("JMSException : Error in stopping client.", e);
+            }
+        } else {
+            throw new NullPointerException("The connection, session and message receiver is not assigned.");
+        }
 //            }
 //        }).start();
     }
@@ -268,16 +287,20 @@ public class AndesJMSConsumer extends AndesJMSClient
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
-                try {
-                    log.info("Un-subscribing Subscriber");
-                    session.unsubscribe(consumerConfig.getSubscriptionID());
-                    log.info("Subscriber Un-Subscribed");
-                    stopClient();
+        if (null != connection && null != session && null != receiver) {
+            try {
+                log.info("Un-subscribing Subscriber");
+                session.unsubscribe(consumerConfig.getSubscriptionID());
+                log.info("Subscriber Un-Subscribed");
+                stopClient();
 
-                } catch (JMSException e) {
-                    log.error("Error in removing subscription(un-subscribing).", e);
-                    throw new RuntimeException("JMSException : Error in removing subscription(un-subscribing).", e);
-                }
+            } catch (JMSException e) {
+                log.error("Error in removing subscription(un-subscribing).", e);
+                throw new RuntimeException("JMSException : Error in removing subscription(un-subscribing).", e);
+            }
+        } else {
+            throw new NullPointerException("The connection, session and message receiver is not assigned.");
+        }
 //            }
 //        }).start();
     }
@@ -288,17 +311,10 @@ public class AndesJMSConsumer extends AndesJMSClient
     @Override
     public void run() {
         try {
-            if (this.consumerConfig.isAsync()) {
-                // Use an asynchronous message listener
-                receiver.setMessageListener(this);
-            } else {
-                // Uses a thread to listen to messages
-                long threadID = Thread.currentThread().getId();
-                while (true) {
-                    Message message = this.receiver.receive();
-                    if (processReceivedMessage(threadID, message)) {
-                        break;
-                    }
+            while (true) {
+                Message message = this.receiver.receive();
+                if (processReceivedMessage(message)) {
+                    break;
                 }
             }
         } catch (JMSException e) {
@@ -315,9 +331,8 @@ public class AndesJMSConsumer extends AndesJMSClient
      */
     @Override
     public void onMessage(Message message) {
-        long threadID = Thread.currentThread().getId();
         try {
-            processReceivedMessage(threadID, message);
+            this.processReceivedMessage(message);
         } catch (JMSException e) {
             log.error("Error while listening to messages", e);
             throw new RuntimeException("JMSException : Error while listening to messages", e);
@@ -327,20 +342,35 @@ public class AndesJMSConsumer extends AndesJMSClient
         }
     }
 
-    private boolean processReceivedMessage(long threadID, Message message)
+    /**
+     * Processes the received messages. The processing includes the following actions.
+     * 1. Calculation of transactions per second.
+     * 2. Calculation of  average latency for messages.
+     * 3. Message detail logging
+     * 4. Writes messages to a file.
+     * 5. Writes statistics to a file.
+     * 6. Closing and un-subscribing of client.
+     *
+     * @param message The {@link javax.jms.Message} to publish.
+     * @return true if client is stopped or un-subscribed, false otherwise.
+     * @throws JMSException
+     * @throws IOException
+     */
+    private boolean processReceivedMessage(Message message)
             throws JMSException, IOException {
         if (null != message) {
+            long threadID = Thread.currentThread().getId();
             // Calculating total latency
             long currentTimeStamp = System.currentTimeMillis();
-            this.totalLatency.set(this.totalLatency.get() + (currentTimeStamp - message.getJMSTimestamp()));
+            this.totalLatency = this.totalLatency + (currentTimeStamp - message.getJMSTimestamp());
             // Setting timestamps for TPS calculation
-            if (this.firstMessageConsumedTimestamp.get() == 0) {
-                this.firstMessageConsumedTimestamp.set(currentTimeStamp);
+            if (0 == this.firstMessageConsumedTimestamp) {
+                this.firstMessageConsumedTimestamp = currentTimeStamp;
             }
-            this.lastMessageConsumedTimestamp.set(currentTimeStamp);
+            this.lastMessageConsumedTimestamp = currentTimeStamp;
 
             if (message instanceof TextMessage) {
-                this.receivedMessageCount.incrementAndGet();
+                this.receivedMessageCount++;
                 TextMessage textMessage = (TextMessage) message;
                 JMSDeliveryStatus deliveryStatus;
                 // Gets whether the message is original or redelivered
@@ -350,10 +380,10 @@ public class AndesJMSConsumer extends AndesJMSClient
                     deliveryStatus = JMSDeliveryStatus.ORIGINAL;
                 }
                 // Logging the received message
-                if (0 == this.receivedMessageCount.get() % this.consumerConfig.getPrintsPerMessageCount()) {
+                if (0 == this.receivedMessageCount % this.consumerConfig.getPrintsPerMessageCount()) {
                     log.info("[RECEIVE] ThreadID:" + threadID + " Destination:" + this.consumerConfig.getExchangeType().getType()
                              + "." + this.consumerConfig.getDestinationName() + " ReceivedMessageCount:" +
-                             this.receivedMessageCount.get() + " MaximumMessageToReceive:" +
+                             this.receivedMessageCount + " MessageToReceive:" +
                              this.consumerConfig.getMaximumMessagesToReceived() + " Original/Redelivered:" + deliveryStatus.getStatus());
 
                 }
@@ -369,30 +399,30 @@ public class AndesJMSConsumer extends AndesJMSClient
             }
 
             // Acknowledges messages
-            if (0 == this.receivedMessageCount.get() % this.consumerConfig.getAcknowledgeAfterEachMessageCount()) {
-                if (session.getAcknowledgeMode() == Session.CLIENT_ACKNOWLEDGE) {
+            if (0 == this.receivedMessageCount % this.consumerConfig.getAcknowledgeAfterEachMessageCount()) {
+                if (Session.CLIENT_ACKNOWLEDGE == session.getAcknowledgeMode()) {
                     message.acknowledge();
                     log.info("Acknowledging message : " + message.getJMSMessageID());
                 }
             }
 
-            if (0 == this.receivedMessageCount.get() % consumerConfig.getCommitAfterEachMessageCount()) {
+            if (0 == this.receivedMessageCount % consumerConfig.getCommitAfterEachMessageCount()) {
                 // Committing session
                 session.commit();
                 log.info("Committed session");
-            } else if (0 == this.receivedMessageCount.get() % consumerConfig.getRollbackAfterEachMessageCount()) {
+            } else if (0 == this.receivedMessageCount % consumerConfig.getRollbackAfterEachMessageCount()) {
                 // Roll-backing session
                 session.rollback();
                 log.info("Roll-backed session");
             }
 
-            if (this.receivedMessageCount.get() >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
+            if (this.receivedMessageCount >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
                 // Un-Subscribing consumer
                 unSubscribe();
                 return true;
-            } else if (this.receivedMessageCount.get() >= consumerConfig.getMaximumMessagesToReceived()) {
+            } else if (this.receivedMessageCount >= consumerConfig.getMaximumMessagesToReceived()) {
                 // Stopping the consumer
-                stopClient();
+//                stopClient();
                 return true;
             }
 
@@ -414,7 +444,7 @@ public class AndesJMSConsumer extends AndesJMSClient
      * @return The received message count.
      */
     public long getReceivedMessageCount() {
-        return this.receivedMessageCount.get();
+        return this.receivedMessageCount;
     }
 
     /**
@@ -423,10 +453,10 @@ public class AndesJMSConsumer extends AndesJMSClient
      * @return The consumer transactions per seconds.
      */
     public double getConsumerTPS() {
-        if (0 == this.lastMessageConsumedTimestamp.get() - this.firstMessageConsumedTimestamp.get()) {
-            return this.receivedMessageCount.doubleValue() / (1D / 1000);
+        if (0 == this.lastMessageConsumedTimestamp - this.firstMessageConsumedTimestamp) {
+            return ((double) this.receivedMessageCount) / (1D / 1000);
         } else {
-            return this.receivedMessageCount.doubleValue() / ((this.lastMessageConsumedTimestamp.doubleValue() - this.firstMessageConsumedTimestamp.doubleValue()) / 1000D);
+            return ((double) this.receivedMessageCount) / (((double) (this.lastMessageConsumedTimestamp - this.firstMessageConsumedTimestamp)) / 1000D);
         }
     }
 
@@ -436,11 +466,11 @@ public class AndesJMSConsumer extends AndesJMSClient
      * @return The average latency.
      */
     public double getAverageLatency() {
-        if (0 == this.receivedMessageCount.get()) {
+        if (0 == this.receivedMessageCount) {
             log.warn("No messages were received");
             return 0D;
         } else {
-            return (this.totalLatency.doubleValue() / 1000D) / this.receivedMessageCount.doubleValue();
+            return (((double) this.totalLatency) / 1000D) / ((double) this.receivedMessageCount);
         }
     }
 
@@ -453,29 +483,55 @@ public class AndesJMSConsumer extends AndesJMSClient
     }
 
     /**
+     * Gets the JMS message consuming connection ({@link javax.jms.Connection}).
      *
-     * @return
+     * @return A {@link javax.jms.Connection}
      */
     public Connection getConnection() {
-        return connection;
+        return this.connection;
     }
 
+    /**
+     * Sets the JMS message consuming connection ({@link javax.jms.Connection}).
+     *
+     * @param connection A {@link javax.jms.Connection}.
+     */
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
 
+    /**
+     * Gets the JMS message consuming session ({@link javax.jms.Session}).
+     *
+     * @return A {@link javax.jms.Session}.
+     */
     public Session getSession() {
-        return session;
+        return this.session;
     }
 
+    /**
+     * Sets the JMS message consuming session ({@link javax.jms.Session}).
+     *
+     * @param session A {@link javax.jms.Session}.
+     */
     public void setSession(Session session) {
         this.session = session;
     }
 
+    /**
+     * Gets the JMS message consumer ({@link javax.jms.MessageConsumer}).
+     *
+     * @return A {@link javax.jms.MessageConsumer}.
+     */
     public MessageConsumer getReceiver() {
-        return receiver;
+        return this.receiver;
     }
 
+    /**
+     * Sets the JMS message consumer ({@link javax.jms.MessageConsumer}).
+     *
+     * @param receiver A {@link javax.jms.MessageConsumer}.
+     */
     public void setReceiver(MessageConsumer receiver) {
         this.receiver = receiver;
     }
