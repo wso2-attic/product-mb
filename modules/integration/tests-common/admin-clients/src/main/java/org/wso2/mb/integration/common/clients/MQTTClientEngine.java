@@ -339,16 +339,29 @@ public class MQTTClientEngine {
     /**
      * Wait for subscribers to receive all the messages and shutdown all clients.
      * Use in test cases before doing assertions so message send/receive will be completed before assertions.
+     *
+     * @see MQTTClientEngine#waitUntilAllMessageReceived()
+     *
+     * @throws MqttException
+     */
+    public void waitUntilAllMessageReceivedAndShutdownClients() throws MqttException {
+        waitUntilAllMessageReceived();
+
+        shutdown();
+    }
+
+    /**
+     * Wait for subscribers to receive all the messages that have been sent.
+     * Use in test cases before doing assertions so message send/receive will be completed before assertions
+     * but needs the clients to be connected for further cases.
      * <p/>
      * Detect all the messages are received by checking message count in each 10 second iterations.
      * If message count doesn't change in two consecutive rounds it will be decided that all the messages that the
      * server has sent is received.
      * <p/>
      * If no messages are received, will lookout for 20 seconds for message and return.
-     *
-     * @throws MqttException
      */
-    public void waitUntilAllMessageReceivedAndShutdownClients() throws MqttException {
+    public void waitUntilAllMessageReceived() {
         int previousMessageCount = 0;
         int currentMessageCount = -1;
 
@@ -363,9 +376,6 @@ public class MQTTClientEngine {
             previousMessageCount = currentMessageCount;
             currentMessageCount = getReceivedMessageCount();
         }
-
-        shutdown();
-
     }
 
     /**
