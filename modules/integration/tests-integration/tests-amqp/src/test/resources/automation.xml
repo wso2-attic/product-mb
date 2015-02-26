@@ -183,6 +183,42 @@
                     </user>
                 </users>
             </tenant>
+            <tenant domain="topictenant1.com" key="topictenant1">
+                <admin>
+                    <user key="admin">
+                        <userName>admin</userName>
+                        <password>admin</password>
+                    </user>
+                </admin>
+                <users>
+                    <user key="topictenantuser1">
+                        <userName>topictenantuser1</userName>
+                        <password>topictenantuser1</password>
+                    </user>
+                    <user key="topictenantuser2">
+                        <userName>topictenantuser2</userName>
+                        <password>topictenantuser2</password>
+                    </user>
+                </users>
+            </tenant>
+            <tenant domain="topictenant2.com" key="topictenant2">
+                <admin>
+                    <user key="admin">
+                        <userName>admin</userName>
+                        <password>admin</password>
+                    </user>
+                </admin>
+                <users>
+                    <user key="topictenantuser1">
+                        <userName>topictenantuser1</userName>
+                        <password>topictenantuser1</password>
+                    </user>
+                    <user key="topictenantuser2">
+                        <userName>topictenantuser2</userName>
+                        <password>topictenantuser2</password>
+                    </user>
+                </users>
+            </tenant>
         </tenants>
     </userManagement>
     <!--
