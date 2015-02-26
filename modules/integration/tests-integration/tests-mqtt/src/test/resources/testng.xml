@@ -27,6 +27,7 @@
             <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.LongTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>
+            <class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>
 
 
             <!-- load test cases -->
