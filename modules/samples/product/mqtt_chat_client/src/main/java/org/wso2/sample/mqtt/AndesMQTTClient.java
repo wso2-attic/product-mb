@@ -58,7 +58,7 @@ public class AndesMQTTClient implements MqttCallback {
         this.clientId = clientId;
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
-        mqttClient = new MqttClient(brokerURL, clientId, new MqttDefaultFilePersistence(tmpDir + File.pathSeparator +
+        mqttClient = new MqttClient(brokerURL, clientId, new MqttDefaultFilePersistence(tmpDir + File.separator +
                 clientId));
         mqttClient.setCallback(this);
         mqttClient.connect(options);
