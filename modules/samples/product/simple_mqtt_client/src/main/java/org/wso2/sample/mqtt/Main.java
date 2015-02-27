@@ -92,8 +92,12 @@ public class Main {
         mqttClient.setCallback(callback);
 
         MqttConnectOptions connectOptions = new MqttConnectOptions();
+
+        connectOptions.setUserName("admin");
+        connectOptions.setPassword("admin".toCharArray());
         connectOptions.setCleanSession(true);
-        mqttClient.connect();
+        mqttClient.connect(connectOptions);
+
 
         return mqttClient;
     }
