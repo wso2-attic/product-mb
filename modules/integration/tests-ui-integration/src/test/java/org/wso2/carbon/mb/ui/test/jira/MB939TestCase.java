@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.mb.ui.test.jira;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -26,8 +25,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
-import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
-import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
@@ -35,14 +32,12 @@ import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.MessageContentPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
-import org.xml.sax.SAXException;
+import org.wso2.mb.integration.common.utils.ui.pages.main.QueueContentPage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Refer wso2 jira : https://wso2.org/jira/browse/MB-939 for details.
@@ -52,14 +47,16 @@ public class MB939TestCase extends MBIntegrationUiBaseTest {
 
     private static final Log log = LogFactory.getLog(MB939TestCase.class);
 
-    private static final int messageSizeInBytes = 1024 * 1024; //Size of MessageContentInput.txt
+    private static final int MESSAGE_SIZE_IN_BYTES = 1024 * 1024; //Size of MessageContentInput.txt
     private static final String TEST_QUEUE_NAME = "939TestQueue";
     // Input file to read a 1MB message content.
-    private static final String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
+    private static final String MESSAGE_CONTENT_INPUT_FILE_PATH = System.getProperty("framework.resource.location") + File.separator +
             "MessageContentInput.txt";
 
-    private static final String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
+    private static final String DEFAULT_MB_CONFIG_PATH = ServerConfigurationManager.getCarbonHome() +
             File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
+
+    private ConfigurationEditor configurationEditor;
 
     @BeforeClass()
     public void init() throws Exception {
@@ -74,18 +71,25 @@ public class MB939TestCase extends MBIntegrationUiBaseTest {
 
         super.serverManager = new ServerConfigurationManager(mbServer);
 
-        ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
+        log.info("DEFAULT_MB_CONFIG_PATH : " + DEFAULT_MB_CONFIG_PATH);
 
-        configurationEditor.updateProperty(AndesConfiguration.MANAGEMENT_CONSOLE_MAX_DISPLAY_LENGTH_FOR_MESSAGE_CONTENT,String.valueOf(messageSizeInBytes));
+        log.info("MESSAGE_CONTENT_INPUT_FILE_PATH" + MESSAGE_CONTENT_INPUT_FILE_PATH);
+
+        configurationEditor = new ConfigurationEditor(DEFAULT_MB_CONFIG_PATH);
+
+        configurationEditor.updateProperty(AndesConfiguration.MANAGEMENT_CONSOLE_MAX_DISPLAY_LENGTH_FOR_MESSAGE_CONTENT,String.valueOf(MESSAGE_CONTENT_INPUT_FILE_PATH));
 
         configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
 
     /**
-     * Create a Queue and successfully send a large message to the Queue
+     * Verify that the Message content browse page for the sent message displays the exact length as the original message.
      */
-    @BeforeClass()
-    public void publishLargeMessageToQueue() throws Exception {
+    @Test(groups = {"wso2.mb"})
+    public void verifyDisplayedMessageContentLength() throws Exception {
+
+        boolean testSuccess = false;
+        int displayedLength = 0;
 
         // Login and create test Queue
         driver.get(getLoginURL());
@@ -97,13 +101,40 @@ public class MB939TestCase extends MBIntegrationUiBaseTest {
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(TEST_QUEUE_NAME), true);
 
-    }
+        Integer sendCount = 1;
+        Integer runTime = 20;
 
-    /**
-     * Verify that the Message content browse page for the sent message displays the exact length as the original message.
-     */
-    @Test()
-    public void verifyDisplayedMessageContentLength() {
+        String queueNameArg = "queue:" + MESSAGE_SIZE_IN_BYTES;
+
+        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "true",
+                runTime.toString(), sendCount.toString(), "1",
+                "ackMode=1,delayBetweenMsg=0,file=" + MESSAGE_CONTENT_INPUT_FILE_PATH + ",stopAfter=" + sendCount, "");
+
+        sendingClient.startWorking();
+
+        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+
+        Assert.assertTrue(sendSuccess, "Message sending failed.");
+
+        QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+
+        QueueContentPage queueContentPage = queuesBrowsePage.browseQueue(TEST_QUEUE_NAME);
+        Assert.assertNotNull(queueContentPage, "Unable to browse Queue " + TEST_QUEUE_NAME);
+
+        if (null != queueContentPage) {
+            MessageContentPage messageContentPage = queueContentPage.viewFullMessage(1);
+
+            Assert.assertNotNull(messageContentPage, "Unable to view the fully sent large message to queue : " + TEST_QUEUE_NAME);
+
+            if (null != messageContentPage) {
+                displayedLength = messageContentPage.getDisplayedMessageLength();
+                if (displayedLength == MESSAGE_SIZE_IN_BYTES) {
+                    testSuccess = true;
+                }
+            }
+        }
+
+        Assert.assertTrue(testSuccess, "Sent Large message of " + MESSAGE_SIZE_IN_BYTES + " bytes for queue " + TEST_QUEUE_NAME + " was not displayed correctly. " + "Displayed length : " + displayedLength);
 
     }
 
@@ -111,8 +142,21 @@ public class MB939TestCase extends MBIntegrationUiBaseTest {
      * Revert changed configuration, purge and delete the queue.
      */
     @AfterClass()
-    public void cleanup() {
+    public void cleanup() throws Exception {
 
+        // Delete test queue
+        driver.get(getLoginURL());
+        LoginPage loginPage = new LoginPage(driver);
+        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant()
+                .getContextUser().getUserName(), mbServer.getContextTenant()
+                .getContextUser().getPassword());
+
+        QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+
+        Assert.assertTrue(queuesBrowsePage.deleteQueue(TEST_QUEUE_NAME), "Failed to delete queue : " + TEST_QUEUE_NAME);
+
+        //Revert back to original configuration.
+        super.serverManager.restoreToLastConfiguration(true);
     }
 
 

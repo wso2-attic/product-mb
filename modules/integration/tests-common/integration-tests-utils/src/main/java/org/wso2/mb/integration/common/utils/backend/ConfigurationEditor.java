@@ -25,6 +25,7 @@ import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
 import java.io.File;
+import java.nio.file.Files;
 
 /**
  * This class allows a test case to edit the main server configuration (currently broker.xml) and apply it to the
@@ -39,6 +40,8 @@ public class ConfigurationEditor {
     public XMLConfiguration configuration;
 
     public String originalConfigFilePath;
+
+    public String updatedConfigFilePath;
 
     public ConfigurationEditor(String originalConfigFilePath) throws ConfigurationException {
         this.originalConfigFilePath = originalConfigFilePath;
@@ -81,7 +84,7 @@ public class ConfigurationEditor {
 
         //Save updated Configuration as updated_broker.xml in same path
 
-        String updatedConfigFilePath = originalConfigFileDirectory + UPDATED_CONFIG_FILE_PREFIX + originalConfigFileName;
+        updatedConfigFilePath = originalConfigFileDirectory + UPDATED_CONFIG_FILE_PREFIX + originalConfigFileName;
         configuration.save(updatedConfigFilePath);
 
         serverConfigurationManager.applyConfiguration(new File(updatedConfigFilePath), new File(originalConfigFilePath), true, true);
@@ -89,8 +92,14 @@ public class ConfigurationEditor {
         return true;
     }
 
-    public boolean revertConfigurationAndRestartServer() {
-        return false;
+    /**
+     * Remove temporarily generated config file after running the test case. (recommended for the @cleanup method.)
+     * @return true if the delete was successful.
+     */
+    public boolean removeUpdatedConfigurationFile() {
+
+        File updatedFile = new File(updatedConfigFilePath);
+        return updatedFile.delete();
     }
 
 
