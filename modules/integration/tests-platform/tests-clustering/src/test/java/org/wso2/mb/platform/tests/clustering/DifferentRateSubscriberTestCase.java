@@ -69,9 +69,9 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     public void testSameNodeSlowSubscriber()
             throws IOException, JMSException, AndesClientConfigurationException, NamingException,
                    XPathExpressionException {
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, brokerUrl, brokerUrl);
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, brokerAddress, brokerAddress);
     }
 
     /**
@@ -88,8 +88,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
                    NamingException {
-        String brokerUrl = getRandomAMQPBrokerUrl();
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, brokerUrl, brokerUrl);
+        String brokerAddress = getRandomAMQPBrokerAddress();
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, brokerAddress, brokerAddress);
     }
 
 
@@ -108,7 +108,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                    AndesClientConfigurationException,
                    NamingException {
 
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, getRandomAMQPBrokerUrl(), getRandomAMQPBrokerUrl());
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
 
     /**
@@ -125,7 +125,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
                    NamingException {
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, getRandomAMQPBrokerUrl(), getRandomAMQPBrokerUrl());
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
 
     /**
@@ -161,11 +161,11 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     /**
      * Runs a receiver and a consumer that publishes messages with a delay.
      *
-     * @param destinationName    The destination name
-     * @param consumerDelay      The delay in which the consumer sends messages
-     * @param publisherDelay     The delay in which the publisher received messages
-     * @param consumerBrokerUrl  The amqp connection string for consumer
-     * @param publisherBrokerUrl The amqp connection string for publisher
+     * @param destinationName        The destination name
+     * @param consumerDelay          The delay in which the consumer sends messages
+     * @param publisherDelay         The delay in which the publisher received messages
+     * @param consumerBrokerAddress  The amqp connection string for consumer
+     * @param publisherBrokerAddress The amqp connection string for publisher
      * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
@@ -173,8 +173,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      */
     private void runDifferentRateSubscriberTestCase(String destinationName, long consumerDelay,
                                                     long publisherDelay,
-                                                    String consumerBrokerUrl,
-                                                    String publisherBrokerUrl)
+                                                    String consumerBrokerAddress,
+                                                    String publisherBrokerAddress)
             throws AndesClientConfigurationException, NamingException, JMSException, IOException {
         // Number of messages expected
         long expectedCount = 500L;
@@ -182,13 +182,13 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
         long sendCount = 500L;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerUrl, ExchangeType.QUEUE, destinationName);
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setRunningDelay(consumerDelay);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerUrl, ExchangeType.QUEUE, destinationName);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setRunningDelay(publisherDelay);

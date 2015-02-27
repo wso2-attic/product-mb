@@ -54,11 +54,6 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
     private static final long SEND_COUNT = 1L;
 
     /**
-     * Number of messages expected
-     */
-    private static final long EXPECTED_COUNT = 10L;
-
-    /**
      * Initializing test case
      * @throws XPathExpressionException
      */
@@ -108,7 +103,8 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected message count");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed.");
+        // The received count is higher than the sent count as the sent message is redelivered till 'defaultMaxRedeliveryAttempts' is reached.
+        Assert.assertTrue(consumerClient.getReceivedMessageCount() > SEND_COUNT, "Did not receive expected message count.");
     }
 }

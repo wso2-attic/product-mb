@@ -31,8 +31,8 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -42,12 +42,9 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-
-import static org.testng.Assert.assertTrue;
 
 /**
  * This class includes test cases with multiple topics.
@@ -93,7 +90,8 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case")
     public void testMultipleTopicSingleNode()
-            throws JMSException, AndesClientConfigurationException, XPathExpressionException, NamingException,
+            throws JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException,
                    IOException {
         // Creating receiver clients
         AndesClient receivingClient1 = getAndesReceiverClient("topic1", EXPECTED_COUNT);
@@ -187,11 +185,13 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @return AndesClient object to receive messages
      * @throws NamingException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
+     * @throws IOException
      */
     private AndesClient getAndesReceiverClient(String topicName, long expectedCount)
-            throws NamingException, JMSException, AndesClientConfigurationException, XPathExpressionException {
+            throws NamingException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException, IOException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),
@@ -211,12 +211,14 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @param sendCount Message count to be sent
      * @return An andes client
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
+     * @throws IOException
      */
     private AndesClient getAndesSenderClient(String topicName, long sendCount)
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException, IOException {
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts().get("default"),
                                                                                                         Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
                                                                                                         ExchangeType.TOPIC, topicName);

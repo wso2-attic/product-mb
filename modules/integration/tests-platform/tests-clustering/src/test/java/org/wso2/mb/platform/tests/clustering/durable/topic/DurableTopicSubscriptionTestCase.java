@@ -295,7 +295,6 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
         BasicTopicSubscriber durableTopicsub2 = null;
         BasicTopicSubscriber nonDurableTopicsub = null;
         AndesClient receivingClient = null;
-        Integer runTime = 20;
         Integer expectedCount = 1000;
         try {
             durableTopicsub1 = new BasicTopicSubscriber(hostNode1, portInNode1, userName,

@@ -124,7 +124,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, false);
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);

@@ -156,6 +156,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 log.info("Publisher closed | ThreadID : " + threadID);
             } catch (JMSException e) {
                 log.error("Error while stopping the publisher.", e);
+                throw e;
             }
         } else {
             throw new NullPointerException("The connection, session and message sender is not assigned.");
@@ -235,14 +236,14 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                         // Logging the sent message details.
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +
-                                     threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
-                                     "." + this.publisherConfig.getDestinationName() + " SentMessageCount:" +
+                                     threadID + " Destination(" + this.publisherConfig.getExchangeType().getType() + "):" +
+                                     this.publisherConfig.getDestinationName() + " SentMessageCount:" +
                                      this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         } else {
                             log.info("[SEND]" + " (INBUILT MESSAGE) ThreadID:" +
-                                     threadID + " Destination:" + this.publisherConfig.getExchangeType().getType() +
-                                     "." + this.publisherConfig.getDestinationName() + " SentMessageCount:" +
+                                     threadID + " Destination(" + this.publisherConfig.getExchangeType().getType() + "):" +
+                                     this.publisherConfig.getDestinationName() + " SentMessageCount:" +
                                      this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }

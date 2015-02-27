@@ -98,7 +98,6 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
-        // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
 

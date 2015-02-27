@@ -164,7 +164,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sl");
         publisherClient5.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating publishers
         Assert.assertEquals(publisherClient3.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient3 failed to publish messages.");

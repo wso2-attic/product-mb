@@ -77,13 +77,13 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         // Number of messages send
         long sendCount = 250L;
 
-        String brokerURL = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerURL, ExchangeType.QUEUE, "singleQueue1");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue1");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerURL, ExchangeType.QUEUE, "singleQueue1");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue1");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -143,42 +143,44 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         long expectedCount = 250L;
         // Number of messages send
         long sendCount = 250L;
+        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueue2");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue2");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueue2");
+        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue2");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        consumerConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
         consumerClient2.startClient();
 
-        consumerConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient3 = new AndesClient(consumerConfig, true);
         consumerClient3.startClient();
 
-        consumerConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient4 = new AndesClient(consumerConfig, true);
         consumerClient4.startClient();
 
         AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
         publisherClient1.startClient();
 
-        publisherConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient2 = new AndesClient(publisherConfig, true);
         publisherClient2.startClient();
 
-        publisherConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient3 = new AndesClient(publisherConfig, true);
         publisherClient3.startClient();
 
-        publisherConfig.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient4 = new AndesClient(publisherConfig, true);
         publisherClient4.startClient();
 
@@ -226,11 +228,15 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         // Number of messages send
         long sendCount = 250L;
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueue3");
+        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
+
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue3");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getRandomAMQPBrokerUrl(), ExchangeType.QUEUE, "singleQueue3");
+        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue3");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -239,19 +245,19 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
         consumerConfig2.setDestinationName("singleQueue4");
-        consumerConfig2.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig2.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig.clone();
         consumerConfig3.setDestinationName("singleQueue5");
-        consumerConfig3.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig3.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient3 = new AndesClient(consumerConfig3, true);
         consumerClient3.startClient();
 
         AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
         consumerConfig4.setDestinationName("singleQueue6");
-        consumerConfig4.setConnectionString(getRandomAMQPBrokerUrl());
+        consumerConfig4.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
         consumerClient4.startClient();
 
@@ -260,19 +266,19 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
 
         AndesJMSPublisherClientConfiguration publisherConfig2 = publisherConfig.clone();
         publisherConfig2.setDestinationName("singleQueue4");
-        publisherConfig2.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig2.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
         publisherClient2.startClient();
 
         AndesJMSPublisherClientConfiguration publisherConfig3 = publisherConfig.clone();
         publisherConfig3.setDestinationName("singleQueue5");
-        publisherConfig3.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig3.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient3 = new AndesClient(publisherConfig3, true);
         publisherClient3.startClient();
 
         AndesJMSPublisherClientConfiguration publisherConfig4 = publisherConfig.clone();
         publisherConfig4.setDestinationName("singleQueue6");
-        publisherConfig4.setConnectionString(getRandomAMQPBrokerUrl());
+        publisherConfig4.setConnectionString(getRandomAMQPBrokerAddress());
         AndesClient publisherClient4 = new AndesClient(publisherConfig4, true);
         publisherClient4.startClient();
 

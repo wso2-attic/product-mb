@@ -31,7 +31,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
     /**
      * Expected message count.
      */
-    private static final long EXPECTED_COUNT = 500L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
 
     /**
      * Topic name to publish and receive.
@@ -93,8 +93,7 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         durableHierarchicalTopicConsumerConfig.setDurable(true, "diffSub3"); // durable topic
 
         AndesJMSConsumerClientConfiguration queueConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, TOPIC_NAME); // queue consumer
-        queueConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        queueConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        queueConsumerConfig.setMaximumMessagesToReceived(10L);  // To wait if any message does received
 
         // Creating a publisher client configurations
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
@@ -146,8 +145,6 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         AndesClientUtils.waitForMessagesAndShutdown(queueConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         Assert.assertEquals(queueConsumerClient.getReceivedMessageCount(), 0L,
                             "Message received from queue subscriber. This should not happen");
-
-        AndesClientUtils.sleepForInterval(2000L);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT,
                             "Message send error");

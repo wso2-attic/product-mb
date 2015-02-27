@@ -25,8 +25,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -40,7 +40,7 @@ import java.io.IOException;
  * Test class for durable topics. Tests include the testing of durability properties by
  * un-subscribing and resubscribing.
  */
-public class DurableTopicTestCase  extends MBIntegrationBaseTest {
+public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
     /**
      * Message count to send.
@@ -73,15 +73,14 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    CloneNotSupportedException {
 
-
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig1.setDurable(true, "durableSub1");
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -119,7 +118,6 @@ public class DurableTopicTestCase  extends MBIntegrationBaseTest {
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 1.");
         Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 2.");
-        Assert.assertNotEquals(tertiaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 3.");
         Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), 0L, "Messages received for client 3.");
     }
 }

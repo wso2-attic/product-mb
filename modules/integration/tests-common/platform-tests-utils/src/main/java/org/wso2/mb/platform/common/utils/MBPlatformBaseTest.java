@@ -20,6 +20,7 @@ package org.wso2.mb.platform.common.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -34,6 +35,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -45,21 +47,19 @@ public class MBPlatformBaseTest {
     protected Map<String, AutomationContext> contextMap;
     protected Map<String, AndesAdminClient> andesAdminClients;
     protected Map<String, TopicAdminClient> topicAdminClients;
-    Stack stack = null;
+    private Stack<String> stack = null;
 
     /**
-     * create automationcontext objects for every node in config
-     * @param userMode
+     * Create automation context objects for every node in config
+     *
+     * @param userMode User mode for which the automation context should use
      * @throws XPathExpressionException
      */
-
     protected void initCluster(TestUserMode userMode) throws XPathExpressionException {
-
         contextMap = new HashMap<String, AutomationContext>();
-
-        AutomationContext automationContext1 = new AutomationContext("MB_Cluster", userMode);
+        AutomationContext automationContext = new AutomationContext("MB_Cluster", userMode);
         log.info("Cluster instance loading");
-        Map<String, Instance> instanceMap = automationContext1.getProductGroup().getInstanceMap();
+        Map<String, Instance> instanceMap = automationContext.getProductGroup().getInstanceMap();
 
         if (instanceMap != null && instanceMap.size() > 0) {
             for (Map.Entry<String, Instance> entry : instanceMap.entrySet()) {
@@ -69,14 +69,15 @@ public class MBPlatformBaseTest {
             }
         }
 
-        stack = new Stack();
+        stack = new Stack<String>();
 
     }
 
     /**
-     * get automation context object with given node key
-     * @param key
-     * @return
+     * Get automation context object with given node key
+     *
+     * @param key The key value for automation context map
+     * @return Respective automation context
      */
 
     protected AutomationContext getAutomationContextWithKey(String key) {
@@ -93,9 +94,10 @@ public class MBPlatformBaseTest {
     }
 
     /**
-     * get andes admin client for given node
-     * @param key
-     * @return
+     * Get andes admin client for given node
+     *
+     * @param key The key for the map which the andes admin clients are stored
+     * @return An {@link org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient}.
      */
 
     protected AndesAdminClient getAndesAdminClientWithKey(String key) {
@@ -112,11 +114,11 @@ public class MBPlatformBaseTest {
     }
 
     /**
-     * get topic admin client for given node
-     * @param key
-     * @return
+     * Get topic admin client for given node
+     *
+     * @param key The key for the map which the topic admin clients are stored
+     * @return An {@link org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient}.
      */
-
     protected TopicAdminClient getTopicAdminClientWithKey(String key) {
 
         if (topicAdminClients != null && topicAdminClients.size() > 0) {
@@ -131,9 +133,10 @@ public class MBPlatformBaseTest {
     }
 
     /**
-     * login and provide session cookie for node
-     * @param context
-     * @return
+     * Login and provide session cookie for node
+     *
+     * @param context The automation context to be used.
+     * @return The session cookie of the login user
      * @throws IOException
      * @throws XPathExpressionException
      * @throws URISyntaxException
@@ -141,27 +144,23 @@ public class MBPlatformBaseTest {
      * @throws XMLStreamException
      * @throws LoginAuthenticationExceptionException
      */
-
     protected String login(AutomationContext context)
             throws IOException, XPathExpressionException, URISyntaxException, SAXException,
-            XMLStreamException, LoginAuthenticationExceptionException {
+                   XMLStreamException, LoginAuthenticationExceptionException {
         LoginLogoutClient loginLogoutClient = new LoginLogoutClient(context);
         return loginLogoutClient.login();
     }
 
     /**
-     * make MB instances in random mode to support pick a random instance for test cases
+     * Make MB instances in random mode to support pick a random instance for test cases
      */
-
     protected void makeMBInstancesRandom() {
 
         Object[] keys = contextMap.keySet().toArray();
 
         List<Object> list = new ArrayList<Object>();
 
-        for (Object object : keys) {
-            list.add(object);
-        }
+        Collections.addAll(list, keys);
 
         Collections.shuffle(list);
 
@@ -169,12 +168,12 @@ public class MBPlatformBaseTest {
             keys[i] = list.get(i);
             stack.push(list.get(i).toString());
         }
-
     }
 
     /**
+     * Gets an MB instance randomly
      *
-     * @return random instance key of the MB node
+     * @return Random instance key of the MB node
      */
     protected String getRandomMBInstance() {
 
@@ -182,35 +181,48 @@ public class MBPlatformBaseTest {
             makeMBInstancesRandom();
         }
 
-        return stack.pop().toString();
+        return stack.pop();
     }
 
     /**
-     * create and login andes admin client to nodes in cluster
-     * @throws Exception
+     * Create and login andes admin client to nodes in cluster
+     *
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
      */
-
-    protected void initAndesAdminClients() throws Exception {
-
+    protected void initAndesAdminClients()
+            throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
+                   LoginAuthenticationExceptionException, IOException {
         andesAdminClients = new HashMap<String, AndesAdminClient>();
 
         if (contextMap != null && contextMap.size() > 0) {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
                 andesAdminClients.put(entry.getKey(),
-                        new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                login(tempContext),
-                                ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                                      new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
+                                                           login(tempContext),
+                                                           ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }
 
     /**
-     * create and login topic admin client to nodes in cluster
-     * @throws Exception
+     * Create and login topic admin client to nodes in cluster
+     *
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
-
-    protected void initTopicAdminClients() throws Exception {
+    protected void initTopicAdminClients()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
 
         topicAdminClients = new HashMap<String, TopicAdminClient>();
 
@@ -218,59 +230,63 @@ public class MBPlatformBaseTest {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
                 topicAdminClients.put(entry.getKey(),
-                        new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                login(tempContext),
-                                ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                                      new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
+                                                           login(tempContext),
+                                                           ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }
 
     /**
-     * check whether given queue is deleted from the cluster nodes
-     * @param queue
-     * @return success status
-     * @throws Exception
+     * Check whether given queue is deleted from the cluster nodes
+     *
+     * @param queue The queue name
+     * @return true if queue deleted successfully, false otherwise.
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
-
-    protected boolean isQueueDeletedFromCluster(String queue) throws Exception {
+    protected boolean isQueueDeletedFromCluster(String queue)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         AndesAdminClient andesAdminClient;
-        boolean bDeleted = true;
+        boolean queueDeleted = true;
         if (andesAdminClients != null && andesAdminClients.size() > 0) {
             for (Map.Entry<String, AndesAdminClient> entry : andesAdminClients.entrySet()) {
                 andesAdminClient = entry.getValue();
 
                 if (andesAdminClient.getQueueByName(queue) != null) {
-                    bDeleted = false;
+                    queueDeleted = false;
                 }
 
             }
         }
 
-        return bDeleted;
+        return queueDeleted;
     }
 
     /**
-     * check whether given queue is created in the cluster nodes
-     * @param queue
-     * @return success status
-     * @throws Exception
+     * Check whether given queue is created in the cluster nodes
+     *
+     * @param queue The queue name
+     * @return true if queue exists in cluster, false otherwise.
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
-
-    protected boolean isQueueCreatedInCluster(String queue) throws Exception{
+    protected boolean isQueueCreatedInCluster(String queue)
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         AndesAdminClient andesAdminClient;
-        boolean bExist = true;
+        boolean queueExists = true;
         if (andesAdminClients != null && andesAdminClients.size() > 0) {
             for (Map.Entry<String, AndesAdminClient> entry : andesAdminClients.entrySet()) {
                 andesAdminClient = entry.getValue();
 
                 if (andesAdminClient.getQueueByName(queue) == null) {
-                    bExist = false;
+                    queueExists = false;
                 }
 
             }
         }
 
-        return bExist;
+        return queueExists;
     }
 
     /**
@@ -279,12 +295,11 @@ public class MBPlatformBaseTest {
      * @return Broker URL in host:port format (E.g "127.0.0.1:5672")
      * @throws XPathExpressionException
      */
-    protected String getRandomAMQPBrokerUrl() throws XPathExpressionException {
+    protected String getRandomAMQPBrokerAddress() throws XPathExpressionException {
         String randomInstanceKey = getRandomMBInstance();
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
         return tempContext.getInstance().getHosts().get("default") + ":" +
                tempContext.getInstance().getPorts().get("amqp");
     }
-
 }

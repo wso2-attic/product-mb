@@ -127,7 +127,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");

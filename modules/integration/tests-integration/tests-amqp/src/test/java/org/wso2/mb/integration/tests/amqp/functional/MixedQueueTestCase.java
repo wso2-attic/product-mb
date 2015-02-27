@@ -103,8 +103,8 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed");
-        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed");
+        Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed for publisher without expiration.");
+        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed for publisher with expiration.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), sendCountWithoutExpiration, "Message receiving failed.");
     }
 
@@ -131,7 +131,7 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         // Message count expected by one subscriber. Considering 2 consumers.
         long expectedCountByOneSubscriber = sendCountWithoutExpiration / 2L;
         // Expiration time for messages with expiration.
-        long expirationTime = 5L;
+        long expirationTime = 1L;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
@@ -169,11 +169,11 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed");
-        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed");
+        Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed for publisher without expiration.");
+        Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed for publisher with expiration");
 
-        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed.");
-        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed.");
+        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed for client 1.");
+        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed for client 2.");
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount() + secondaryConsumerClient.getReceivedMessageCount(), sendCountWithoutExpiration, "Message receiving failed.");
     }
 }

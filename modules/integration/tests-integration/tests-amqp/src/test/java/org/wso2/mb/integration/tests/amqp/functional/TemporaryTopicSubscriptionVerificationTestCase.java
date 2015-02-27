@@ -40,6 +40,17 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Put a topic subscriber
+     * 2. Receive some of the messages and close.
+     * 3. Resubscribe to same topic and see if messages are received.
+     * 4. Messages should not be receiving
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     */
     @Test(groups = {"wso2.mb", "topic"},
             description = "Single topic subscriber subscribe-close-re-subscribe test case")
     public void performSingleTopicSubscribeCloseResubscribeTest()
@@ -85,17 +96,23 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
     }
 
     /**
-     * 1. put a topic subscriber
-     * 2. put another topic subscriber. It will receive some of the messages and close
-     * 3. resubscribe to same topic and see if messages are received. (when first subscriber is still getting messages)
+     * 1. Put a topic subscriber
+     * 2. Put another topic subscriber. It will receive some of the messages and close
+     * 3. Resubscribe to same topic and see if messages are received. (while first subscriber is still getting messages)
+     * 4. Messages should not be receiving
      *
      * @throws ExecutionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"}, description = "Single topic subscriber subscribe-close-" +
                                                        "re-subscribe test case with multiple " +
                                                        "subscriptions")
     public void performMultipleTopicSubscribeCloseResubscribeTest()
-            throws ExecutionException, AndesClientConfigurationException, NamingException, JMSException,
+            throws ExecutionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
                    IOException {
 
         long sendCount = 1000L;
