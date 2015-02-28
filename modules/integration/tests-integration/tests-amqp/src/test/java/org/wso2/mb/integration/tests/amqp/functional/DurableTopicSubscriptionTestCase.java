@@ -27,7 +27,7 @@ public class DurableTopicSubscriptionTestCase {
      * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void basicSubscriptionTest()
+    public void subscribeDisconnectAndSubscribeAgainTest()
             throws JMSException, NamingException, AndesClientConfigurationException, IOException {
 
         // Creating configurations
@@ -161,6 +161,7 @@ public class DurableTopicSubscriptionTestCase {
 
         AndesJMSConsumerClientConfiguration secondConsumerConfig = consumerConfig.clone();
         secondConsumerConfig.setDestinationName("myTopic5");
+
         AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
