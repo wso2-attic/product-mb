@@ -131,9 +131,11 @@ public class AndesClientOutputParser {
 
     /**
      * Prints missing message IDs.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
      *
      * @param numberOfSentMessages Number of messages to print.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMissingMessages(int numberOfSentMessages) {
         log.info("Printing Missing Messages");
         for (long count = 0; count < numberOfSentMessages; count++) {
@@ -145,7 +147,9 @@ public class AndesClientOutputParser {
 
     /**
      * Prints duplicated message IDs
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void printDuplicateMessages() {
         log.info("Printing Duplicated Messages");
         log.info(this.getDuplicatedMessages());
@@ -153,7 +157,9 @@ public class AndesClientOutputParser {
 
     /**
      * Prints the map that contains received messages.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMessagesMap() {
         log.info("Printing Received Messages");
         log.info(mapOfReceivedMessages);
@@ -176,8 +182,10 @@ public class AndesClientOutputParser {
     }
 
     /**
-     * Prints received message IDs sortedly.
+     * Prints received message IDs in sorted.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMessagesSorted() {
         log.info("Printing Sorted Messages");
         List<Long> cloneOfMessages = new ArrayList<Long>();

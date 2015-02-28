@@ -142,6 +142,8 @@ public class AndesClient {
         for (AndesJMSPublisher publisher : publishers) {
             publisher.stopClient();
         }
+
+        log.info("TPS:" + this.getConsumerTPS() + " AverageLatency:" + this.getAverageLatency());
     }
 
     /**
@@ -198,9 +200,11 @@ public class AndesClient {
 
     /**
      * Gets the average transactions per seconds for publisher(s).
+     * Suppressing "UnusedDeclaration" as the client acts as an service.
      *
      * @return the average transactions per seconds.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public double getPublisherTPS() {
         double tps = 0L;
         for (AndesJMSPublisher publisher : publishers) {
@@ -275,15 +279,6 @@ public class AndesClient {
         } else {
             return -1L;
         }
-    }
-
-    /**
-     * Gets the starting delay when starting publishers or consumers.
-     *
-     * @return The starting delay.
-     */
-    public long getStartDelay() {
-        return startDelay;
     }
 
     /**

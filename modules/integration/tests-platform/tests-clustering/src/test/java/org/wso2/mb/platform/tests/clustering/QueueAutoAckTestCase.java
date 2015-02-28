@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -31,11 +32,14 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Load test in MB clustering for queues with auto acknowledge.
@@ -47,14 +51,20 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
     private static final int NO_OF_SUBSCRIBERS = 50;
     private static final int NO_OF_PUBLISHERS = 50;
 
-
     /**
-     * Initialize the test as super tenant user.
+     * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }

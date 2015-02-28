@@ -76,31 +76,38 @@ public class ManySubscribersTestCase extends MBIntegrationBaseTest {
      * Test message sending to 1000 subscribers at the same time.
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case")
-    public void performMillionMessageTestCase()
+    public void performMillionMessageManyConsumersTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException {
 
-        // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
-        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        try {
+            // Creating a consumer client configuration
+            AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueueMillion");
+            consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+            consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        // Creating a consumer client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
-        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
+            // Creating a consumer client configuration
+            AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueueMillion");
+            publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+            publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS, true);
-        consumerClient.setStartDelay(100L); // Use a starting delay between consumers
-        consumerClient.startClient();
+            AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS, true);
+            consumerClient.setStartDelay(100L); // Use a starting delay between consumers
+            consumerClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS, true);
-        publisherClient.startClient();
+            AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS, true);
+            publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_SUBSCRIBERS, "Message sending failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT* NUMBER_OF_SUBSCRIBERS, "Message receiving failed.");
-
+            // Evaluating
+            Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT * NUMBER_OF_SUBSCRIBERS, "Message sending failed");
+            Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT * NUMBER_OF_SUBSCRIBERS, "Message receiving failed.");
+        } catch (OutOfMemoryError e) {
+            try {
+                restartServer();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 }

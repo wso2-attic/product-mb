@@ -369,9 +369,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
 
     /**
      * Sets the exchange type used for publishing/consuming jms messages
+     * Suppressing "UnusedDeclaration" as this is a configuration
      *
      * @param exchangeType The exchange type
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setExchangeType(ExchangeType exchangeType) {
         this.exchangeType = exchangeType;
     }
@@ -452,9 +454,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
 
     /**
      * Sets the file path to write statistics such as TPS, Average latency against Timestamp
+     * Suppressing "UnusedDeclaration" as this is a configuration
      *
      * @param filePathToPrintStatistics The file path used for writing statistics.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setFilePathToWriteStatistics(String filePathToPrintStatistics) {
         this.filePathToWriteStatistics = filePathToPrintStatistics;
     }

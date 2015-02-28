@@ -451,9 +451,11 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * Sets the consumer to read message asynchronously. Asynchronously message
      * reading implies that it uses {@link javax.jms.MessageListener} to listen to receiving
      * messages.
+     * Suppressing "UnusedDeclaration" as this is a configuration
      *
      * @param async true if messages should be read asynchronously, false otherwise.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setAsync(boolean async) {
         this.async = async;
     }

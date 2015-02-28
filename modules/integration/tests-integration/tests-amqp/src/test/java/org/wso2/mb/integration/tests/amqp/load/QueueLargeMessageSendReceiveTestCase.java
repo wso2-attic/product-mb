@@ -29,8 +29,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -38,10 +38,6 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
 /**
@@ -73,22 +69,6 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
             throws AndesClientConfigurationException, IOException, NamingException, JMSException {
         long sendCount = 1000L;
 
-        // Input file to read a 1MB message content.
-        String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
-                                             "MessageContentInput.txt";
-        int sizeToRead = 1024 * 1024;
-
-        char[] inputContent = new char[sizeToRead];
-
-        try {
-            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
-            inputFileReader.read(inputContent);
-        } catch (FileNotFoundException e) {
-            log.warn("Error locating input content from file : " + messageContentInputFilePath);
-        } catch (IOException e) {
-            log.warn("Error reading input content from file : " + messageContentInputFilePath);
-        }
-
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "Queue1MBSendReceive");
         consumerConfig.setMaximumMessagesToReceived(sendCount);
@@ -98,7 +78,7 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "Queue1MBSendReceive");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
-        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath);   // Setting file to be sent by publisher
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_ONE_MB_SAMPLE_FILE);   // Setting file to be sent by publisher
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -122,15 +102,10 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
      * @throws JMSException
      * @throws IOException
      */
-    @Test(groups = {"wso2.mb", "queue"}, enabled = false)
+    @Test(groups = {"wso2.mb", "queue"}, enabled = true)
     public void performQueueTenMBSizeMessageSendReceiveTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException {
         long sendCount = 10L;
-
-        // Creating a file of 10MB
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom10mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 10 * 1024);
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleLargeQueue10MB");
@@ -139,7 +114,7 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleLargeQueue10MB");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setReadMessagesFromFilePath(pathOfFileToReadContent);   // Setting file to be sent by publisher
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_TEN_MB_SAMPLE_FILE);   // Setting file to be sent by publisher
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

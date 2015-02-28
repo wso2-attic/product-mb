@@ -57,7 +57,9 @@ public class AndesClientConstants {
 
     /**
      * Default file path to write statistics by subscriber/consumer and publisher
+     * Suppressing "UnusedDeclaration" as this may be used in client configuration
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static final String FILE_PATH_TO_WRITE_STATISTICS =
             System.getProperty("framework.resource.location") + File.separator + "stats.csv";
 
@@ -90,4 +92,18 @@ public class AndesClientConstants {
      * Default port for AMQP connections string
      */
     public static final int DEFAULT_PORT = 5672;
+
+    /**
+     * File path for a file of size 1 mb.
+     */
+    public static final String FILE_PATH_FOR_ONE_MB_SAMPLE_FILE =
+            System.getProperty("framework.resource.location") + File.separator + "sample" +
+            File.separator + "files" + File.separator + "sample_1mb_msg.xml";
+
+    /**
+     * File path for a file of size 10 mb.
+     */
+    public static final String FILE_PATH_FOR_TEN_MB_SAMPLE_FILE =
+            System.getProperty("framework.resource.location") + File.separator + "sample" +
+            File.separator + "files" + File.separator + "sample_10mb_msg.xml";
 }

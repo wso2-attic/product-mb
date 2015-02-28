@@ -1,14 +1,15 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.topic.BasicTopicSubscriber;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import java.io.IOException;
 
 /**
  * This class holds set of test cases to verify if durable topic
@@ -16,304 +17,297 @@ import javax.naming.NamingException;
  */
 public class DurableTopicSubscriptionTestCase {
 
-    private static Log log = LogFactory.getLog(DurableTopicSubscriptionTestCase.class);
-    private String host = "127.0.0.1";
-    private String port = "5672";
-    private String userName = "admin";
-    private String password = "admin";
-    private Integer runTime = 10;
-    private Integer expectedCount = 10;
-    private long intervalBetSubscription = 1000;
-
     /**
-     * Creating a client with a subscription ID and unsubscribe it and
-     * create another client with the same subscription ID
+     * Creating a client with a subscription ID and unSubscribe it and
+     * create another client with the same subscription ID.
      *
      * @throws JMSException
      * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void basicSubscriptionTest() throws JMSException, NamingException {
+    public void basicSubscriptionTest()
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
 
-        /**
-         * create with sub id= x topic=y. disconnect and try to connect again
-         */
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic1");
+        consumerConfig.setDurable(true, "durableSub1");
 
-        try {
-            String topic = "myTopic1";
-            String subID = "wso2";
-            Integer runTime = 10;
-            Integer expectedCount = 10;
-            AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
-                    "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                    "unsubscribeAfter=" + expectedCount, "");
-            receivingClient.startWorking();
-            sleepForInterval(intervalBetSubscription);
-            receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
-                    "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                    "unsubscribeAfter=" + expectedCount, "");
-            receivingClient.startWorking();
-            sleepForInterval(intervalBetSubscription);
-        } finally {
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
 
-        }
+        AndesClientUtils.sleepForInterval(2000L);
 
+        initialConsumerClient.getConsumers().get(0).unSubscribe(false);
 
-        /**
-         * create with sub id= x topic=y. kill subscription and try to connect again
-         */
-        //Cannot automate
+        AndesClientUtils.sleepForInterval(2000L);
 
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        secondaryConsumerClient.getConsumers().get(0).unSubscribe(false);
+
+        // Stopping the clients
+        initialConsumerClient.stopClient();
+        secondaryConsumerClient.stopClient();
     }
 
 
     /**
-     * create with sub id= x topic=y. try another subscription with same params.
-     * should rejects the subscription
+     * Create with sub id=x topic=y. Try another subscription with same params.
+     * should rejects the subscription.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientConfigurationException
      */
-    @Test(groups = {"wso2.mb", "topic"})
-    public void multipleSubsWithSameIdTest() throws JMSException, NamingException {
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = javax.jms.JMSException.class, expectedExceptionsMessageRegExp = ".*Cannot subscribe to queue .* as it already has an existing exclusive consumer.*")
+    public void multipleSubsWithSameIdTest()
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic2");
+        consumerConfig.setDurable(true, "sriLanka");
 
-        String topic = "myTopic2";
-        String subID = "sriLanka";
-        BasicTopicSubscriber sub1 = null;
-        BasicTopicSubscriber sub2 = null;
-        boolean multipleSubsNotAllowed = true;
-        try {
-            sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub1.subscribe(topic, true, subID);
-            sleepForInterval(intervalBetSubscription);
-            try {
-                sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
-                sub2.subscribe(topic, true, subID);
-                sleepForInterval(intervalBetSubscription);
-            } catch (Exception e) {
-                log.error("Error while subscribing. This is expected.", e);
-                multipleSubsNotAllowed = false;
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
 
-            }
-            Assert.assertFalse(multipleSubsNotAllowed, "Multiple subscriptions allowed for same client ID.");
-        } finally {
-            if (null != sub1) {
-                sub1.close();
-            }
-        }
-        Assert.assertFalse(multipleSubsNotAllowed, "Multiple subscriptions allowed for same client ID.");
+        AndesClientUtils.sleepForInterval(2000L);
 
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        // Stopping the clients
+        initialConsumerClient.stopClient();
+        secondaryConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 
     /**
-     * create with sub id= x topic=y. try another with sub id=z topic=y. Allowed
+     * Create with sub id=x topic=y. Try another with sub id=z topic=y. Should be allowed.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws CloneNotSupportedException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void multipleSubsWithDifferentIdTest() throws JMSException, NamingException {
+    public void multipleSubsWithDifferentIdTest()
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   CloneNotSupportedException {
 
-        String topic = "myTopic3";
-        String subID1 = "test1";
-        String subID2 = "test2";
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
-        sub1.subscribe(topic, true, subID1);
-        sleepForInterval(intervalBetSubscription);
-        BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
-        sub2.subscribe(topic, true, subID2);
-        sleepForInterval(intervalBetSubscription);
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic3");
+        consumerConfig.setDurable(true, "test1");
 
-        /**
-         * above multiple subscribers closed
-         */
-        sub1.close();
-        sub2.close();
+        AndesJMSConsumerClientConfiguration secondaryConsumerConfig = consumerConfig.clone();
+        secondaryConsumerConfig.setSubscriptionID("test2");
+
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        // Stopping the clients
+        initialConsumerClient.stopClient();
+        secondaryConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 
     /**
-     * create with sub id= x topic=y.
-     * close it.
-     * Then try with sub id= x topic=z.
-     * Should reject the subscription
+     * 1. Create with sub id= x topic=y.
+     * 2. Close it.
+     * 3. Then try with sub id= x topic=z.
+     * 4. Should reject the subscription.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws CloneNotSupportedException
      */
-    @Test(groups = {"wso2.mb", "topic"})
-    public void multipleSubsToDifferentTopicsWithSameSubIdTest() throws JMSException, NamingException {
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = javax.jms.JMSException.class, expectedExceptionsMessageRegExp = ".*An Exclusive Bindings already exists for different topic.*")
+    public void multipleSubsToDifferentTopicsWithSameSubIdTest()
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   CloneNotSupportedException {
 
-        String topic1 = "myTopic4";
-        String topic2 = "myTopic5";
-        String subID1 = "test3";
-        boolean subscriptionAllowedForDifferentTopic = true;
-        BasicTopicSubscriber sub1 = new BasicTopicSubscriber(host, port, userName, password, topic1);
-        sub1.subscribe(topic1, true, subID1);
-        sleepForInterval(intervalBetSubscription);
-        sub1.close();
-        sleepForInterval(intervalBetSubscription);
-        try {
-            BasicTopicSubscriber sub2 = new BasicTopicSubscriber(host, port, userName, password, topic2);
-            sub2.subscribe(topic2, true, subID1);
-            sleepForInterval(intervalBetSubscription);
-        } catch (JMSException e) {
-            if (e.getMessage().contains("An Exclusive Bindings already exists for different topic. Not permitted")) {
-                log.error("Error while subscribing. This is expected.", e);
-                subscriptionAllowedForDifferentTopic = false;
-            } else {
-                log.error("Error while subscribing.", e);
-                throw new JMSException("Error while subscribing");
-            }
-        }
-        Assert.assertFalse(subscriptionAllowedForDifferentTopic, "Subscriptions to a different topic" +
-                " was allowed by same client Id without un-subscribing");
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic4");
+        consumerConfig.setDurable(true, "test3");
+
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        initialConsumerClient.stopClient();
+
+        AndesJMSConsumerClientConfiguration secondConsumerConfig = consumerConfig.clone();
+        secondConsumerConfig.setDestinationName("myTopic5");
+        AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        secondaryConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 
     /**
-     * create with sub id= x topic=y.
-     * Create a normal topic subscription topic=y
+     * 1. Create with sub id=x topic=y.
+     * 2. Create a normal topic subscription topic=y.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void durableTopicWithNormalTopicTest() throws JMSException, NamingException {
+    public void durableTopicWithNormalTopicTest()
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
 
-        String topic = "myTopic5";
-        String subID = "test5";
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
+        consumerConfig.setDurable(true, "test5");
 
-        BasicTopicSubscriber sub1 = null;
-        BasicTopicSubscriber sub2 = null;
-        try {
-            sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub1.subscribe(topic, true, subID);
-            sleepForInterval(intervalBetSubscription);
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
 
-            sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub2.subscribe(topic, false, "");
-            sleepForInterval(intervalBetSubscription);
-        } finally {
-            if (null != sub1) {
-                sub1.close();
-            }
-            if (null != sub2) {
-                sub2.close();
-            }
-        }
+        AndesClientUtils.sleepForInterval(2000L);
+
+        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
+        AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        // Stopping the clients
+        initialConsumerClient.stopClient();
+        secondaryConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 
     /**
-     * create with sub id= x topic=y.
-     * Unsubscribe.
-     * Now try sub id= x topic=y
+     * 1. Create with sub id=x topic=y.
+     * 2. UnSubscribe.
+     * 3. Now try sub id=z topic=y.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws CloneNotSupportedException
+     * @throws IOException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void subscribeUnSuscribeAndSubscribeAgainTest() throws JMSException, NamingException {
+    public void multipleSubsWithDiffIDsToSameTopicTest()
+            throws JMSException, NamingException, AndesClientConfigurationException,
+                   CloneNotSupportedException, IOException {
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration firstConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubTopic");
+        firstConsumerConfig.setDurable(true, "new1");
 
-        String topic = "myTopic7";
-        String subID = "test7";
+        AndesJMSConsumerClientConfiguration secondConsumerConfig = firstConsumerConfig.clone();
+        secondConsumerConfig.setSubscriptionID("new2");
 
+        AndesJMSConsumerClientConfiguration thirdConsumerConfig = firstConsumerConfig.clone();
+        thirdConsumerConfig.setSubscriptionID("new3");
 
-        try {
-            AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
-                    "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                    "unsubscribeAfter=" + expectedCount, "");
+        AndesJMSConsumerClientConfiguration forthConsumerConfig = firstConsumerConfig.clone();
+        forthConsumerConfig.setSubscriptionID("new4");
 
+        // Creating clients
+        AndesClient firstConsumerClient = new AndesClient(firstConsumerConfig, true);
+        firstConsumerClient.startClient();
 
-            sub1.startWorking();
-            sleepForInterval(intervalBetSubscription);
+        AndesClientUtils.sleepForInterval(2000L);
 
-            AndesClient sub2 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic,
-                    "100", "false", runTime.toString(), expectedCount.toString(),
-                    "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                    "unsubscribeAfter=" + expectedCount, "");
+        AndesClient secondConsumerClient = new AndesClient(secondConsumerConfig, true);
+        secondConsumerClient.startClient();
 
-            sub2.startWorking();
-            sleepForInterval(intervalBetSubscription);
+        AndesClientUtils.sleepForInterval(2000L);
 
-        } finally {
+        AndesClient thirdConsumerClient = new AndesClient(thirdConsumerConfig, true);
+        thirdConsumerClient.startClient();
 
+        AndesClientUtils.sleepForInterval(2000L);
 
-        }
+        AndesClient forthConsumerClient = new AndesClient(forthConsumerConfig, true);
+        forthConsumerClient.startClient();
 
+        AndesClientUtils.sleepForInterval(2000L);
+
+        // Stopping the clients
+        firstConsumerClient.stopClient();
+        secondConsumerClient.stopClient();
+        thirdConsumerClient.stopClient();
+        forthConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 
     /**
-     * create with sub id= x topic=y.
-     * Unsubscribe.
-     * Now try sub id= z topic=y
+     * 1. Create with sub id= x topic=y.
+     * 2. UnSubscribe.
+     * 3. Now try sub id= x topic=z
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientConfigurationException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void multipleSubsWithDiffIDsToSameTopicTest() throws JMSException, NamingException {
-        String topic = "multiSubTopic";
-        String subID1 = "new1";
-        String subID2 = "new2";
-        String subID3 = "new3";
-        String subID4 = "new4";
+    public void subscribeUnSubscribeAndTryDifferentTopicTest()
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
 
-        BasicTopicSubscriber sub1 = null;
-        BasicTopicSubscriber sub2 = null;
-        BasicTopicSubscriber sub3 = null;
-        BasicTopicSubscriber sub4 = null;
+        // Creating configurations
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic8");
+        consumerConfig.setDurable(true, "test8");
 
-        try {
-            sub1 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub1.subscribe(topic, true, subID1);
-            sleepForInterval(intervalBetSubscription);
-
-            sub2 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub2.subscribe(topic, true, subID2);
-            sleepForInterval(intervalBetSubscription);
-
-            sub3 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub3.subscribe(topic, true, subID3);
-            sleepForInterval(intervalBetSubscription);
-
-            sub4 = new BasicTopicSubscriber(host, port, userName, password, topic);
-            sub4.subscribe(topic, true, subID4);
-            sleepForInterval(intervalBetSubscription);
-
-        } finally {
-            if (null != sub1) {
-                sub1.close();
-            }
-            if (null != sub2) {
-                sub2.close();
-            }
-            if (null != sub3) {
-                sub3.close();
-            }
-            if (null != sub4) {
-                sub4.close();
-            }
-        }
-    }
-
-    /**
-     * create with sub id= x topic=y.
-     * Unsubscribe.
-     * Now try sub id= x topic=z
-     */
-
-    @Test(groups = {"wso2.mb", "topic"})
-    public void subscribeUnsubscribeAndTryDifferentTopicTest()
-            throws JMSException, NamingException {
-
-        String topic1 = "myTopic8";
-        String topic2 = "myTopic9";
-        String subID = "test8";
+        AndesJMSConsumerClientConfiguration secondaryConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic9");
+        consumerConfig.setDurable(true, "test8");
 
 
-        AndesClient sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                "unsubscribeAfter=" + expectedCount, "");
-        sub1.startWorking();
-        sleepForInterval(intervalBetSubscription);
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
 
-        sub1 = new AndesClient("receive", "127.0.0.1:5672", "topic:" + topic1,
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=" + subID + ",delayBetweenMsg=0," +
-                "unsubscribeAfter=" + expectedCount, "");
-        sub1.startWorking();
-    }
+        AndesClientUtils.sleepForInterval(2000L);
 
-    private void sleepForInterval(long timeToSleep) {
-        try {
-            Thread.sleep(timeToSleep);
-        } catch (InterruptedException e) {
-            //ignore
-        }
+        initialConsumerClient.getConsumers().get(0).unSubscribe(false);
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        AndesClient secondaryConsumerClient = new AndesClient(secondaryConfig, true);
+        secondaryConsumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
+
+        secondaryConsumerClient.getConsumers().get(0).unSubscribe(false);
+
+        // Stopping the clients
+        initialConsumerClient.stopClient();
+        secondaryConsumerClient.stopClient();
+
+        AndesClientUtils.sleepForInterval(2000L);
     }
 }

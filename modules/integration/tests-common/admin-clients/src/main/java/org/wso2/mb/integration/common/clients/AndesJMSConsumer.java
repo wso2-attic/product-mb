@@ -282,9 +282,10 @@ public class AndesJMSConsumer extends AndesJMSBase
     /**
      * Un-Subscribes and closes a consumers.
      *
+     * @param stopClient true if the client needs to stopped after un-subscribing, false otherwise.
      * @throws JMSException
      */
-    public void unSubscribe() throws JMSException {
+    public void unSubscribe(final boolean stopClient) throws JMSException {
         /**
          * Using a separate thread as un-subscribing the consumer on "onMessage" thread is not allowed.
          */
@@ -296,7 +297,9 @@ public class AndesJMSConsumer extends AndesJMSBase
                         log.info("Un-subscribing Subscriber");
                         session.unsubscribe(consumerConfig.getSubscriptionID());
                         log.info("Subscriber Un-Subscribed");
-                        stopClient();
+                        if (stopClient) {
+                            stopClient();
+                        }
 
                     } catch (JMSException e) {
                         log.error("Error in removing subscription(un-subscribing).", e);
@@ -420,7 +423,7 @@ public class AndesJMSConsumer extends AndesJMSBase
 
             if (this.receivedMessageCount.get() >= consumerConfig.getUnSubscribeAfterEachMessageCount()) {
                 // Un-Subscribing consumer
-                unSubscribe();
+                unSubscribe(true);
                 // Waiting till consumer is un-subscribed so that no messages will be read.
                 AndesClientUtils.sleepForInterval(1000L);
                 return true;
@@ -437,7 +440,7 @@ public class AndesJMSConsumer extends AndesJMSBase
                 try {
                     Thread.sleep(consumerConfig.getRunningDelay());
                 } catch (InterruptedException e) {
-                    //silently ignore
+                    Thread.currentThread().interrupt();
                 }
             }
         }

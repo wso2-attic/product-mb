@@ -98,74 +98,8 @@ public class AndesClientUtils {
             try {
                 Thread.sleep(milliseconds);
             } catch (InterruptedException ignore) {
-                // TODO : ignoring thread sleep exception
-                //ignore
+                Thread.currentThread().interrupt();
             }
-        }
-    }
-
-    /**
-     * //TODO : Check usage
-     * Creates a file.
-     *
-     * @param filePathToRead   File path to read content.
-     * @param filePathToCreate File path to store content
-     * @param sizeInKB         Size of the file in KB.
-     */
-    public static void createTestFileToSend(String filePathToRead, String filePathToCreate,
-                                            int sizeInKB) {
-        String sampleKB10StringToWrite = "";
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(filePathToRead));
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append('\n');
-                line = br.readLine();
-            }
-            sampleKB10StringToWrite = sb.toString();
-        } catch (FileNotFoundException e) {
-            log.error("File to read sample string to create text file to send is not found", e);
-        } catch (IOException e) {
-            log.error("Error in reading sample file to create text file to send", e);
-        } finally {
-
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-                log.error("Error while closing buffered reader", e);
-            }
-
-        }
-        try {
-
-            File fileToCreate = new File(filePathToCreate);
-
-            //no need to recreate if exists
-            if (fileToCreate.exists()) {
-                log.info("File requested to create already exists. Skipping file creation... " + filePathToCreate);
-                return;
-            } else {
-                boolean createFileSuccess = fileToCreate.createNewFile();
-                if (createFileSuccess) {
-                    log.info("Successfully created a file to append content for sending at " + filePathToCreate);
-                }
-            }
-
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePathToCreate));
-            PrintWriter printWriter = new PrintWriter(bufferedWriter);
-
-            for (int count = 0; count < sizeInKB / 10; count++) {
-                printWriter.append(sampleKB10StringToWrite);
-            }
-
-        } catch (IOException e) {
-            log.error("Error. File to print received messages is not provided", e);
         }
     }
 

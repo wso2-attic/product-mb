@@ -84,7 +84,9 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
             consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
             // Creating consumer clients
-            consumers.add(new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS / DESTINATIONS.length, true));
+            AndesClient newConsumer = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS / DESTINATIONS.length, true);
+            newConsumer.setStartDelay(100L);
+            consumers.add(newConsumer);
         }
 
         for (String DESTINATION : DESTINATIONS) {
@@ -94,7 +96,9 @@ public class MultiThreadedMultipleQueueTestCase extends MBIntegrationBaseTest {
             publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
             // Creating publisher clients
-            publishers.add(new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS / DESTINATIONS.length, true));
+            AndesClient newPublisher = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS / DESTINATIONS.length, true);
+            newPublisher.setStartDelay(100L);
+            publishers.add(newPublisher);
         }
 
         // Starting clients

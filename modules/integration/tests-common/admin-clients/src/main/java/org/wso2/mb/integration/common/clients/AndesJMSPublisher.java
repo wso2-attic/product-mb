@@ -141,18 +141,12 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             try {
                 long threadID = Thread.currentThread().getId();
                 log.info("Closing publisher | ThreadID : " + threadID);
-                if (this.sender != null) {
-                    this.sender.close();
-                    this.sender = null;
-                }
-                if (this.session != null) {
-                    this.session.close();
-                    this.session = null;
-                }
-                if (this.connection != null) {
-                    this.connection.close();
-                    this.connection = null;
-                }
+                this.sender.close();
+                this.session.close();
+                this.connection.close();
+                this.sender = null;
+                this.session = null;
+                this.connection = null;
                 log.info("Publisher closed | ThreadID : " + threadID);
             } catch (JMSException e) {
                 log.error("Error while stopping the publisher.", e);
@@ -218,10 +212,6 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 }
 
                 if (null != message) {
-                    // Sending messages
-                    if (this.sentMessageCount >= this.publisherConfig.getNumberOfMessagesToSend()) {
-                        break;
-                    }
                     this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
                     this.sentMessageCount++;
 
@@ -259,7 +249,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                         try {
                             Thread.sleep(this.publisherConfig.getRunningDelay());
                         } catch (InterruptedException e) {
-                            //silently ignore
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }
@@ -291,9 +281,9 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
      */
     public double getPublisherTPS() {
         if (0 == this.lastMessagePublishTimestamp - this.firstMessagePublishTimestamp) {
-            return ((double)this.sentMessageCount) / (1D / 1000);
+            return ((double) this.sentMessageCount) / (1D / 1000);
         } else {
-            return ((double)this.sentMessageCount) / (((double)(this.lastMessagePublishTimestamp - this.firstMessagePublishTimestamp)) / 1000);
+            return ((double) this.sentMessageCount) / (((double) (this.lastMessagePublishTimestamp - this.firstMessagePublishTimestamp)) / 1000);
         }
     }
 
@@ -352,9 +342,11 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
     /**
      * Sets the JMS message producer ({@link javax.jms.MessageProducer}).
+     * Suppressing "UnusedDeclaration" as the client acts as a service.
      *
      * @param sender A {@link javax.jms.MessageProducer}.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setSender(MessageProducer sender) {
         this.sender = sender;
     }

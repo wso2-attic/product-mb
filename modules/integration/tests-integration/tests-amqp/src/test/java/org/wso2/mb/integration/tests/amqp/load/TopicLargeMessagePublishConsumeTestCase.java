@@ -25,8 +25,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -34,7 +34,6 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.File;
 import java.io.IOException;
 
 
@@ -67,20 +66,16 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
             throws AndesClientConfigurationException, IOException, NamingException, JMSException {
         long sendCount = 10;
 
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom1mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 1024);
-
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleLargeTopic1MB");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
         consumerConfig.setMaximumMessagesToReceived(sendCount);
         consumerConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleLargeTopic1MB");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
-        publisherConfig.setReadMessagesFromFilePath(pathOfFileToReadContent);   // Setting file to be sent by publisher
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_ONE_MB_SAMPLE_FILE);   // Setting file to be sent by publisher
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -109,18 +104,14 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
             throws AndesClientConfigurationException, NamingException, JMSException, IOException {
         long sendCount = 10L;
 
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom1mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 1024);
-
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleLargeTopic10MB");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
         consumerConfig.setMaximumMessagesToReceived(sendCount);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleLargeTopic10MB");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setReadMessagesFromFilePath(pathOfFileToReadContent);
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_TEN_MB_SAMPLE_FILE);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

@@ -24,6 +24,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -35,11 +36,14 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfig
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import static org.testng.Assert.assertTrue;
@@ -52,11 +56,17 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
-
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }
