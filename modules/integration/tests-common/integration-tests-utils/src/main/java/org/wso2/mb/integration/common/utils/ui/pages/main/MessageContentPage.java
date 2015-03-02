@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,8 +18,6 @@
 
 package org.wso2.mb.integration.common.utils.ui.pages.main;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
@@ -32,7 +30,6 @@ import java.io.IOException;
  */
 public class MessageContentPage {
 
-    private static final Log log = LogFactory.getLog(MessageContentPage.class);
     private WebDriver driver;
 
     public MessageContentPage(WebDriver driver) throws IOException {
