@@ -43,4 +43,17 @@ public class QueueContentPage {
         }
     }
 
+    /**
+     * Navigate to message content page related to the message on the given row index within the page. (e.g. 1st row)
+     * @param listIndex
+     */
+    public MessageContentPage viewFullMessage(int listIndex) throws IOException {
+
+        String xpath = UIElementMapper.getInstance().getElement("mb.queue.content.page.row.xpath").replaceAll("#REPLACE#",String.valueOf(listIndex));
+
+        driver.findElement(By.xpath(xpath)).click();
+
+        return new MessageContentPage(this.driver);
+    }
+
 }
