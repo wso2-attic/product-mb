@@ -69,11 +69,12 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
     
     /**
      * Initialize super class.
+     * @throws XPathExpressionException 
      *
      * @throws Exception
      */
     @BeforeClass(alwaysRun = true)
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(userMode);
     }
 
