@@ -26,7 +26,8 @@ public class AndesClientConstants {
     /**
      * Andes initial context factory.
      */
-    public static final String ANDES_ICF = "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
+    public static final String ANDES_ICF =
+            "org.wso2.andes.jndi.PropertiesFileInitialContextFactory";
 
     /**
      * Connection factory name prefix.
@@ -56,8 +57,8 @@ public class AndesClientConstants {
             "receivedMessages.txt";
 
     /**
-     * Default file path to write statistics by subscriber/consumer and publisher
-     * Suppressing "UnusedDeclaration" as this may be used in client configuration
+     * Default file path to write statistics by subscriber/consumer and publisher Suppressing
+     * "UnusedDeclaration" as this may be used in client configuration
      */
     @SuppressWarnings("UnusedDeclaration")
     public static final String FILE_PATH_TO_WRITE_STATISTICS =
@@ -66,7 +67,8 @@ public class AndesClientConstants {
     /**
      * Message publishing format
      */
-    public static final String PUBLISH_MESSAGE_FORMAT = "Sending Message:{0} ThreadID:{1}";    // please see usages prior editing
+    public static final String PUBLISH_MESSAGE_FORMAT = "Sending Message:{0} ThreadID:{1}";
+    // please see usages prior editing
 
     /**
      * Default waiting time that is used to check whether the consumer has received messages.
@@ -94,16 +96,23 @@ public class AndesClientConstants {
     public static final int DEFAULT_PORT = 5672;
 
     /**
-     * File path for a file of size 1 mb.
+     * File path to read message content for publishing
      */
-    public static final String FILE_PATH_FOR_ONE_MB_SAMPLE_FILE =
-            System.getProperty("framework.resource.location") + File.separator + "sample" +
-            File.separator + "files" + File.separator + "sample_1mb_msg.xml";
+    public static final String MESSAGE_CONTENT_INPUT_FILE_PATH_1MB =
+            System.getProperty("framework.resource.location") + File.separator +
+            "MessageContentInput.txt";
 
     /**
-     * File path for a file of size 10 mb.
+     * File path creating a file.
      */
-    public static final String FILE_PATH_FOR_TEN_MB_SAMPLE_FILE =
-            System.getProperty("framework.resource.location") + File.separator + "sample" +
-            File.separator + "files" + File.separator + "sample_10mb_msg.xml";
+    public static final String FILE_PATH_FOR_CREATING_A_NEW_FILE =
+            System.getProperty("framework.resource.location") + "sample" + File.separator +
+            "newFile.txt";
+
+    /**
+     * File path for a file of size 1 kb.
+     */
+    public static final String FILE_PATH_FOR_ONE_KB_SAMPLE_FILE =
+            System.getProperty("framework.resource.location") + "sample" + File.separator +
+            "sample_1KB_msg.xml";
 }

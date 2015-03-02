@@ -67,15 +67,18 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
         long sendCount = 10;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
         consumerConfig.setMaximumMessagesToReceived(sendCount);
         consumerConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic1MB");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
-        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_ONE_MB_SAMPLE_FILE);   // Setting file to be sent by publisher
+        publisherConfig
+                .setReadMessagesFromFilePath(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);   // Setting file to be sent by publisher
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -84,11 +87,14 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), sendCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), sendCount, "Message receiving failed.");
     }
 
     /**
@@ -104,14 +110,21 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
             throws AndesClientConfigurationException, NamingException, JMSException, IOException {
         long sendCount = 10L;
 
+        // Creating a file of 10MB
+        AndesClientUtils.createMockFile(AndesClientConstants.FILE_PATH_FOR_ONE_KB_SAMPLE_FILE,
+                                        AndesClientConstants.FILE_PATH_FOR_CREATING_A_NEW_FILE, 10 * 1024);
+
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
         consumerConfig.setMaximumMessagesToReceived(sendCount);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleLargeTopic10MB");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_TEN_MB_SAMPLE_FILE);
+        publisherConfig
+                .setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_CREATING_A_NEW_FILE);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -120,10 +133,13 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), sendCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), sendCount, "Message receiving failed.");
     }
 }

@@ -37,15 +37,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class AndesClientUtils {
     /**
+     * The logger used in logging information, warnings, errors and etc.
+     */
+    private static Logger log = Logger.getLogger(AndesClientUtils.class);
+
+    /**
      * The print writer to print received messages to a file.
      */
     private static PrintWriter receivedMessagePrintWriter;
 
     /**
-     * The print write to print statistics such as TPS and etc to a file.
+     * The print write to print statistics such as TPS for consumers and producers and also the
+     * average latency to a file.
      */
     private static PrintWriter statisticsPrintWriter;
-    private static Logger log = Logger.getLogger(AndesClientUtils.class);
 
     /**
      * Waits until no messages are received. The waiting is done by using a loop checking whether
@@ -80,10 +85,10 @@ public class AndesClientUtils {
             currentMessageCount = client.getReceivedMessageCount();
         }
 
-        log.info("Message count received by consumer : " + Long.toString(client.getReceivedMessageCount()));
+        log.info("Message count received by consumer : " + Long
+                .toString(client.getReceivedMessageCount()));
         // Stopping the consumer client
         client.stopClient();
-//        client.getConsumers().get(0).countDownLatch.countDown();
         // Prints print writer contents to files.
         flushPrintWriters();
     }
@@ -159,7 +164,8 @@ public class AndesClientUtils {
             if (writerFile.exists() || writerFile.createNewFile()) {
                 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
                 statisticsPrintWriter = new PrintWriter(bufferedWriter);
-                statisticsPrintWriter.println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
+                statisticsPrintWriter
+                        .println("TIMESTAMP,CONSUMER_TPS,AVERAGE_LATENCY,,TIMESTAMP,PUBLISHER_TPS");
             }
         }
     }
@@ -175,5 +181,77 @@ public class AndesClientUtils {
         if (statisticsPrintWriter != null) {
             statisticsPrintWriter.flush();
         }
+    }
+
+    /**
+     * Creates a file using a given file and a size.
+     *
+     * @param filePathToRead   The file path to read contents from.
+     * @param filePathToCreate The path in which the contents should be written with a given size.
+     * @param sizeInKB         The size of the file to be written in kilobytes.
+     */
+    public static void createMockFile(String filePathToRead, String filePathToCreate,
+                                      int sizeInKB) {
+        String fileContentToBeWritten = "";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(filePathToRead));
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append('\n');
+                line = br.readLine();
+            }
+            fileContentToBeWritten = sb.toString();
+        } catch (FileNotFoundException e) {
+            log.error("File to read sample string to create text file to send is not found", e);
+        } catch (IOException e) {
+            log.error("Error in reading sample file to create text file to send", e);
+        } finally {
+
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                log.error("Error while closing buffered reader", e);
+            }
+
+        }
+        try {
+            File fileToCreate = new File(filePathToCreate);
+
+            //no need to recreate if exists
+            if (fileToCreate.exists()) {
+                log.info("File requested to create already exists... " + filePathToCreate);
+                if (fileToCreate.delete()) {
+                    log.info("Deleting file... " + filePathToCreate);
+                    boolean createFileSuccess = fileToCreate.createNewFile();
+                    if (createFileSuccess) {
+                        log.info("Successfully created a file to append content for sending at " + filePathToCreate);
+                    }
+                }
+            } else {
+                boolean createFileSuccess = fileToCreate.createNewFile();
+                if (createFileSuccess) {
+                    log.info("Successfully created a file to append content for sending at " + filePathToCreate);
+                }
+            }
+
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePathToCreate));
+            PrintWriter printWriter = new PrintWriter(bufferedWriter);
+
+            for (int count = 0; count < sizeInKB; count++) {
+                printWriter.append(fileContentToBeWritten);
+            }
+
+            printWriter.flush();
+            printWriter.close();
+        } catch (IOException e) {
+            log.error("Error. File to print received messages is not provided", e);
+        }
+
     }
 }

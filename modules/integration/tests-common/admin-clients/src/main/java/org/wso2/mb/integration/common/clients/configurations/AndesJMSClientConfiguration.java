@@ -118,8 +118,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
     }
 
     /**
-     * Creates a connection string with default username, password and a given host name, port.
-     * Also sets exchangeType and destination name used for publishing/consuming jms messages.
+     * Creates a connection string with default username, password and a given host name, port. Also
+     * sets exchangeType and destination name used for publishing/consuming jms messages.
      *
      * @param hostName        The host name used in the AMQP transport connection string.
      * @param port            The port used in the AMQP transport connection string.
@@ -178,9 +178,12 @@ public class AndesJMSClientConfiguration implements Cloneable {
             this.destinationName = config.getString("base.destinationName", TEMP_DESTINATION_NAME);
 
             // Creating connection string
-            this.userName = config.getString("base.userName", AndesClientConstants.DEFAULT_USERNAME);
-            this.password = config.getString("base.password", AndesClientConstants.DEFAULT_PASSWORD);
-            this.hostName = config.getString("base.hostName", AndesClientConstants.CARBON_VIRTUAL_HOST_NAME);
+            this.userName =
+                    config.getString("base.userName", AndesClientConstants.DEFAULT_USERNAME);
+            this.password =
+                    config.getString("base.password", AndesClientConstants.DEFAULT_PASSWORD);
+            this.hostName =
+                    config.getString("base.hostName", AndesClientConstants.CARBON_VIRTUAL_HOST_NAME);
             this.port = config.getInt("base.port", AndesClientConstants.DEFAULT_PORT);
             this.queryStringForConnection = config.getString("base.queryStringForConnection", "");
             this.createConnectionString();
@@ -368,8 +371,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
     }
 
     /**
-     * Sets the exchange type used for publishing/consuming jms messages
-     * Suppressing "UnusedDeclaration" as this is a configuration
+     * Sets the exchange type used for publishing/consuming jms messages Suppressing
+     * "UnusedDeclaration" as this is a configuration
      *
      * @param exchangeType The exchange type
      */

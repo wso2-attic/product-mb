@@ -46,13 +46,8 @@ import java.io.IOException;
 public class MessageContentTestCase extends MBIntegrationBaseTest {
 
     /**
-     * File path to read message content for publishing
-     */
-    private static final String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
-                                                              "MessageContentInput.txt";
-
-    /**
-     * 300KB size. This is to create more than 3 message content chunks to check chunk data retrieval.
+     * 300KB size. This is to create more than 3 message content chunks to check chunk data
+     * retrieval.
      */
     private static final int SIZE_TO_READ = 300 * 1024;
     /**
@@ -77,8 +72,8 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Test the message content integrity of a single message by comparing the sent and received message content
-     * which spreads over several message content chunks.
+     * Test the message content integrity of a single message by comparing the sent and received
+     * message content which spreads over several message content chunks.
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case")
     public void performQueueContentSendReceiveTestCase()
@@ -87,24 +82,28 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
         // Reading message content
         char[] inputContent = new char[SIZE_TO_READ];
         try {
-            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
+            BufferedReader inputFileReader =
+                    new BufferedReader(new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB));
             inputFileReader.read(inputContent);
         } catch (FileNotFoundException e) {
-            log.warn("Error locating input content from file : " + messageContentInputFilePath);
+            log.warn("Error locating input content from file : " + AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);
         } catch (IOException e) {
-            log.warn("Error reading input content from file : " + messageContentInputFilePath);
+            log.warn("Error reading input content from file : " + AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);
         }
 
-
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
+        consumerConfig
+                .setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setReadMessagesFromFilePath(messageContentInputFilePath); // message content will be read from this path and published
+        publisherConfig
+                .setReadMessagesFromFilePath(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB); // message content will be read from this path and published
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -113,23 +112,27 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Reading received message content
         char[] outputContent = new char[SIZE_TO_READ];
 
         try {
-            BufferedReader inputFileReader = new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
+            BufferedReader inputFileReader =
+                    new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
             inputFileReader.read(outputContent);
         } catch (FileNotFoundException e) {
-            log.warn("Error locating output content from file : " + messageContentInputFilePath);
+            log.warn("Error locating output content from file : " + AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);
         } catch (IOException e) {
-            log.warn("Error reading output content from file : " + messageContentInputFilePath);
+            log.warn("Error reading output content from file : " + AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);
         }
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
     }
 }
