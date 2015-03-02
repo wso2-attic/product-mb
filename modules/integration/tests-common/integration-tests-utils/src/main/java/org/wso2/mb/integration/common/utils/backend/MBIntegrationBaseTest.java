@@ -18,20 +18,16 @@
 
 package org.wso2.mb.integration.common.utils.backend;
 
+import java.io.File;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
-import org.xml.sax.SAXException;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Base class of all MB integration tests
@@ -49,7 +45,7 @@ public class MBIntegrationBaseTest {
      * @param userMode The testing user mode
      * @throws Exception
      */
-    protected void init(TestUserMode userMode) throws Exception {
+    protected void init(TestUserMode userMode) throws XPathExpressionException {
         automationContext = new AutomationContext("MB", userMode);
         backendURL = automationContext.getContextUrls().getBackEndUrl();
     }

@@ -109,7 +109,7 @@ public class MQTTClientEngine {
      *
      * @return A unique Id
      */
-    private String generateClientID() {
+    public String generateClientID() {
         String clientId = RandomStringUtils.random(MQTTConstants.CLIENT_ID_LENGTH, String.valueOf(System
                 .currentTimeMillis()));
         log.info("ClientID generated : " + clientId);
@@ -232,6 +232,28 @@ public class MQTTClientEngine {
             createSubscriberConnection(defaultConfigurations, topicName, qos, saveMessages, clientMode);
         }
     }
+    
+    
+    /**
+     * Create a given number of subscribers.
+     *
+     * @param topicName       Topic to subscribe to
+     * @param qos             Quality of Service
+     * @param noOfSubscribers Number of subscriber connections to create
+     * @param saveMessages    Save receiving messages
+     * @param clientMode      Client connection mode
+     * @param configuration   Configuration to use
+     * @throws MqttException
+     */
+    public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
+                                           boolean saveMessages, ClientMode clientMode, 
+                                           MQTTClientConnectionConfiguration configuration) throws MqttException {
+        
+        for (int i = 0; i < noOfSubscribers; i++) {
+            createSubscriberConnection(configuration, topicName, qos, saveMessages, clientMode);
+        }
+    }
+    
 
     /**
      * Create a given number of publishers.
@@ -247,19 +269,38 @@ public class MQTTClientEngine {
     public void createPublisherConnection(String topicName, QualityOfService qos, byte[] payload,
                                           int noOfPublishers, int noOfMessages, ClientMode clientMode) throws
             MqttException {
-        MQTTClientConnectionConfiguration defaultConfigurations = getDefaultConfigurations();
-        for (int i = 0; i < noOfPublishers; i++) {
-            createPublisherConnection(defaultConfigurations, topicName, qos, payload, noOfMessages, clientMode);
-        }
+    	createPublisherConnection(topicName, qos, payload, noOfPublishers, noOfMessages, clientMode, getDefaultConfigurations());
     }
 
+    /**
+     * Create a given number of publishers.
+     *
+     * @param topicName      Topic to publish to
+     * @param qos            Quality of Service
+     * @param payload        Payload of the sending message
+     * @param noOfPublishers Number of publisher connections to create
+     * @param noOfMessages   Number of message to send
+     * @param clientMode     Client connection mode
+     * @param configuration  Configuration to use.
+     * @throws MqttException
+     */
+    public void createPublisherConnection(String topicName, QualityOfService qos, byte[] payload,
+                                          int noOfPublishers, int noOfMessages, ClientMode clientMode, 
+                                          MQTTClientConnectionConfiguration configuration) throws MqttException {
+        
+        for (int i = 0; i < noOfPublishers; i++) {
+            createPublisherConnection(configuration, topicName, qos, payload, noOfMessages, clientMode);
+        }
+    }
+    
+    
     /**
      * Retrieve default MQTT client configurations. Always retrieve configurations from this unless there is a
      * specific requirement.
      *
      * @return Default MQTTClientConnectionConfigurations
      */
-    private MQTTClientConnectionConfiguration getDefaultConfigurations() {
+    public MQTTClientConnectionConfiguration getDefaultConfigurations() {
         MQTTClientConnectionConfiguration configuration = new MQTTClientConnectionConfiguration();
 
         configuration.setBrokerHost(MQTTConstants.BROKER_HOST);

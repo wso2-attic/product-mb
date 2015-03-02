@@ -26,8 +26,8 @@ public class MQTTConstants {
     public static final String BROKER_PROTOCOL = "tcp";
     public static final String BROKER_HOST = "localhost";
     public static final String BROKER_PORT = "1883";
-    public static final String BROKER_PASSWORD = null;
-    public static final String BROKER_USER_NAME = null;
+    public static final String BROKER_PASSWORD = "admin";
+    public static final String BROKER_USER_NAME = "admin";
 
     public static final byte[] TEMPLATE_PAYLOAD = "hello".getBytes();
 

@@ -48,6 +48,15 @@ public class AndesMQTTClient implements MqttCallback {
      */
     private final String clientId;
 
+    
+    /**
+     * Credentials to be used when connecting to MQTT server
+     */
+    private static final String DEFAULT_USER_NAME = "admin";
+    
+    private static final String DEFAULT_PASSWORD = "admin";
+    
+    
     /**
      * Create a new MQTT client with the given client Id. Return after the connection is successful.
      *
@@ -58,6 +67,9 @@ public class AndesMQTTClient implements MqttCallback {
         this.clientId = clientId;
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
+        options.setUserName(DEFAULT_USER_NAME);
+        options.setPassword(DEFAULT_PASSWORD.toCharArray());
+        
         mqttClient = new MqttClient(brokerURL, clientId, new MqttDefaultFilePersistence(tmpDir + File.separator +
                 clientId));
         mqttClient.setCallback(this);
