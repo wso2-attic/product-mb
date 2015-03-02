@@ -194,13 +194,13 @@ public class Main {
      * @throws MqttException
      */
     private static void listenToVehicleSensorStatuses() throws MqttException {
-        temperatureClient = new AndesMQTTClient("temperatureClient", true);
+        temperatureClient = new AndesMQTTClient("temperatureClient", true, MQTTSampleConstants.DEFAULT_USER_NAME, MQTTSampleConstants.DEFAULT_PASSWORD);
         temperatureClient.subscribe("+/+/+/" + Vehicle.ENGINE_TEMPERATURE, 1);
 
-        carClient = new AndesMQTTClient("carClient", true);
+        carClient = new AndesMQTTClient("carClient", true, MQTTSampleConstants.DEFAULT_USER_NAME, MQTTSampleConstants.DEFAULT_PASSWORD);
         carClient.subscribe(vehicleTypes.CAR.name() + "/#", 1);
 
-        harleySpeedClient = new AndesMQTTClient("harleySpeedClient", true);
+        harleySpeedClient = new AndesMQTTClient("harleySpeedClient", true, MQTTSampleConstants.DEFAULT_USER_NAME, MQTTSampleConstants.DEFAULT_PASSWORD);
         harleySpeedClient.subscribe(vehicleTypes.BIKE.name() + "/HarleyDavidsonNightRod/#", 1);
 
         // Print real time sensor data each second

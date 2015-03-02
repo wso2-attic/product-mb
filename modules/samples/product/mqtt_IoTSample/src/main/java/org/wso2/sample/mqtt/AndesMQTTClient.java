@@ -63,13 +63,19 @@ public class AndesMQTTClient implements MqttCallback {
      *
      * @param clientId     The unique client Id
      * @param cleanSession Clean previous session data
+     * @param userName User Name of the account
+     * @param password User Password of the account
+     * 
      * @throws MqttException
      */
-    public AndesMQTTClient(String clientId, boolean cleanSession) throws MqttException {
+    public AndesMQTTClient(String clientId, boolean cleanSession, String userName, String password) throws MqttException {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(cleanSession);
+        options.setUserName(userName);
+        options.setPassword(password.toCharArray());
+
         mqttClient = new MqttClient(MQTTSampleConstants.BROKER_URL, clientId,
-                new MqttDefaultFilePersistence(MQTTSampleConstants.TMP_DIR + File.pathSeparator + clientId));
+                new MqttDefaultFilePersistence(MQTTSampleConstants.TMP_DIR + File.separator + clientId));
         mqttClient.setCallback(this);
         mqttClient.connect(options);
     }

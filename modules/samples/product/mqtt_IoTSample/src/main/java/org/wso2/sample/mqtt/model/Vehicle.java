@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.wso2.sample.mqtt.AndesMQTTClient;
+import org.wso2.sample.mqtt.MQTTSampleConstants;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,7 +67,9 @@ public class Vehicle {
         setVehicleId(vehicleId);
         setVehicleModel(vehicleModel);
 
-        mqttClient = new AndesMQTTClient(vehicleId, true);
+        mqttClient = new AndesMQTTClient(vehicleId, true, 
+        						MQTTSampleConstants.DEFAULT_USER_NAME, 
+        						MQTTSampleConstants.DEFAULT_PASSWORD);
 
         // send sensor statuses to the server periodically.
         statusUpdateSchedule = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
