@@ -138,7 +138,7 @@ public class MBIntegrationUiBaseTest {
     }
 
     protected String getLoginURL() throws Exception{
-        return "https://localhost:9443/carbon/";
+        return "https://localhost:9443/carbon/admin/login.jsp";
     }
 
     protected LoginPage logout() throws Exception {

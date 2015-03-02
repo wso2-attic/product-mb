@@ -25,7 +25,6 @@ import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
 import java.io.File;
-import java.nio.file.Files;
 
 /**
  * This class allows a test case to edit the main server configuration (currently broker.xml) and apply it to the
@@ -33,14 +32,24 @@ import java.nio.file.Files;
  */
 public class ConfigurationEditor {
 
-    public static final String ORIGINAL_CONFIG_BACKUP_PREFIX = "original_";
-
+    /**
+     * File name prefix used for the updated configuration file.
+     */
     public static final String UPDATED_CONFIG_FILE_PREFIX = "updated_";
 
+    /**
+     * Configuration property holder
+     */
     public XMLConfiguration configuration;
 
+    /**
+     * File path of the original configuration file.
+     */
     public String originalConfigFilePath;
 
+    /**
+     * File path of the updated configuration file.
+     */
     public String updatedConfigFilePath;
 
     public ConfigurationEditor(String originalConfigFilePath) throws ConfigurationException {
@@ -57,9 +66,9 @@ public class ConfigurationEditor {
 
     /**
      * Update a property in loaded original configuration
-     * @param property
-     * @param value
-     * @return
+     * @param property AndesConfiguration property.
+     * @param value New value to be set
+     * @return the set value
      */
     public String updateProperty(AndesConfiguration property, String value) {
         configuration.setProperty(property.get().getKeyInFile(),value);
@@ -68,8 +77,8 @@ public class ConfigurationEditor {
 
     /**
      * Apply modified configuration and restart server
-     * @param serverConfigurationManager
-     * @return
+     * @param serverConfigurationManager Server configuration manager object from automation engine.
+     * @return true if the update was successful.
      * @throws Exception
      */
     public boolean applyUpdatedConfigurationAndRestartServer(ServerConfigurationManager serverConfigurationManager) throws Exception {
@@ -78,12 +87,6 @@ public class ConfigurationEditor {
         String originalConfigFileDirectory = originalConfigFilePath.substring(0,originalConfigFilePath.lastIndexOf(File.separator));
         String originalConfigFileName = originalConfigFilePath.substring(originalConfigFilePath.lastIndexOf(File.separator));
 
-        /*File originalConfigFile = new File(originalConfigFilePath);
-        File renamedOriginalConfigFile = new File(originalConfigFileDirectory + ORIGINAL_CONFIG_BACKUP_PREFIX + originalConfigFile.getName());
-        originalConfigFile.renameTo(renamedOriginalConfigFile);*/
-
-        //Save updated Configuration as updated_broker.xml in same path
-
         updatedConfigFilePath = originalConfigFileDirectory + UPDATED_CONFIG_FILE_PREFIX + originalConfigFileName;
         configuration.save(updatedConfigFilePath);
 
@@ -91,16 +94,5 @@ public class ConfigurationEditor {
 
         return true;
     }
-
-    /**
-     * Remove temporarily generated config file after running the test case. (recommended for the @cleanup method.)
-     * @return true if the delete was successful.
-     */
-    public boolean removeUpdatedConfigurationFile() {
-
-        File updatedFile = new File(updatedConfigFilePath);
-        return updatedFile.delete();
-    }
-
 
 }
