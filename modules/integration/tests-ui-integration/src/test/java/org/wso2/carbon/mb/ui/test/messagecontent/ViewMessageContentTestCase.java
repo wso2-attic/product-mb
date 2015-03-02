@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.mb.ui.test.jira;
+package org.wso2.carbon.mb.ui.test.messagecontent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,9 +43,9 @@ import java.io.File;
  * Refer wso2 jira : https://wso2.org/jira/browse/MB-939 for details.
  * Verify that the maximum display length is configurable for message content shown through management console.
  */
-public class MB939TestCase extends MBIntegrationUiBaseTest {
+public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
 
-    private static final Log log = LogFactory.getLog(MB939TestCase.class);
+    private static final Log log = LogFactory.getLog(ViewMessageContentTestCase.class);
 
     private static final int MESSAGE_SIZE_IN_BYTES = 1044375; //Size of MessageContentInput.txt
     private static final String TEST_QUEUE_NAME = "939TestQueue";
