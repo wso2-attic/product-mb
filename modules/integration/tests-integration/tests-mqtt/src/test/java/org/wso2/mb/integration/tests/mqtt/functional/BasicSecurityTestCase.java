@@ -64,7 +64,6 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
     public BasicSecurityTestCase(TestUserMode userMode){
         
         this.userMode = userMode;
-        log.info("RUNNING IN USER MODE: " + userMode);
         
     }
     
