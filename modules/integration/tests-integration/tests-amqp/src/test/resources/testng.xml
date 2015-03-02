@@ -40,7 +40,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
-           <!-- <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
+            <!-- <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>-->
@@ -66,6 +66,8 @@
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DifferentSubscriptionsWithDurableTopicTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveSecurityEnabledTestCase"/>
+
 
 
 
@@ -73,7 +75,6 @@
 
             <!-- Not working -->
             <!--
-
             -->
 
             <!-- load test cases-->
