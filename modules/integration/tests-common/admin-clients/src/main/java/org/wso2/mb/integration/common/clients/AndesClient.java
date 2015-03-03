@@ -108,7 +108,8 @@ public class AndesClient {
                 }
             }
         } else {
-            throw new AndesClientException("The amount of subscribers cannot be less than 1");
+            throw new AndesClientException("The amount of subscribers cannot be less than 1. " +
+                                           "Value entered is " + Integer.toString(numberOfThreads));
         }
     }
 
