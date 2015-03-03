@@ -45,7 +45,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>commons-configuration</groupId>
+            <groupId>commons-configuration.wso2</groupId>
             <artifactId>commons-configuration</artifactId>
             <scope>compile</scope>
         </dependency>

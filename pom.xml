@@ -209,10 +209,10 @@
             </dependency>
             <!-- for editing server configurations during tests -->
             <dependency>
-                <groupId>commons-configuration</groupId>
+                <groupId>commons-configuration.wso2</groupId>
                 <artifactId>commons-configuration</artifactId>
-                <version>${apache.commons.configuration.version}</version>
-                <scope>test</scope>
+                <version>${wso2.commons.configuration.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>commons-jxpath</groupId>
@@ -426,9 +426,8 @@
         <commons.lang.version>2.6.0.wso2v1</commons.lang.version>
         <testng.version>6.8.5</testng.version>
         <eclipse.paho.mqtt.client.version>0.4.0</eclipse.paho.mqtt.client.version>
-        <apache.commons.configuration.version>1.6</apache.commons.configuration.version>
+        <wso2.commons.configuration.version>1.6.0.wso2v1</wso2.commons.configuration.version>
         <apache.commons.jxpath.version>1.3</apache.commons.jxpath.version>
-        <commons.configuration.version>1.6.0.wso2v1</commons.configuration.version>
 
     </properties>
 
