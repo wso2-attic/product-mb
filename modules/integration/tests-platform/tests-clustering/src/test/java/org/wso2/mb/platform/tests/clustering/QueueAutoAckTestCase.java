@@ -27,7 +27,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -73,15 +74,17 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
     public void performMillionMessageTestCase()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
-                   IOException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         String randomInstanceKeyForReceiver = getRandomMBInstance();
 
         AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);

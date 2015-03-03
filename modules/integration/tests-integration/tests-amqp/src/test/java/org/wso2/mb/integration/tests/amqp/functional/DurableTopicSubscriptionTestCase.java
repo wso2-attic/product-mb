@@ -1,9 +1,28 @@
+/*
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
@@ -12,26 +31,29 @@ import javax.naming.NamingException;
 import java.io.IOException;
 
 /**
- * This class holds set of test cases to verify if durable topic
- * subscriptions happen according to spec.
+ * This class holds set of test cases to verify if durable topic subscriptions happen according to
+ * spec.
  */
 public class DurableTopicSubscriptionTestCase {
 
     /**
-     * Creating a client with a subscription ID and unSubscribe it and
-     * create another client with the same subscription ID.
+     * Creating a client with a subscription ID and unSubscribe it and create another client with
+     * the same subscription ID.
      *
      * @throws JMSException
      * @throws NamingException
      * @throws AndesClientConfigurationException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeDisconnectAndSubscribeAgainTest()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic1");
         consumerConfig.setDurable(true, "durableSub1");
 
         // Creating clients
@@ -56,21 +78,24 @@ public class DurableTopicSubscriptionTestCase {
         secondaryConsumerClient.stopClient();
     }
 
-
     /**
-     * Create with sub id=x topic=y. Try another subscription with same params.
-     * should rejects the subscription.
+     * Create with sub id=x topic=y. Try another subscription with same params. should rejects the
+     * subscription.
      *
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      * @throws AndesClientConfigurationException
+     * @throws AndesClientException
      */
-    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = javax.jms.JMSException.class, expectedExceptionsMessageRegExp = ".*Cannot subscribe to queue .* as it already has an existing exclusive consumer.*")
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = javax.jms.JMSException.class,
+            expectedExceptionsMessageRegExp = ".*Cannot subscribe to queue .* as it already has an existing exclusive consumer.*")
     public void multipleSubsWithSameIdTest()
-            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException,
+                   AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic2");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic2");
         consumerConfig.setDurable(true, "sriLanka");
 
         // Creating clients
@@ -99,14 +124,16 @@ public class DurableTopicSubscriptionTestCase {
      * @throws AndesClientConfigurationException
      * @throws IOException
      * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDifferentIdTest()
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic3");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic3");
         consumerConfig.setDurable(true, "test1");
 
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig = consumerConfig.clone();
@@ -141,14 +168,16 @@ public class DurableTopicSubscriptionTestCase {
      * @throws AndesClientConfigurationException
      * @throws IOException
      * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = javax.jms.JMSException.class, expectedExceptionsMessageRegExp = ".*An Exclusive Bindings already exists for different topic.*")
     public void multipleSubsToDifferentTopicsWithSameSubIdTest()
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic4");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic4");
         consumerConfig.setDurable(true, "test3");
 
         // Creating clients
@@ -180,13 +209,16 @@ public class DurableTopicSubscriptionTestCase {
      * @throws NamingException
      * @throws AndesClientConfigurationException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void durableTopicWithNormalTopicTest()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
         consumerConfig.setDurable(true, "test5");
 
         // Creating clients
@@ -195,7 +227,8 @@ public class DurableTopicSubscriptionTestCase {
 
         AndesClientUtils.sleepForInterval(2000L);
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic5");
         AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
@@ -218,13 +251,15 @@ public class DurableTopicSubscriptionTestCase {
      * @throws AndesClientConfigurationException
      * @throws CloneNotSupportedException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void multipleSubsWithDiffIDsToSameTopicTest()
             throws JMSException, NamingException, AndesClientConfigurationException,
-                   CloneNotSupportedException, IOException {
+                   CloneNotSupportedException, IOException, AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration firstConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubTopic");
+        AndesJMSConsumerClientConfiguration firstConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubTopic");
         firstConsumerConfig.setDurable(true, "new1");
 
         AndesJMSConsumerClientConfiguration secondConsumerConfig = firstConsumerConfig.clone();
@@ -269,22 +304,26 @@ public class DurableTopicSubscriptionTestCase {
     /**
      * 1. Create with sub id= x topic=y.
      * 2. UnSubscribe.
-     * 3. Now try sub id= x topic=z
+     * 3. Now try sub id= x topic=z.
      *
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      * @throws AndesClientConfigurationException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void subscribeUnSubscribeAndTryDifferentTopicTest()
-            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException,
+                   AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic8");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic8");
         consumerConfig.setDurable(true, "test8");
 
-        AndesJMSConsumerClientConfiguration secondaryConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic9");
+        AndesJMSConsumerClientConfiguration secondaryConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic9");
         consumerConfig.setDurable(true, "test8");
 
 

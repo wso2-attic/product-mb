@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -53,6 +54,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
+     *
+     * @throws XPathExpressionException
      */
     @BeforeClass
     public void prepare() throws XPathExpressionException {
@@ -70,14 +73,16 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 6. Publish messages to "games.cricket".
      * 7. Messages should receive for second subscriber.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsTopicOnlyTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         /**
          * topic only option. Here we subscribe to games.cricket and verify that only messages
@@ -90,7 +95,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient sendingClient1 = getPublishingClientForTopic("games");
         sendingClient1.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages specific to games.cricket topic. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -101,15 +107,20 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient sendingClient2 = getPublishingClientForTopic("games.cricket");
         sendingClient2.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating publishers
-        Assert.assertEquals(sendingClient1.getSentMessageCount(), SEND_COUNT, "Publisher client1 failed to publish messages");
-        Assert.assertEquals(sendingClient2.getSentMessageCount(), SEND_COUNT, "Publisher client2 failed to publish messages");
+        Assert.assertEquals(sendingClient1
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher client1 failed to publish messages");
+        Assert.assertEquals(sendingClient2
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher client2 failed to publish messages");
 
         // Evaluating consumers
-        Assert.assertEquals(receivingClient1.getReceivedMessageCount(), 0, "Messages received when subscriber should not receive messages.");
-        Assert.assertEquals(receivingClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for games.cricket.");
+        Assert.assertEquals(receivingClient1
+                                    .getReceivedMessageCount(), 0, "Messages received when subscriber should not receive messages.");
+        Assert.assertEquals(receivingClient2
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for games.cricket.");
     }
 
     /**
@@ -126,14 +137,16 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 10. Publish messages to "games.cricket.sl".
      * 11. No messages should be received for the first subscription.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsImmediateChildrenTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         // Creating clients
         AndesClient consumerClient3 = getConsumerClientForTopic("games.*");
@@ -142,7 +155,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient3 = getPublishingClientForTopic("games");
         publisherClient3.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(1000);
 
@@ -153,7 +167,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient4 = getPublishingClientForTopic("games.football");
         publisherClient4.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(1000);
 
@@ -164,19 +179,26 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sl");
         publisherClient5.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating publishers
-        Assert.assertEquals(publisherClient3.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient3 failed to publish messages.");
-        Assert.assertEquals(publisherClient4.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient4 failed to publish messages.");
-        Assert.assertEquals(publisherClient5.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient5 failed to publish messages.");
+        Assert.assertEquals(publisherClient3
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient3 failed to publish messages.");
+        Assert.assertEquals(publisherClient4
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient4 failed to publish messages.");
+        Assert.assertEquals(publisherClient5
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient5 failed to publish messages.");
 
         // Evaluating consumers
-        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient3 should not receive messages.");
+        Assert.assertEquals(consumerClient3
+                                    .getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient3 should not receive messages.");
 
-        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient4.");
+        Assert.assertEquals(consumerClient4
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient4.");
 
-        Assert.assertEquals(consumerClient5.getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient5 should not receive messages.");
+        Assert.assertEquals(consumerClient5
+                                    .getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient5 should not receive messages.");
 
 
     }
@@ -192,14 +214,16 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 6. Publish messages to "games.football.sl".
      * 7. Messages should receive for second subscriber.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsChildrenTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         //we should  get any message here
         AndesClient consumerClient6 = getConsumerClientForTopic("games.#");
@@ -208,7 +232,8 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient6 = getPublishingClientForTopic("games");
         publisherClient6.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient6, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient6, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //now we send messages to level 2 child. We should receive messages here
         AndesClientUtils.sleepForInterval(1000);
@@ -219,15 +244,20 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient7 = getPublishingClientForTopic("games.football.sl");
         publisherClient7.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient7, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient7, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating publishers
-        Assert.assertEquals(publisherClient6.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient6 failed to publish messages.");
-        Assert.assertEquals(publisherClient7.getSentMessageCount(), SEND_COUNT, "Publisher publisherClient7 failed to publish messages.");
+        Assert.assertEquals(publisherClient6
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient6 failed to publish messages.");
+        Assert.assertEquals(publisherClient7
+                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient7 failed to publish messages.");
 
         // Evaluating consumers
-        Assert.assertEquals(consumerClient6.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient6.");
-        Assert.assertEquals(consumerClient7.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient7.");
+        Assert.assertEquals(consumerClient6
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient6.");
+        Assert.assertEquals(consumerClient7
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient7.");
     }
 
     /**
@@ -235,14 +265,18 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      *
      * @param topicName Topic name
      * @return The andes client.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     private AndesClient getConsumerClientForTopic(String topicName)
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
         // Creating a JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
@@ -254,14 +288,18 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      *
      * @param topicName Topic name
      * @return The andes client.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     private AndesClient getPublishingClientForTopic(String topicName)
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
         // Creating a JMS publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

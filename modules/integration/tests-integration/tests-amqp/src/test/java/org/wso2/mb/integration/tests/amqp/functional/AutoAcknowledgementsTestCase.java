@@ -24,8 +24,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -67,10 +68,17 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * 2. Publisher sends {@link #SEND_COUNT} amount of messages.
      * 3. Receiver receives {@link #EXPECTED_COUNT}
      * 4. Check whether all messages received.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"}, description = "Single queue send-receive test case with auto Ack")
     public void autoAcknowledgementsTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueue");
@@ -105,11 +113,19 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * 5. Start a second queue receiver in auto acknowledge mode.
      * 6. Second receiver will read up 500 messages.
      * 7. Check whether total received messages were equal to {@link #EXPECTED_COUNT}.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws CloneNotSupportedException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"}, description = "Single queue send-receive test case with dropping the receiving client")
     public void autoAcknowledgementsDropReceiverTestCase()
-            throws AndesClientConfigurationException, CloneNotSupportedException, JMSException, NamingException,
-                   IOException {
+            throws AndesClientConfigurationException, CloneNotSupportedException, JMSException,
+                   NamingException,
+                   IOException, AndesClientException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");

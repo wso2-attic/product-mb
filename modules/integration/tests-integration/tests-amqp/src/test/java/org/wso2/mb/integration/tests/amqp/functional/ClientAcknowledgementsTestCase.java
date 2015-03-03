@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -70,20 +71,31 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * 2. Publisher sends {@link #SEND_COUNT} messages.
      * 3. Consumer receives messages and only acknowledge after each 200 messages.
      * 4. Consumer should receive {@link #EXPECTED_COUNT} messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void performClientAcknowledgementsTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
-        consumerConfig.setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
+        consumerConfig
+                .setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
+        consumerConfig
+                .setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a JMS publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
@@ -93,16 +105,19 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
         consumerClient2.startClient();
 
         AndesClientUtils.sleepForInterval(2000);
 
-        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount();
+        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2
+                .getReceivedMessageCount();
 
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
     }
 }

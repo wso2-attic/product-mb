@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -83,11 +84,18 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
      * 4. Start subscriber
      * 5. Verify that the subscriber has received remaining 300 messages.
      * 6. Pass test case if and only if 600 messages in total have been received.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single durable topic send-receive test case with jms expiration")
     public void performExpiryDurableTopicTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Creating a subscriber client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicWithExpiration");

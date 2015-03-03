@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -63,18 +64,21 @@ public class MultiThreadedMultipleTopicTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * 1. Create 45 topic subscribers (there will be three for each topic) thus there will be 15 topics.
+     * 1. Create 45 topic subscribers (there will be three for each topic) thus there will be 15
+     * topics.
      * 2. Send 30000 messages , 2000 for each topic.
      * 3. Verify that all messages are received and no more messages are received.
      *
      * @throws JMSException
      * @throws NamingException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performMultiThreadedMultipleTopicTestCase()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
         for (String DESTINATION : DESTINATIONS) {
             // Creating a consumer client configuration
             AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, DESTINATION);

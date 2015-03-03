@@ -31,9 +31,10 @@ import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -86,18 +87,21 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * Publish message to a single topic in a single node by one publisher and subscribe to
      * that topic with two subscribers
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single node single publisher two subscribers test " +
                                             "case", enabled = true)
     public void testMultipleSubscribers()
-            throws AndesClientConfigurationException, XPathExpressionException, NamingException, JMSException,
-                   IOException, TopicManagerAdminServiceEventAdminExceptionException {
+            throws AndesClientConfigurationException, XPathExpressionException, NamingException,
+                   JMSException,
+                   IOException, TopicManagerAdminServiceEventAdminExceptionException,
+                   AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 2000L;
 
@@ -148,18 +152,21 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * Publish message to a single topic in a single node by one publisher and subscribe to
      * that topic with many subscribers
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single node single publisher multiple subscribers " +
                                             "test case", enabled = true)
     public void testBulkSubscribers()
-            throws AndesClientConfigurationException, NamingException, JMSException, XPathExpressionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException,
+                   XPathExpressionException,
+                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+                   AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
 
@@ -183,7 +190,8 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
 
         // Check if topic is created
         TopicNode topic = topicAdminClient.getTopicByName("mulSubTopic2");
-        assertTrue(topic.getTopicName().equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
+        assertTrue(topic.getTopicName()
+                           .equalsIgnoreCase("mulSubTopic2"), "Topic created in MB node 1 not exist");
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
@@ -200,17 +208,20 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * that topic with one subscribers
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single node multiple publishers single subscriber " +
                                             "test case", enabled = true)
     public void testBulkPublishers()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+                   AndesClientException {
         long sendCount = 100000L;
         long expectedCount = 100000L;
 
@@ -254,8 +265,9 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws IOException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single node multiple publishers multiple " +
                                             "subscribers test case", enabled = true)
@@ -263,7 +275,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
                                                            TopicManagerAdminServiceEventAdminExceptionException,
                                                            IOException,
                                                            AndesClientConfigurationException,
-                                                           NamingException {
+                                                           NamingException, AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
 
@@ -304,17 +316,20 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * that topic with multiple subscribers from another node
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "multiple node multiple publishers multiple " +
                                             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribersDifferentNodes()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+                   AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
 

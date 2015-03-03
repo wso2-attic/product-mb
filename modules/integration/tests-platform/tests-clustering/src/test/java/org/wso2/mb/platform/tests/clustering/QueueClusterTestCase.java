@@ -30,9 +30,10 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -77,7 +78,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws IOException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      */
@@ -85,8 +86,9 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     public void testSingleQueueSingleNodeSendReceive() throws XPathExpressionException,
                                                               AndesAdminServiceBrokerManagerAdminException,
                                                               IOException,
-                                                              AndesClientConfigurationException, NamingException,
-                                                              JMSException {
+                                                              AndesClientConfigurationException,
+                                                              NamingException,
+                                                              JMSException, AndesClientException {
 
         long sendCount = 1000L;
         long expectedCount = 1000L;
@@ -168,7 +170,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws IOException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      */
@@ -177,7 +179,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                                                              AndesAdminServiceBrokerManagerAdminException,
                                                              IOException,
                                                              AndesClientConfigurationException,
-                                                             NamingException, JMSException {
+                                                             NamingException, JMSException,
+                                                             AndesClientException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 

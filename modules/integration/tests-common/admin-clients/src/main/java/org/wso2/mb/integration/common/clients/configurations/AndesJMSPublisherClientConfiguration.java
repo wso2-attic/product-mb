@@ -20,7 +20,7 @@ package org.wso2.mb.integration.common.clients.configurations;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
@@ -187,7 +187,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * publishing.
      *
      * @param readMessagesFromFilePath The file path.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws FileNotFoundException
      */
     public void setReadMessagesFromFilePath(String readMessagesFromFilePath)
@@ -231,7 +231,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * Sets the number of messages to be sent by the publisher
      *
      * @param numberOfMessagesToSend The number of messages.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      */
     public void setNumberOfMessagesToSend(long numberOfMessagesToSend)
             throws AndesClientConfigurationException {
@@ -256,7 +256,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * Sets the message expiry time.
      *
      * @param jmsMessageExpiryTime The message expiry time.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      */
     public void setJMSMessageExpiryTime(long jmsMessageExpiryTime) throws
                                                                    AndesClientConfigurationException {

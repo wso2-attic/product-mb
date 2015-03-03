@@ -28,9 +28,10 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -71,10 +72,11 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
      * Multiple subscribers and publishers in same node for a single queue
      *
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node single queue multiple subscriber " +
                                             "publisher test case")
@@ -82,7 +84,8 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                                                      XPathExpressionException,
                                                                      AndesClientConfigurationException,
                                                                      NamingException, JMSException,
-                                                                     IOException {
+                                                                     IOException,
+                                                                     AndesClientException {
         // Number of messages expected
         long expectedCount = 250L;
         // Number of messages send
@@ -139,17 +142,19 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for a single queue
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple node single queue multiple subscriber " +
                                             "publisher test case")
     public void testMultiNodeSingleQueueMultipleSubscriberPublisher()
-            throws AndesClientConfigurationException, XPathExpressionException, NamingException, JMSException,
-                   IOException {
+            throws AndesClientConfigurationException, XPathExpressionException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Number of messages expected
         long expectedCount = 250L;
         // Number of messages send
@@ -218,12 +223,13 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for Multiple queues
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
      * @throws IOException
      * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple node Multiple queue multiple subscriber " +
                                             "publisher test case")
@@ -233,7 +239,8 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
                                                                         JMSException,
                                                                         XPathExpressionException,
                                                                         IOException,
-                                                                        CloneNotSupportedException {
+                                                                        CloneNotSupportedException,
+                                                                        AndesClientException {
         // Number of messages expected
         long expectedCount = 250L;
         // Number of messages send

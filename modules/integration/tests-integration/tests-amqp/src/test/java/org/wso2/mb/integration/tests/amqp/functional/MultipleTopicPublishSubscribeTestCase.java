@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -65,14 +66,16 @@ public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest
      * 2. Use two publishers for t1 and one for t2.
      * 3. Check if messages were received correctly.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "topic"})
     public void performMultipleTopicPublishSubscribeTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         // Creating a consumer client configurations
         AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");

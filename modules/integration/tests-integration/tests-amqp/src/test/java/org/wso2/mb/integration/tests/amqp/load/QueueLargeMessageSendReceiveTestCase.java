@@ -29,7 +29,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -59,14 +60,16 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
     /**
      * Send 1000 messages of 1MB value and check 1000 messages are received by the consumer.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws IOException
      * @throws NamingException
      * @throws JMSException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"}, enabled = false)
     public void performQueueOneMBSizeMessageSendReceiveTestCase()
-            throws AndesClientConfigurationException, IOException, NamingException, JMSException {
+            throws AndesClientConfigurationException, IOException, NamingException, JMSException,
+                   AndesClientException {
         long sendCount = 1000L;
 
         // Creating a consumer client configuration
@@ -104,14 +107,16 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
      * Send 10 messages of size 10MB and check whether consumer receives the same amount of
      * messages
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"}, enabled = true)
     public void performQueueTenMBSizeMessageSendReceiveTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
         long sendCount = 10L;
 
         // Creating a file of 10MB

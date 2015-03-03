@@ -19,6 +19,7 @@ package org.wso2.mb.integration.common.clients;
 
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
@@ -103,12 +104,14 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
         // Creates a JMS connection, sessions and sender
         if (createPublisher) {
-            ConnectionFactory connFactory = (ConnectionFactory) super.getInitialContext().lookup(AndesClientConstants.CF_NAME);
+            ConnectionFactory connFactory = (ConnectionFactory) super.getInitialContext()
+                    .lookup(AndesClientConstants.CF_NAME);
             connection = connFactory.createConnection();
             connection.start();
             this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            Destination destination = (Destination) super.getInitialContext().lookup(this.publisherConfig.getDestinationName());
+            Destination destination = (Destination) super.getInitialContext()
+                    .lookup(this.publisherConfig.getDestinationName());
             this.sender = this.session.createProducer(destination);
         }
 
@@ -118,7 +121,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
      * {@inheritDoc}
      */
     @Override
-    public void startClient() throws JMSException, NamingException, IOException {
+    public void startClient() throws AndesClientException, IOException {
         if (null != connection && null != session && null != sender) {
             //reading message content from file
             if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
@@ -128,7 +131,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             Thread subscriberThread = new Thread(this);
             subscriberThread.start();
         } else {
-            throw new NullPointerException("The connection, session and message sender is not assigned.");
+            throw new AndesClientException("The connection, session and message sender is not assigned.");
         }
     }
 
@@ -136,24 +139,19 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
      * {@inheritDoc}
      */
     @Override
-    public void stopClient() throws JMSException {
+    public void stopClient() throws JMSException, AndesClientException {
         if (null != connection && null != session && null != sender) {
-            try {
-                long threadID = Thread.currentThread().getId();
-                log.info("Closing publisher | ThreadID : " + threadID);
-                this.sender.close();
-                this.session.close();
-                this.connection.close();
-                this.sender = null;
-                this.session = null;
-                this.connection = null;
-                log.info("Publisher closed | ThreadID : " + threadID);
-            } catch (JMSException e) {
-                log.error("Error while stopping the publisher.", e);
-                throw e;
-            }
+            long threadID = Thread.currentThread().getId();
+            log.info("Closing publisher | ThreadID : " + threadID);
+            this.sender.close();
+            this.session.close();
+            this.connection.close();
+            this.sender = null;
+            this.session = null;
+            this.connection = null;
+            log.info("Publisher closed | ThreadID : " + threadID);
         } else {
-            throw new NullPointerException("The connection, session and message sender is not assigned.");
+            throw new AndesClientException("The connection, session and message sender is not assigned.");
         }
     }
 
@@ -165,7 +163,8 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
      */
     public void getMessageContentFromFile() throws IOException {
         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
-            BufferedReader br = new BufferedReader(new FileReader(this.publisherConfig.getReadMessagesFromFilePath()));
+            BufferedReader br = new BufferedReader(new FileReader(this.publisherConfig
+                                                                          .getReadMessagesFromFilePath()));
             try {
                 StringBuilder sb = new StringBuilder();
                 String line = br.readLine();
@@ -199,7 +198,8 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                         message = this.session.createTextMessage(this.messageContentFromFile);
                     } else {
-                        message = this.session.createTextMessage(MessageFormat.format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
+                        message = this.session.createTextMessage(MessageFormat
+                                                                         .format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
                     }
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
@@ -212,7 +212,8 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 }
 
                 if (null != message) {
-                    this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig.getJMSMessageExpiryTime());
+                    this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig
+                            .getJMSMessageExpiryTime());
                     this.sentMessageCount++;
 
                     // TPS calculation
@@ -222,26 +223,35 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     }
 
                     this.lastMessagePublishTimestamp = currentTimeStamp;
-                    if (0 == this.sentMessageCount % this.publisherConfig.getPrintsPerMessageCount()) {
+                    if (0 == this.sentMessageCount % this.publisherConfig
+                            .getPrintsPerMessageCount()) {
                         // Logging the sent message details.
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +
-                                     threadID + " Destination(" + this.publisherConfig.getExchangeType().getType() + "):" +
-                                     this.publisherConfig.getDestinationName() + " SentMessageCount:" +
+                                     threadID + " Destination(" + this.publisherConfig
+                                    .getExchangeType().getType() + "):" +
+                                     this.publisherConfig
+                                             .getDestinationName() + " SentMessageCount:" +
                                      this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         } else {
                             log.info("[SEND]" + " (INBUILT MESSAGE) ThreadID:" +
-                                     threadID + " Destination(" + this.publisherConfig.getExchangeType().getType() + "):" +
-                                     this.publisherConfig.getDestinationName() + " SentMessageCount:" +
+                                     threadID + " Destination(" + this.publisherConfig
+                                    .getExchangeType().getType() + "):" +
+                                     this.publisherConfig
+                                             .getDestinationName() + " SentMessageCount:" +
                                      this.sentMessageCount + " CountToSend:" +
                                      this.publisherConfig.getNumberOfMessagesToSend());
                         }
                     }
                     // Writing statistics
                     if (null != this.publisherConfig.getFilePathToWriteStatistics()) {
-                        String statisticsString = ",,,," + Long.toString(currentTimeStamp) + "," + Double.toString(this.getPublisherTPS());
-                        AndesClientUtils.writeStatisticsToFile(statisticsString, this.publisherConfig.getFilePathToWriteStatistics());
+                        String statisticsString =
+                                ",,,," + Long.toString(currentTimeStamp) + "," + Double
+                                        .toString(this.getPublisherTPS());
+                        AndesClientUtils
+                                .writeStatisticsToFile(statisticsString, this.publisherConfig
+                                        .getFilePathToWriteStatistics());
                     }
 
                     // Delaying the publishing of messages
@@ -258,10 +268,12 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             this.stopClient();
         } catch (JMSException e) {
             log.error("Error while publishing messages", e);
-            throw new RuntimeException("JMSException : Error while publishing messages", e);
+            throw new RuntimeException("Error while publishing messages", e);
         } catch (IOException e) {
             log.error("Error while writing statistics", e);
-            throw new RuntimeException("IOException : Error while writing statistics", e);
+            throw new RuntimeException("Error while writing statistics", e);
+        } catch (AndesClientException e) {
+            throw new RuntimeException("The connection, session and message sender is not assigned.", e);
         }
     }
 
@@ -341,8 +353,8 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
     }
 
     /**
-     * Sets the JMS message producer ({@link javax.jms.MessageProducer}).
-     * Suppressing "UnusedDeclaration" as the client acts as a service.
+     * Sets the JMS message producer ({@link javax.jms.MessageProducer}). Suppressing
+     * "UnusedDeclaration" as the client acts as a service.
      *
      * @param sender A {@link javax.jms.MessageProducer}.
      */

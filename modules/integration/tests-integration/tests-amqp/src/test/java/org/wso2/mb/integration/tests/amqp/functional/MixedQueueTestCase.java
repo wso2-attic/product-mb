@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -56,16 +57,17 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
      * 2. Send messages with and without expiry as configured
      * 3. Verify that only messages without expiry have been received and that both types of messages have been sent.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
      * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case with 50% expired messages")
     public void performSingleQueueExpirySendReceiveTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Message send count
         long sendCount = 1000L;
@@ -113,14 +115,16 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
      * 2. Send messages with and without expiration as configured
      * 3. Verify that the total number of messages received by both subscribers is equal to message count sent with no expiration.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "send messages to a queue which has two consumers with jms expiration")
     public void performManyQueueExpirySendReceiveTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         // Message send count
         long sendCount = 1000L;

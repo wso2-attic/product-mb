@@ -30,9 +30,10 @@ import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExc
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -74,37 +75,51 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
 
         automationContext = getAutomationContextWithKey("mb002");
         topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
-                                                super.login(automationContext), ConfigurationContextProvider.getInstance().getConfigurationContext());
+                                                super.login(automationContext), ConfigurationContextProvider
+                .getInstance().getConfigurationContext());
 
     }
 
     /**
      * Subscribe to a durable topic and publish messages to that topic
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void pubSubDurableTopicTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException, XPathExpressionException,
-                   IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException,
+                   XPathExpressionException,
+                   IOException, AndesClientException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.TOPIC, "durableTopicMessageDelivering");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, "durableTopicMessageDelivering");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig.setDurable(true, "durableTopicSub5");    // durable topic
-        consumerConfig.setUnSubscribeAfterEachMessageCount(500L);   // Un-Subscribes messages at this message count
+        consumerConfig
+                .setUnSubscribeAfterEachMessageCount(500L);   // Un-Subscribes messages at this message count
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.TOPIC, "durableTopicMessageDelivering");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, "durableTopicMessageDelivering");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
@@ -115,11 +130,14 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
     }
 
     /**

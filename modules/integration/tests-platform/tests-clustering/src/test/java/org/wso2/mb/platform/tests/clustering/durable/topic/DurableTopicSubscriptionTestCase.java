@@ -26,9 +26,10 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -72,11 +73,18 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
 
     /**
      * Create with sub id= x topic=y. Disconnect and try to connect again from a different node.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Reconnect to topic with same sub ID after " +
                                             "disconnecting", enabled = true)
     public void subscribeDisconnectAndSubscribeAgainTest()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic1");
         consumerConfig.setDurable(true, "durableTopic1");
@@ -109,11 +117,18 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     /**
      * Create with sub id= x topic=y. try another subscription from a different node with same
      * params.Should rejects the subscription
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Try to connect to a topic with same subscription ID " +
                                             "which is already a subscription", enabled = true)
     public void multipleSubsWithSameIdTest()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic2");
         consumerConfig.setDurable(true, "durableTopic2Sub");
@@ -142,11 +157,18 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     /**
      * Create with sub id= x topic=y. try another subscription from a different node with a
      * different subscription ID.Should allow the subscription
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Try to connect to same topic with different " +
                                             "subscription IDs", enabled = true)
     public void multipleSubToSameTopicTest()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic3");
         consumerConfig.setDurable(true, "durableTopic3Sub1");
@@ -175,11 +197,18 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     /**
      * Create with sub id= x topic=y. Unsubscribe and try to connect another subscription for the
      * same topic from a different node.
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Reconnect to topic with different sub ID after " +
                                             "unsubscribing", enabled = true)
     public void subscribeUnsubscribeWithDifferentIDsTest()
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws JMSException, NamingException, AndesClientConfigurationException, IOException,
+                   AndesClientException {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic5");
         consumerConfig.setDurable(true, "durableTopic5Sub1");
@@ -209,11 +238,18 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     /**
      * Create with sub id= x topic=y. Unsubscribe. Then try to connect with the same subscription
      * to a different topic from another node
+     *
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientConfigurationException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Connect to a different topic with same sub ID after " +
                                             "unsubscribing", enabled = true)
     public void sameIdDifferentTopicsTest()
-            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException,
+                   AndesClientException {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic6");
         consumerConfig.setDurable(true, "durableTopic6Sub1");
@@ -247,12 +283,16 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
      *
      * @throws JMSException
      * @throws NamingException
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Create all kinds of subscriptions for same " +
                                             "topic/queue name", enabled = true)
     public void allKindOfSubscriptionsTest()
             throws JMSException, NamingException, XPathExpressionException,
-                   AndesClientConfigurationException, IOException {
+                   AndesClientConfigurationException, IOException, AndesClientException {
 
         // Creating configurations
         AndesJMSConsumerClientConfiguration firstConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "wso2");

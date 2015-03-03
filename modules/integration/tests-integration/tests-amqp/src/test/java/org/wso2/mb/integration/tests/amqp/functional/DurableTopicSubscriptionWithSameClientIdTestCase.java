@@ -27,8 +27,9 @@ import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -40,13 +41,14 @@ import java.io.IOException;
 
 
 /**
- * This class holds test case to verify if shared durable topic subscriptions.
- * Shared durable topic subscriptions has enabled in broker.xml and tested in following test class.
+ * This class holds test case to verify if shared durable topic subscriptions. Shared durable topic
+ * subscriptions has enabled in broker.xml and tested in following test class.
  */
 public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrationBaseTest {
 
     /**
-     * Expected amount set to more than what is received as the amount of messages received by the subscribers are unknown but the total should be the same amount as sent
+     * Expected amount set to more than what is received as the amount of messages received by the
+     * subscribers are unknown but the total should be the same amount as sent
      */
     private static final long EXPECTED_COUNT = 500L;
     private static final long SEND_COUNT = 12L;
@@ -66,7 +68,8 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         // Replace the broker.xml with the allowSharedTopicSubscriptions configuration enabled under amqp
         // and restarts the server.
-        super.serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
+        super.serverManager.applyConfiguration(new File(FrameworkPathUtil
+                                                                .getSystemResourceLocation() + File.separator +
                                                         "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator +
                                                         "allowSharedTopicSubscriptionsConfig" + File.separator + "broker.xml"),
                                                new File(ServerConfigurationManager.getCarbonHome() +
@@ -75,23 +78,31 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
     }
 
-
     /**
-     * Start 3 durable subscribers. Start publisher which sends 12 messages.
-     * Get the total count received by all durable subscribers and compare with sent message count of the publisher.
+     * Start 3 durable subscribers. Start publisher which sends 12 messages. Get the total count
+     * received by all durable subscribers and compare with sent message count of the publisher.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicWithSameClientIdTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Creating a JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setDurable(true, "sameClientIDSub1");
 
         // Creating a JMS consumer client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -107,13 +118,19 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        long totalReceivingMessageCount = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() + consumerClient3.getReceivedMessageCount();
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        long totalReceivingMessageCount =
+                consumerClient1.getReceivedMessageCount() + consumerClient2
+                        .getReceivedMessageCount() + consumerClient3.getReceivedMessageCount();
         Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT, "Message receive count not equal to sent message count.");
 
     }

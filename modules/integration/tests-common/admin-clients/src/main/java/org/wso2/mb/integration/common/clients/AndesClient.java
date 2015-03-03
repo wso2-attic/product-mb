@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
@@ -71,7 +71,7 @@ public class AndesClient {
      * @throws NamingException
      */
     public AndesClient(AndesJMSClientConfiguration config, boolean createConsumersAndProducers)
-            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+            throws NamingException, JMSException, AndesClientException, IOException {
         this(config, 1, createConsumersAndProducers);
     }
 
@@ -86,36 +86,39 @@ public class AndesClient {
      *                                    and respecting receivers or consumers. False otherwise.
      * @throws JMSException
      * @throws NamingException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientException
      */
     public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads,
                        boolean createConsumersAndProducers)
-            throws JMSException, NamingException, AndesClientConfigurationException, IOException {
+            throws IOException, JMSException, NamingException, AndesClientException {
         if (0 < numberOfThreads) {
             if (config instanceof AndesJMSConsumerClientConfiguration) {
-                AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages());
+                AndesClientUtils
+                        .initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config)
+                                                                       .getFilePathToWriteReceivedMessages());
             }
 
             for (int i = 0; i < numberOfThreads; i++) {
                 if (config instanceof AndesJMSConsumerClientConfiguration) {
-                    consumers.add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config, createConsumersAndProducers));
+                    consumers
+                            .add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config, createConsumersAndProducers));
                 } else if (config instanceof AndesJMSPublisherClientConfiguration) {
-                    publishers.add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config, createConsumersAndProducers));
+                    publishers
+                            .add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config, createConsumersAndProducers));
                 }
             }
         } else {
-            throw new AndesClientConfigurationException("The amount of subscribers cannot be less than 1");
+            throw new AndesClientException("The amount of subscribers cannot be less than 1");
         }
     }
 
     /**
      * Starts up the consumer(s) or publisher(s) to consume or publish messages.
      *
-     * @throws NamingException
      * @throws JMSException
      * @throws IOException
      */
-    public void startClient() throws NamingException, JMSException, IOException {
+    public void startClient() throws AndesClientException, JMSException, IOException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.startClient();
             if (this.startDelay > 0L) {
@@ -135,7 +138,7 @@ public class AndesClient {
      *
      * @throws JMSException
      */
-    public void stopClient() throws JMSException {
+    public void stopClient() throws JMSException, AndesClientException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.stopClient();
         }
@@ -199,8 +202,8 @@ public class AndesClient {
     }
 
     /**
-     * Gets the average transactions per seconds for publisher(s).
-     * Suppressing "UnusedDeclaration" as the client acts as an service.
+     * Gets the average transactions per seconds for publisher(s). Suppressing "UnusedDeclaration"
+     * as the client acts as an service.
      *
      * @return the average transactions per seconds.
      */
@@ -224,7 +227,8 @@ public class AndesClient {
         if (0 < consumers.size()) {
             AndesClientUtils.flushPrintWriters();
             AndesClientOutputParser andesClientOutputParser =
-                    new AndesClientOutputParser(consumers.get(0).getConfig().getFilePathToWriteReceivedMessages());
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
             return andesClientOutputParser.getDuplicatedMessages();
         } else {
             return null;
@@ -241,7 +245,8 @@ public class AndesClient {
             throws IOException {
         if (0 < consumers.size()) {
             AndesClientOutputParser andesClientOutputParser =
-                    new AndesClientOutputParser(consumers.get(0).getConfig().getFilePathToWriteReceivedMessages());
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
             return andesClientOutputParser.checkIfMessagesAreInOrder();
         } else {
             return false;
@@ -258,7 +263,8 @@ public class AndesClient {
             throws IOException {
         if (0 < consumers.size()) {
             AndesClientOutputParser andesClientOutputParser =
-                    new AndesClientOutputParser(consumers.get(0).getConfig().getFilePathToWriteReceivedMessages());
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
             return andesClientOutputParser.transactedOperations(operationOccurredIndex);
         } else {
             return false;
@@ -274,7 +280,8 @@ public class AndesClient {
             throws IOException {
         if (0 < consumers.size()) {
             AndesClientOutputParser andesClientOutputParser =
-                    new AndesClientOutputParser(consumers.get(0).getConfig().getFilePathToWriteReceivedMessages());
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
             return andesClientOutputParser.numberDuplicatedMessages();
         } else {
             return -1L;

@@ -18,6 +18,7 @@
 package org.wso2.mb.integration.common.clients;
 
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 
 import javax.jms.JMSException;
@@ -75,14 +76,15 @@ public abstract class AndesJMSBase {
      * @throws NamingException
      * @throws IOException
      */
-    public abstract void startClient() throws JMSException, NamingException, IOException;
+    public abstract void startClient()
+            throws JMSException, NamingException, IOException, AndesClientException;
 
     /**
      * Stops the publisher or consumer
      *
      * @throws JMSException
      */
-    public abstract void stopClient() throws JMSException;
+    public abstract void stopClient() throws JMSException, AndesClientException;
 
     /**
      * Gets the configuration.

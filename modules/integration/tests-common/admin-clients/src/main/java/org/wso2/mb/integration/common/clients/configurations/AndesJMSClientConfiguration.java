@@ -22,7 +22,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 /**
@@ -412,7 +412,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the number of console logging per message count
      *
      * @param printsPerMessageCount The number of console logging per message count
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      */
     public void setPrintsPerMessageCount(long printsPerMessageCount) throws
                                                                      AndesClientConfigurationException {
@@ -436,7 +436,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
      * Sets the delay used in publishing/consuming messages in milliseconds.
      *
      * @param runningDelay The delay used in publishing/consuming messages in milliseconds.
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      */
     public void setRunningDelay(long runningDelay) throws AndesClientConfigurationException {
         if (0 <= runningDelay) {

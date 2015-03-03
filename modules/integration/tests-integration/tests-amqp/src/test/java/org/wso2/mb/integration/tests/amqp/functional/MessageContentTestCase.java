@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -35,7 +36,6 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -74,10 +74,17 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     /**
      * Test the message content integrity of a single message by comparing the sent and received
      * message content which spreads over several message content chunks.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Message content validation test case")
     public void performQueueContentSendReceiveTestCase()
-            throws AndesClientConfigurationException, IOException, JMSException, NamingException {
+            throws AndesClientConfigurationException, IOException, JMSException, NamingException,
+                   AndesClientException {
 
         // Reading message content
         char[] inputContent = new char[SIZE_TO_READ];

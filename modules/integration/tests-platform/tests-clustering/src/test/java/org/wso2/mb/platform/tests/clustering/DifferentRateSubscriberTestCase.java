@@ -28,9 +28,10 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -72,14 +73,14 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      * @throws XPathExpressionException
      */
     @Test(groups = "wso2.mb", description = "Same node slow subscriber test case")
     public void testSameNodeSlowSubscriber()
             throws IOException, JMSException, AndesClientConfigurationException, NamingException,
-                   XPathExpressionException {
+                   XPathExpressionException, AndesClientException {
         String brokerAddress = getRandomAMQPBrokerAddress();
 
         this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, brokerAddress, brokerAddress);
@@ -91,14 +92,14 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Same node slow publisher test case")
     public void testSameNodeSlowPublisher()
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
-                   NamingException {
+                   NamingException, AndesClientException {
         String brokerAddress = getRandomAMQPBrokerAddress();
         this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, brokerAddress, brokerAddress);
     }
@@ -110,14 +111,14 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Different node slow subscriber test case")
     public void testDifferentNodeSlowSubscriber()
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
-                   NamingException {
+                   NamingException, AndesClientException {
 
         this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
@@ -128,14 +129,14 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      */
     @Test(groups = "wso2.mb", description = "Different node slow publisher test case")
     public void testDifferentNodeSlowPublisher()
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
-                   NamingException {
+                   NamingException, AndesClientException {
         this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
 
@@ -177,7 +178,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @param publisherDelay         The delay in which the publisher received messages
      * @param consumerBrokerAddress  The amqp connection string for consumer
      * @param publisherBrokerAddress The amqp connection string for publisher
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
@@ -186,7 +187,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                                                     long publisherDelay,
                                                     String consumerBrokerAddress,
                                                     String publisherBrokerAddress)
-            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
         // Number of messages expected
         long expectedCount = 500L;
         // Number of messages send

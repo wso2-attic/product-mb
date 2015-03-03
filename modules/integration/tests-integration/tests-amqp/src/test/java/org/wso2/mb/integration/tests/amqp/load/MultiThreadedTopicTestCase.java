@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -60,15 +61,17 @@ public class MultiThreadedTopicTestCase extends MBIntegrationBaseTest{
      * 1. Send 2000 messages to a topic by 10 threads
      * 2. At the same time create 20 subscribers and collaboratively receive 2000 X 20 messages
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb",
             description = "Multiple topic publishers - multiple topic receivers test case")
     public void performMultiThreadedTopicTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiThreadTopic");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);

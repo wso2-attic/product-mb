@@ -20,6 +20,7 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 
 import javax.jms.JMSException;
 import java.io.BufferedReader;
@@ -65,7 +66,7 @@ public class AndesClientUtils {
      */
     public static void waitForMessagesAndShutdown(AndesClient client,
                                                   long waitTimeTillMessageCounterChanges)
-            throws JMSException {
+            throws JMSException, AndesClientException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
 

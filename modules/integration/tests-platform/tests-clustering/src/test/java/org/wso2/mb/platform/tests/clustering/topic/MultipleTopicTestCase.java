@@ -30,8 +30,9 @@ import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExc
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -75,7 +76,8 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         automationContext = getAutomationContextWithKey("mb002");
 
         topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
-                                                super.login(automationContext), ConfigurationContextProvider.getInstance().getConfigurationContext());
+                                                super.login(automationContext), ConfigurationContextProvider
+                .getInstance().getConfigurationContext());
 
     }
 
@@ -83,16 +85,17 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in a single node and receive from the same node
      *
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case")
     public void testMultipleTopicSingleNode()
             throws JMSException, AndesClientConfigurationException, XPathExpressionException,
                    NamingException,
-                   IOException {
+                   IOException, AndesClientException {
         // Creating receiver clients
         AndesClient receivingClient1 = getAndesReceiverClient("topic1", EXPECTED_COUNT);
         AndesClient receivingClient2 = getAndesReceiverClient("topic2", EXPECTED_COUNT);
@@ -141,44 +144,74 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         sendingClient9.startClient();
         sendingClient10.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient3, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient4, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient5, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient6, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient7, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient8, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient9, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(receivingClient10, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient5, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient6, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient7, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient8, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient9, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(receivingClient10, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(sendingClient1.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 1");
-        Assert.assertEquals(sendingClient2.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 2");
-        Assert.assertEquals(sendingClient3.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 3");
-        Assert.assertEquals(sendingClient4.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 4");
-        Assert.assertEquals(sendingClient5.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 5");
-        Assert.assertEquals(sendingClient6.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 6");
-        Assert.assertEquals(sendingClient7.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 7");
-        Assert.assertEquals(sendingClient8.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 8");
-        Assert.assertEquals(sendingClient9.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 9");
-        Assert.assertEquals(sendingClient10.getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 10");
+        Assert.assertEquals(sendingClient1
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 1");
+        Assert.assertEquals(sendingClient2
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 2");
+        Assert.assertEquals(sendingClient3
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 3");
+        Assert.assertEquals(sendingClient4
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 4");
+        Assert.assertEquals(sendingClient5
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 5");
+        Assert.assertEquals(sendingClient6
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 6");
+        Assert.assertEquals(sendingClient7
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 7");
+        Assert.assertEquals(sendingClient8
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 8");
+        Assert.assertEquals(sendingClient9
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 9");
+        Assert.assertEquals(sendingClient10
+                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 10");
 
-        Assert.assertEquals(receivingClient1.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 1");
-        Assert.assertEquals(receivingClient2.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 2");
-        Assert.assertEquals(receivingClient3.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 3");
-        Assert.assertEquals(receivingClient4.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 4");
-        Assert.assertEquals(receivingClient5.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 5");
-        Assert.assertEquals(receivingClient6.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 6");
-        Assert.assertEquals(receivingClient7.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 7");
-        Assert.assertEquals(receivingClient8.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 8");
-        Assert.assertEquals(receivingClient9.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 9");
-        Assert.assertEquals(receivingClient10.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 10");
+        Assert.assertEquals(receivingClient1
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 1");
+        Assert.assertEquals(receivingClient2
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 2");
+        Assert.assertEquals(receivingClient3
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 3");
+        Assert.assertEquals(receivingClient4
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 4");
+        Assert.assertEquals(receivingClient5
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 5");
+        Assert.assertEquals(receivingClient6
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 6");
+        Assert.assertEquals(receivingClient7
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 7");
+        Assert.assertEquals(receivingClient8
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 8");
+        Assert.assertEquals(receivingClient9
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 9");
+        Assert.assertEquals(receivingClient10
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 10");
 
     }
 
     /**
-     * Return AndesClient to subscriber for a given topic
+     * Gets an AndesClient to subscriber for a given topic
      *
      * @param topicName     Name of the topic which the subscriber subscribes
      * @param expectedCount Expected message count to be received
@@ -188,15 +221,21 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws IOException
+     * @throws AndesClientException
      */
     private AndesClient getAndesReceiverClient(String topicName, long expectedCount)
             throws NamingException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException, IOException {
+                   XPathExpressionException, IOException, AndesClientException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.TOPIC, topicName);
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, topicName);
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
@@ -205,7 +244,7 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
     }
 
     /**
-     * Return AndesClient to send messages to a given topic
+     * Gets an AndesClient to send messages to a given topic
      *
      * @param topicName Name of the topic
      * @param sendCount Message count to be sent
@@ -215,13 +254,19 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     private AndesClient getAndesSenderClient(String topicName, long sendCount)
             throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException, IOException {
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.TOPIC, topicName);
+                   JMSException, IOException, AndesClientException {
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, topicName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 

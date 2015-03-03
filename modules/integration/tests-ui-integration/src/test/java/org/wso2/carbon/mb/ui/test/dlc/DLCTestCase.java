@@ -30,7 +30,8 @@ import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -59,6 +60,11 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
     private static final long SEND_COUNT = 15L;
     private static final long EXPECTED_COUNT = 15L;
 
+    /**
+     * Initializes test
+     *
+     * @throws Exception
+     */
     @BeforeClass()
     public void init() throws Exception {
         super.init();
@@ -67,18 +73,26 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
     /**
      * Create a DeadLetter channel and send messages to DeadLetter Queue
      * which are failed to send
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @BeforeClass()
     public void createDLC() throws AndesClientConfigurationException, NamingException, JMSException,
-                                   IOException {
+                                   IOException, AndesClientException {
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 200L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig.setAcknowledgeAfterEachMessageCount(215L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -110,7 +124,8 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(mbServer.getContextTenant()
                                                       .getContextUser().getUserName(), mbServer
-                                                      .getContextTenant().getContextUser().getPassword());
+                                                      .getContextTenant().getContextUser()
+                                                      .getPassword());
         //Add an queue to test rerouting messages of DLC
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(rerouteQueue), true);
@@ -133,7 +148,8 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.browse.content.table"))) {
             restoredMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                    .getElement("mb.dlc.restored.message.id"))).getText();
+                                                                    .getElement("mb.dlc.restored.message.id")))
+                    .getText();
 
             Assert.assertEquals(restoredMessageID, restoringMessageID, "Restoring messages of DeadLetter Channel is unsuccessful");
             log.info("Restoring messages of DeadLetter Channel is successful.");
@@ -150,7 +166,8 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.rerouted.queue.table"))) {
             reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                    .getElement("mb.dlc.rerouted.message.id"))).getText();
+                                                                    .getElement("mb.dlc.rerouted.message.id")))
+                    .getText();
             Assert.assertEquals(reroutedMessageID, reroutingMessageID, "Rerouting messages of DeadLetter Channel is unsuccessful");
             log.info("Rerouting messages of dead letter channel is successful.");
         } else {
@@ -187,7 +204,8 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
             for (WebElement row : rowElementList) {
                 List<WebElement> columnList = row.findElements(By.tagName("td"));
                 // Assumption: there are eleven columns. MessageID is in second column
-                if ((columnList.size() == COLUMN_LIST_SIZE) && columnList.get(MESSAGE_ID_COLUMN).getText().equals(deletingMessageID)) {
+                if ((columnList.size() == COLUMN_LIST_SIZE) && columnList.get(MESSAGE_ID_COLUMN)
+                        .getText().equals(deletingMessageID)) {
                     isSuccessful = false;
                     break;
                 }

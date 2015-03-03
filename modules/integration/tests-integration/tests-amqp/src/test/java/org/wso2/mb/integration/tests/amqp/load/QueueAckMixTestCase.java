@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -64,15 +65,17 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
      * Send million messages and receive them via AUTO_ACKNOWLEDGE subscribers and CLIENT_ACKNOWLEDGE subscribers and
      * check if AUTO_ACKNOWLEDGE subscribers receive all the messages.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Send million messages and Receive them via AUTO_ACKNOWLEDGE subscribers " +
                                             "and CLIENT_ACKNOWLEDGE", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException, IOException {
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "MillionTenPercentAckMixReturnQueue");

@@ -25,8 +25,9 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
@@ -68,22 +69,27 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
      * 3. Send message count should be received by the consumer.
      *
      * @throws IOException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case")
     public void performSingleQueueSendReceiveTestCase() throws IOException,
-                                                               AndesClientConfigurationException, JMSException,
-                                                               NamingException {
+                                                               AndesClientConfigurationException,
+                                                               JMSException,
+                                                               NamingException,
+                                                               AndesClientException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
@@ -96,10 +102,13 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.sleepForInterval(10000);
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "TENANT 1 send failed");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "TENANT 1 receive failed");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "TENANT 1 send failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "TENANT 1 receive failed");
     }
 }

@@ -20,13 +20,18 @@ package org.wso2.mb.integration.common.utils.backend;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
+import org.xml.sax.SAXException;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Base class of all MB integration tests
@@ -73,7 +78,8 @@ public class MBIntegrationBaseTest {
      *
      * @throws Exception
      */
-    protected void restartServer() throws Exception {
+    protected void restartServer()
+            throws Exception {
         serverManager = new ServerConfigurationManager(automationContext);
         serverManager.restartGracefully();
     }

@@ -31,9 +31,10 @@ import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -89,17 +90,19 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send and receive messages in a single node for a topic
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws XPathExpressionException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case")
     public void testSingleTopicSingleNodeSendReceive()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException {
+                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException,
+                   AndesClientException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 
@@ -131,6 +134,8 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     }
 
     /**
+     * Checking for topic deletion and adding cluster wide.
+     *
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws RemoteException
      */
@@ -157,17 +162,19 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send messages from one node and received messages from another node.
      *
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
      * @throws TopicManagerAdminServiceEventAdminExceptionException
      * @throws XPathExpressionException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case")
     public void testSingleTopicMultiNodeSendReceive()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException {
+                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException,
+                   AndesClientException {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 

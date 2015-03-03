@@ -24,15 +24,17 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public class StartH2MemMode extends MBIntegrationBaseTest {
 
     /**
      * Initialize the test as super tenant user.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }

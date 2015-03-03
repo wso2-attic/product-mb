@@ -21,7 +21,8 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 
 import javax.jms.JMSException;
@@ -36,12 +37,16 @@ public class CreateRemoveQueueSubscriptionTestCase {
     /**
      * Creating and removing of a topic subscription
      *
-     * @throws NamingException
      * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientConfigurationException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "queue"})
     public void testCreateRemoveSubscription()
-            throws JMSException, NamingException, IOException, AndesClientConfigurationException {
+            throws JMSException, NamingException, IOException, AndesClientConfigurationException,
+                   AndesClientException {
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "TestQueue");
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

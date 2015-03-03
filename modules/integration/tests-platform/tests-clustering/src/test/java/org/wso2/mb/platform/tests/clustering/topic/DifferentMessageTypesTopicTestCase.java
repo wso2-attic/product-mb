@@ -31,8 +31,9 @@ import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExc
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -86,14 +87,16 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber byte messages", enabled = true)
     public void testByteMessageSingleSubSinglePubTopic()
-            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
-                   NamingException {
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
 
         this.runMessageTypeTestCase(JMSMessageType.BYTE, "byteTopic1");
     }
@@ -104,18 +107,19 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber map messages",
             enabled = true)
     public void testMapMessageSingleSubSinglePubTopic()
-            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
-                   NamingException {
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
         this.runMessageTypeTestCase(JMSMessageType.MAP, "mapTopic1");
     }
-
 
     /**
      * Publish object messages to a topic in a single node and receive from the same node with one
@@ -123,15 +127,17 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber object messages",
             enabled = true)
     public void testObjectMessageSingleSubSinglePubTopic()
-            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
-                   NamingException {
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
         this.runMessageTypeTestCase(JMSMessageType.OBJECT, "objectTopic1");
     }
 
@@ -141,15 +147,17 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      *
      * @throws IOException
      * @throws JMSException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber stream messages",
             enabled = true)
     public void testStreamMessageSingleSubSinglePubTopic()
-            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
-                   NamingException {
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
         this.runMessageTypeTestCase(JMSMessageType.STREAM, "streamTopic1");
     }
 
@@ -176,14 +184,16 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * @param messageType     The message type to be used when publishing
      * @param destinationName The destination name for sender and receiver
      * @throws XPathExpressionException
-     * @throws org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException
+     * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
+     * @throws AndesClientException
      */
     private void runMessageTypeTestCase(JMSMessageType messageType, String destinationName)
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
-                   IOException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
 
         // Number of expected messages
         long expectedCount = 2000L;

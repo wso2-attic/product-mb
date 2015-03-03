@@ -15,10 +15,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.mb.integration.common.clients.operations.utils;
+package org.wso2.mb.integration.common.clients.exceptions;
 
 /**
- * Exception class for andes client and its configuration.
+ * Exception class for andes client configuration.
  */
 public class AndesClientConfigurationException extends Exception {
 
@@ -28,13 +28,13 @@ public class AndesClientConfigurationException extends Exception {
     public String errorMessage;
 
     /**
-     * Creates Andes exception
+     * Creates Andes configuration exception
      */
     public AndesClientConfigurationException() {
     }
 
     /**
-     * Creates Andes exception with error message
+     * Creates Andes configuration exception with error message
      *
      * @param message Error message
      */
@@ -44,7 +44,7 @@ public class AndesClientConfigurationException extends Exception {
     }
 
     /**
-     * Creates Andes exception with error message and throwable
+     * Creates Andes configuration exception with error message and throwable
      *
      * @param message Error message
      * @param cause   The throwable
@@ -55,7 +55,7 @@ public class AndesClientConfigurationException extends Exception {
     }
 
     /**
-     * Creates Andes exception with throwable.
+     * Creates Andes configuration exception with throwable.
      *
      * @param cause The throwable
      */

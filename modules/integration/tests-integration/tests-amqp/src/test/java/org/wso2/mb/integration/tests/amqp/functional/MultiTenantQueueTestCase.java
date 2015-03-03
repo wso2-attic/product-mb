@@ -25,7 +25,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -73,10 +74,12 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
      * @throws IOException
      * @throws NamingException
      * @throws AndesClientConfigurationException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single Tenant Test")
     public void performSingleTenantMultipleUserQueueTestCase()
-            throws JMSException, IOException, NamingException, AndesClientConfigurationException {
+            throws JMSException, IOException, NamingException, AndesClientConfigurationException,
+                   AndesClientException {
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
 
@@ -114,10 +117,12 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantQueueTestCase()
-            throws AndesClientConfigurationException, JMSException, NamingException, IOException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
         int sendMessageCount1 = 80;
         int sendMessageCount2 = 120;

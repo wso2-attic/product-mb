@@ -25,7 +25,8 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -54,6 +55,8 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
+     *
+     * @throws XPathExpressionException
      */
     @BeforeClass
     public void prepare() throws XPathExpressionException {
@@ -67,19 +70,28 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
      * 3. After {@link #EXPECTED_COUNT} messages were received close the subscriber.
      * 4. Subscribe again. After {@link #EXPECTED_COUNT} messages were received un-subscribe.
      * 5. Subscribe again. Verify no more messages are coming.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   CloneNotSupportedException {
+                   CloneNotSupportedException, AndesClientException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig1.setDurable(true, "durableSub1");
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
@@ -91,7 +103,8 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
         publisherClient.startClient();
 
         //Wait until messages receive
-        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a second consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
@@ -101,7 +114,8 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig2, true);
         secondaryConsumerClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Creating a third JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig2.clone();
@@ -110,14 +124,19 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
         AndesClient tertiaryConsumerClient = new AndesClient(consumerConfig3, true);
         tertiaryConsumerClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(tertiaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(5000L);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 1.");
-        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 2.");
-        Assert.assertEquals(tertiaryConsumerClient.getReceivedMessageCount(), 0L, "Messages received for client 3.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(initialConsumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 1.");
+        Assert.assertEquals(secondaryConsumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed for client 2.");
+        Assert.assertEquals(tertiaryConsumerClient
+                                    .getReceivedMessageCount(), 0L, "Messages received for client 3.");
     }
 }
