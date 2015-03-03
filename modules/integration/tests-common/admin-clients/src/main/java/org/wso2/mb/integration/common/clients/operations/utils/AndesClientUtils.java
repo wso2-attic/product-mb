@@ -66,7 +66,7 @@ public class AndesClientUtils {
      */
     public static void waitForMessagesAndShutdown(AndesClient client,
                                                   long waitTimeTillMessageCounterChanges)
-            throws JMSException, AndesClientException {
+            throws JMSException {
         long previousMessageCount = 0;
         long currentMessageCount = -1;
 

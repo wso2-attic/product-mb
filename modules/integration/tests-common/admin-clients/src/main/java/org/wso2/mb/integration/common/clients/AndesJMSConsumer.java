@@ -233,7 +233,7 @@ public class AndesJMSConsumer extends AndesJMSBase
      * {@inheritDoc}
      */
     @Override
-    public void stopClient() throws JMSException {
+    public void stopClient(){
         /**
          * Using a separate thread as stopping the consumer on "onMessage" thread is not allowed.
          */
@@ -286,11 +286,6 @@ public class AndesJMSConsumer extends AndesJMSBase
                         log.error("Error in stopping client.", e);
                         throw new RuntimeException("Error in stopping client.", e);
                     }
-                } else {
-                    AndesClientException andesClientException =
-                            new AndesClientException("The connection, session and message receiver is not assigned.");
-                    log.error("The connection, session and message receiver is not assigned.", andesClientException);
-                    throw new RuntimeException("The connection, session and message receiver is not assigned.", andesClientException);
                 }
             }
         }).start();

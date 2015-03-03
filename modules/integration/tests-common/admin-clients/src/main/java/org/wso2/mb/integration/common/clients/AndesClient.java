@@ -139,7 +139,7 @@ public class AndesClient {
      *
      * @throws JMSException
      */
-    public void stopClient() throws JMSException, AndesClientException {
+    public void stopClient() throws JMSException {
         for (AndesJMSConsumer consumer : consumers) {
             consumer.stopClient();
         }

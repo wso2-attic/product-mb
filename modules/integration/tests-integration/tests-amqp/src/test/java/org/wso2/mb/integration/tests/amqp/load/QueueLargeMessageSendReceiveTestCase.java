@@ -66,7 +66,7 @@ public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest 
      * @throws JMSException
      * @throws AndesClientException
      */
-    @Test(groups = {"wso2.mb", "queue"}, enabled = false)
+    @Test(groups = {"wso2.mb", "queue"}, enabled = true)
     public void performQueueOneMBSizeMessageSendReceiveTestCase()
             throws AndesClientConfigurationException, IOException, NamingException, JMSException,
                    AndesClientException {

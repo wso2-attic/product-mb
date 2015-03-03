@@ -110,7 +110,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name" +
-                                            " as queue", enabled = false)
+                                            " as queue")
     public void performSubTopicPubQueueTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    AndesClientException {

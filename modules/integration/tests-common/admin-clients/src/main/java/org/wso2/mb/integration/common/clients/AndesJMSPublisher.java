@@ -139,7 +139,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
      * {@inheritDoc}
      */
     @Override
-    public void stopClient() throws JMSException, AndesClientException {
+    public void stopClient() throws JMSException {
         if (null != connection && null != session && null != sender) {
             long threadID = Thread.currentThread().getId();
             log.info("Closing publisher | ThreadID : " + threadID);
@@ -150,8 +150,6 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             this.session = null;
             this.connection = null;
             log.info("Publisher closed | ThreadID : " + threadID);
-        } else {
-            throw new AndesClientException("The connection, session and message sender is not assigned.");
         }
     }
 
@@ -272,8 +270,6 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
         } catch (IOException e) {
             log.error("Error while writing statistics", e);
             throw new RuntimeException("Error while writing statistics", e);
-        } catch (AndesClientException e) {
-            throw new RuntimeException("The connection, session and message sender is not assigned.", e);
         }
     }
 
