@@ -21,62 +21,88 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This class used to get Andes Client outputs from parse file.
+ * This class is used to get Andes Client outputs from parse file. The class provides evaluation
+ * functions for testing purposes.
  */
 public class AndesClientOutputParser {
 
+    /**
+     * The logger used in logging information, warnings, errors and etc.
+     */
     private static Log log = LogFactory.getLog(AndesClientOutputParser.class);
 
+    /**
+     * Map that stored received messages. Used to check message duplication.
+     */
     private Map<Long, Integer> mapOfReceivedMessages = new HashMap<Long, Integer>();
+
+    /**
+     * List of received messages.
+     */
     private List<Long> messages = new ArrayList<Long>();
+
+    /**
+     * File path to parse received messages
+     */
     private String filePath = "";
 
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public AndesClientOutputParser(String filePath) {
+    /**
+     * Creates an output parse for andes with a give file path.
+     *
+     * @param filePath The file path for received messages.
+     * @throws IOException
+     */
+    public AndesClientOutputParser(String filePath) throws IOException {
         this.filePath = filePath;
         parseFile();
     }
 
-    public void parseFile() {
+    /**
+     * Reads received messages from a file path and store the message ID in necessary data
+     * structures.
+     *
+     * @throws IOException
+     */
+    private void parseFile() throws IOException {
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
             try {
                 String line = br.readLine();
-
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
-                    addMessage(messageIdentifier);
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
+                    this.addMessage(messageIdentifier);
                     line = br.readLine();
                 }
             } finally {
                 br.close();
             }
-        } catch (Exception e) {
-            log.error("Error while parsing the file containing received messages", e);
+        } catch (FileNotFoundException e) {
+            log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Error " + filePath + " the file cannot be read", e);
+            throw e;
         }
     }
 
     /**
-     * Check whether messages are duplicated.
-     * Returns duplicated ids
+     * Gets the map used for message duplication.
      *
-     * @return
+     * @return A map of duplicated message IDs as key.
      */
-    public Map<Long, Integer> checkIfMessagesAreDuplicated() {
+    public Map<Long, Integer> getDuplicatedMessages() {
         Map<Long, Integer> messagesDuplicated = new HashMap<Long, Integer>();
         for (Long messageIdentifier : mapOfReceivedMessages.keySet()) {
             if (mapOfReceivedMessages.get(messageIdentifier) > 1) {
@@ -86,6 +112,11 @@ public class AndesClientOutputParser {
         return messagesDuplicated;
     }
 
+    /**
+     * Checks if messages are received in the correct order.
+     *
+     * @return true if messages are in order, false otherwise.
+     */
     public boolean checkIfMessagesAreInOrder() {
         boolean result = true;
         for (int count = 0; count < messages.size(); count++) {
@@ -98,32 +129,47 @@ public class AndesClientOutputParser {
         return result;
     }
 
+    /**
+     * Prints missing message IDs.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
+     *
+     * @param numberOfSentMessages Number of messages to print.
+     */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMissingMessages(int numberOfSentMessages) {
         log.info("Printing Missing Messages");
         for (long count = 0; count < numberOfSentMessages; count++) {
             if (mapOfReceivedMessages.get(count) == null) {
-                log.info("missing message id:" + count + 1 + "\n");
+                log.info("Missing message id:" + count + 1 + "\n");
             }
         }
     }
 
+    /**
+     * Prints duplicated message IDs
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
+     */
+    @SuppressWarnings("UnusedDeclaration")
     public void printDuplicateMessages() {
         log.info("Printing Duplicated Messages");
-        printMap(checkIfMessagesAreDuplicated());
+        log.info(this.getDuplicatedMessages());
     }
 
+    /**
+     * Prints the map that contains received messages.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
+     */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMessagesMap() {
         log.info("Printing Received Messages");
-        printMap(mapOfReceivedMessages);
+        log.info(mapOfReceivedMessages);
     }
 
-    public void clearFile() {
-        File file = new File(filePath);
-        if (file.delete()) {
-            log.info("File at " + filePath + " is removed...");
-        }
-    }
-
+    /**
+     * Adds received message IDs to a list and a map.
+     *
+     * @param messageIdentifier Received message ID.
+     */
     private void addMessage(Long messageIdentifier) {
         if (mapOfReceivedMessages.get(messageIdentifier) == null) {
             mapOfReceivedMessages.put(messageIdentifier, 1);
@@ -135,29 +181,26 @@ public class AndesClientOutputParser {
         messages.add(messageIdentifier);
     }
 
-    private void printMap(Map<Long, Integer> messageMap) {
-        for (Long messageIdentifier : messageMap.keySet()) {
-            log.info(messageIdentifier + "-----" + messageMap.get(messageIdentifier));
-        }
-    }
-
+    /**
+     * Prints received message IDs in sorted.
+     * Suppressing "UnusedDeclaration" as this could be used for debugging purposes
+     */
+    @SuppressWarnings("UnusedDeclaration")
     public void printMessagesSorted() {
         log.info("Printing Sorted Messages");
         List<Long> cloneOfMessages = new ArrayList<Long>();
         cloneOfMessages.addAll(messages);
         Collections.sort(cloneOfMessages);
-        for (int count = 0; count < cloneOfMessages.size(); count++) {
-            log.info(cloneOfMessages.get(count) + "\n");
-        }
+        log.info(cloneOfMessages);
     }
 
     /**
-     * check whether all the messages are transacted
+     * Check whether all the messages are transacted
      *
-     * @param operationOccurredIndex index of the operation occurred message 
+     * @param operationOccurredIndex Index of the operation occurred message
      * @return transactedResult
      */
-    public boolean transactedOperations(long operationOccurredIndex) {
+    public boolean transactedOperations(long operationOccurredIndex) throws FileNotFoundException {
         boolean result = false;
         int count = 0;
         long firstMessageIdentifier = 0;
@@ -167,9 +210,8 @@ public class AndesClientOutputParser {
             try {
                 String line = br.readLine();
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
                     if (count == 0) {
                         firstMessageIdentifier = messageIdentifier;
                     }
@@ -185,9 +227,7 @@ public class AndesClientOutputParser {
                 log.error("Error while parsing the file containing received messages", e);
             } finally {
                 try {
-                    if (null != br) {
-                        br.close();
-                    }
+                    br.close();
                 } catch (IOException e) {
                     log.error("Error while closing the file containing received messages", e);
                 }
@@ -195,19 +235,20 @@ public class AndesClientOutputParser {
 
         } catch (FileNotFoundException e) {
             log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+            throw e;
         }
 
-        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
+        AndesClientUtils.flushPrintWriters();
         return result;
     }
 
     /**
-     * parse the file and get the number of duplicate messages
+     * Parse the file and get the number of duplicate message IDs.
      *
-     * @return duplicate count
+     * @return Duplicated message ID count.
      */
-    public int numberDuplicatedMessages() {
-        int duplicateCount = 0;
+    public long numberDuplicatedMessages() {
+        long duplicateCount = 0;
         List<Long> messagesDuplicated = new ArrayList<Long>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -215,10 +256,8 @@ public class AndesClientOutputParser {
             try {
                 String line = br.readLine();
                 while (line != null) {
-                    String[] infoParts = line.split("-");
-                    String messageIdentifierAsString = infoParts[1];
-                    long messageIdentifier = Long.parseLong(messageIdentifierAsString);
-                    //Checking for duplicates
+                    String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
                     if (messagesDuplicated.contains(messageIdentifier)) {
                         duplicateCount++;
                     } else {
@@ -231,9 +270,7 @@ public class AndesClientOutputParser {
             } finally {
 
                 try {
-                    if (null != br) {
-                        br.close();
-                    }
+                    br.close();
                 } catch (IOException e) {
                     log.error("Error while closing the file containing received messages", e);
                 }

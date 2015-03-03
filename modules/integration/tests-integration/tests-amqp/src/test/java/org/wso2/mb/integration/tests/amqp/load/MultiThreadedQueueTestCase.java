@@ -23,60 +23,81 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import static org.testng.Assert.assertEquals;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
- * send 10,000 messages collaberatively by 20 threads and receive collaberatively by 20 threads and
- * see if all messages are received
+ * Test class for multiple publishers running parallel for queues.
  */
 public class MultiThreadedQueueTestCase extends MBIntegrationBaseTest {
+    private static final long SEND_COUNT = 10000L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+    private static final int NUMBER_OF_SUBSCRIBERS = 7;
+    private static final int NUMBER_OF_PUBLISHERS = 7;
 
-    @BeforeClass
-    public void init() throws Exception {
+    /**
+     * Initialize the test as super tenant user.
+     *
+     * @throws javax.xml.xpath.XPathExpressionException
+     */
+    @BeforeClass(alwaysRun = true)
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * Send 10,000 messages collaboratively by 7 threads and receive collaboratively by 7 threads
+     * and see if all messages are received.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = "wso2.mb",
             description = "Multiple queue senders - multiple queue receivers test case")
-    public void performMultiThreadedQueueTestCase() {
-        Integer sendCount = 10000;
-        Integer numberOfPublisherThreads = 7;
-        Integer numberOfSubscriberThreads = 7;
-        Integer runTime = 200;
-        Integer expectedCount = 10000;
+    public void performMultiThreadedQueueTestCase()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "multiThreadQueue");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                "queue:multiThreadQueue",
-                "100", "false", runTime.toString(),
-                expectedCount.toString(),
-                numberOfSubscriberThreads.toString(),
-                "listener=true,ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + expectedCount,
-                "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "multiThreadQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, NUMBER_OF_SUBSCRIBERS, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672",
-                "queue:multiThreadQueue",
-                "100", "false",
-                runTime.toString(), sendCount.toString(),
-                numberOfPublisherThreads.toString(),
-                "ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, NUMBER_OF_PUBLISHERS, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils
-                .waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT * NUMBER_OF_PUBLISHERS, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), EXPECTED_COUNT * NUMBER_OF_SUBSCRIBERS, "Message receiving failed.");
     }
 }

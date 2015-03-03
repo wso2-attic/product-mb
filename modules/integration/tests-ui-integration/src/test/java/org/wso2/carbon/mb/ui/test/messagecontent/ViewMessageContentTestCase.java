@@ -27,7 +27,11 @@ import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
@@ -102,18 +106,17 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(TEST_QUEUE_NAME), true);
 
-        Integer sendCount = 1;
-        Integer runTime = 100;
+        long sendCount = 1;
 
-        String queueNameArg = "queue:" + TEST_QUEUE_NAME;
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, TEST_QUEUE_NAME);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setReadMessagesFromFilePath(MESSAGE_CONTENT_INPUT_FILE_PATH);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "true",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,file=" + MESSAGE_CONTENT_INPUT_FILE_PATH + ",stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
-
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
 
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
 

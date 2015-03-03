@@ -18,58 +18,107 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import static org.testng.Assert.assertTrue;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
- * 1. start two durable topic subscription
- * 2. send 1500 messages
+ * This class includes test cases to test multiple durable topics with different subscriptions.
  */
-public class DurableMultipleTopicSubscriberTestCase {
+public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * Message count to send
+     */
+    private static final long SEND_COUNT = 1000L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
+    @BeforeClass
+    public void prepare() throws XPathExpressionException {
+        init(TestUserMode.SUPER_TENANT_ADMIN);
+        AndesClientUtils.sleepForInterval(15000);
+    }
+
+    /**
+     * 1. Start two durable topic subscription.
+     * 2. Publisher sends {@link #SEND_COUNT} messages.
+     * 3. Each subscriber should received {@link #EXPECTED_COUNT} messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDurableTopicTestCase() {
+    public void performMultipleDurableTopicTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 500;
+        // Creating a first JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+        consumerConfig1
+                .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig1.setDurable(true, "multipleSub1");
 
-        // Start subscription 1
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=subwso2,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient1.startWorking();
+        // Creating a second JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+        consumerConfig2
+                .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
+        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig2.setDurable(true, "multipleSub2");
 
-        // Start subscription 2
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:durableTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,durable=true,subscriptionID=wso2sub,delayBetweenMsg=0," +
-                "stopAfter=" + expectedCount, "");
-        receivingClient2.startWorking();
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        // Start message publisher
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:durableTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-        sendingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
 
-        boolean receivingSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount,
-                runTime);
-        assertTrue(receivingSuccess1, "Message receive error from subscriber 1");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        boolean receivingSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount,
-                runTime);
-        assertTrue(receivingSuccess2, "Message receive error from subscriber 2");
+        AndesClientUtils.sleepForInterval(4000);
 
-        AndesClientUtils.sleepForInterval(2000);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean sendingSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-        assertTrue(sendingSuccess, "Message send error");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Message send failed");
+        Assert.assertEquals(consumerClient1
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from multipleSub1");
+        Assert.assertEquals(consumerClient2
+                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from multipleSub2");
     }
 }

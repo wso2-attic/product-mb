@@ -22,219 +22,316 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
-import static org.testng.Assert.assertEquals;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * This class includes test cases to test different ack modes for topics
  */
 public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
-
-    private AutomationContext automationContext1;
-    private TopicAdminClient topicAdminClient1;
+    private AutomationContext automationContext;
+    private TopicAdminClient topicAdminClient;
 
     /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
+                   LoginAuthenticationExceptionException, IOException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
-        automationContext1 = getAutomationContextWithKey("mb002");
+        automationContext = getAutomationContextWithKey("mb002");
 
-        topicAdminClient1 = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
-                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
-
+        topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
+                                                super.login(automationContext), ConfigurationContextProvider
+                .getInstance().getConfigurationContext());
     }
-
 
     /**
      * Publish messages to a topic in single node and receive from the same node with
-     * SESSION_TRANSACTED ack mode
-     * @throws Exception
+     * session_transacted acknowledge mode
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for topic", enabled = true)
-    public void testSessionTransactedAckModeForTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
+    public void testSessionTransactedAckModeForTopic()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
-        Integer expectedCount = 2000;
+        long expectedCount = 2000L;
         // Number of messages send
-        Integer sendCount = 2000;
+        long sendCount = 2000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, "sessionTransactedAckTopic");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:sessionTransactedAckTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=0,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, "sessionTransactedAckTopic");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:sessionTransactedAckTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=0,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
      * Publish messages to a topic in single node and receive from the same node with
-     * AUTO_ACKNOWLEDGE ack mode
-     * @throws Exception
+     * auto acknowledge mode
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "AUTO_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testAutoAcknowledgeModeForTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
+    public void testAutoAcknowledgeModeForTopic()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
-        Integer expectedCount = 2000;
+        long expectedCount = 2000L;
         // Number of messages send
-        Integer sendCount = 2000;
+        long sendCount = 2000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, "autoAcknowledgeTopic");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:autoAcknowledgeTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, "autoAcknowledgeTopic");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:autoAcknowledgeTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
-     * Publish messages to a topic in single node and receive from the same node with
-     * CLIENT_ACKNOWLEDGE ack mode
-     * @throws Exception
+     * Publish messages to a topic in single node and receive from the same node with client
+     * acknowledge mode
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "CLIENT_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testClientAcknowledgeModeForTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
+    public void testClientAcknowledgeModeForTopic()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
-        Integer expectedCount = 2000;
+        int expectedCount = 2000;
         // Number of messages send
-        Integer sendCount = 2000;
+        int sendCount = 2000;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, "clientAcknowledgeTopic");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:clientAcknowledgeTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=2,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, "clientAcknowledgeTopic");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:clientAcknowledgeTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=2,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
      * Publish messages to a topic in single node and receive from the same node with
-     * DUPS_OK_ACKNOWLEDGE ack mode
-     * @throws Exception
+     * duplicate acknowledge mode
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "DUPS_OK_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testDupOkAcknowledgeModeForTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
+    public void testDupOkAcknowledgeModeForTopic()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
+        long expectedCount = 2000L;
+        long sendCount = 2000L;
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts()
+                                                                .get("default"),
+                                                        Integer.parseInt(automationContext
+                                                                                 .getInstance()
+                                                                                 .getPorts()
+                                                                                 .get("amqp")),
+                                                        ExchangeType.TOPIC, "dupsOkAcknowledgeTopic");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
 
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:dupsOkAcknowledgeTopic",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=3,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
+                                                                 .get("default"),
+                                                         Integer.parseInt(automationContext
+                                                                                  .getInstance()
+                                                                                  .getPorts()
+                                                                                  .get("amqp")),
+                                                         ExchangeType.TOPIC, "dupsOkAcknowledgeTopic");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:dupsOkAcknowledgeTopic", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=3,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
      * Cleanup after running tests.
      *
-     * @throws Exception
+     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
-
-        topicAdminClient1.removeTopic("sessionTransactedAckTopic");
-        topicAdminClient1.removeTopic("autoAcknowledgeTopic");
-        topicAdminClient1.removeTopic("clientAcknowledgeTopic");
-        topicAdminClient1.removeTopic("dupsOkAcknowledgeTopic");
-
-
+    public void destroy()
+            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+        topicAdminClient.removeTopic("sessionTransactedAckTopic");
+        topicAdminClient.removeTopic("autoAcknowledgeTopic");
+        topicAdminClient.removeTopic("clientAcknowledgeTopic");
+        topicAdminClient.removeTopic("dupsOkAcknowledgeTopic");
     }
-
 }

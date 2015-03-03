@@ -23,25 +23,42 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
  * Testing for multi tenant - Topic specific test case
- *
+ * <p/>
  * Test case 1
  * 1. Start a 3 subscribers in same tenant(Normal tenant) who listens to the same topic
  * 2. Send 200 messages to the topic
  * 3. All 3 subscribers should receive all 200 messages
- *
+ * <p/>
  * Test case 2
  * 1. Start 2 subscribers from different tenant for the same topic
  * 2. Start 2 publishers from different tenant for the same topic
  * 3. Subscribers should receive the message from their tenant only
  */
 public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
+
+    /**
+     * Initializes test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
@@ -51,112 +68,142 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
      * 1. Start a 3 subscribers in same tenant(Normal tenant) who listens to the same topic
      * 2. Send 200 messages to the topic
      * 3. All 3 subscribers should receive all 200 messages
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
-    public void performSingleTenantMultipleUserTopicTestCase() {
+    public void performSingleTenantMultipleUserTopicTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
         int sendMessageCount = 200;
-        int runTime = 40;
         int expectedMessageCount = 200;
 
-        // Start receiving clients (admin, user1, user2)
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration adminConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+        adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
+        adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesClient adminReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
-                "admin!topictenant1.com", "admin");
-        adminReceivingClient.startWorking();
+        AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+        tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
+        tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesClient tenant1ReceivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
-                "topictenantuser1!topictenant1.com", "topictenantuser1");
-        tenant1ReceivingClient1.startWorking();
+        AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser2!topictenant1.com", "topictenantuser2", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+        tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
+        tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesClient tenant1ReceivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
-                "topictenantuser2!topictenant1.com", "topictenantuser2");
-        tenant1ReceivingClient2.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+        tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
+        tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
 
-        // Start sending client (tenant1)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/tenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount, "", "topictenantuser1!topictenant1.com", "topictenantuser1");
+        // Creating clients
+        AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig, true);
+        adminConsumerClient.startClient();
 
-        tenant1SendingClient.startWorking();
+        AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig, true);
+        tenant1ConsumerClient.startClient();
 
+        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig, true);
+        tenant2ConsumerClient.startClient();
 
-        boolean tenant1ReceiveSuccess1 = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient1,
-                expectedMessageCount, runTime);
-        boolean tenant1ReceiveSuccess2 = AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient2,
-                expectedMessageCount, runTime);
-        boolean adminReceiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(adminReceivingClient,
-                expectedMessageCount, runTime);
+        AndesClient tenant2PublisherClient = new AndesClient(tenant1PublisherConfig, true);
+        tenant2PublisherClient.startClient();
 
-        boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(adminConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertTrue(tenant1ReceiveSuccess1, "Message receiving failed for tenant 1 user 1. Received message count : "+tenant1ReceivingClient1.getReceivedTopicMessagecount());
-        Assert.assertTrue(tenant1ReceiveSuccess2, "Message receiving failed for tenant 1 user 2. Received message count : " + tenant1ReceivingClient2.getReceivedTopicMessagecount());
-        Assert.assertEquals(adminReceivingClient.getReceivedTopicMessagecount(), expectedMessageCount);
-        Assert.assertTrue(adminReceiveSuccess, "Message receiving failed for admin of tenant 1. Received message count : " + adminReceivingClient.getReceivedTopicMessagecount());
+        // Evaluating
+        Assert.assertEquals(tenant2PublisherClient
+                                    .getSentMessageCount(), sendMessageCount, "Sending failed for topictenantuser1!topictenant1.com.");
+        Assert.assertEquals(adminConsumerClient
+                                    .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for admin!topictenant1.com.");
+        Assert.assertEquals(tenant1ConsumerClient
+                                    .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for topictenantuser1!topictenant1.com.");
+        Assert.assertEquals(tenant2ConsumerClient
+                                    .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for topictenantuser2!topictenant1.com.");
 
     }
 
     /**
-     *
      * Test case 2
      * 1. Start 2 subscribers from different tenant for the same topic
      * 2. Start 2 publishers from different tenant for the same topic
      * 3. Subscribers should receive the message from their tenant only
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
-    public void performMultipleTenantTopicTestCase() {
+    public void performMultipleTenantTopicTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
         int sendMessageCount1 = 120;
         int sendMessageCount2 = 80;
-        int runTime = 20;
         int expectedMessageCount = 200;
 
-        // Start receiving clients (tenant1, tenant2)
-        AndesClient tenant1ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
-                "topictenantuser1!topictenant1.com", "topictenantuser1");
-        tenant1ReceivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/multitenantTopic");
+        tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
+        tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesClient tenant2ReceivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(expectedMessageCount),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedMessageCount, "",
-                "topictenantuser1!topictenant2.com", "topictenantuser1");
-        tenant2ReceivingClient.startWorking();
+        AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant2.com/multitenantTopic");
+        tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
+        tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        // Start sending clients (tenant1, tenant2)
-        AndesClient tenant1SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant1.com/multitenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount1), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount1, "",
-                "topictenantuser1!topictenant1.com", "topictenantuser1");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/multitenantTopic");
+        tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount1);
+        tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount1 / 10L);
 
-        tenant1SendingClient.startWorking();
+        AndesJMSPublisherClientConfiguration tenant2PublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant2.com/multitenantTopic");
+        tenant2PublisherConfig.setNumberOfMessagesToSend(sendMessageCount2);
+        tenant2PublisherConfig.setPrintsPerMessageCount(sendMessageCount2 / 10L);
 
-        AndesClient tenant2SendingClient = new AndesClient("send", "127.0.0.1:5672", "topic:topictenant2.com/multitenantTopic",
-                "100", "false", Integer.toString(runTime), Integer.toString(sendMessageCount2), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendMessageCount2, "",
-                "topictenantuser2!topictenant2.com", "topictenantuser2");
-        tenant2SendingClient.startWorking();
+        // Creating clients
+        AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig, true);
+        tenant1ConsumerClient.startClient();
 
-        AndesClientUtils.waitUntilMessagesAreReceived(tenant1ReceivingClient,
-                expectedMessageCount, runTime);
-        AndesClientUtils.waitUntilMessagesAreReceived(tenant2ReceivingClient,
-                expectedMessageCount, runTime);
+        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig, true);
+        tenant2ConsumerClient.startClient();
 
-        boolean tenant1SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant1SendingClient, sendMessageCount1);
-        boolean tenant2SendSuccess = AndesClientUtils.getIfSenderIsSuccess(tenant2SendingClient, sendMessageCount2);
+        AndesClient tenant1PublisherClient = new AndesClient(tenant1PublisherConfig, true);
+        tenant1PublisherClient.startClient();
 
-        Assert.assertTrue(tenant1SendSuccess, "Sending failed for tenant 1 user 1.");
-        Assert.assertTrue(tenant2SendSuccess, "Sending failed for tenant 2 user 1.");
-        Assert.assertEquals(tenant1ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount1, "Tenant 1 client received incorrect number of message count. Received message count : " + tenant1ReceivingClient.getReceivedTopicMessagecount());
-        Assert.assertEquals(tenant2ReceivingClient.getReceivedTopicMessagecount(), sendMessageCount2, "Tenant 2 client received incorrect number of message count. Received message count : " + tenant2ReceivingClient.getReceivedTopicMessagecount());
+        AndesClient tenant2PublisherClient = new AndesClient(tenant2PublisherConfig, true);
+        tenant2PublisherClient.startClient();
 
+        AndesClientUtils
+                .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
+        Assert.assertEquals(tenant1PublisherClient
+                                    .getSentMessageCount(), sendMessageCount1, "Sending failed for tenant 1.");
+        Assert.assertEquals(tenant2PublisherClient
+                                    .getSentMessageCount(), sendMessageCount2, "Sending failed for tenant 2.");
+        Assert.assertEquals(tenant1ConsumerClient
+                                    .getReceivedMessageCount(), sendMessageCount1, "Tenant 1 client received incorrect number of message count.");
+        Assert.assertEquals(tenant2ConsumerClient
+                                    .getReceivedMessageCount(), sendMessageCount2, "Tenant 2 client received incorrect number of message count.");
     }
 }

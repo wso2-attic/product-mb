@@ -22,24 +22,49 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
- *This class includes test cases to test different ack modes for queues
+ * This class includes test cases to test different ack modes for queues
  */
 public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
 
     /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }
@@ -48,215 +73,230 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from the same node with SESSION_TRANSACTED
      * ack mode
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for queue")
-    public void testSessionTransactedAckModeForQueue() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 80;
+    public void testSessionTransactedAckModeForQueueTestCase()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
         int expectedCount = 2000;
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl,
-                "queue:sessionTransactedAckQueue",
-                "100", "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(expectedCount),
-                "1",
-                "listener=true,ackMode=0," +
-                        "delayBetweenMsg=10," +
-                        "stopAfter=" + expectedCount,
-                "");
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "sessionTransactedAckQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:sessionTransactedAckQueue", "100",
-                "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(sendCount), "1",
-                "ackMode=0,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
-        sendingClient.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "sessionTransactedAckQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                expectedCount,
-                maxRunningTime),
-                "Message receiving failed.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                "All messages are not received.");
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
-
 
     /**
      * Publish messages to a single node and receive from the same node with AUTO_ACKNOWLEDGE
      * ack mode
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "AUTO_ACKNOWLEDGE ack mode test case for queue")
-    public void testAutoAcknowledgeModeForQueue() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 80;
+    public void testAutoAcknowledgeModeForQueue()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
         int expectedCount = 2000;
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl,
-                "queue:autoAcknowledgeQueue",
-                "100", "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(expectedCount),
-                "1",
-                "listener=true,ackMode=1," +
-                        "delayBetweenMsg=10," +
-                        "stopAfter=" + expectedCount,
-                "");
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "autoAcknowledgeQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:autoAcknowledgeQueue", "100",
-                "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(sendCount), "1",
-                "ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
-        sendingClient.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "autoAcknowledgeQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                expectedCount,
-                maxRunningTime),
-                "Message receiving failed.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                "All messages are not received.");
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
      * Publish messages to a single node and receive from the same node with CLIENT_ACKNOWLEDGE
      * ack mode
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "CLIENT_ACKNOWLEDGE ack mode test case for queue")
-    public void testClientAcknowledgeModeForQueue() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 80;
+    public void testClientAcknowledgeModeForQueue()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         // Expected message count
         int expectedCount = 2000;
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl,
-                "queue:clientAcknowledgeQueue",
-                "100", "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(expectedCount),
-                "1",
-                "listener=true,ackMode=2," +
-                        "delayBetweenMsg=10," +
-                        "stopAfter=" + expectedCount,
-                "");
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "clientAcknowledgeQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
+        consumerConfig.setRunningDelay(10L);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:clientAcknowledgeQueue", "100",
-                "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(sendCount), "1",
-                "ackMode=2,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
-        sendingClient.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "clientAcknowledgeQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                expectedCount,
-                maxRunningTime),
-                "Message receiving failed.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                "All messages are not received.");
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
-
 
     /**
      * Publish messages to a single node and receive from the same node with DUPS_OK_ACKNOWLEDGE
      * ack mode
-     *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "DUPS_OK_ACKNOWLEDGE ack mode test case for queue")
-    public void testDupOkAcknowledgeModeForQueue() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 80;
+    public void testDupOkAcknowledgeModeForQueue()
+            throws XPathExpressionException, AndesClientConfigurationException, JMSException,
+                   NamingException,
+                   IOException, AndesClientException {
         // Expected message count
         int expectedCount = 2000;
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl,
-                "queue:dupsOkAcknowledgeQueue",
-                "100", "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(expectedCount),
-                "1",
-                "listener=true,ackMode=3," +
-                        "delayBetweenMsg=10," +
-                        "stopAfter=" + expectedCount,
-                "");
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
+        consumerConfig.setRunningDelay(10L);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:dupsOkAcknowledgeQueue", "100",
-                "false",
-                String.valueOf(maxRunningTime),
-                String.valueOf(sendCount), "1",
-                "ackMode=3,delayBetweenMsg=0," +
-                        "stopAfter=" + sendCount,
-                "");
-        sendingClient.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
+                        .parseInt(brokerAddress
+                                          .split(":")[1]), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                expectedCount,
-                maxRunningTime),
-                "Message receiving failed.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                "All messages are not received.");
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**
      * Cleanup after running tests.
      *
-     * @throws Exception
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy() throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
 
         String randomInstanceKey = getRandomMBInstance();
 

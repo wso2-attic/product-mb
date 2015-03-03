@@ -23,21 +23,40 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import java.io.IOException;
 import java.util.Map;
 
 /**
- * 1. start a queue receiver with trasacted sessions
- * 2. send 10 messages
- * 3. after 10 messages are received rollback session
- * 4. do same 5 times.After 50 messages received commit the session and close subscriber
- * 5. analyse and see if each message is duplicated five times
- * 6. do another subscription to verify no more messages are received
+ * Tests
  */
 public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * Message send count.
+     */
+    private static final long SEND_COUNT = 10L;
+
+    /**
+     * Number of rollback iterations.
+     */
+    private static final int ROLLBACK_ITERATIONS = 5;
+
+    /**
+     * Total expected message count after rollback.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT * ROLLBACK_ITERATIONS;
 
     @BeforeClass
     public void prepare() throws Exception {
@@ -45,40 +64,56 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Start a queue receiver with transacted sessions.
+     * 2. Send 10 messages.
+     * 3. After 10 messages are received rollback session.
+     * 4. Do same 5 times. After 50 messages received commit the session and close subscriber.
+     * 5. Analyse and see if each message is duplicated five times.
+     * 6. Do another subscription to verify no more messages are received.
+     *
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     */
     @Test(groups = {"wso2.mb", "queue", "transactions"})
-    public void performJMSSubscriberTransactionsSessionCommitRollbackTestCase() {
+    public void performJMSSubscriberTransactionsSessionCommitRollbackTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   CloneNotSupportedException, AndesClientException {
 
-        Integer sendCount = 10;
-        Integer runTime = 40;
-        int numberOfRollbackIterations = 5;
-        Integer expectedCount = sendCount * numberOfRollbackIterations;
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "transactionQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
+        consumerConfig.setCommitAfterEachMessageCount(EXPECTED_COUNT);
+        consumerConfig.setRollbackAfterEachMessageCount(SEND_COUNT);
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:transactionQueue",
-                "10", "true", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=0,delayBetweenMsg=0,rollbackAfterEach=" + sendCount + "," +
-                "commitAfterEach=" + expectedCount + ",stopAfter=" + expectedCount, "");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactionQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
+        initialConsumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:transactionQueue", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClientUtils.sleepForInterval(1000);
 
-        Map<Long, Integer> duplicateMessages = receivingClient.checkIfMessagesAreDuplicated();
+        Map<Long, Integer> duplicateMessages = initialConsumerClient.checkIfMessagesAreDuplicated();
 
         boolean expectedCountDelivered = false;
+        // waiting till the number of deliveries is equal to {@link #ROLLBACK_ITERATIONS}.
         if (duplicateMessages != null) {
-            for (Long messaggeIdentifier : duplicateMessages.keySet()) {
-                int numberOfTimesDelivered = duplicateMessages.get(messaggeIdentifier);
-                if (numberOfRollbackIterations == numberOfTimesDelivered) {
+            for (Long messageIdentifier : duplicateMessages.keySet()) {
+                int numberOfTimesDelivered = duplicateMessages.get(messageIdentifier);
+                if (ROLLBACK_ITERATIONS == numberOfTimesDelivered) {
                     expectedCountDelivered = true;
                 } else {
                     expectedCountDelivered = false;
@@ -87,21 +122,17 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
             }
         }
 
-        //verify no more messages are delivered
-
         AndesClientUtils.sleepForInterval(2000);
 
-        receivingClient.startWorking();
+        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
+        secondaryConsumerClient.startClient();
 
-        boolean areMessagesReceivedAfterwars = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                expectedCount, 20);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(sendSuccess && receiveSuccess && expectedCountDelivered && !areMessagesReceivedAfterwars, true);
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
-        Assert.assertFalse(areMessagesReceivedAfterwars, "Messages received after the test.");
+        Assert.assertNotEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received after the test.");
     }
-
 }

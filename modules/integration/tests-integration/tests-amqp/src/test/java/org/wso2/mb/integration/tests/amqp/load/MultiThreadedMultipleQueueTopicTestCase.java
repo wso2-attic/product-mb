@@ -21,87 +21,166 @@ package org.wso2.mb.integration.tests.amqp.load;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-public class MultiThreadedMultipleQueueTopicTestCase {
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-    @BeforeClass
-    public void prepare() {
+/**
+ * Test class for multiple queues and topics running parallel for consumers and publishers.
+ */
+public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTest {
+    private static final long SEND_COUNT = 30000L;
+    private static final long ADDITIONAL = 30L;
+    private static final long EXPECTED_COUNT = SEND_COUNT + ADDITIONAL;
+    private static final int QUEUE_NUMBER_OF_SUBSCRIBERS = 45;
+    private static final int QUEUE_NUMBER_OF_PUBLISHERS = 45;
+    private static final int TOPIC_NUMBER_OF_SUBSCRIBERS = 45;
+    private static final int TOPIC_NUMBER_OF_PUBLISHERS = 15;
+    private static final String[] QUEUE_DESTINATIONS =
+            {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "Q11", "Q12", "Q13", "Q14", "Q15"};
+    private static final String[] TOPIC_DESTINATIONS =
+            {"T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15"};
+    private List<AndesClient> consumers = new ArrayList<AndesClient>();
+    private List<AndesClient> publishers = new ArrayList<AndesClient>();
+
+    /**
+     * Initialize the test as super tenant user.
+     *
+     * @throws javax.xml.xpath.XPathExpressionException
+     */
+    @BeforeClass(alwaysRun = true)
+    public void init() throws XPathExpressionException {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Define 15 queues and topic.
+     * 2. Send 30000 messages to 15 queues (2000 to each) by 45 threads.
+     * 2. Send 30000 messages to 15 topic (2000 to each) by 15 threads.
+     * 3. Receive messages from 15 queues by 45 threads.
+     * 3. Receive messages from 15 topics by 45 threads.
+     * 4. Verify that all messages are received and no more messages are received.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb"})
-    public void performMultiThreadedMultipleQueueTopicTestCase() {
+    public void performMultiThreadedMultipleQueueTopicTestCase()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
 
-        Integer queueSendCount = 30000;
-        Integer queueRunTime = 200;
-        Integer queueNumOfSendingThreads = 45;
-        Integer queueNumOfReceivingThreads = 45;
-        int additional = 30;
+        // Creating consumers
+        for (String queueDestination : QUEUE_DESTINATIONS) {
+            // Creating a queue consumer client configuration
+            AndesJMSConsumerClientConfiguration consumerConfig =
+                    new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueDestination);
+            consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+            consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        Integer topicSendCount = 30000;
-        Integer topicRunTime = 200;
-        Integer topicNumOfSendingThreads = 15;
-        Integer topicNumOfReceivingThreads = 45;
+            // Creating client
+            consumers
+                    .add(new AndesClient(consumerConfig, QUEUE_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length, true));
+        }
 
-        //wait some more time to see if more messages are received
-        Integer queueExpectedCount = 3 * 2000 * 15 + additional;
+        for (String topicDestination : TOPIC_DESTINATIONS) {
+            // Creating a topic consumer client configuration
+            AndesJMSConsumerClientConfiguration consumerConfig =
+                    new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicDestination);
+            consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+            consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        //wait some more time to see if more messages are received
-        Integer topicExpectedCount = topicSendCount + additional;
+            // Creating client
+            consumers
+                    .add(new AndesClient(consumerConfig, TOPIC_NUMBER_OF_SUBSCRIBERS / TOPIC_DESTINATIONS.length, true));
+        }
 
-        AndesClient queueReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                "false",
-                queueRunTime.toString(), queueExpectedCount.toString(),
-                queueNumOfReceivingThreads.toString(),
-                "listener=true,ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + queueExpectedCount,
-                "");
+        // Creating publishers
+        for (String queueDestinations : QUEUE_DESTINATIONS) {
+            // Creating a queue publisher client configuration
+            AndesJMSPublisherClientConfiguration publisherConfig =
+                    new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueDestinations);
+            publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+            publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        queueReceivingClient.startWorking();
+            // Creating client
+            publishers
+                    .add(new AndesClient(publisherConfig, QUEUE_NUMBER_OF_PUBLISHERS / QUEUE_DESTINATIONS.length, true));
+        }
 
+        for (String topicDestination : TOPIC_DESTINATIONS) {
+            // Creating a topic publisher client configuration
+            AndesJMSPublisherClientConfiguration publisherConfig =
+                    new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicDestination);
+            publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+            publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient topicReceivingClient = new AndesClient("receive", "127.0.0.1:5672",
-                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                "false",
-                topicRunTime.toString(), topicExpectedCount.toString(),
-                topicNumOfReceivingThreads.toString(),
-                "listener=true,ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + topicExpectedCount,
-                "");
+            // Creating client
+            publishers
+                    .add(new AndesClient(publisherConfig, TOPIC_NUMBER_OF_PUBLISHERS / TOPIC_DESTINATIONS.length, true));
+        }
 
-        topicReceivingClient.startWorking();
+        // Starting up clients
+        for (AndesClient consumer : consumers) {
+            consumer.startClient();
+        }
 
+        for (AndesClient publisher : publishers) {
+            publisher.startClient();
+        }
 
-        AndesClient queueSendingClient = new AndesClient("send", "127.0.0.1:5672",
-                "queue:Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15", "100",
-                "false", queueRunTime.toString(),
-                queueSendCount.toString(), queueNumOfSendingThreads.toString(),
-                "ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + queueSendCount,
-                "");
+        for (AndesClient consumer : consumers) {
+            AndesClientUtils
+                    .waitForMessagesAndShutdown(consumer, AndesClientConstants.DEFAULT_RUN_TIME * 3L);
+        }
 
-        queueSendingClient.startWorking();
+        // Evaluating
+        for (AndesClient publisher : publishers) {
+            if (ExchangeType.QUEUE == publisher.getConfig().getExchangeType()) {
+                Assert.assertEquals(publisher
+                                            .getSentMessageCount(), SEND_COUNT * (QUEUE_NUMBER_OF_PUBLISHERS / QUEUE_DESTINATIONS.length), "Message sending failed for queues for " + publisher
+                        .getConfig().getDestinationName());
+            } else if (ExchangeType.TOPIC == publisher.getConfig().getExchangeType()) {
+                Assert.assertEquals(publisher
+                                            .getSentMessageCount(), SEND_COUNT * (TOPIC_NUMBER_OF_PUBLISHERS / TOPIC_DESTINATIONS.length), "Message sending failed for topics " + publisher
+                        .getConfig().getDestinationName());
+            }
+        }
 
+        long totalQueueMessagesReceived = 0L;
+        long totalTopicMessagesReceived = 0L;
+        for (AndesClient consumer : consumers) {
+            if (ExchangeType.QUEUE == consumer.getConfig().getExchangeType()) {
+                Assert.assertEquals(consumer.getReceivedMessageCount(), (EXPECTED_COUNT - ADDITIONAL) * (TOPIC_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length), "Message receiving failed " + consumer
+                        .getConfig().getDestinationName());
+                totalQueueMessagesReceived =
+                        totalQueueMessagesReceived + consumer.getReceivedMessageCount();
+            } else if (ExchangeType.TOPIC == consumer.getConfig().getExchangeType()) {
+                Assert.assertEquals(consumer.getReceivedMessageCount(), EXPECTED_COUNT - ADDITIONAL, "Message receiving failed " + consumer
+                        .getConfig().getDestinationName());
+                totalTopicMessagesReceived =
+                        totalTopicMessagesReceived + consumer.getReceivedMessageCount();
+            }
+        }
 
-        AndesClient topicSendingClient = new AndesClient("send", "127.0.0.1:5672",
-                "topic:T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15", "100",
-                "false", topicRunTime.toString(),
-                topicSendCount.toString(), topicNumOfSendingThreads.toString(),
-                "ackMode=1,delayBetweenMsg=0," +
-                        "stopAfter=" + topicSendCount,
-                "");
-
-        topicSendingClient.startWorking();
-
-        //let us wait topic message receive time which is larger
-        AndesClientUtils.waitUntilMessagesAreReceived(topicReceivingClient, topicExpectedCount, topicRunTime);
-
-        Assert.assertEquals(queueReceivingClient.getReceivedqueueMessagecount(), queueExpectedCount - additional,
-                "Did not receive expected message count for Queues.");
-        Assert.assertEquals(topicReceivingClient.getReceivedqueueMessagecount(), topicExpectedCount - additional,
-                "Did not receive expected message count for Queues.");
+        Assert.assertEquals(totalQueueMessagesReceived, SEND_COUNT * (QUEUE_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length), "Message receiving failed.");
+        Assert.assertEquals(totalQueueMessagesReceived, (EXPECTED_COUNT - ADDITIONAL) * TOPIC_NUMBER_OF_SUBSCRIBERS / TOPIC_DESTINATIONS.length, "Message receiving failed.");
     }
 }

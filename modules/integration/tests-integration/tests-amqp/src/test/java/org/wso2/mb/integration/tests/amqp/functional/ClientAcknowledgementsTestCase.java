@@ -23,55 +23,101 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+
 /**
- * 1. start a queue receiver in client ack mode
- * 2. receive messages acking message bunch to bunch
- * 3. after all messages are received subscribe again and verify n more messages come
+ * This class includes test cases to test client acknowledgements modes for queues
  */
 public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * Amount of messages sent.
+     */
+    private static final long SEND_COUNT = 1000L;
+
+    /**
+     * Amount of messages expected.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * In this test it will check functionality of client acknowledgement by acknowledging bunch by
+     * bunch.
+     * 1. Start queue receiver in client acknowledge mode.
+     * 2. Publisher sends {@link #SEND_COUNT} messages.
+     * 3. Consumer receives messages and only acknowledge after each 200 messages.
+     * 4. Consumer should receive {@link #EXPECTED_COUNT} messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb", "queue"})
-    public void performClientAcknowledgementsTestCase() {
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 1000;
+    public void performClientAcknowledgementsTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:clientAckTestQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=2,delayBetweenMsg=0,ackAfterEach=200,stopAfter=" + expectedCount, "");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig
+                .setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
+        consumerConfig
+                .setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        receivingClient.startWorking();
+        // Creating a JMS publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:clientAckTestQueue", "100",
-                "false",
-                runTime.toString(), sendCount.toString(), "1", "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount,
-                "");
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
+        consumerClient1.startClient();
 
-        sendingClient.startWorking();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Integer totalMsgsReceived = receivingClient.getReceivedqueueMessagecount();
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
+        consumerClient2.startClient();
 
         AndesClientUtils.sleepForInterval(2000);
 
-        receivingClient.startWorking();
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, 15);
+        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2
+                .getReceivedMessageCount();
 
-        totalMsgsReceived += receivingClient.getReceivedqueueMessagecount();
-
-        Assert.assertTrue(success, "Message receiving failed.");
-
-        Assert.assertEquals(totalMsgsReceived, expectedCount, "Expected message count not received.");
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
+        Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
     }
-
 }

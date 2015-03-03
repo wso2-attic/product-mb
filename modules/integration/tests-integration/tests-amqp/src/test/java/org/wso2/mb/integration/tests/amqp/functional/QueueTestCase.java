@@ -18,110 +18,179 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import static org.testng.Assert.assertEquals;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
+/**
+ * Test cases for queue related scenarios.
+ */
 public class QueueTestCase extends MBIntegrationBaseTest {
-    private static final Log log = LogFactory.getLog(QueueTestCase.class);
 
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Create queue names "singleQueue".
+     * 2. Publish 1000 messages to queue.
+     * 3. Consumer should receive 1000 messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case")
-    public void performSingleQueueSendReceiveTestCase() {
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 1000;
+    public void performSingleQueueSendReceiveTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
 
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleQueue", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        sendingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
     }
 
-    // Disabled until topic workflow is implemented
+    /**
+     * 1. Create a topic named "subTopicPubQueue"
+     * 2. Create a subscriber for that topic.
+     * 3. Publish messages to a queue that has the same name as "subTopicPubQueue".
+     * 4. Subscriber should not receive any messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = "wso2.mb", description = "subscribe to a topic and send message to a queue which has the same name" +
-            " as queue", enabled = false)
-    public void performSubTopicPubQueueTestCase() {
+                                            " as queue")
+    public void performSubTopicPubQueueTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
 
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = 1000;
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "subTopicPubQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "topic:topic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "subTopicPubQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:topic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertFalse(receiveSuccess, "Message sending failed.");
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), 0, "Messages should have not received");
     }
 
-
+    /**
+     * 1. Create 2 consumers for queue name "queueManyConsumers"
+     * 2. Publish 3000 message to queue name "queueManyConsumers"
+     * 3. Total messages received by both consumers should be 3000 messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = "wso2.mb", description = "send large number of messages to a queue which has two consumers")
-    public void performManyConsumersTestCase() {
+    public void performManyConsumersTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        Integer sendCount = 3000;
-        Integer runTime = 20;
-        Integer expectedCount = 3000;
+        long sendCount = 3000L;
+        long expectedCount = 3000L;
 
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueManyConsumers");
+        consumerConfig1.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig1.setPrintsPerMessageCount(expectedCount / 10L);
 
-        receivingClient1.startWorking();
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "queue:queue1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-        receivingClient2.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueManyConsumers");
+        consumerConfig2.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig2.setPrintsPerMessageCount(100L);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:queue1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "queueManyConsumers");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(100L);
 
-        sendingClient.startWorking();
-        int msgCountFromClient1 = AndesClientUtils.getNoOfMessagesReceived(receivingClient1, expectedCount, runTime);
-        int msgCountFromClient2 = AndesClientUtils.getNoOfMessagesReceived(receivingClient2, expectedCount, runTime);
+        // Creating clients
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
 
-        assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount.intValue(),
-                "Did not received expected message count");
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.sleepForInterval(5000);
+
+        // Evaluating
+        long msgCountFromClient1 = consumerClient1.getReceivedMessageCount();
+        long msgCountFromClient2 = consumerClient2.getReceivedMessageCount();
+
+        Assert.assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount,
+                            "Did not received expected message count");
     }
-
 }

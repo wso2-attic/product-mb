@@ -18,72 +18,113 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 
 /**
- * 1. subscribe to a single queue which will take 1/5 messages of sent and stop
- * 2. send messages to the queue
- * 3. close and resubscribe 5 times to the queue
- * 4. verify message count is equal to the sent total
+ * Test class to verify breaking the consumers from time to time to make sure that at the end all
+ * messages are delivered.
  */
-public class QueueSubscriptionsBreakAndReceiveTestCase {
+public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBaseTest {
 
-    private static final Log log = LogFactory.getLog(QueueSubscriptionsBreakAndReceiveTestCase.class);
+    /**
+     * Number of messages to send
+     */
+    private static final long SEND_COUNT = 1000L;
 
+    /**
+     * Number of subscribers
+     */
+    private static final int NUMBER_OF_SUBSCRIPTION_BREAKS = 5;
+
+    /**
+     * Number of messages expected by one subscriber/consumer
+     */
+    private static final long EXPECTED_COUNT_BY_EACH_SUBSCRIBER = SEND_COUNT / NUMBER_OF_SUBSCRIPTION_BREAKS;
+
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() {
+    public void prepare() throws XPathExpressionException {
+        init(TestUserMode.SUPER_TENANT_ADMIN);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Subscribe to a single queue which will take 1/5 messages of sent and stop
+     * 2. Send messages to the queue
+     * 3. Close and resubscribe 5 times to the queue. Each subscriber should get 200 messages each.
+     * 4. Verify message count is equal to the sent total
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb", "queue"})
-    public void performQueueSubscriptionsBreakAndReceiveTestCase() {
+    public void performQueueSubscriptionsBreakAndReceiveTestCase()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   CloneNotSupportedException, AndesClientException {
 
-        Integer sendCount = 1000;
-        Integer runTime = 40;
-        int numberOfSubscriptionBreaks = 5;
-        Integer expectedCount = sendCount / numberOfSubscriptionBreaks;
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "breakSubscriberQueue");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_BY_EACH_SUBSCRIBER);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT_BY_EACH_SUBSCRIBER / 10L);
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:breakSubscriberQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "breakSubscriberQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        receivingClient.startWorking();
+        // Creating clients
+        AndesClient firstConsumerClient = new AndesClient(consumerConfig, true);
+        firstConsumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:breakSubscriberQueue", "100",
-                "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitForMessagesAndShutdown(firstConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(firstConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT_BY_EACH_SUBSCRIBER, "Message receiving failed for first consumer.");
 
-        Assert.assertTrue(success, "Message receiving failed.");
+        long totalMessageCountReceived = firstConsumerClient.getReceivedMessageCount();
 
-        int totalMsgCountReceived = receivingClient.getReceivedqueueMessagecount();
+        // Using a loop to create consumers and receive expected messages
+        for (int count = 1; count < NUMBER_OF_SUBSCRIPTION_BREAKS; count++) {
+            AndesClient newConsumerClient = new AndesClient(consumerConfig, true);
+            newConsumerClient.startClient();
 
+            AndesClientUtils.waitForMessagesAndShutdown(newConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
 
-
-        //anyway wait one more iteration to verify no more messages are delivered
-        for (int count = 1; count < numberOfSubscriptionBreaks; count++) {
-
-            receivingClient.startWorking();
-            AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-            AndesClientUtils.sleepForInterval(2000);
-            totalMsgCountReceived += receivingClient.getReceivedqueueMessagecount();
-           // AndesClientUtils.sleepForInterval(1000);
+            totalMessageCountReceived = totalMessageCountReceived + newConsumerClient.getReceivedMessageCount();
+            AndesClientUtils.sleepForInterval(1000L);
         }
 
-        Assert.assertEquals(totalMsgCountReceived, sendCount.intValue(), "Expected message count was not received.");
-
-        log.info(totalMsgCountReceived);
+        // Evaluating received total message count
+        Assert.assertEquals(totalMessageCountReceived, SEND_COUNT, "Expected message count was not received.");
     }
-
 }

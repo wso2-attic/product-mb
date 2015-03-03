@@ -23,61 +23,91 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+
 /**
- * 1. subscribe to a single queue using Client Ack
- * 2. this subscriber will wait a long time for messages (defaultAckWaitTimeout*defaultMaxRedeliveryAttempts)
- * 3. subscriber will never ack for messages
- * 4. subscriber will receive same message until defaultMaxRedeliveryAttempts breached
- * 5. after that message will be written to dlc
- * 6. no more message should be delivered after written to DLC
+ * Test case where client acknowledgement is not given when needed and that messages gets
+ * redelivered through dead letter channel.
  */
 public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationBaseTest {
 
+    /**
+     * Default acknowledge waiting time
+     */
+    private static final long DEFAULT_ACK_WAIT_TIMEOUT = 10L;
+
+    /**
+     * Number of messages to send
+     */
+    private static final long SEND_COUNT = 1L;
+
+    /**
+     * Initializing test case
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Subscribe to a single queue using Client Ack
+     * 2. This subscriber will wait a long time for messages (defaultAckWaitTimeout*defaultMaxRedeliveryAttempts)
+     * 3. Subscriber will never ack for messages
+     * 4. Subscriber will receive same message until defaultMaxRedeliveryAttempts breached
+     * 5. After that message will be written to dlc
+     * 6. No more message should be delivered after written to DLC
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb", "queue"})
-    public void performQueueMessageRedeliveryWithAckTimeOutTestCase() {
+    public void performQueueMessageRedeliveryWithAckTimeOutTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        int defaultMaxRedeliveryAttempts = 10;
-        int defaultAckWaitTimeout = 10;
-        Integer sendCount = 2;
+        // Setting system property "AndesAckWaitTimeOut" for andes
+        System.setProperty("AndesAckWaitTimeOut", Long.toString(DEFAULT_ACK_WAIT_TIMEOUT * 1000L));
 
-        //wait until messages go to DLC and some more time to verify no more messages are coming
-        Integer expectedCount = defaultMaxRedeliveryAttempts * sendCount;
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
+        consumerConfig.setMaximumMessagesToReceived(5L);
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
 
-        //wait until messages go to DLC and some more time to verify no more messages are coming
-        Integer runTime = defaultAckWaitTimeout * defaultMaxRedeliveryAttempts + 200;
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
-        // set AckwaitTimeout
-        System.setProperty("AndesAckWaitTimeOut", Integer.toString(defaultAckWaitTimeout * 1000));
-        // expect 1000 messages to stop it from stopping
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:redeliveryQueue",
-                "100", "true", runTime.toString(), expectedCount.toString(),
-                "2", "listener=true,ackMode=2,ackAfterEach=200,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, 3, true);
+        consumerClient.startClient();
 
-        receivingClient.startWorking();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:redeliveryQueue", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2L);
 
-        sendingClient.startWorking();
-
-        boolean success = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(success, "Message receiving failed.");
-
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount * defaultMaxRedeliveryAttempts,
-                "Did not receive expected message count");
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed.");
+        // The received count is higher than the sent count as the sent message is redelivered till 'defaultMaxRedeliveryAttempts' is reached.
+        Assert.assertTrue(consumerClient.getReceivedMessageCount() > SEND_COUNT, "Did not receive expected message count.");
     }
 }

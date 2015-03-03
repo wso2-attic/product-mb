@@ -23,16 +23,31 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * This class includes test cases to test different types of messages (e.g. byte, map, object,
@@ -40,22 +55,29 @@ import static org.testng.Assert.assertTrue;
  */
 public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
 
-    private AutomationContext automationContext1;
-    private TopicAdminClient topicAdminClient1;
+    private AutomationContext automationContext;
+    private TopicAdminClient topicAdminClient;
 
     /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
+                   LoginAuthenticationExceptionException, IOException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
-        automationContext1 = getAutomationContextWithKey("mb002");
+        automationContext = getAutomationContextWithKey("mb002");
 
-        topicAdminClient1 = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
-                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
+        topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
+                                                super.login(automationContext), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
     }
 
@@ -63,196 +85,147 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish byte messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws NamingException
+     * @throws AndesClientException
      */
-    @Test(groups = "wso2.mb", description = "Single publisher single subscriber byte messages",enabled = true)
-    public void testByteMessageSingleSubSinglePubTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
+    @Test(groups = "wso2.mb", description = "Single publisher single subscriber byte messages", enabled = true)
+    public void testByteMessageSingleSubSinglePubTopic()
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
 
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
-
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:byteTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:byteTopic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-
-        sendingClient.setMessageType("byte");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+        this.runMessageTypeTestCase(JMSMessageType.BYTE, "byteTopic1");
     }
 
     /**
      * Publish map messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber map messages",
             enabled = true)
-    public void testMapMessageSingleSubSinglePubTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
-
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
-
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:mapTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:mapTopic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-
-        sendingClient.setMessageType("map");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+    public void testMapMessageSingleSubSinglePubTopic()
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
+        this.runMessageTypeTestCase(JMSMessageType.MAP, "mapTopic1");
     }
-
 
     /**
      * Publish object messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber object messages",
             enabled = true)
-    public void testObjectMessageSingleSubSinglePubTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
-
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
-
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:objectTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:objectTopic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-
-        sendingClient.setMessageType("object");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+    public void testObjectMessageSingleSubSinglePubTopic()
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
+        this.runMessageTypeTestCase(JMSMessageType.OBJECT, "objectTopic1");
     }
 
     /**
      * Publish stream messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws NamingException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber stream messages",
             enabled = true)
-    public void testStreamMessageSingleSubSinglePubTopic() throws Exception {
-        // Max number of seconds to run the client
-        Integer runTime = 80;
-        // Expected message count
-        Integer expectedCount = 2000;
-        // Number of messages send
-        Integer sendCount = 2000;
-
-        String hostinfo = automationContext1.getInstance().getHosts().get("default") + ":" +
-                automationContext1.getInstance().getPorts().get("amqp");
-
-        AndesClient receivingClient = new AndesClient("receive", hostinfo
-                , "topic:streamTopic1",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        AndesClient sendingClient = new AndesClient("send", hostinfo
-                , "topic:streamTopic1", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-
-        sendingClient.setMessageType("stream");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived
-                (receivingClient, expectedCount, runTime);
-
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Assert.assertTrue(receiveSuccess, "Did not receive all the messages");
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
+    public void testStreamMessageSingleSubSinglePubTopic()
+            throws IOException, JMSException, AndesClientConfigurationException,
+                   XPathExpressionException,
+                   NamingException, AndesClientException {
+        this.runMessageTypeTestCase(JMSMessageType.STREAM, "streamTopic1");
     }
 
     /**
-     * Cleanup after running tests.
+     * Publish stream messages to a topic in a single node and receive from the same node with one
+     * subscriber
      *
-     * @throws Exception
+     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy()
+            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
 
-        topicAdminClient1.removeTopic("byteTopic1");
-        topicAdminClient1.removeTopic("mapTopic1");
-        topicAdminClient1.removeTopic("objectTopic1");
-        topicAdminClient1.removeTopic("streamTopic1");
-
-
+        topicAdminClient.removeTopic("byteTopic1");
+        topicAdminClient.removeTopic("mapTopic1");
+        topicAdminClient.removeTopic("objectTopic1");
+        topicAdminClient.removeTopic("streamTopic1");
     }
 
+    /**
+     * Runs a topic send and receive test case
+     *
+     * @param messageType     The message type to be used when publishing
+     * @param destinationName The destination name for sender and receiver
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     */
+    private void runMessageTypeTestCase(JMSMessageType messageType, String destinationName)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
+
+        // Number of expected messages
+        long expectedCount = 2000L;
+        // Number of messages send
+        long sendCount = 2000L;
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.TOPIC, destinationName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(automationContext.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.TOPIC, destinationName);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setJMSMessageType(messageType);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+    }
 }

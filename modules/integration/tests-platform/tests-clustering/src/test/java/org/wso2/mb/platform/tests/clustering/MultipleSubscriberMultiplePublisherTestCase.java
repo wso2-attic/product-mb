@@ -18,20 +18,32 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.automation.engine.context.AutomationContext;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * This class tests broker with multiple publisher and subscribers
@@ -39,18 +51,19 @@ import javax.xml.xpath.XPathExpressionException;
 public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseTest {
 
     /**
-     * Class Logger
-     */
-    private static final Log log =
-            LogFactory.getLog(MultipleSubscriberMultiplePublisherTestCase.class);
-
-    /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }
@@ -58,404 +71,263 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in same node for a single queue
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node single queue multiple subscriber " +
                                             "publisher test case")
-    public void testSameNodeSingleQueueMultipleSubscriberPublisher() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 250;
+    public void testSameNodeSingleQueueMultipleSubscriberPublisher() throws
+                                                                     XPathExpressionException,
+                                                                     AndesClientConfigurationException,
+                                                                     NamingException, JMSException,
+                                                                     IOException,
+                                                                     AndesClientException {
+        // Number of messages expected
+        long expectedCount = 250L;
         // Number of messages send
-        int sendCount = 250;
+        long sendCount = 250L;
 
-        String brokerURL = getRandomAMQPBrokerUrl();
-        AndesClient receivingClient1 = new AndesClient("receive", brokerURL,
-                                                       "queue:singleQueue1",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient2 = new AndesClient("receive", brokerURL,
-                                                       "queue:singleQueue1",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient3 = new AndesClient("receive", brokerURL,
-                                                       "queue:singleQueue1",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient4 = new AndesClient("receive", brokerURL,
-                                                       "queue:singleQueue1",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        receivingClient1.startWorking();
-        receivingClient2.startWorking();
-        receivingClient3.startWorking();
-        receivingClient4.startWorking();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient sendingClient1 = new AndesClient("send", brokerURL,
-                                                     "queue:singleQueue1", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient1.startWorking();
-        AndesClient sendingClient2 = new AndesClient("send", brokerURL,
-                                                     "queue:singleQueue1", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient2.startWorking();
-        AndesClient sendingClient3 = new AndesClient("send", brokerURL,
-                                                     "queue:singleQueue1", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient3.startWorking();
-        AndesClient sendingClient4 = new AndesClient("send", brokerURL,
-                                                     "queue:singleQueue1", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient4.startWorking();
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue1");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 4.");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue1");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 4.");
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
+        consumerClient1.startClient();
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
+        consumerClient2.startClient();
+        AndesClient consumerClient3 = new AndesClient(consumerConfig, true);
+        consumerClient3.startClient();
+        AndesClient consumerClient4 = new AndesClient(consumerConfig, true);
+        consumerClient4.startClient();
 
-        int receiveCount = receivingClient1.getReceivedqueueMessagecount()
-                           + receivingClient2.getReceivedqueueMessagecount()
-                           + receivingClient3.getReceivedqueueMessagecount()
-                           + receivingClient4.getReceivedqueueMessagecount();
-        Assert.assertEquals(receiveCount, sendCount * 4,
-                            "All messages are not received.");
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
+        publisherClient1.startClient();
+        AndesClient publisherClient2 = new AndesClient(publisherConfig, true);
+        publisherClient2.startClient();
+        AndesClient publisherClient3 = new AndesClient(publisherConfig, true);
+        publisherClient3.startClient();
+        AndesClient publisherClient4 = new AndesClient(publisherConfig, true);
+        publisherClient4.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), sendCount, "Message sending failed by publisherClient1.");
+        Assert.assertEquals(publisherClient2.getSentMessageCount(), sendCount, "Message sending failed by publisherClient2.");
+        Assert.assertEquals(publisherClient3.getSentMessageCount(), sendCount, "Message sending failed by publisherClient3.");
+        Assert.assertEquals(publisherClient4.getSentMessageCount(), sendCount, "Message sending failed by publisherClient4.");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient1.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient2.");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient3.");
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient4.");
+
+        long totalMessagesSent = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount() + publisherClient3.getSentMessageCount() + publisherClient4.getSentMessageCount();
+        long totalMessagesReceived = consumerClient1.getSentMessageCount() + consumerClient2.getSentMessageCount() + consumerClient3.getSentMessageCount() + consumerClient4.getSentMessageCount();
+        Assert.assertEquals(totalMessagesSent, totalMessagesReceived, "Message receiving failed by all consumers");
+        Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers does not match the message count that was sent");
     }
 
     /**
      * Multiple subscribers and publishers in Multiple node for a single queue
      *
-     * @throws Exception
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple node single queue multiple subscriber " +
                                             "publisher test case")
-    public void testMultiNodeSingleQueueMultipleSubscriberPublisher() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 250;
+    public void testMultiNodeSingleQueueMultipleSubscriberPublisher()
+            throws AndesClientConfigurationException, XPathExpressionException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
+        // Number of messages expected
+        long expectedCount = 250L;
         // Number of messages send
-        int sendCount = 250;
+        long sendCount = 250L;
+        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient1 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue2",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient2 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue2",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient3 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue2",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient4 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue2",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        receivingClient1.startWorking();
-        receivingClient2.startWorking();
-        receivingClient3.startWorking();
-        receivingClient4.startWorking();
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue2");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesClient sendingClient1 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue2", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient1.startWorking();
-        AndesClient sendingClient2 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue2", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient2.startWorking();
-        AndesClient sendingClient3 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue2", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient3.startWorking();
-        AndesClient sendingClient4 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue2", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient4.startWorking();
+        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue2");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 4.");
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
+        consumerClient1.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 4.");
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
+        consumerClient2.startClient();
 
-        int receiveCount = receivingClient1.getReceivedqueueMessagecount()
-                           + receivingClient2.getReceivedqueueMessagecount()
-                           + receivingClient3.getReceivedqueueMessagecount()
-                           + receivingClient4.getReceivedqueueMessagecount();
-        Assert.assertEquals(receiveCount, sendCount * 4,
-                            "All messages are not received.");
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient3 = new AndesClient(consumerConfig, true);
+        consumerClient3.startClient();
+
+        consumerConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient4 = new AndesClient(consumerConfig, true);
+        consumerClient4.startClient();
+
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
+        publisherClient1.startClient();
+
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient2 = new AndesClient(publisherConfig, true);
+        publisherClient2.startClient();
+
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient3 = new AndesClient(publisherConfig, true);
+        publisherClient3.startClient();
+
+        publisherConfig.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient4 = new AndesClient(publisherConfig, true);
+        publisherClient4.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), sendCount, "Message sending failed by publisherClient1.");
+        Assert.assertEquals(publisherClient2.getSentMessageCount(), sendCount, "Message sending failed by publisherClient2.");
+        Assert.assertEquals(publisherClient3.getSentMessageCount(), sendCount, "Message sending failed by publisherClient3.");
+        Assert.assertEquals(publisherClient4.getSentMessageCount(), sendCount, "Message sending failed by publisherClient4.");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient1.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient2.");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient3.");
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient4.");
+
+        long totalMessagesSent = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount() + publisherClient3.getSentMessageCount() + publisherClient4.getSentMessageCount();
+        long totalMessagesReceived = consumerClient1.getSentMessageCount() + consumerClient2.getSentMessageCount() + consumerClient3.getSentMessageCount() + consumerClient4.getSentMessageCount();
+        Assert.assertEquals(totalMessagesSent, totalMessagesReceived, "Message receiving failed by all consumers");
+        Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers does not match the message count that was sent");
     }
 
     /**
      * Multiple subscribers and publishers in Multiple node for Multiple queues
      *
-     * @throws Exception
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Multiple node Multiple queue multiple subscriber " +
                                             "publisher test case")
-    public void testMultiNodeMultipleQueueMultipleSubscriberPublisher() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 250;
+    public void testMultiNodeMultipleQueueMultipleSubscriberPublisher() throws
+                                                                        AndesClientConfigurationException,
+                                                                        NamingException,
+                                                                        JMSException,
+                                                                        XPathExpressionException,
+                                                                        IOException,
+                                                                        CloneNotSupportedException,
+                                                                        AndesClientException {
+        // Number of messages expected
+        long expectedCount = 250L;
         // Number of messages send
-        int sendCount = 250;
+        long sendCount = 250L;
 
-        AndesClient receivingClient1 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue3",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient2 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue4",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient3 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue5",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        AndesClient receivingClient4 = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                       "queue:singleQueue6",
-                                                       "100", "false",
-                                                       String.valueOf(maxRunningTime),
-                                                       String.valueOf(expectedCount),
-                                                       "1",
-                                                       "listener=true,ackMode=1," +
-                                                       "delayBetweenMsg=0," +
-                                                       "stopAfter=" + expectedCount,
-                                                       "");
-        receivingClient1.startWorking();
-        receivingClient2.startWorking();
-        receivingClient3.startWorking();
-        receivingClient4.startWorking();
+        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient sendingClient1 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue3", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient1.startWorking();
-        AndesClient sendingClient2 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue4", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient2.startWorking();
-        AndesClient sendingClient3 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue5", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient3.startWorking();
-        AndesClient sendingClient4 = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                     "queue:singleQueue6", "100",
-                                                     "false",
-                                                     String.valueOf(maxRunningTime),
-                                                     String.valueOf(sendCount), "1",
-                                                     "ackMode=1,delayBetweenMsg=0," +
-                                                     "stopAfter=" + sendCount,
-                                                     "");
-        sendingClient4.startWorking();
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue3");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient3,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient4,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed for client 4.");
+        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 1.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 2.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 3.");
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient1, sendCount),
-                          "Message sending failed for client 4.");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueue3");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        int receiveCount = receivingClient1.getReceivedqueueMessagecount()
-                           + receivingClient2.getReceivedqueueMessagecount()
-                           + receivingClient3.getReceivedqueueMessagecount()
-                           + receivingClient4.getReceivedqueueMessagecount();
-        Assert.assertEquals(receiveCount, sendCount * 4,
-                            "All messages are not received.");
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
+        consumerClient1.startClient();
+
+        AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
+        consumerConfig2.setDestinationName("singleQueue4");
+        consumerConfig2.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
+
+        AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig.clone();
+        consumerConfig3.setDestinationName("singleQueue5");
+        consumerConfig3.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient3 = new AndesClient(consumerConfig3, true);
+        consumerClient3.startClient();
+
+        AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
+        consumerConfig4.setDestinationName("singleQueue6");
+        consumerConfig4.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
+        consumerClient4.startClient();
+
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
+        publisherClient1.startClient();
+
+        AndesJMSPublisherClientConfiguration publisherConfig2 = publisherConfig.clone();
+        publisherConfig2.setDestinationName("singleQueue4");
+        publisherConfig2.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
+        publisherClient2.startClient();
+
+        AndesJMSPublisherClientConfiguration publisherConfig3 = publisherConfig.clone();
+        publisherConfig3.setDestinationName("singleQueue5");
+        publisherConfig3.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient3 = new AndesClient(publisherConfig3, true);
+        publisherClient3.startClient();
+
+        AndesJMSPublisherClientConfiguration publisherConfig4 = publisherConfig.clone();
+        publisherConfig4.setDestinationName("singleQueue6");
+        publisherConfig4.setConnectionString(getRandomAMQPBrokerAddress());
+        AndesClient publisherClient4 = new AndesClient(publisherConfig4, true);
+        publisherClient4.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), sendCount, "Message sending failed by publisherClient1.");
+        Assert.assertEquals(publisherClient2.getSentMessageCount(), sendCount, "Message sending failed by publisherClient2.");
+        Assert.assertEquals(publisherClient3.getSentMessageCount(), sendCount, "Message sending failed by publisherClient3.");
+        Assert.assertEquals(publisherClient4.getSentMessageCount(), sendCount, "Message sending failed by publisherClient4.");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient1.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient2.");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient3.");
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient4.");
+
+        long totalMessagesSent = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount() + publisherClient3.getSentMessageCount() + publisherClient4.getSentMessageCount();
+        long totalMessagesReceived = consumerClient1.getSentMessageCount() + consumerClient2.getSentMessageCount() + consumerClient3.getSentMessageCount() + consumerClient4.getSentMessageCount();
+        Assert.assertEquals(totalMessagesSent, totalMessagesReceived, "Message receiving failed by all consumers");
+        Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers does not match the message count that was sent");
     }
 
     /**
      * Cleanup after running tests.
      *
-     * @throws Exception
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy() throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
 
         String randomInstanceKey = getRandomMBInstance();
 

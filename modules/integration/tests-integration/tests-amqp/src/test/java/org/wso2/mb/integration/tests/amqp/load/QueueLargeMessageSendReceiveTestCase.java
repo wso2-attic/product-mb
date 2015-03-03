@@ -27,111 +27,128 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import java.io.*;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
-import static org.testng.Assert.assertEquals;
-
+/**
+ * Load test case to check message size support for queues
+ */
 public class QueueLargeMessageSendReceiveTestCase extends MBIntegrationBaseTest {
-
-    // Input file to read a 1MB message content.
-    String messageContentInputFilePath = System.getProperty("framework.resource.location") + File.separator +
-            "MessageContentInput.txt";
-
-    // 1MB size.
-    public static final int SIZE_TO_READ = 1024 * 1024;
 
     /**
      * Initialize the test as super tenant user.
      *
-     * @throws Exception
+     * @throws javax.xml.xpath.XPathExpressionException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
-     * check with 1MB messages
+     * Send 1000 messages of 1MB value and check 1000 messages are received by the consumer.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws AndesClientException
      */
-    @Test(groups = {"wso2.mb", "queue"})
-    public void performQueueOneMBSizeMessageSendReceiveTestCase() {
-        Integer sendCount = 1000;
-        Integer runTime = 20;
-        Integer expectedCount = sendCount;
+    @Test(groups = {"wso2.mb", "queue"}, enabled = true)
+    public void performQueueOneMBSizeMessageSendReceiveTestCase()
+            throws AndesClientConfigurationException, IOException, NamingException, JMSException,
+                   AndesClientException {
+        long sendCount = 1000L;
 
-        String queueNameArg = "queue:Queue1MBSendReceive";
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "Queue1MBSendReceive");
+        consumerConfig.setMaximumMessagesToReceived(sendCount);
+        consumerConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        char[] inputContent = new char[SIZE_TO_READ];
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "Queue1MBSendReceive");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig
+                .setReadMessagesFromFilePath(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);   // Setting file to be sent by publisher
 
-        try {
-            BufferedReader inputFileReader = new BufferedReader(new FileReader(messageContentInputFilePath));
-            inputFileReader.read(inputContent);
-        } catch (FileNotFoundException e) {
-            log.warn("Error locating input content from file : " + messageContentInputFilePath);
-        } catch (IOException e) {
-            log.warn("Error reading input content from file : " + messageContentInputFilePath);
-        }
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", queueNameArg,
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        receivingClient.startWorking();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", queueNameArg, "100", "true",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,file=" + messageContentInputFilePath + ",stopAfter=" + sendCount, "");
-
-        sendingClient.startWorking();
-
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, sendCount, runTime);
-
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Integer actualReceiveCount = receivingClient.getReceivedqueueMessagecount();
-
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
-
-        assertEquals(actualReceiveCount, sendCount, "Did not receive expected message count.");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), sendCount, "Message receiving failed.");
     }
 
     /**
-     * check with 10MB messages
+     * Send 10 messages of size 10MB and check whether consumer receives the same amount of
+     * messages
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
-    @Test(groups = {"wso2.mb", "queue"}, enabled = false)
-    public void performQueueTenMBSizeMessageSendReceiveTestCase() {
-        Integer sendCount = 10;
-        Integer runTime = 120;
-        Integer expectedCount = 10;
-        String pathOfSampleFileToReadContent = System.getProperty("resources.dir") + File.separator + "sample.xml";
-        String pathOfFileToReadContent = System.getProperty("resources.dir") + File.separator + "pom10mb.xml";
-        AndesClientUtils.createTestFileToSend(pathOfSampleFileToReadContent, pathOfFileToReadContent, 10 * 1024);
+    @Test(groups = {"wso2.mb", "queue"}, enabled = true)
+    public void performQueueTenMBSizeMessageSendReceiveTestCase()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+                   AndesClientException {
+        long sendCount = 10L;
 
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:singleLargeQueue10MB",
-                "1", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
+        // Creating a file of 10MB
+        AndesClientUtils.createMockFile(AndesClientConstants.FILE_PATH_FOR_ONE_KB_SAMPLE_FILE,
+                                        AndesClientConstants.FILE_PATH_FOR_CREATING_A_NEW_FILE, 10 * 1024);
 
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleLargeQueue10MB");
+        consumerConfig.setMaximumMessagesToReceived(sendCount);
 
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:singleLargeQueue10MB", "1",
-                "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,file=" + pathOfFileToReadContent + ",delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleLargeQueue10MB");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig
+                .setReadMessagesFromFilePath(AndesClientConstants.FILE_PATH_FOR_CREATING_A_NEW_FILE);   // Setting file to be sent by publisher
 
-        sendingClient.startWorking();
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        boolean receiveSuccess = AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(sendSuccess, "Message sending failed.");
-        Assert.assertTrue(receiveSuccess, "Message receiving failed.");
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                                    .getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                                    .getReceivedMessageCount(), sendCount, "Message receiving failed.");
     }
-
-
 }

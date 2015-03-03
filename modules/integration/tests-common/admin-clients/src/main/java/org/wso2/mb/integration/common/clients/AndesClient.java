@@ -1,589 +1,317 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
 package org.wso2.mb.integration.common.clients;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageBrowser;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageSender;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicMessagePublisher;
-import org.wso2.mb.integration.common.clients.operations.topic.TopicMessageReceiver;
-import org.wso2.mb.integration.common.clients.operations.utils.*;
+
+import org.apache.log4j.Logger;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
-import java.io.File;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This class represents the Andes Client which is used to publish/consume JMS messages. The JMS
+ * publishers and consumers are created within this class with the help of a configuration file.
+ * This class also provides functionality which can be used to evaluate JMS message publishers and
+ * consumers.
+ */
 public class AndesClient {
-    private final Log log = LogFactory.getLog(AndesClient.class);
+    /**
+     * The logger used to log information, warnings, errors, etc.
+     */
+    private static Logger log = Logger.getLogger(AndesClient.class);
 
-    private AtomicInteger queueMessageCounter = new AtomicInteger(0);
-    private AtomicInteger topicMessageCounter = new AtomicInteger(0);
-    public String filePathToWriteReceivedMessages = System.getProperty("framework.resource.location") + File.separator +"receivedMessages.txt";
+    /**
+     * The delay between starting publishers or consumers
+     */
+    private long startDelay = 0L;
 
-    private String mode = "";
+    /**
+     * The consumers that are started concurrently
+     */
+    List<AndesJMSConsumer> consumers = new ArrayList<AndesJMSConsumer>();
 
-    private String hostInformation = "localhost:5673";
-    private String destinations = "topic:myTopic";
-    private String printNumberOfMessagesPerAsString = "1";
-    private String isToPrintEachMessageAsString = "false";
-    private String numOfSecondsToRunAsString = "200";
-    private String messageCountAsString = "100";
-    private String numberOfThreadsAsString = "1";
-    private String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
-    private String connectionString = "";
-    private int unsubscribeAfter = Integer.MAX_VALUE;
+    /**
+     * The publishers that are started concurrently
+     */
+    List<AndesJMSPublisher> publishers = new ArrayList<AndesJMSPublisher>();
 
-    private String analyticOperation = "";
-    private String numberOfMessagesExpectedForAnalysis = "";
-
-    private String username = "admin";
-    private String password = "admin";
-
-    private String messageType = "text";
-    private boolean isDurable = false;
-
-    private List<QueueMessageReceiver> queueListeners = new ArrayList<QueueMessageReceiver>();
-    private List<TopicMessageReceiver> topicListeners = new ArrayList<TopicMessageReceiver>();
-    private List<QueueMessageSender> queueMessageSenders = new ArrayList<QueueMessageSender>();
-    private List<TopicMessagePublisher> topicMessagePublishers = new ArrayList<TopicMessagePublisher>();
-
-    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
-                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
-                       String numberOfThreadsAsString, String parameters, String connectionString, String username,
-                       String password) {
-        this(mode, hostInformation, destinations, printNumberOfMessagesPerAsString, isToPrintEachMessageAsString, numOfSecondsToRunAsString, messageCountAsString, numberOfThreadsAsString, parameters, connectionString);
-        this.username = username;
-        this.password = password;
-        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
+    /**
+     * Creates a single consumer or publisher based on the configuration passed
+     *
+     * @param config                      The configuration.
+     * @param createConsumersAndProducers True if the client needs to create connections, sessions
+     *                                    and respecting receivers or consumers. False otherwise.
+     * @throws JMSException
+     * @throws NamingException
+     */
+    public AndesClient(AndesJMSClientConfiguration config, boolean createConsumersAndProducers)
+            throws NamingException, JMSException, AndesClientException, IOException {
+        this(config, 1, createConsumersAndProducers);
     }
 
-    public AndesClient(String mode, String hostInformation, String destinations, String printNumberOfMessagesPerAsString,
-                       String isToPrintEachMessageAsString, String numOfSecondsToRunAsString, String messageCountAsString,
-                       String numberOfThreadsAsString, String parameters, String connectionString) {
-        this.mode = mode;
-        this.hostInformation = hostInformation;
-        this.destinations = destinations;
-        this.printNumberOfMessagesPerAsString = printNumberOfMessagesPerAsString;
-        this.isToPrintEachMessageAsString = isToPrintEachMessageAsString;
-        this.numOfSecondsToRunAsString = numOfSecondsToRunAsString;
-        this.messageCountAsString = messageCountAsString;
-        this.numberOfThreadsAsString = numberOfThreadsAsString;
-        this.parameters = parameters;
-        this.connectionString = connectionString;
-        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
-    }
+    /**
+     * The constructor used for creating multiple consumer or publishers based on the configuration
+     * passed.
+     *
+     * @param config                      The configuration.
+     * @param numberOfThreads             The amount of publishers or consumers. This amount of
+     *                                    threads will be started.
+     * @param createConsumersAndProducers True if the client needs to create connections, sessions
+     *                                    and respecting receivers or consumers. False otherwise.
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
+     */
+    public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads,
+                       boolean createConsumersAndProducers)
+            throws IOException, JMSException, NamingException, AndesClientException {
+        if (0 < numberOfThreads) {
+            if (config instanceof AndesJMSConsumerClientConfiguration) {
+                AndesClientUtils
+                        .initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config)
+                                                                       .getFilePathToWriteReceivedMessages());
+            }
 
-    public AndesClient(String mode, String analiticOperation, String numberOfMessagesExpeactedForAnalysis) {
-        this.mode = mode;
-        this.analyticOperation = analiticOperation;
-        this.numberOfMessagesExpectedForAnalysis = numberOfMessagesExpeactedForAnalysis;
-        AndesClientUtils.initializePrintWriter(filePathToWriteReceivedMessages);
-    }
-
-    public void startWorking() {
-
-        queueMessageCounter.set(0);
-        topicMessageCounter.set(0);
-        //mode: send/receive/browse/purge/analyse
-        //hosts host1:port,host2:port;
-        //destinations queue:q1,q2,q3|topic:t1,t2,t3;
-        //printNumberOfMessagesPer 100
-        //isToPrintEachMessage false
-        //numOfSecondsToRun
-        //count 1000;
-        //numOfThreads 5;
-        //params listener=true,durable=false,subscriptionID=sub1,file="",ackMode=AUTO,delayBetweenMsg=200,stopAfter=12,ackAfterEach=300,commitAfterEach=300,rollbackAfterEach=400,unsubscribeAfter=500 (all parameters are optional)
-        //connectionString (optional)
-
-        //String mode = "receive";
-
-        if (mode.equals("send") || mode.equals("receive")) {
-
-
-/*            String hostInformation ="localhost:5673";
-            String destinations = "topic:myTopic";
-            String printNumberOfMessagesPerAsString = "1";
-            String isToPrintEachMessageAsString = "false";
-            String numOfSecondsToRunAsString = "200";
-            String messageCountAsString = "100";
-            String numberOfThreadsAsString = "1";
-            String parameters = "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=100";
-            String connectionString = "";*/
-
-            //print input information
-            log.info("hosts==>" + hostInformation);
-            log.info("destinations==>" + destinations);
-            log.info("mode==>" + mode);
-            log.info("number of seconds to run==>" + numOfSecondsToRunAsString);
-            log.info("message count==>" + messageCountAsString);
-            log.info("num of threads==>" + numberOfThreadsAsString);
-            log.info("print message count per==>" + printNumberOfMessagesPerAsString);
-            log.info("is to print message==>" + isToPrintEachMessageAsString);
-            log.info("parameters==>" + parameters);
-            log.info("connectionString(optional)==>" + connectionString);
-
-
-            //decode the host information
-            String[] hostsAndPorts = hostInformation.split(",");
-
-            //decode destinations
-            String[] destinationList = destinations.split("\\|");
-
-            String[] queues = null;
-            String[] topics = null;
-
-            for (int count = 0; count < destinationList.length; count++) {
-                String destinationString = destinationList[count];
-                if (destinationString.startsWith("queue")) {
-                    String queueString = destinationString.split(":")[1];
-                    queues = queueString.split(",");
-
-                } else if (destinationString.startsWith("topic")) {
-                    String topicString = destinationString.split(":")[1];
-                    topics = topicString.split(",");
+            for (int i = 0; i < numberOfThreads; i++) {
+                if (config instanceof AndesJMSConsumerClientConfiguration) {
+                    consumers
+                            .add(new AndesJMSConsumer((AndesJMSConsumerClientConfiguration) config, createConsumersAndProducers));
+                } else if (config instanceof AndesJMSPublisherClientConfiguration) {
+                    publishers
+                            .add(new AndesJMSPublisher((AndesJMSPublisherClientConfiguration) config, createConsumersAndProducers));
                 }
-            }
-
-
-            //get mode of operation
-            String modeOfOperation = mode;
-
-            //get numberOfSecondsToRun
-            int numberOfSecondsToWaitForMessages = Integer.MAX_VALUE;
-            if (numOfSecondsToRunAsString != null && !numOfSecondsToRunAsString.equals("")) {
-                numberOfSecondsToWaitForMessages = Integer.parseInt(numOfSecondsToRunAsString);
-            }
-
-            //decode message count
-            int messageCount = 1;
-            if (messageCountAsString != null && !messageCountAsString.equals("")) {
-                messageCount = Integer.parseInt(messageCountAsString);
-            }
-            if (topics == null || topics.length == 0) {
-                topicMessageCounter.set(messageCount);
-            }
-            if (queues == null || queues.length == 0) {
-                queueMessageCounter.set(messageCount);
-            }
-
-            //decode thread count
-            int numberOfThreads = 1;
-            if (numberOfThreadsAsString != null && !numberOfThreadsAsString.equals("")) {
-                numberOfThreads = Integer.parseInt(numberOfThreadsAsString);
-            }
-
-            //decode how often we should print message count
-            int printNumberOfMessagesPer = 1;
-            if (printNumberOfMessagesPerAsString != null && !printNumberOfMessagesPerAsString.equals("")) {
-                printNumberOfMessagesPer = Integer.parseInt(printNumberOfMessagesPerAsString);
-            }
-
-            //decode if we should print each message
-            boolean isToPrintEachMessage = false;
-            if (isToPrintEachMessageAsString != null && !isToPrintEachMessageAsString.equals("")) {
-                isToPrintEachMessage = Boolean.parseBoolean(isToPrintEachMessageAsString);
-            }
-
-
-
-
-            //decode parameters
-            boolean isToUseListerner = true;
-            String subscriptionID = "";
-            String filePath = null;
-            //default AUTO_ACK
-            int ackMode = 1;
-            int delayBetWeenMessages = 0;
-            int stopAfter = Integer.MAX_VALUE;
-            int ackAfterEach = Integer.MAX_VALUE;
-            int commitAfterEach = Integer.MAX_VALUE;
-            int rollbackAfterEach = Integer.MAX_VALUE;
-            Long jmsExpiration = 0L; // By Default according to JMS 1.1, message expiration is only activated if this
-            // value is larger than 0.
-            String selectors = null;
-            String jmsType = null;
-
-            String[] parameterStrings = parameters.split(",");
-            for (int count = 0; count < parameterStrings.length; count++) {
-                String[] keyValues = parameterStrings[count].split("=");
-                String key = keyValues[0];
-                String value = keyValues[1];
-                if (key.equals("")) {
-
-                } else if (key.equals("listener")) {
-                    isToUseListerner = Boolean.parseBoolean(value);
-                } else if (key.equals("durable")) {
-                    isDurable = Boolean.parseBoolean(value);
-                } else if (key.equals("subscriptionID")) {
-                    subscriptionID = value;
-                } else if (key.equals("file")) {
-                    filePath = value;
-                } else if (key.equals("ackMode")) {
-                    ackMode = Integer.parseInt(value);
-                } else if (key.equals("delayBetweenMsg")) {
-                    delayBetWeenMessages = Integer.parseInt(value);
-                } else if (key.equals("stopAfter")) {
-                    stopAfter = Integer.parseInt(value);
-                } else if (key.equals("ackAfterEach")) {
-                    ackAfterEach = Integer.parseInt(value);
-                } else if (key.equals("commitAfterEach")) {
-                    commitAfterEach = Integer.parseInt(value);
-                } else if (key.equals("rollbackAfterEach")) {
-                    rollbackAfterEach = Integer.parseInt(value);
-                } else if (key.equals("unsubscribeAfter")) {
-                    unsubscribeAfter = Integer.parseInt(value);
-                } else if (key.equals("jMSSelector")){
-                    selectors=value;
-                } else if (key.equals("setJMSType")) {
-                    jmsType = value;
-                } else if (key.equals("jmsExpiration")) {
-                    if (!value.equals("")) {
-                        jmsExpiration = Long.parseLong(value);
-                    }
-                }
-            }
-
-            //*************************************************************************************************8
-
-
-            //according to information start threads
-            if (modeOfOperation.equals("send")) {
-                log.info("===============Sending Messages====================");
-                for (int count = 0; count < numberOfThreads; count++) {
-                    int hostIndex = count % hostsAndPorts.length;
-                    String host = hostsAndPorts[hostIndex].split(":")[0];
-                    String port = hostsAndPorts[hostIndex].split(":")[1];
-                    if (queues != null && queues.length != 0) {
-                        int queueIndex = count % queues.length;
-                        String queue = queues[queueIndex];
-
-                        //start a queue sender
-                        QueueMessageSender queueMessageSender =
-                                new QueueMessageSender(connectionString, host, port, this.username, this.password,
-                                                       queue, queueMessageCounter, messageCount, delayBetWeenMessages,
-                                                       filePath, printNumberOfMessagesPer, isToPrintEachMessage,
-                                                       jmsExpiration, jmsType);
-                        queueMessageSender.setTypeOfMessage(messageType);
-
-                        queueMessageSenders.add(queueMessageSender);
-
-                        new Thread(queueMessageSender).start();
-
-                    }
-                    if (topics != null && topics.length != 0) {
-                        int topicIndex = count % topics.length;
-                        String topic = topics[topicIndex];
-
-                        //start a topic sender
-                        TopicMessagePublisher topicMessagePublisher =
-                                new TopicMessagePublisher(connectionString, host, port, this.username, this.password,
-                                                          topic, topicMessageCounter, messageCount,
-                                                          delayBetWeenMessages, filePath, printNumberOfMessagesPer,
-                                                          isToPrintEachMessage, jmsExpiration, jmsType);
-                        topicMessagePublishers.add(topicMessagePublisher);
-
-                        new Thread(topicMessagePublisher).start();
-
-                    }
-
-                }
-
-            } else if (modeOfOperation.equals("receive")) {
-
-                log.info("===============Receiving Messages====================");
-
-                File fileToWriteReceivedMessages = new File(filePathToWriteReceivedMessages);
-                if (isToPrintEachMessage) {
-                    try {
-                        if (fileToWriteReceivedMessages.exists()) {
-                            fileToWriteReceivedMessages.delete();
-                        }
-                        fileToWriteReceivedMessages.getParentFile().mkdirs();
-                        fileToWriteReceivedMessages.createNewFile();
-                    } catch (IOException e) {
-                        log.info("Cannot create a file to append receive messages" + e);
-                    }
-                }
-                for (int count = 0; count < numberOfThreads; count++) {
-                    int hostIndex = count % hostsAndPorts.length;
-                    String host = hostsAndPorts[hostIndex].split(":")[0];
-                    String port = hostsAndPorts[hostIndex].split(":")[1];
-                    if (queues != null && queues.length != 0) {
-                        int queueIndex = count % queues.length;
-                        String queue = queues[queueIndex];
-
-                        //start a queue receiver
-                        QueueMessageReceiver queueMessageReceiver =
-                                new QueueMessageReceiver(connectionString, host, port, this.username, this.password,
-                                                         queue, ackMode, isToUseListerner, queueMessageCounter,
-                                                         delayBetWeenMessages, printNumberOfMessagesPer,
-                                                         isToPrintEachMessage, filePathToWriteReceivedMessages,
-                                                         stopAfter, ackAfterEach, commitAfterEach, rollbackAfterEach,
-                                                         selectors);
-                        queueListeners.add(queueMessageReceiver);
-                        new Thread(queueMessageReceiver).start();
-                    }
-                    if (topics != null && topics.length != 0) {
-                        int topicIndex = count % topics.length;
-                        String topic = topics[topicIndex];
-
-                        //start a topic receiver
-                        TopicMessageReceiver topicMessageReceiver =
-                                new TopicMessageReceiver(connectionString, host, port, this.username, this.password,
-                                                         topic, isDurable, subscriptionID, ackMode, isToUseListerner,
-                                                         topicMessageCounter, delayBetWeenMessages,
-                                                         printNumberOfMessagesPer, isToPrintEachMessage,
-                                                         filePathToWriteReceivedMessages, stopAfter, unsubscribeAfter,
-                                                         ackAfterEach, commitAfterEach, rollbackAfterEach, selectors);
-                        topicListeners.add(topicMessageReceiver);
-                        new Thread(topicMessageReceiver).start();
-
-                    }
-                }
-
-            } else {
-                log.info("ERROR: Unknown mode of operation");
-            }
-        } else if (mode.equals("browse")) {
-
-            /*mode browse
-              host Name And Port localhost:5672
-              destination myQueue
-              print Number Of Messages Per 100
-              is To Print Each Message false
-              */
-
-            log.info("===============Browsing Messages====================");
-            //only applies to queues
-
-/*          String hostnameandPort =args[1];
-            String destination = args[2];
-            String printNumberOfMessagesPerAsString = args[3];
-            String isToPrintEachMessageAsString = args[4];*/
-
-            //print input information
-            log.info("mode==>" + mode);
-            log.info("host and port==>" + hostInformation);
-            log.info("destination==>" + destinations);
-            log.info("print message count per==>" + printNumberOfMessagesPerAsString);
-            log.info("is to print message==>" + isToPrintEachMessageAsString);
-
-            //decode host and port
-            String hostName = hostInformation.split(":")[0];
-            String port = hostInformation.split(":")[1];
-
-            //decode how often we should print message count
-            int printNumberOfMessagesPer = 1;
-            if (printNumberOfMessagesPerAsString != null && !printNumberOfMessagesPerAsString.equals("")) {
-                printNumberOfMessagesPer = Integer.parseInt(printNumberOfMessagesPerAsString);
-            }
-
-            //decode if we should print each message
-            boolean isToPrintEachMessage = false;
-            if (isToPrintEachMessageAsString != null && !isToPrintEachMessageAsString.equals("")) {
-                isToPrintEachMessage = Boolean.parseBoolean(isToPrintEachMessageAsString);
-            }
-
-            int messageCount = browseQueue(hostName, port, this.username, this.password, destinations, printNumberOfMessagesPer, isToPrintEachMessage);
-
-            log.info("Browser Message Count: " + messageCount);
-
-
-        } else if (mode.equals("purge")) {
-
-            log.info("===============Purging Messages====================");
-
-            //only applies to queues
-/*          String hostnameandPort =args[1];
-            String destination = args[2];*/
-
-            //print input information
-            log.info("mode==>" + mode);
-            log.info("host and port==>" + hostInformation);
-
-            //decode host and port
-            String hostName = hostInformation.split(":")[0];
-            String port = hostInformation.split(":")[1];
-
-            //browse and get the message count
-            int messageCount = browseQueue(hostName, port, this.username, this.password, destinations, Integer.MAX_VALUE, false);
-
-            //activate receiver for the queue(if specified more first one/ if specified more than one host get the first one)
-            //start a queue receiver
-            QueueMessageReceiver queueMessageReceiver = new QueueMessageReceiver
-                    ("", hostName, port, this.username, this.password, destinations, 1, true, queueMessageCounter, 0,
-                            Integer.MAX_VALUE, false, "", messageCount, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-            queueListeners.add(queueMessageReceiver);
-            new Thread(queueMessageReceiver).start();
-
-            topicMessageCounter.set(messageCount);
-
-        } else if (mode.equals("analyse")) {
-
-            /**
-             * mode analyse
-             *     printMessages/printDuplicates/printMissing/printSorted/checkOrder/clearFile
-             */
-            String operation = analyticOperation;
-            String numberOfMessagesSentAsString = "";
-            int numberOfMessagesSent = 0;
-
-            if (operation.equals("printMissing")) {
-
-                numberOfMessagesSentAsString = numberOfMessagesExpectedForAnalysis;
-                numberOfMessagesSent = Integer.parseInt(numberOfMessagesSentAsString);
-            }
-
-            //print input information
-            log.info("mode==>" + mode);
-            log.info("operation==>" + operation);
-
-            AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
-
-            if (operation.equals("printMessages")) {
-                andesClientOutputParser.printMessagesMap();
-            } else if (operation.equals("printDuplicates")) {
-                andesClientOutputParser.printDuplicateMessages();
-            } else if (operation.equals("printMissing")) {
-                andesClientOutputParser.printMissingMessages(numberOfMessagesSent);
-            } else if (operation.equals("printSorted")) {
-                andesClientOutputParser.printMessagesSorted();
-            } else if (operation.equals("checkOrder")) {
-                log.info("MESSAGE ORDER PRESERVED: " + andesClientOutputParser.checkIfMessagesAreInOrder());
-            } else if (operation.equals("clearFile")) {
-                andesClientOutputParser.clearFile();
-            } else {
-                log.info("analyse operation not found...");
             }
         } else {
-            log.info("ERROR: Unknown mode of operation");
+            throw new AndesClientException("The amount of subscribers cannot be less than 1. " +
+                                           "Value entered is " + Integer.toString(numberOfThreads));
         }
     }
 
-    private int browseQueue(String host, String port, String userName, String password, String destination, int printNumberOfMessagesPer, boolean isToPrintMessage) {
-        int messageCount = 0;
-        //create a browser - one threaded app blocking
-        //make an enumeration and get the count
-        QueueMessageBrowser queueMessageBrowser = new QueueMessageBrowser(host, port, userName, password, destination, printNumberOfMessagesPer, isToPrintMessage);
-        messageCount = queueMessageBrowser.getMessageCount();
-        return messageCount;
-    }
-
-
-    //******************************************************************************************************************
-
-    public void shutDownClient() {
-
-        if (mode.equals("send")) {
-
-            for (QueueMessageSender qSender : queueMessageSenders) {
-                qSender.stopSending();
-            }
-            for (TopicMessagePublisher tPublisher : topicMessagePublishers) {
-                tPublisher.stopPublishing();
-            }
-
-        } else if (mode.equals("receive")) {
-
-            for (QueueMessageReceiver qListener : queueListeners) {
-                qListener.stopListening();
-            }
-            for (TopicMessageReceiver tListener : topicListeners) {
-                tListener.stopListening();
-            }
-
-        } else if (mode.equals("purge")) {
-
-            for (QueueMessageReceiver qListener : queueListeners) {
-                qListener.stopListening();
+    /**
+     * Starts up the consumer(s) or publisher(s) to consume or publish messages.
+     *
+     * @throws JMSException
+     * @throws IOException
+     */
+    public void startClient() throws AndesClientException, JMSException, IOException {
+        for (AndesJMSConsumer consumer : consumers) {
+            consumer.startClient();
+            if (this.startDelay > 0L) {
+                AndesClientUtils.sleepForInterval(this.startDelay);
             }
         }
-
-    }
-
-    public int getReceivedqueueMessagecount() {
-        return queueMessageCounter.get();
-    }
-
-    public int getReceivedTopicMessagecount() {
-        return topicMessageCounter.get();
-    }
-
-    public Map<Long, Integer> checkIfMessagesAreDuplicated() {
-        org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils.flushPrintWriter();
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
-        return andesClientOutputParser.checkIfMessagesAreDuplicated();
-    }
-
-    public boolean checkIfMessagesAreInOrder() {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
-        return andesClientOutputParser.checkIfMessagesAreInOrder();
+        for (AndesJMSPublisher publisher : publishers) {
+            publisher.startClient();
+            if (this.startDelay > 0L) {
+                AndesClientUtils.sleepForInterval(this.startDelay);
+            }
+        }
     }
 
     /**
-     * This method return whether received messages are transacted
+     * Stops the client from publishing or consuming messages.
      *
-     * @param operationOccurredIndex Index of the operated message most of the time last message
-     * @return
+     * @throws JMSException
      */
-    public boolean transactedOperation(long operationOccurredIndex) {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
-        return andesClientOutputParser.transactedOperations(operationOccurredIndex);
+    public void stopClient() throws JMSException {
+        for (AndesJMSConsumer consumer : consumers) {
+            consumer.stopClient();
+        }
+        for (AndesJMSPublisher publisher : publishers) {
+            publisher.stopClient();
+        }
+
+        log.info("TPS:" + this.getConsumerTPS() + " AverageLatency:" + this.getAverageLatency());
     }
 
     /**
-     * This method returns number of duplicate received messages
+     * Gets the received messages for all consumers in the client.
      *
-     * @return duplicate message count
+     * @return The total number of messages received for all consumers.
      */
-    public int getTotalNumberOfDuplicates() {
-        AndesClientOutputParser andesClientOutputParser = new AndesClientOutputParser(filePathToWriteReceivedMessages);
-        return andesClientOutputParser.numberDuplicatedMessages();
+    public long getReceivedMessageCount() {
+        long allReceivedMessageCount = 0L;
+        for (AndesJMSConsumer consumer : consumers) {
+            allReceivedMessageCount = allReceivedMessageCount + consumer.getReceivedMessageCount();
+        }
+        return allReceivedMessageCount;
     }
 
-    public List<QueueMessageReceiver> getQueueListeners() {
-        return queueListeners;
+    /**
+     * Gets the average transactions per second for consumer(s).
+     *
+     * @return The average TPS.
+     */
+    public double getConsumerTPS() {
+        double tps = 0L;
+        for (AndesJMSConsumer consumer : consumers) {
+            tps = tps + consumer.getConsumerTPS();
+        }
+        return tps / consumers.size();
     }
 
-    public String getMessageType() {
-        return messageType;
+    /**
+     * Gets the average latency for consumer(s).
+     *
+     * @return The average latency.
+     */
+    public double getAverageLatency() {
+        double averageLatency = 0L;
+        for (AndesJMSConsumer consumer : consumers) {
+            averageLatency = averageLatency + consumer.getAverageLatency();
+        }
+        return averageLatency / consumers.size();
     }
 
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
+    /**
+     * Gets the number of messages sent by the publisher(s).
+     *
+     * @return The number of messages.
+     */
+    public long getSentMessageCount() {
+        long allSentMessageCount = 0L;
+        for (AndesJMSPublisher publisher : publishers) {
+            allSentMessageCount = allSentMessageCount + publisher.getSentMessageCount();
+        }
+        return allSentMessageCount;
     }
 
-    public int getUnsubscribeAfter() {
-        return unsubscribeAfter;
+    /**
+     * Gets the average transactions per seconds for publisher(s). Suppressing "UnusedDeclaration"
+     * as the client acts as an service.
+     *
+     * @return the average transactions per seconds.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public double getPublisherTPS() {
+        double tps = 0L;
+        for (AndesJMSPublisher publisher : publishers) {
+            tps = tps + publisher.getPublisherTPS();
+        }
+        return tps / publishers.size();
     }
 
-    public void setUnsubscribeAfter(int unsubscribeAfter) {
-        this.unsubscribeAfter = unsubscribeAfter;
+    /**
+     * Gets the duplicated messages received
+     *
+     * @return A map of message identifiers and message content.
+     * @throws IOException
+     */
+    public Map<Long, Integer> checkIfMessagesAreDuplicated()
+            throws IOException {
+        if (0 < consumers.size()) {
+            AndesClientUtils.flushPrintWriters();
+            AndesClientOutputParser andesClientOutputParser =
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
+            return andesClientOutputParser.getDuplicatedMessages();
+        } else {
+            return null;
+        }
     }
 
-    public List<TopicMessageReceiver> getTopicListeners() {
-        return topicListeners;
+    /**
+     * Checks whether the received messages are in order.
+     *
+     * @return true if messages are in order, false otherwise.
+     * @throws IOException
+     */
+    public boolean checkIfMessagesAreInOrder()
+            throws IOException {
+        if (0 < consumers.size()) {
+            AndesClientOutputParser andesClientOutputParser =
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
+            return andesClientOutputParser.checkIfMessagesAreInOrder();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This method returns whether received messages are transacted.
+     *
+     * @param operationOccurredIndex Index of the operated message most of the time last message.
+     * @return true if all messages are transacted, false otherwise.
+     */
+    public boolean transactedOperation(long operationOccurredIndex)
+            throws IOException {
+        if (0 < consumers.size()) {
+            AndesClientOutputParser andesClientOutputParser =
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
+            return andesClientOutputParser.transactedOperations(operationOccurredIndex);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This method returns number of duplicate received messages.
+     *
+     * @return The duplicate message count.
+     */
+    public long getTotalNumberOfDuplicates()
+            throws IOException {
+        if (0 < consumers.size()) {
+            AndesClientOutputParser andesClientOutputParser =
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
+            return andesClientOutputParser.numberDuplicatedMessages();
+        } else {
+            return -1L;
+        }
+    }
+
+    /**
+     * Sets the starting delay when starting publishers or consumers.
+     *
+     * @param startDelay The starting delay
+     */
+    public void setStartDelay(long startDelay) {
+        this.startDelay = startDelay;
+    }
+
+    /**
+     * Gets the configuration file used in creating the publisher(s) or consumer(s)
+     *
+     * @return The configuration
+     */
+    public AndesJMSClientConfiguration getConfig() {
+        return this.consumers.get(0).getConfig();
+    }
+
+    public List<AndesJMSConsumer> getConsumers() {
+        return consumers;
+    }
+
+    public List<AndesJMSPublisher> getPublishers() {
+        return publishers;
     }
 }

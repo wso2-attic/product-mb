@@ -23,8 +23,20 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
  * This class includes test cases to test duplicate acknowledgements modes for queues
@@ -32,51 +44,66 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 public class DuplicatesOkAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
     /**
+     * Sending message count.
+     */
+    private static final long SEND_COUNT = 100L;
+
+    /**
+     * Expected message count.
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
      * Prepare environment for tests
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(1000);
     }
 
     /**
      * In this method we just test a sender and receiver with acknowledgements
-     * 1. Start a queue receiver in client ack mode
-     * 2. Receive messages acking message bunch to bunch
-     * 3. Check whether all messages received
+     * 1. Create consumer client with duplicate acknowledge mode
+     * 2. Publisher sends {@link #SEND_COUNT} messages.
+     * 3. Consumer will receive {@link #EXPECTED_COUNT} or more messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
-    @Test(groups = "wso2.mb", description = "Single queue send-receive test case with dup messages")
-    public void duplicatesOkAcknowledgementsTest() {
-        Integer sendCount = 100;
-        Integer runTime = 20;
-        Integer expectedCount = 100;
-        Integer duplicateCount;
-        //Create receiving client
-        AndesClient receivingClient = new AndesClient("receive", "127.0.0.1:5672", "queue:dupOkAckTestQueue",
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                "1", "listener=true,ackMode=3,delayBetweenMsg=10,stopAfter=500",
-                "");
-        //Start receiving client
-        receivingClient.startWorking();
+    @Test(groups = {"wso2.mb", "queue"}, description = "Single queue send-receive test case with dup messages")
+    public void duplicatesOkAcknowledgementsTest()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        //Create sending client
-        AndesClient sendingClient = new AndesClient("send", "127.0.0.1:5672", "queue:dupOkAckTestQueue", "100", "false",
-                runTime.toString(), sendCount.toString(), "1",
-                "ackMode=1,delayBetweenMsg=10,stopAfter=" + sendCount, "");
-        //Start sending client
-        sendingClient.startWorking();
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, 3 * expectedCount, runTime);
-        Integer totalMessagesReceived = receivingClient.getReceivedqueueMessagecount();
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-        //Stop receiving client
-        receivingClient.shutDownClient();
-        //Get duplicates
-        duplicateCount = receivingClient.getTotalNumberOfDuplicates();
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
-        Assert.assertEquals(totalMessagesReceived, (Integer) (expectedCount + duplicateCount),
-                "Total number of received message should be equal sum of expected and duplicate message count ");
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "dupOkAckTestQueue");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "dupOkAckTestQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.sleepForInterval(5000);
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message send failed");
+        Assert.assertTrue(consumerClient.getReceivedMessageCount() >= EXPECTED_COUNT, "The number of received messages should be equal or more than the amount sent");
     }
 }

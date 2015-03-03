@@ -23,8 +23,20 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
  * This class includes test cases to test transacted acknowledgements modes for queues
@@ -32,12 +44,22 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
     /**
+     * Message count to send
+     */
+    private static final long SEND_COUNT = 10L;
+
+    /**
+     * Message count expected
+     */
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+
+    /**
      * Prepare environment for tests
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass
-    public void prepare() throws Exception {
+    public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(1000);
     }
@@ -48,37 +70,47 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * 3. After 10 messages are received rollback session
      * 4. After 50 messages received commit the session and close subscriber
      * 5. Analyse and see if each message is duplicated five times
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case with transactions")
-    public void transactedAcknowledgements() {
-        Integer sendCount = 10;
-        Integer runTime = 20;
-        int expectedCount = 10;
-        //Create receiving client
-        AndesClient receivingClient =
-                new AndesClient("receive", "127.0.0.1:5672", "queue:transactedAckTestQueue", "100", "true",
-                        runTime.toString(), String.valueOf(expectedCount), "1",
-                        "listener=true,ackMode=0,delayBetweenMsg=100,stopAfter=100,rollbackAfterEach=10,commitAfterEach=30",
-                        "");
-        //Start receiving client
-        receivingClient.startWorking();
-        //Create sending client
-        AndesClient sendingClient =
-                new AndesClient("send", "127.0.0.1:5672", "queue:transactedAckTestQueue", "100", "false",
-                        runTime.toString(), sendCount.toString(), "1",
-                        "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
-        //Start sending client
-        sendingClient.startWorking();
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient, expectedCount, runTime);
-        int totalMessagesReceived = receivingClient.getReceivedqueueMessagecount();
-        boolean sendSuccess = AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
+    public void transactedAcknowledgements()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "transactedAckTestQueue");
+        consumerConfig.setMaximumMessagesToReceived(100L);
+        consumerConfig.setRunningDelay(100L);   // Setting a delay publishing each message
+        consumerConfig.setRollbackAfterEachMessageCount(10);   // Roll back session after given message count
+        consumerConfig.setCommitAfterEachMessageCount(30);     // Committing sessions after given message count
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);  // Use session_transacted acknowledgement mode
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // Write received messages to file
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactedAckTestQueue");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Messaging sending failed");
+
         //If received messages less than expected number wait until received again
         //Get rollback status , check message id of next message of roll backed message equal to first message
-        int duplicateCount = receivingClient.getTotalNumberOfDuplicates();
-        Assert.assertTrue(sendSuccess, "Messaging sending failed");
-        Assert.assertEquals(totalMessagesReceived, (expectedCount + duplicateCount),
-                "Total number of received message should be equal sum of expected and duplicate message count ");
-        Assert.assertTrue(receivingClient.transactedOperation(10),
-                "After rollback next message need to equal first message of batch");
+        long duplicateCount = consumerClient.getTotalNumberOfDuplicates();
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), (EXPECTED_COUNT + duplicateCount), "Total number of received message should be equal sum of expected and duplicate message count ");
+        Assert.assertTrue(consumerClient.transactedOperation(10L), "After rollback next message need to equal first message of batch");
     }
 }

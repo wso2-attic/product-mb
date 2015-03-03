@@ -18,92 +18,103 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.QueueMessageReceiver;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
-import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
-import javax.jms.QueueSession;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
-import java.util.List;
-
-import static org.testng.Assert.assertEquals;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
- * Load test in MB clustering.
+ * Load test in MB clustering for queues with auto acknowledge.
  */
 public class QueueAutoAckTestCase extends MBPlatformBaseTest {
 
-    private Integer sendCount = 100000;
-    private Integer runTime = 30 * 15; // 15 minutes
-    private Integer noOfSubscribers = 50;
-    private Integer noOfPublishers = 50;
-
-    // Greater than send count to see if more than the sent amount is received
-    private Integer expectedCount = sendCount;
+    private static final long SEND_COUNT = 100000L;
+    private static final long EXPECTED_COUNT = SEND_COUNT;
+    private static final int NO_OF_SUBSCRIBERS = 50;
+    private static final int NO_OF_PUBLISHERS = 50;
 
     /**
-     * Initialize the test as super tenant user.
+     * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }
 
     /**
      * Test Sending million messages through 50 publishers and receive them through 50 subscribers.
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "50 publishers and 50 subscribers test case", enabled = true)
-    public void performMillionMessageTestCase() throws XPathExpressionException {
-        String queueNameArg = "queue:LoadTestQueue";
-
+    public void performMillionMessageTestCase()
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
+                   JMSException,
+                   IOException, AndesClientException {
         String randomInstanceKeyForReceiver = getRandomMBInstance();
 
         AutomationContext tempContextForReceiver = getAutomationContextWithKey(randomInstanceKeyForReceiver);
 
-        String receiverHostInfo = tempContextForReceiver.getInstance().getHosts().get("default") + ":" +
-                tempContextForReceiver.getInstance().getPorts().get("amqp");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
+                                                                                                     Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
+                                                                                                     ExchangeType.QUEUE, "platformQueueAutoAck");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        AndesClient receivingClient = new AndesClient("receive", receiverHostInfo, queueNameArg,
-                "100", "false", runTime.toString(), expectedCount.toString(),
-                noOfSubscribers.toString(), "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount, "");
-
-        receivingClient.startWorking();
-
-        List<QueueMessageReceiver> queueListeners = receivingClient.getQueueListeners();
-
-        log.info("Number of Subscriber ["+queueListeners.size()+"]");
 
         String randomInstanceKeyForSender = getRandomMBInstance();
-
         AutomationContext tempContextForSender = getAutomationContextWithKey(randomInstanceKeyForSender);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContextForSender.getInstance().getHosts().get("default"),
+                                                                                                        Integer.parseInt(tempContextForSender.getInstance().getPorts().get("amqp")),
+                                                                                                        ExchangeType.QUEUE, "platformQueueAutoAck");
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
-        String senderHostInfo = tempContextForSender.getInstance().getHosts().get("default") + ":" +
-                tempContextForSender.getInstance().getPorts().get("amqp");
+        AndesClient consumerClient = new AndesClient(consumerConfig, NO_OF_SUBSCRIBERS, true);
+        consumerClient.startClient();
 
-        AndesClient sendingClient = new AndesClient("send", senderHostInfo, queueNameArg, "100", "false",
-                runTime.toString(), sendCount.toString(), noOfPublishers.toString(),
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount, "");
+        AndesClient publisherClient = new AndesClient(publisherConfig, NO_OF_PUBLISHERS, true);
+        publisherClient.startClient();
 
-        sendingClient.startWorking();
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClientUtils.waitUntilAllMessagesReceived(receivingClient, "MillionQueue", expectedCount, runTime);
+        log.info("Total Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
 
-        AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount);
-
-        Integer actualReceivedCount = receivingClient.getReceivedqueueMessagecount();
-
-        log.info("Total Received Messages ["+actualReceivedCount+"]");
-
-        assertEquals(actualReceivedCount, sendCount);
-        assertEquals(actualReceivedCount, expectedCount);
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
     }
 }

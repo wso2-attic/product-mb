@@ -18,17 +18,32 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.operations.queue.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * This class includes all order guaranteeing tests
@@ -36,17 +51,19 @@ import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
 
     /**
-     * Class Logger
-     */
-    private static final Log log = LogFactory.getLog(OrderGuaranteeTestCase.class);
-
-    /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws XMLStreamException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init()
+            throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
+                   URISyntaxException, SAXException, XMLStreamException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }
@@ -55,115 +72,115 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * Publish message to a single node and receive from the same node and check for any out of
      * order delivery and message duplication.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node ordered delivery test case")
-    public void testSameNodeOrderedDelivery() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 1000;
+    public void testSameNodeOrderedDelivery() throws XPathExpressionException,
+                                                     AndesClientConfigurationException,
+                                                     NamingException,
+                                                     JMSException, IOException,
+                                                     AndesClientException {
+        // Number of messages expected
+        long expectedCount = 1000L;
         // Number of messages send
-        int sendCount = 1000;
+        long sendCount = 1000L;
 
-        String brokerUrl = getRandomAMQPBrokerUrl();
+        String brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient receivingClient = new AndesClient("receive", brokerUrl, "queue:singleQueue1",
-                                                      "100", "false",
-                                                      String.valueOf(maxRunningTime),
-                                                      String.valueOf(expectedCount),
-                                                      "1",
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
-        receivingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder1");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        AndesClient sendingClient = new AndesClient("send", brokerUrl, "queue:singleQueue1", "100",
-                                                    "false",
-                                                    String.valueOf(maxRunningTime),
-                                                    String.valueOf(sendCount), "1",
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
-        sendingClient.startWorking();
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder1");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                          "Message sending failed.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                            "All messages are not received.");
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
-                          "Messages did not receive in order.");
-        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
-                "Messages are not duplicated.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluating
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
     }
 
     /**
      * Publish message to a single node and receive from another node and check for any out of order
      * delivery and message duplication.
      *
-     * @throws Exception
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Different node ordered delivery test case")
-    public void testDifferentNodeOrderedDelivery() throws Exception {
-        // Max number of seconds to run the client
-        int maxRunningTime = 20;
-        // Expected message count
-        int expectedCount = 1000;
+    public void testDifferentNodeOrderedDelivery()
+            throws AndesClientConfigurationException, XPathExpressionException, JMSException,
+                   NamingException,
+                   IOException, AndesClientException {
+        // Number of messages expected
+        long expectedCount = 1000L;
         // Number of messages send
-        int sendCount = 1000;
+        long sendCount = 1000L;
 
-        AndesClient receivingClient = new AndesClient("receive", getRandomAMQPBrokerUrl(),
-                                                      "queue:singleQueue2",
-                                                      "100", "false",
-                                                      String.valueOf(maxRunningTime),
-                                                      String.valueOf(expectedCount),
-                                                      "1",
-                                                      "listener=true,ackMode=1,delayBetweenMsg=0," +
-                                                      "stopAfter=" + expectedCount,
-                                                      "");
-        receivingClient.startWorking();
+        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesClient sendingClient = new AndesClient("send", getRandomAMQPBrokerUrl(),
-                                                    "queue:singleQueue2", "100",
-                                                    "false",
-                                                    String.valueOf(maxRunningTime),
-                                                    String.valueOf(sendCount), "1",
-                                                    "ackMode=1,delayBetweenMsg=0," +
-                                                    "stopAfter=" + sendCount,
-                                                    "");
-        sendingClient.startWorking();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder2");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        Assert.assertTrue(AndesClientUtils.waitUntilMessagesAreReceived(receivingClient,
-                                                                        expectedCount,
-                                                                        maxRunningTime),
-                          "Message receiving failed.");
+        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
 
-        Assert.assertTrue(AndesClientUtils.getIfSenderIsSuccess(sendingClient, sendCount),
-                          "Message sending failed.");
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder2");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        Assert.assertEquals(receivingClient.getReceivedqueueMessagecount(), sendCount,
-                            "All messages are not received.");
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
-        Assert.assertTrue(receivingClient.checkIfMessagesAreInOrder(),
-                          "Messages did not receive in order.");
-        Assert.assertEquals(receivingClient.checkIfMessagesAreDuplicated().size(), 0,
-                "Messages are not duplicated.");
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluating
+        Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
+        Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
     }
 
     /**
      * Cleanup after running tests.
      *
-     * @throws Exception
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
-    public void destroy() throws Exception {
+    public void destroy() throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
 
         String randomInstanceKey = getRandomMBInstance();
 

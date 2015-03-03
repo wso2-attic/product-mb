@@ -21,64 +21,102 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 
 /**
- * 1. use two topics t1, t2. 2 subscribers for t1 and one subscriber for t2
- * 2. use two publishers for t1 and one for t2
- * 3. check if messages were received correctly
+ * Test case for multiple publishers and subscribers for topics
  */
-public class MultipleTopicPublishSubscribeTestCase {
+public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest {
 
+    private static final long SEND_COUNT_1000 = 1000L;
+    private static final long SEND_COUNT_2000 = 2000L;
+    private static final long ADDITIONAL = 10L;
+
+    // Expect little more to check if no more messages are received
+    private static final long EXPECTED_COUNT_4010 = 4000L + ADDITIONAL;
+    private static final long EXPECTED_COUNT_1010 = 1000L + ADDITIONAL;
+
+    /**
+     * Initializing test case
+     *
+     * @throws XPathExpressionException
+     */
     @BeforeClass
-    public void prepare() {
+    public void prepare() throws XPathExpressionException {
+        init(TestUserMode.SUPER_TENANT_ADMIN);
         AndesClientUtils.sleepForInterval(15000);
     }
 
+    /**
+     * 1. Use two topics t1, t2. 2 subscribers for t1 and one subscriber for t2.
+     * 2. Use two publishers for t1 and one for t2.
+     * 3. Check if messages were received correctly.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
     @Test(groups = {"wso2.mb", "topic"})
-    public void performMultipleTopicPublishSubscribeTestCase() {
+    public void performMultipleTopicPublishSubscribeTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException {
 
-        Integer sendCount1 = 1000;
-        Integer sendCount2 = 2000;
-        Integer runTime = 40;
-        int additional = 10;
+        // Creating a consumer client configurations
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_4010);
+        consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
 
-        //expect little more to check if no more messages are received
-        Integer expectedCount2 = 4000 + additional;
-        Integer expectedCount1 = 1000 + additional;
+        AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic1");
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
+        consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_1010 / 10);
 
-        AndesClient receivingClient2 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic2,", "100",
-                "false",
-                runTime.toString(), expectedCount2.toString(), "2",
-                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount2, "");
+        // Creating a publisher client configurations
+        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
+        publisherConfig1.setPrintsPerMessageCount(100L);
+        publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT_2000);
 
-        AndesClient receivingClient1 = new AndesClient("receive", "127.0.0.1:5672", "topic:multipleTopic1,", "100",
-                "false",
-                runTime.toString(), expectedCount1.toString(), "1",
-                "listener=true,ackMode=1,delayBetweenMsg=0,stopAfter=" + expectedCount1, "");
+        AndesJMSPublisherClientConfiguration publisherConfig2 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic1");
+        publisherConfig2.setPrintsPerMessageCount(100L);
+        publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_1000);
 
-        receivingClient1.startWorking();
-        receivingClient2.startWorking();
+        // Creating clients
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, 2, true);
+        consumerClient1.startClient();
 
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
 
-        AndesClient sendingClient2 = new AndesClient("send", "127.0.0.1:5672", "topic:multipleTopic2", "100",
-                "false", runTime.toString(), sendCount2.toString(), "2",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount2, "");
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, 2, true);
+        publisherClient1.startClient();
 
-        AndesClient sendingClient1 = new AndesClient("send", "127.0.0.1:5672", "topic:multipleTopic1", "100",
-                "false", runTime.toString(), sendCount1.toString(), "1",
-                "ackMode=1,delayBetweenMsg=0,stopAfter=" + sendCount1, "");
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
+        publisherClient2.startClient();
 
-        sendingClient1.startWorking();
-        sendingClient2.startWorking();
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient1, expectedCount1, runTime);
-        AndesClientUtils.waitUntilMessagesAreReceived(receivingClient2, expectedCount2, runTime);
-
-        Assert.assertEquals(receivingClient1.getReceivedTopicMessagecount(), expectedCount1 - additional,
-                "Did not receive expected message count for multipleTopic1.");
-        Assert.assertEquals(receivingClient2.getReceivedTopicMessagecount(), expectedCount2 - additional,
-                "Did not receive expected message count for multipleTopic2.");
+        // Evaluating
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT_2000 * 2L, "Publisher publisherClient1 failed to publish messages");
+        Assert.assertEquals(publisherClient2.getSentMessageCount(), SEND_COUNT_1000, "Publisher publisherClient2 failed to publish messages");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), (EXPECTED_COUNT_4010 - ADDITIONAL) * 2L,
+                            "Did not receive expected message count for consumerClient1.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), EXPECTED_COUNT_1010 - ADDITIONAL,
+                            "Did not receive expected message count for consumerClient2.");
     }
 }
