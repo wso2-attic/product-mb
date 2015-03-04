@@ -27,7 +27,8 @@ import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 import java.util.List;
 
 /**
- *
+ * The class for topic content browsing page. Provides functions available in the topic browsing
+ * page.
  */
 public class TopicsBrowsePage extends MBPage {
     /**
