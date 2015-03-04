@@ -95,23 +95,23 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     public void initialize() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_ADMIN);
 
-        String[] CREATE_PUB_SUB_USERS = new String[]{"authUser1", "authUser2"};
-        String[] PUB_SUB_USERS = new String[]{"authUser3", "authUser4"};
-        String[] NO_PERMISSION_USERS = new String[]{"authUser5"};
-        String[] ALL_USERS =
+        String[] createPubSubUsers = new String[]{"authUser1", "authUser2"};
+        String[] pubSubUsers = new String[]{"authUser3", "authUser4"};
+        String[] noPermissionUsers = new String[]{"authUser5"};
+        String[] allUsers =
                 new String[]{"authUser1", "authUser2", "authUser3", "authUser4", "authUser5"};
 
         // Logging into user management as admin
         userManagementClient = new UserManagementClient(backendURL, "admin", "admin");
 
         // Removing admin permission for all users
-        userManagementClient.updateUserListOfRole(FrameworkConstants.ADMIN_ROLE, null, ALL_USERS);
+        userManagementClient.updateUserListOfRole(FrameworkConstants.ADMIN_ROLE, null, allUsers);
 
         // Adding roles along with users
         userManagementClient
-                .addRole(CREATE_PUB_SUB_QUEUE_ROLE, CREATE_PUB_SUB_USERS, new String[]{ADD_QUEUE_PERMISSION});
-        userManagementClient.addRole(PUB_SUB_QUEUE_ROLE, PUB_SUB_USERS, new String[]{});
-        userManagementClient.addRole(NO_PERMISSION_QUEUE_ROLE, NO_PERMISSION_USERS, new String[]{});
+                .addRole(CREATE_PUB_SUB_QUEUE_ROLE, createPubSubUsers, new String[]{ADD_QUEUE_PERMISSION});
+        userManagementClient.addRole(PUB_SUB_QUEUE_ROLE, pubSubUsers, new String[]{});
+        userManagementClient.addRole(NO_PERMISSION_QUEUE_ROLE, noPermissionUsers, new String[]{});
     }
 
     /**
