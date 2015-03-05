@@ -134,6 +134,14 @@
                         <userName>testuser21</userName>
                         <password>testuser21</password>
                     </user>
+                    <user key="queueAuthUser">
+                        <userName>queueAuthUser</userName>
+                        <password>queueAuthUser</password>
+                    </user>
+                    <user key="topicAuthUser">
+                        <userName>topicAuthUser</userName>
+                        <password>topicAuthUser</password>
+                    </user>
                 </users>
             </tenant>
         </superTenant>

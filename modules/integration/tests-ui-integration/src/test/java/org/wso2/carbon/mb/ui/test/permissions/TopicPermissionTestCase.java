@@ -51,6 +51,10 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
      */
     private static final String CREATE_TOPIC_PERMISSION_ROLE = "create_topic_role";
 
+    /**
+     * Initializes test case
+     * @throws Exception
+     */
     @BeforeClass()
     public void init() throws Exception {
         super.init();

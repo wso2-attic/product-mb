@@ -51,9 +51,9 @@ public class TopicAddPage extends MBPage {
         boolean isSuccessful = false;
 
         // Setting topic name value
-        WebElement queueNameField = driver.findElement(By.id(UIElementMapper.getInstance()
+        WebElement topicNameField = driver.findElement(By.id(UIElementMapper.getInstance()
                                                                  .getElement("mb.add.topics.page.topic.name.field.id")));
-        queueNameField.sendKeys(topicName);
+        topicNameField.sendKeys(topicName);
 
         driver.getWindowHandle();
 

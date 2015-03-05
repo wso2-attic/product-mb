@@ -56,11 +56,11 @@ public class TopicsBrowsePage extends MBPage {
         boolean isTopicPresent = false;
 
         // Gets the topic tree element
-        WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance()
+        WebElement topicTree = driver.findElement(By.xpath(UIElementMapper.getInstance()
                                                                     .getElement("mb.topic.browse.topictree")));
 
         // Gets all 'ul' elements.
-        List<WebElement> ulList = queueTable.findElements(By.tagName("ul"));
+        List<WebElement> ulList = topicTree.findElements(By.tagName("ul"));
         for (WebElement ulNode : ulList) {
             // Gets all 'li' elements
             List<WebElement> liList = ulNode.findElements(By.tagName("li"));
