@@ -404,7 +404,7 @@
         <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
         <emma.version>2.1.5320</emma.version>
 
-        <carbon.commons.version>4.3.4</carbon.commons.version>
+        <carbon.commons.version>4.3.6</carbon.commons.version>
         <carbon.identity.version>4.3.2</carbon.identity.version>
         <carbon.registry.version>4.3.0</carbon.registry.version>
         <carbon.messaging.version>3.0.0-SNAPSHOT</carbon.messaging.version>
