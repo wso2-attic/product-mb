@@ -65,9 +65,11 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
     /**
      * Test case 1
-     * 1. Start a 3 subscribers in same tenant(Normal tenant) who listens to the same topic
-     * 2. Send 200 messages to the topic
-     * 3. All 3 subscribers should receive all 200 messages
+     * 1. Admin under topictenant1.com domain creates consumer for "topictenant1.com/tenantTopic".
+     * 2. topictenantuser1 user under topictenant1.com domain tries to use
+     * "topictenant1.com/tenantTopic".
+     * 3.topictenantuser1 user fails to use "topictenant1.com/tenantTopic" destination as no
+     * permissions were given.
      *
      * @throws AndesClientConfigurationException
      * @throws JMSException
@@ -75,7 +77,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
      * @throws IOException
      * @throws AndesClientException
      */
-    @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test")
+    @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test", expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performSingleTenantMultipleUserTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    AndesClientException {
@@ -93,14 +95,9 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser2!topictenant1.com", "topictenantuser2", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
-        tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
-        tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
-
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+                new AndesJMSPublisherClientConfiguration("admin!topictenant1.com", "admin", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
 
@@ -111,9 +108,6 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         AndesClient tenant1ConsumerClient = new AndesClient(tenant1ConsumerConfig, true);
         tenant1ConsumerClient.startClient();
 
-        AndesClient tenant2ConsumerClient = new AndesClient(tenant2ConsumerConfig, true);
-        tenant2ConsumerClient.startClient();
-
         AndesClient tenant2PublisherClient = new AndesClient(tenant1PublisherConfig, true);
         tenant2PublisherClient.startClient();
 
@@ -121,8 +115,6 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                 .waitForMessagesAndShutdown(adminConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         AndesClientUtils
                 .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(tenant2PublisherClient
@@ -131,8 +123,6 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                                     .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for admin!topictenant1.com.");
         Assert.assertEquals(tenant1ConsumerClient
                                     .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for topictenantuser1!topictenant1.com.");
-        Assert.assertEquals(tenant2ConsumerClient
-                                    .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for topictenantuser2!topictenant1.com.");
 
     }
 

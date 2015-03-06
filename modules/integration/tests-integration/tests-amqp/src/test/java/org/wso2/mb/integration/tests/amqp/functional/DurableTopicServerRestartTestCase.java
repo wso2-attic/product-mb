@@ -101,7 +101,8 @@ public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
         // Restarting the server
         super.restartServer();
 
-        AndesClientUtils.sleepForInterval(15000L);
+        // Waiting till server is completely started
+        AndesClientUtils.sleepForInterval(60L * 1000L);
 
         // Starting the second durable subscription
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
