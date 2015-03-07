@@ -39,7 +39,7 @@ public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Tests the queue creation from UI with colon sign for the name
+     * Tests the topic creation from UI with colon sign for the name
      *
      * Test Steps:
      *  - Login to management console

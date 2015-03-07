@@ -53,7 +53,7 @@ public class TopicBrowsePage {
 
     /**
      * Delete topic from the UI delete option
-     * @param topicName queue name
+     * @param topicName topic name
      * @return true if delete successful, false otherwise
      */
     public boolean deleteTopic(final String topicName) {

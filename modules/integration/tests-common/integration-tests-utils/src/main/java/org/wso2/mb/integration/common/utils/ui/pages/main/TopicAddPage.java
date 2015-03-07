@@ -54,8 +54,8 @@ public class TopicAddPage extends MBPage {
     }
 
     /**
-     * Adds a queue without privileges to any role or not explicitly specified
-     * @param topicName queue name
+     * Adds a topic without privileges to any role or not explicitly specified
+     * @param topicName topic name
      * @param withoutPrivileges without privileges set to roles to consume or publish
      * @return true if successful and false otherwise
      * @throws IOException
