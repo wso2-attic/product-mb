@@ -411,7 +411,7 @@
         <carbon.multitenancy.version>4.3.4</carbon.multitenancy.version>
         <carbon.storagemgt.version>4.3.1</carbon.storagemgt.version>
 
-        <carbon.metrics.version>1.0.0-SNAPSHOT</carbon.metrics.version>
+        <carbon.metrics.version>1.0.0</carbon.metrics.version>
 
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <andes.version>3.0.0-SNAPSHOT</andes.version>
