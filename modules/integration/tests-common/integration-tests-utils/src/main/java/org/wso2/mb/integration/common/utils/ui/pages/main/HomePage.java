@@ -55,8 +55,18 @@ public class HomePage extends MBPage {
         return new QueuesBrowsePage(driver);
     }
 
+    public TopicBrowsePage getTopicBrowsePage() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.topic.browse.xpath"))).click();
+        return new TopicBrowsePage(driver);
+    }
+
     public QueueAddPage getQueueAddPage() throws IOException {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.queues.add.xpath"))).click();
         return new QueueAddPage(driver);
+    }
+
+    public TopicAddPage getTopicAddPage() throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.topic.add.xpath"))).click();
+        return new TopicAddPage(driver);
     }
 }

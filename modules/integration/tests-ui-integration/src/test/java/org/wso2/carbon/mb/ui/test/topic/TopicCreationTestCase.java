@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.mb.ui.test.queues;
+package org.wso2.carbon.mb.ui.test.topic;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -25,13 +25,13 @@ import org.testng.annotations.Test;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
-import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
-import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.TopicAddPage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.TopicBrowsePage;
 
 /**
- * This tests the creation of a queue from management console
+ * This tests the creation of a topic from management console
  */
-public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
+public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
 
     @BeforeClass()
     public void init() throws Exception {
@@ -39,26 +39,26 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Tests the queue creation from UI with colon sign for the name
+     * Tests the topic creation from UI with colon sign for the name
      *
      * Test Steps:
-     *  - login to management console
-     *  - create a queue
-     *  - Go to queue browse page
+     *  - Login to management console
+     *  - Create a topic
+     *  - Go to topic browse page
      * @throws Exception
      */
     @Test()
     public void testCase()  throws Exception{
 
-        String qName = "test:test";
+        String topicName = "test:topic";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
 
-        QueueAddPage queueAddPage = homePage.getQueueAddPage();
-        Assert.assertEquals(queueAddPage.addQueue(qName), true);
-        QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        Assert.assertEquals(queuesBrowsePage.isQueuePresent(qName), true);
+        TopicAddPage topicAddPage = homePage.getTopicAddPage();
+        Assert.assertEquals(topicAddPage.addTopic(topicName), true);
+        TopicBrowsePage topicBrowsePage = homePage.getTopicBrowsePage();
+        Assert.assertEquals(topicBrowsePage.isTopicPresent(topicName), true);
 
     }
 

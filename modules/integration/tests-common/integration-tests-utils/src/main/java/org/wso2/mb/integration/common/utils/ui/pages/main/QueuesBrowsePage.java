@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * This page represents 'Queues-> Browse' page in MB management console.
+ * This page represents 'Queue-> Browse' page in MB management console.
  */
 public class QueuesBrowsePage {
 
