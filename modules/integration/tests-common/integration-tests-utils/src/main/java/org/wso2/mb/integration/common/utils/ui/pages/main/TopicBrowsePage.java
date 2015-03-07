@@ -24,6 +24,9 @@ import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
 
+/**
+ * This page represents 'Topic-> Browse' page in MB management console.
+ */
 public class TopicBrowsePage {
 
     private WebDriver driver;
