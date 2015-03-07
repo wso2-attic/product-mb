@@ -49,6 +49,7 @@
 
             <class name="org.wso2.mb.integration.tests.amqp.functional.DifferentSubscriptionsWithDurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>
+            <!--H2 In-memory does not store data during a server restart-->
             <!--<class  name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>

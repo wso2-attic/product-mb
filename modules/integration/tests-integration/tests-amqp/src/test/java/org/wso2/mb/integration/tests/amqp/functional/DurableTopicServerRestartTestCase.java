@@ -32,7 +32,8 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * The following test class contains durable topic test cases with relation to restarting the server.
+ * The following test class contains durable topic test cases with relation to restarting the
+ * server. H2 in-memory mode will not work as restarting the server will not hold the sent messages.
  */
 public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
 
@@ -85,24 +86,23 @@ public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
         initialConsumerClient.startClient();
 
+        // Wait till consumer starts listening
         AndesClientUtils.sleepForInterval(5000L);
 
         // Stopping the subscription
         initialConsumerClient.stopClient();
 
+        // Wait till consumer stops
         AndesClientUtils.sleepForInterval(5000L);
 
         // Creating the publisher and publishing
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.sleepForInterval(15000L);
+        AndesClientUtils.sleepForInterval(5000L);
 
         // Restarting the server
         super.restartServer();
-
-        // Waiting till server is completely started
-        AndesClientUtils.sleepForInterval(60L * 1000L);
 
         // Starting the second durable subscription
         AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
