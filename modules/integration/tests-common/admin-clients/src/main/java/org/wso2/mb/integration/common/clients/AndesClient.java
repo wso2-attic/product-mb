@@ -225,7 +225,7 @@ public class AndesClient {
      */
     public Map<Long, Integer> checkIfMessagesAreDuplicated()
             throws IOException {
-        if (0 < consumers.size()) {
+        if (!consumers.isEmpty()) {
             AndesClientUtils.flushPrintWriters();
             AndesClientOutputParser andesClientOutputParser =
                     new AndesClientOutputParser(consumers.get(0).getConfig()
@@ -244,7 +244,7 @@ public class AndesClient {
      */
     public boolean checkIfMessagesAreInOrder()
             throws IOException {
-        if (0 < consumers.size()) {
+        if (!consumers.isEmpty()) {
             AndesClientOutputParser andesClientOutputParser =
                     new AndesClientOutputParser(consumers.get(0).getConfig()
                                                         .getFilePathToWriteReceivedMessages());
@@ -296,15 +296,6 @@ public class AndesClient {
      */
     public void setStartDelay(long startDelay) {
         this.startDelay = startDelay;
-    }
-
-    /**
-     * Gets the configuration file used in creating the publisher(s) or consumer(s)
-     *
-     * @return The configuration
-     */
-    public AndesJMSClientConfiguration getConfig() {
-        return this.consumers.get(0).getConfig();
     }
 
     public List<AndesJMSConsumer> getConsumers() {

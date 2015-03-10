@@ -153,28 +153,28 @@ public class MultiThreadedMultipleQueueTopicTestCase extends MBIntegrationBaseTe
 
         // Evaluating
         for (AndesClient publisher : publishers) {
-            if (ExchangeType.QUEUE == publisher.getConfig().getExchangeType()) {
+            if (ExchangeType.QUEUE == publisher.getPublishers().get(0).getConfig().getExchangeType()) {
                 Assert.assertEquals(publisher
                                             .getSentMessageCount(), SEND_COUNT * (QUEUE_NUMBER_OF_PUBLISHERS / QUEUE_DESTINATIONS.length), "Message sending failed for queues for " + publisher
-                        .getConfig().getDestinationName());
-            } else if (ExchangeType.TOPIC == publisher.getConfig().getExchangeType()) {
+                        .getPublishers().get(0).getConfig().getDestinationName());
+            } else if (ExchangeType.TOPIC == publisher.getPublishers().get(0).getConfig().getExchangeType()) {
                 Assert.assertEquals(publisher
                                             .getSentMessageCount(), SEND_COUNT * (TOPIC_NUMBER_OF_PUBLISHERS / TOPIC_DESTINATIONS.length), "Message sending failed for topics " + publisher
-                        .getConfig().getDestinationName());
+                        .getPublishers().get(0).getConfig().getDestinationName());
             }
         }
 
         long totalQueueMessagesReceived = 0L;
         long totalTopicMessagesReceived = 0L;
         for (AndesClient consumer : consumers) {
-            if (ExchangeType.QUEUE == consumer.getConfig().getExchangeType()) {
+            if (ExchangeType.QUEUE == consumer.getConsumers().get(0).getConfig().getExchangeType()) {
                 Assert.assertEquals(consumer.getReceivedMessageCount(), (EXPECTED_COUNT - ADDITIONAL) * (TOPIC_NUMBER_OF_SUBSCRIBERS / QUEUE_DESTINATIONS.length), "Message receiving failed " + consumer
-                        .getConfig().getDestinationName());
+                        .getConsumers().get(0).getConfig().getDestinationName());
                 totalQueueMessagesReceived =
                         totalQueueMessagesReceived + consumer.getReceivedMessageCount();
-            } else if (ExchangeType.TOPIC == consumer.getConfig().getExchangeType()) {
+            } else if (ExchangeType.TOPIC == consumer.getConsumers().get(0).getConfig().getExchangeType()) {
                 Assert.assertEquals(consumer.getReceivedMessageCount(), EXPECTED_COUNT - ADDITIONAL, "Message receiving failed " + consumer
-                        .getConfig().getDestinationName());
+                        .getConsumers().get(0).getConfig().getDestinationName());
                 totalTopicMessagesReceived =
                         totalTopicMessagesReceived + consumer.getReceivedMessageCount();
             }
