@@ -120,15 +120,16 @@ public class AndesClient {
      * @throws IOException
      */
     public void startClient() throws AndesClientException, JMSException, IOException {
+        boolean isStartDelaySet = this.startDelay > 0L;
         for (AndesJMSConsumer consumer : consumers) {
             consumer.startClient();
-            if (this.startDelay > 0L) {
+            if (isStartDelaySet) {
                 AndesClientUtils.sleepForInterval(this.startDelay);
             }
         }
         for (AndesJMSPublisher publisher : publishers) {
             publisher.startClient();
-            if (this.startDelay > 0L) {
+            if (isStartDelaySet) {
                 AndesClientUtils.sleepForInterval(this.startDelay);
             }
         }
@@ -218,14 +219,15 @@ public class AndesClient {
     }
 
     /**
-     * Gets the duplicated messages received
+     * Gets the duplicated messages received for a single consumer. This is not valid when is comes
+     * to multiple consumers.
      *
      * @return A map of message identifiers and message content.
      * @throws IOException
      */
     public Map<Long, Integer> checkIfMessagesAreDuplicated()
             throws IOException {
-        if (0 < consumers.size()) {
+        if (!consumers.isEmpty()) {
             AndesClientUtils.flushPrintWriters();
             AndesClientOutputParser andesClientOutputParser =
                     new AndesClientOutputParser(consumers.get(0).getConfig()
@@ -237,14 +239,15 @@ public class AndesClient {
     }
 
     /**
-     * Checks whether the received messages are in order.
+     * Checks whether the received messages are in order for a single consumer. This is not valid
+     * when is comes to multiple consumers.
      *
      * @return true if messages are in order, false otherwise.
      * @throws IOException
      */
     public boolean checkIfMessagesAreInOrder()
             throws IOException {
-        if (0 < consumers.size()) {
+        if (!consumers.isEmpty()) {
             AndesClientOutputParser andesClientOutputParser =
                     new AndesClientOutputParser(consumers.get(0).getConfig()
                                                         .getFilePathToWriteReceivedMessages());
@@ -255,7 +258,8 @@ public class AndesClient {
     }
 
     /**
-     * This method returns whether received messages are transacted.
+     * This method returns whether received messages are transacted for a single consumer. This is
+     * not valid when is comes to multiple consumers.
      *
      * @param operationOccurredIndex Index of the operated message most of the time last message.
      * @return true if all messages are transacted, false otherwise.
@@ -273,7 +277,8 @@ public class AndesClient {
     }
 
     /**
-     * This method returns number of duplicate received messages.
+     * This method returns number of duplicate received messages for a single consumer. This is not
+     * valid when is comes to multiple consumers.
      *
      * @return The duplicate message count.
      */
@@ -299,18 +304,19 @@ public class AndesClient {
     }
 
     /**
-     * Gets the configuration file used in creating the publisher(s) or consumer(s)
-     *
-     * @return The configuration
+     * Gets the all the consumers created by the client.
+     * @return A {@link java.util.List} of
+     *          {@link org.wso2.mb.integration.common.clients.AndesJMSConsumer}.
      */
-    public AndesJMSClientConfiguration getConfig() {
-        return this.consumers.get(0).getConfig();
-    }
-
     public List<AndesJMSConsumer> getConsumers() {
         return consumers;
     }
 
+    /**
+     * Gets the all the publisher created by the client.
+     * @return A {@link java.util.List} of
+     *          {@link org.wso2.mb.integration.common.clients.AndesJMSPublisher}.
+     */
     public List<AndesJMSPublisher> getPublishers() {
         return publishers;
     }

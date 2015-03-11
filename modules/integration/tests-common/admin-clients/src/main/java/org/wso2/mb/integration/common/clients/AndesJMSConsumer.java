@@ -505,7 +505,7 @@ public class AndesJMSConsumer extends AndesJMSBase
      */
     public double getAverageLatency() {
         if (0 == this.receivedMessageCount.doubleValue()) {
-            log.warn("No messages were received");
+            log.warn("No messages were received to calculate average latency.");
             return 0D;
         } else {
             return (((double) this.totalLatency) / 1000D) / this.receivedMessageCount.doubleValue();
