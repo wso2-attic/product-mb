@@ -324,7 +324,7 @@ public class DurableTopicSubscriptionTestCase {
 
         AndesJMSConsumerClientConfiguration secondaryConfig =
                 new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "myTopic9");
-        consumerConfig.setDurable(true, "test8");
+        secondaryConfig.setDurable(true, "test8");
 
 
         // Creating clients
