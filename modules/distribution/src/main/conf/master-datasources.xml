@@ -94,7 +94,7 @@
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
-                    <url>jdbc:h2:mem:msg_store</url>
+                    <url>jdbc:h2:mem:msg_store;DB_CLOSE_DELAY=-1</url>
                     <driverClassName>org.h2.Driver</driverClassName>
                 </configuration>
             </definition>
