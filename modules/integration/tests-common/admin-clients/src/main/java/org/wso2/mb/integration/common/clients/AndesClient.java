@@ -303,10 +303,20 @@ public class AndesClient {
         this.startDelay = startDelay;
     }
 
+    /**
+     * Gets the all the consumers created by the client.
+     * @return A {@link java.util.List} of
+     *          {@link org.wso2.mb.integration.common.clients.AndesJMSConsumer}.
+     */
     public List<AndesJMSConsumer> getConsumers() {
         return consumers;
     }
 
+    /**
+     * Gets the all the publisher created by the client.
+     * @return A {@link java.util.List} of
+     *          {@link org.wso2.mb.integration.common.clients.AndesJMSPublisher}.
+     */
     public List<AndesJMSPublisher> getPublishers() {
         return publishers;
     }
