@@ -74,7 +74,8 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
         String topicName = "topicCreationPermission";
 
         AutomationContext authAutomationContext =
-                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY, "topicAuthUser");
+                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY,
+                                                                                    "topicAuthUser");
         User contextUser = authAutomationContext.getContextTenant().getContextUser();
 
         String[] createPermissionUser = new String[]{contextUser.getUserNameWithoutDomain()};

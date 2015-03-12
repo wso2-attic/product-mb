@@ -88,7 +88,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     private UserManagementClient userManagementClient;
 
     /**
-     * Initializes before a test method. Removes users of admin group if exists. Adds new roles with permissions.
+     * Initializes before a test method. Removes users of admin group if exists. Adds new roles with
+     * permissions.
      *
      * @throws Exception
      */
@@ -169,7 +170,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientException
      * @throws JMSException
      */
-    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class,
+            expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performTopicPermissionSameRoleUsersWithNoPublishOrConsume()
             throws AndesClientConfigurationException, NamingException, IOException,
                    XPathExpressionException, AndesClientException, JMSException {
@@ -214,7 +216,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
         this.updateTopicRoleConsumePublishPermission("authTopic3", topicRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
+        log.info("Consumer and publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser2", "authTopic3");
     }
@@ -257,7 +259,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
         this.updateTopicRoleConsumePublishPermission("authTopic8", topicRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
+        log.info("Consumer and publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic8");
         this.createPublishAndSubscribeFromUser("authUser2", "authTopic8");
@@ -277,7 +279,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientException
      * @throws AndesClientConfigurationException
      */
-    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class,
+            expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performTopicPermissionDifferentRoleUsersWithNoPermissions()
             throws IOException, UserAdminUserAdminException, XPathExpressionException,
                    NamingException, JMSException, AndesClientException,
@@ -300,7 +303,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      */
-    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class,
+            expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performTopicPermissionSameUserRemovedFromRole()
             throws AndesClientConfigurationException, NamingException, IOException,
                    XPathExpressionException, AndesClientException, JMSException,
@@ -309,7 +313,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
 
         // Removing authUser1 from create_pub_sub_topic_role and Internal/T_authTopic5
         userManagementClient
-                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE}, new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic5"});
+                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE},
+                                      new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic5"});
         log.info("Removing authUser1 from " + CREATE_PUB_SUB_TOPIC_ROLE + " and Internal/T_authTopic5");
 
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic5");
@@ -353,11 +358,12 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
         updateTopicRoleConsumePublishPermission("authTopic6", topicRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
+        log.info("Consumer and publish permissions updated for " + CREATE_PUB_SUB_TOPIC_ROLE);
 
         // Removing authUser1 from create_pub_sub_topic_role and Internal/T_authTopic6
         userManagementClient
-                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE}, new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic6"});
+                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE},
+                                  new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic6"});
 
         this.createPublishAndSubscribeFromUser("authUser2", "authTopic6");
 
@@ -400,7 +406,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
         this.updateTopicRoleConsumePublishPermission("authTopic7", topicRolePermission);
-        log.info("Consume/Publish permissions updated for " + PUB_SUB_TOPIC_ROLE);
+        log.info("Consumer and publish permissions updated for " + PUB_SUB_TOPIC_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser3", "authTopic7");
     }
@@ -427,7 +433,8 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws SAXException
      * @throws AndesAdminServiceBrokerManagerAdminException
      */
-    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
+    @Test(groups = {"wso2.mb", "topic"}, expectedExceptions = JMSException.class,
+            expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performTopicPermissionDifferentRolesNoPermissions()
             throws AndesClientConfigurationException, NamingException, IOException,
                    XPathExpressionException, AndesClientException, JMSException,
@@ -443,7 +450,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
         this.updateTopicRoleConsumePublishPermission("authTopic9", topicRolePermission);
-        log.info("Consume/Publish permissions updated for " + PUB_SUB_TOPIC_ROLE);
+        log.info("Consumer and publish permissions updated for " + PUB_SUB_TOPIC_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic9");
     }
@@ -511,16 +518,16 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration
                 consumerConfig =
-                new AndesJMSConsumerClientConfiguration(contextUser
-                                                                .getUserNameWithoutDomain(), contextUser
-                                                                .getPassword(), "127.0.0.1", 5672, ExchangeType.TOPIC, destinationName);
+                new AndesJMSConsumerClientConfiguration(
+                                contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                                ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(contextUser
-                                                                 .getUserNameWithoutDomain(), contextUser
-                                                                 .getPassword(), "127.0.0.1", 5672, ExchangeType.TOPIC, destinationName);
+                new AndesJMSPublisherClientConfiguration(
+                        contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                        ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -534,12 +541,10 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed for user : " + contextUser
-                .getUserNameWithoutDomain());
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed for user : " + contextUser
-                .getUserNameWithoutDomain());
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending " +
+                                      "failed for user : " + contextUser.getUserNameWithoutDomain());
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message " +
+                            "receiving failed for user : " + contextUser.getUserNameWithoutDomain());
     }
 
     /**
@@ -570,7 +575,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         String sessionCookie = loginLogoutClientForUser.login();
         TopicAdminClient topicAdminClient =
                 new TopicAdminClient(backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                                                        .getInstance().getConfigurationContext());
         topicAdminClient.updatePermissionForTopic(topicName, permissions);
         loginLogoutClientForUser.logout();
     }

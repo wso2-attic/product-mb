@@ -52,7 +52,7 @@ public class TopicAddPage extends MBPage {
 
         // Setting topic name value
         WebElement topicNameField = driver.findElement(By.id(UIElementMapper.getInstance()
-                                                                 .getElement("mb.add.topics.page.topic.name.field.id")));
+                                            .getElement("mb.add.topics.page.topic.name.field.id")));
         topicNameField.sendKeys(topicName);
 
         driver.getWindowHandle();
@@ -66,15 +66,13 @@ public class TopicAddPage extends MBPage {
 
         // Checking if valid message is prompt on the dialog
         if (driver.findElement(By.id(UIElementMapper.getInstance()
-                                             .getElement("mb.popup.dialog.id"))).getText()
-                .contains("Topic added successfully")) {
+             .getElement("mb.popup.dialog.id"))).getText().contains("Topic added successfully")) {
             isSuccessful = true;
         }
 
         // Clicking ok button of the dialog
         driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                            .getElement("mb.add.topic.page.ontopicadd.okbutton.xpath")))
-                .click();
+                                .getElement("mb.add.topic.page.ontopicadd.okbutton.xpath"))).click();
 
         return isSuccessful;
     }

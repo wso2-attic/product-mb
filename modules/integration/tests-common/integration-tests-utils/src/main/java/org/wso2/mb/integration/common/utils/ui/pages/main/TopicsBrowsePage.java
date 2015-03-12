@@ -41,7 +41,7 @@ public class TopicsBrowsePage extends MBPage {
         // Check that we're on the right page.
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
                                                  .getElement("mb.topic.browse.page.header.xpath")))
-                .getText().contains("Topic Browser")) {
+                                                            .getText().contains("Topic Browser")) {
             throw new IllegalStateException("This is not the Topic List page");
         }
     }
@@ -57,7 +57,7 @@ public class TopicsBrowsePage extends MBPage {
 
         // Gets the topic tree element
         WebElement topicTree = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                    .getElement("mb.topic.browse.topictree")));
+                                                        .getElement("mb.topic.browse.topictree")));
 
         // Gets all 'ul' elements.
         List<WebElement> ulList = topicTree.findElements(By.tagName("ul"));

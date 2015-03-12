@@ -87,7 +87,8 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     private UserManagementClient userManagementClient;
 
     /**
-     * Initializes before a test method. Removes users of admin group if exists. Adds new roles with permissions.
+     * Initializes before a test method. Removes users of admin group if exists. Adds new roles
+     * with permissions.
      *
      * @throws Exception
      */
@@ -208,7 +209,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
         this.updateQueueRoleConsumePublishPermission("authQueue3", queueRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
+        log.info("Consume and publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser2", "authQueue3");
     }
@@ -249,7 +250,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
         this.updateQueueRoleConsumePublishPermission("authQueue8", queueRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
+        log.info("Consumer and publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser1", "authQueue8");
         this.createPublishAndSubscribeFromUser("authUser2", "authQueue8");
@@ -337,7 +338,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
         this.updateQueueRoleConsumePublishPermission("authQueue6", queueRolePermission);
-        log.info("Consume/Publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
+        log.info("Consumer and publish permissions updated for " + CREATE_PUB_SUB_QUEUE_ROLE);
 
         // Removing authUser1 from create_pub_sub_queue_role and Internal/Q_authQueue6
         userManagementClient
@@ -384,7 +385,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
         this.updateQueueRoleConsumePublishPermission("authQueue7", queueRolePermission);
-        log.info("Consume/Publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
+        log.info("Consumer and publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser3", "authQueue7");
     }
@@ -427,7 +428,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
         this.updateQueueRoleConsumePublishPermission("authQueue9", queueRolePermission);
-        log.info("Consume/Publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
+        log.info("Consumer and publish permissions updated for " + PUB_SUB_QUEUE_ROLE);
 
         this.createPublishAndSubscribeFromUser("authUser1", "authQueue9");
     }
@@ -451,11 +452,11 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
                    XMLStreamException, LoginAuthenticationExceptionException,
                    AndesAdminServiceBrokerManagerAdminException {
         LoginLogoutClient loginLogoutClientForAdmin =
-                new LoginLogoutClient(super.automationContext);
+                                                    new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
                 new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                                                        .getInstance().getConfigurationContext());
 
         andesAdminClient.deleteQueue("authQueue1");
         andesAdminClient.deleteQueue("authQueue2");
@@ -496,16 +497,16 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration
                 consumerConfig =
-                new AndesJMSConsumerClientConfiguration(contextUser
-                                                                .getUserNameWithoutDomain(), contextUser
-                                                                .getPassword(), "127.0.0.1", 5672, ExchangeType.QUEUE, destinationName);
+                new AndesJMSConsumerClientConfiguration(
+                        contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                        ExchangeType.QUEUE, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(contextUser
-                                                                 .getUserNameWithoutDomain(), contextUser
-                                                                 .getPassword(), "127.0.0.1", 5672, ExchangeType.QUEUE, destinationName);
+                new AndesJMSPublisherClientConfiguration(
+                        contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                        ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -519,12 +520,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed for user : " + contextUser
-                .getUserNameWithoutDomain());
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed for user : " + contextUser
-                .getUserNameWithoutDomain());
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending " +
+                                    "failed for user : " + contextUser.getUserNameWithoutDomain());
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message " +
+                             "receiving failed for user : " + contextUser.getUserNameWithoutDomain());
     }
 
     /**
@@ -555,7 +554,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
                 new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                                                        .getInstance().getConfigurationContext());
         andesAdminClient.updatePermissionForQueue(queueName, permissions);
         loginLogoutClientForAdmin.logout();
     }

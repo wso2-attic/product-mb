@@ -40,9 +40,9 @@ public class HomePage extends MBPage {
     public HomePage(WebDriver driver) {
         super(driver);
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(UIElementMapper.getInstance()
-                                              .getElement("home.dashboard.middle.text"))).getText()
-                .contains("Home")) {
+        if (!driver.findElement(By.id(
+                UIElementMapper.getInstance().getElement("home.dashboard.middle.text"))).getText()
+                                                                                .contains("Home")) {
             throw new IllegalStateException("This is not the home page");
         }
     }

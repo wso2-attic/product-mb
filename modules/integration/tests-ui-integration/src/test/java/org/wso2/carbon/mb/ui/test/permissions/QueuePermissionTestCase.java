@@ -74,7 +74,8 @@ public class QueuePermissionTestCase extends MBIntegrationUiBaseTest {
         String queueName = "queueCreationPermission";
 
         AutomationContext authAutomationContext =
-                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY, "queueAuthUser");
+                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY,
+                                                                                "queueAuthUser");
         User contextUser = authAutomationContext.getContextTenant().getContextUser();
 
         String[] createPermissionUsers = new String[]{contextUser.getUserNameWithoutDomain()};
