@@ -64,7 +64,8 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * 1. Consumer listens to messages from "testtenant1.com/www" destination. Consumer listening as a tenant.
+     * 1. Consumer listens to messages from "testtenant1.com/www" destination. Consumer listening
+     * as a tenant.
      * 2. Publish messages to "testtenant1.com/www" by a tenant.
      * 3. Send message count should be received by the consumer.
      *
@@ -83,13 +84,15 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
+                new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com",
+                                        "tenant1user1", ExchangeType.QUEUE, "testtenant1.com/www");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com", "tenant1user1", "127.0.0.1", 5672, ExchangeType.QUEUE, "testtenant1.com/www");
+                new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com",
+                                         "tenant1user1", ExchangeType.QUEUE, "testtenant1.com/www");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
@@ -109,6 +112,6 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(publisherClient
                                     .getSentMessageCount(), SEND_COUNT, "TENANT 1 send failed");
         Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "TENANT 1 receive failed");
+                            .getReceivedMessageCount(), EXPECTED_COUNT, "TENANT 1 receive failed");
     }
 }

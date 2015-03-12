@@ -26,7 +26,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.TopicAddPage;
-import org.wso2.mb.integration.common.utils.ui.pages.main.TopicBrowsePage;
+import org.wso2.mb.integration.common.utils.ui.pages.main.TopicsBrowsePage;
 
 /**
  * This tests the creation of a topic from management console
@@ -57,7 +57,7 @@ public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
 
         TopicAddPage topicAddPage = homePage.getTopicAddPage();
         Assert.assertEquals(topicAddPage.addTopic(topicName), true);
-        TopicBrowsePage topicBrowsePage = homePage.getTopicBrowsePage();
+        TopicsBrowsePage topicBrowsePage = homePage.getTopicsBrowsePage();
         Assert.assertEquals(topicBrowsePage.isTopicPresent(topicName), true);
 
     }

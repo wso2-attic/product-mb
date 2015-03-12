@@ -42,7 +42,8 @@ import java.io.IOException;
  * Testing for multi tenant - Durable subscriber specific test case
  * <p/>
  * Test case 1
- * 1. Start a Durable subscriber from a normal tenant (Not super tenant) (Topic - topictenant1.com/durableTenantTopic)
+ * 1. Start a Durable subscriber from a normal tenant (Not super tenant)
+ * (Topic - topictenant1.com/durableTenantTopic)
  * 2. Send 200 messages to the the topic
  * 3. Durable subscriber should receive all 200 messages
  * <p/>
@@ -66,7 +67,8 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
     /**
      * Test case 1
-     * 1. Start a Durable subscriber from a normal tenant (Not super tenant) (Topic - topictenant1.com/durableTenantTopic)
+     * 1. Start a Durable subscriber from a normal tenant (Not super tenant)
+     * (Topic - topictenant1.com/durableTenantTopic)
      * 2. Send 200 messages to the the topic
      * 3. Durable subscriber should receive all 200 messages
      *
@@ -85,14 +87,16 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/durableTenantTopic");
+                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin",
+                                        ExchangeType.TOPIC, "topictenant1.com/durableTenantTopic");
         adminConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         adminConsumerConfig.setDurable(true, "multitenant1");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenantPublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/durableTenantTopic");
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                     "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/durableTenantTopic");
         tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
         tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
 
@@ -108,9 +112,11 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Evaluating
         Assert.assertEquals(tenantPublisherClient
-                                    .getSentMessageCount(), sendMessageCount, "Sending failed for topictenantuser1!topictenant1.com.");
+                                    .getSentMessageCount(), sendMessageCount, "Sending failed for " +
+                                                              "topictenantuser1!topictenant1.com.");
         Assert.assertEquals(adminConsumerClient
-                                    .getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for admin!topictenant1.com.");
+                                    .getReceivedMessageCount(), expectedMessageCount, "Message " +
+                                                  "receiving failed for admin!topictenant1.com.");
     }
 
     /**
@@ -135,25 +141,29 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/multitenantTopicDurable");
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com",
+                "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/multitenantTopicDurable");
         tenant1ConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         tenant1ConsumerConfig.setDurable(true, "multi");
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant2.com/multitenantTopicDurable");
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com",
+                "topictenantuser1", ExchangeType.TOPIC, "topictenant2.com/multitenantTopicDurable");
         tenant2ConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         tenant2ConsumerConfig.setDurable(true, "multi2");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant1.com/multitenantTopicDurable");
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                 "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/multitenantTopicDurable");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount1);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount1 / 10L);
 
         AndesJMSPublisherClientConfiguration tenant2PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.TOPIC, "topictenant2.com/multitenantTopicDurable");
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com",
+                "topictenantuser1", ExchangeType.TOPIC, "topictenant2.com/multitenantTopicDurable");
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendMessageCount2);
         tenant2PublisherConfig.setPrintsPerMessageCount(sendMessageCount2 / 10L);
 
@@ -177,12 +187,16 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Evaluating
         Assert.assertEquals(tenant1PublisherClient
-                                    .getSentMessageCount(), sendMessageCount1, "Sending failed for tenant 1.");
+                                    .getSentMessageCount(), sendMessageCount1, "Sending failed " +
+                                                                               "for tenant 1.");
         Assert.assertEquals(tenant2PublisherClient
-                                    .getSentMessageCount(), sendMessageCount2, "Sending failed for tenant 2.");
+                                    .getSentMessageCount(), sendMessageCount2, "Sending failed " +
+                                                                               "for tenant 2.");
         Assert.assertEquals(tenant1ConsumerClient
-                                    .getReceivedMessageCount(), sendMessageCount1, "Tenant 1 Durable subscriber received incorrect number of message count.");
+                                    .getReceivedMessageCount(), sendMessageCount1, "Tenant 1 " +
+                                   "Durable subscriber received incorrect number of message count.");
         Assert.assertEquals(tenant2ConsumerClient
-                                    .getReceivedMessageCount(), sendMessageCount2, "Tenant 2 Durable subscriber received incorrect number of message count.");
+                                    .getReceivedMessageCount(), sendMessageCount2, "Tenant 2 " +
+                                   "Durable subscriber received incorrect number of message count.");
     }
 }

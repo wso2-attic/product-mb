@@ -40,6 +40,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequentialAndDuplicateTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.SelectorsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
@@ -63,6 +64,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicMessageSequentialAndDuplicateTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
 
             <!-- Following is commented out since it requires config replacement and hence cannot be address
                  in both embedded and in-mem modes since that will require two different configs for two

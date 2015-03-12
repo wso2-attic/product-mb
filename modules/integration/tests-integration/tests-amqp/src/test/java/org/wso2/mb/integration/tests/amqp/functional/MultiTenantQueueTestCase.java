@@ -84,12 +84,16 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         int expectedMessageCount = 200;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration adminConsumerConfig = new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
+        AndesJMSConsumerClientConfiguration adminConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin",
+                                            ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration tenantPublisherConfig = new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
+        AndesJMSPublisherClientConfiguration tenantPublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                             "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
         tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
         tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
 
@@ -100,11 +104,14 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         AndesClient tenantPublisherClient = new AndesClient(tenantPublisherConfig, true);
         tenantPublisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(adminConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(adminConsumerClient,
+                                                            AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(tenantPublisherClient.getSentMessageCount(), sendMessageCount, "Sending failed for tenant 1 user 1.");
-        Assert.assertEquals(adminConsumerClient.getReceivedMessageCount(), expectedMessageCount, "Message receiving failed for admin of tenant 1.");
+        Assert.assertEquals(tenantPublisherClient.getSentMessageCount(), sendMessageCount,
+                                                            "Sending failed for tenant 1 user 1.");
+        Assert.assertEquals(adminConsumerClient.getReceivedMessageCount(), expectedMessageCount,
+                                                "Message receiving failed for admin of tenant 1.");
     }
 
     /**
@@ -129,20 +136,28 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         int expectedMessageCount = 200;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration tenant1ConsumerConfig = new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
+        AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com",
+                        "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
-        AndesJMSConsumerClientConfiguration tenant2ConsumerConfig = new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
+        AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
+                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com",
+                        "topictenantuser1", ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration tenant1PublisherConfig = new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
+        AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                     "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount1);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount1 / 10L);
 
-        AndesJMSPublisherClientConfiguration tenant2PublisherConfig = new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com", "topictenantuser1", "127.0.0.1", 5672, ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
+        AndesJMSPublisherClientConfiguration tenant2PublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com",
+                     "topictenantuser1", ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendMessageCount2);
         tenant2PublisherConfig.setPrintsPerMessageCount(sendMessageCount2 / 10L);
 
@@ -159,13 +174,19 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         AndesClient tenant2PublisherClient = new AndesClient(tenant2PublisherConfig, true);
         tenant2PublisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tenant1ConsumerClient,
+                                                            AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tenant2ConsumerClient,
+                                                            AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(tenant1PublisherClient.getSentMessageCount(), sendMessageCount1, "Sending failed for tenant 1.");
-        Assert.assertEquals(tenant2PublisherClient.getSentMessageCount(), sendMessageCount2, "Sending failed for tenant 2.");
-        Assert.assertEquals(tenant1ConsumerClient.getReceivedMessageCount(), sendMessageCount1, "Tenant 1 client received incorrect number of message count.");
-        Assert.assertEquals(tenant2ConsumerClient.getReceivedMessageCount(), sendMessageCount2, "Tenant 2 client received incorrect number of message count.");
+        Assert.assertEquals(tenant1PublisherClient.getSentMessageCount(), sendMessageCount1,
+                                                                    "Sending failed for tenant 1.");
+        Assert.assertEquals(tenant2PublisherClient.getSentMessageCount(), sendMessageCount2,
+                                                                    "Sending failed for tenant 2.");
+        Assert.assertEquals(tenant1ConsumerClient.getReceivedMessageCount(), sendMessageCount1,
+                                    "Tenant 1 client received incorrect number of message count.");
+        Assert.assertEquals(tenant2ConsumerClient.getReceivedMessageCount(), sendMessageCount2,
+                                    "Tenant 2 client received incorrect number of message count.");
     }
 }
