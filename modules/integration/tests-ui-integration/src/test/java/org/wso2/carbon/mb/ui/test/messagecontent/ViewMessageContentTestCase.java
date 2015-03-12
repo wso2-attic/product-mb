@@ -27,10 +27,7 @@ import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
@@ -111,7 +108,6 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, TEST_QUEUE_NAME);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setReadMessagesFromFilePath(MESSAGE_CONTENT_INPUT_FILE_PATH);
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
@@ -153,7 +149,4 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         //Revert back to original configuration.
         super.serverManager.restoreToLastConfiguration(true);
     }
-
-
-
 }
