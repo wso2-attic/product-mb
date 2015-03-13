@@ -48,6 +48,12 @@ public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
     private static final long EXPECTED_COUNT = SEND_COUNT;
 
     /**
+     * The amount of time to wait till a process is finished. The process could be publishing or
+     * messages or receiving of messages. This is used as a safety precaution.
+     */
+    private static final long WAITING_TIME_TILL_PROCESS_FINISHES = 5000L;
+
+    /**
      * Initializing test case
      *
      * @throws javax.xml.xpath.XPathExpressionException
@@ -87,19 +93,19 @@ public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
         initialConsumerClient.startClient();
 
         // Wait till consumer starts listening
-        AndesClientUtils.sleepForInterval(5000L);
+        AndesClientUtils.sleepForInterval(WAITING_TIME_TILL_PROCESS_FINISHES);
 
         // Stopping the subscription
         initialConsumerClient.stopClient();
 
         // Wait till consumer stops
-        AndesClientUtils.sleepForInterval(5000L);
+        AndesClientUtils.sleepForInterval(WAITING_TIME_TILL_PROCESS_FINISHES);
 
         // Creating the publisher and publishing
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.sleepForInterval(5000L);
+        AndesClientUtils.sleepForInterval(WAITING_TIME_TILL_PROCESS_FINISHES);
 
         // Restarting the server
         super.restartServer();
