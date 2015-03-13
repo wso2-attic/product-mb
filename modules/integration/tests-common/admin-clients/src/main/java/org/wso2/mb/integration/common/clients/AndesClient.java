@@ -206,6 +206,9 @@ public class AndesClient {
     /**
      * Gets the average transactions per seconds for publisher(s). Suppressing "UnusedDeclaration"
      * as the client acts as an service.
+     * Suppressing "UnusedDeclaration" as currently it is not being used within product-mb test
+     * cases. But the client can be exported so that any other use can use the client for publishing
+     * and subscribing messages.
      *
      * @return the average transactions per seconds.
      */
