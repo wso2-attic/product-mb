@@ -73,7 +73,7 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      * @throws IOException
      */
-    @Test(groups = {"wso2.mb", "queue"})
+    @Test(groups = {"wso2.mb", "queue"},enabled = false)
     public void performMultipleQueueSendReceiveTestCase()
             throws AndesClientConfigurationException, AndesClientException, JMSException,
                    IOException, NamingException, CloneNotSupportedException {
