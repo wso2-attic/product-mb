@@ -37,6 +37,8 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
+            <!-- performMultipleQueueSendReceiveTestCase has been disabled in above test class until the issue is resolved.
+            Its an intermittent failure. -->
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequentialAndDuplicateTestCase"/>
