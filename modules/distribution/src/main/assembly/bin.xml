@@ -286,7 +286,9 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>src/main/resources/WSO2MB_DB.h2.db</source>
+            <source>
+                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/database/WSO2MB_DB.h2.db
+            </source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
