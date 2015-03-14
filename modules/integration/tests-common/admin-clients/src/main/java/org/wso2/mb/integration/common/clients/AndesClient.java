@@ -67,8 +67,9 @@ public class AndesClient {
      * @param config                      The configuration.
      * @param createConsumersAndProducers True if the client needs to create connections, sessions
      *                                    and respecting receivers or consumers. False otherwise.
-     * @throws JMSException
-     * @throws NamingException
+     * @throws JMSException    Thrown when creating the JMS sessions, connection and receiver
+ *                             or sender based on consumer or producer.
+     * @throws NamingException Thrown when invalid lookup is used in the initial context.
      */
     public AndesClient(AndesJMSClientConfiguration config, boolean createConsumersAndProducers)
             throws NamingException, JMSException, AndesClientException, IOException {
@@ -83,18 +84,18 @@ public class AndesClient {
      * @param numberOfThreads             The amount of publishers or consumers. This amount of
      *                                    threads will be started.
      * @param createConsumersAndProducers True if the client needs to create connections, sessions
-     *                                    and respecting receivers or consumers. False otherwise.
-     * @throws JMSException
-     * @throws NamingException
-     * @throws AndesClientException
+     *                                    and respective receivers or consumers. False otherwise.
+     * @throws JMSException         Thrown when creating the JMS sessions, connection and receiver
+     *                              or sender based on consumer or producer.
+     * @throws NamingException      Thrown when invalid lookup is used in the initial context.
+     * @throws AndesClientException Thrown when invalid number of threads are used.
      */
     public AndesClient(AndesJMSClientConfiguration config, int numberOfThreads,
                        boolean createConsumersAndProducers)
             throws IOException, JMSException, NamingException, AndesClientException {
         if (0 < numberOfThreads) {
             if (config instanceof AndesJMSConsumerClientConfiguration) {
-                AndesClientUtils
-                        .initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config)
+                AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config)
                                                                        .getFilePathToWriteReceivedMessages());
             }
 
@@ -116,8 +117,8 @@ public class AndesClient {
     /**
      * Starts up the consumer(s) or publisher(s) to consume or publish messages.
      *
-     * @throws JMSException
-     * @throws IOException
+     * @throws JMSException Thrown when broker does not adhere to JMS functions.
+     * @throws IOException  Thrown when trying to read contents from a file.
      */
     public void startClient() throws AndesClientException, JMSException, IOException {
         boolean isStartDelaySet = this.startDelay > 0L;
@@ -138,7 +139,8 @@ public class AndesClient {
     /**
      * Stops the client from publishing or consuming messages.
      *
-     * @throws JMSException
+     * @throws JMSException Thrown when closing the connections, session and receiver or sender
+     *                      based on a consumer and a publisher.
      */
     public void stopClient() throws JMSException {
         for (AndesJMSConsumer consumer : consumers) {
@@ -226,7 +228,7 @@ public class AndesClient {
      * to multiple consumers.
      *
      * @return A map of message identifiers and message content.
-     * @throws IOException
+     * @throws IOException Thrown when the received messages file is either missing or corrupted.
      */
     public Map<Long, Integer> checkIfMessagesAreDuplicated()
             throws IOException {
@@ -246,7 +248,7 @@ public class AndesClient {
      * when is comes to multiple consumers.
      *
      * @return true if messages are in order, false otherwise.
-     * @throws IOException
+     * @throws IOException Thrown when the received messages file is either missing or corrupted.
      */
     public boolean checkIfMessagesAreInOrder()
             throws IOException {
