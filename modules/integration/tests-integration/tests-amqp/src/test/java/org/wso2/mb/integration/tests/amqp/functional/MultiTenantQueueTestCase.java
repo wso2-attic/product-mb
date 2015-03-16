@@ -19,6 +19,7 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
@@ -49,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 
 /**
@@ -66,15 +68,27 @@ import java.net.URISyntaxException;
  */
 public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
+    public static final String PUBLISHER_ROLE = "publisher";
+
+    private UserManagementClient userManagementClient;
     /**
      * Initializes the test case.
      *
      * @throws XPathExpressionException
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws XPathExpressionException {
+    public void init() throws XPathExpressionException, RemoteException, UserAdminUserAdminException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
+
+
+        // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
+        userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
+                "admin");
+        String[] publishers = {"topictenantuser1"};
+        userManagementClient.addRole(PUBLISHER_ROLE, publishers, new String[]{});
     }
 
     /**
@@ -92,20 +106,13 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single Tenant Test")
     public void performSingleTenantMultipleUserQueueTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
-            AndesClientException, UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            XPathExpressionException, AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            AndesClientException, LoginAuthenticationExceptionException, XPathExpressionException,
+            AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
             LogoutAuthenticationExceptionException, XMLStreamException {
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
 
-        String publisherRole = "publisher";
         String destinationName = "topictenant1.com/tenantQueue";
-
-        // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
-        UserManagementClient userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
-                "admin");
-        String[] publishers = {"topictenantuser1"};
-        userManagementClient.addRole(publisherRole, publishers, new String[]{});
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
@@ -121,7 +128,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
         // Add permission to be able to publish
         QueueRolePermission queueRolePermission = new QueueRolePermission();
-        queueRolePermission.setRoleName(publisherRole);
+        queueRolePermission.setRoleName(PUBLISHER_ROLE);
         queueRolePermission.setAllowedToConsume(true);
         queueRolePermission.setAllowedToPublish(true);
 
@@ -234,5 +241,17 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
                                     "Tenant 1 client received incorrect number of message count.");
         Assert.assertEquals(tenant2ConsumerClient.getReceivedMessageCount(), sendMessageCount2,
                                     "Tenant 2 client received incorrect number of message count.");
+    }
+
+    /**
+     * Cleans up the test case effects. Deletes created roles.
+     *
+     * @throws java.rmi.RemoteException
+     * @throws UserAdminUserAdminException
+     */
+    @AfterClass(alwaysRun = true)
+    public void cleanUp() throws RemoteException, UserAdminUserAdminException {
+        // Deleting roles of the users used in the test case
+        userManagementClient.deleteRole(PUBLISHER_ROLE);
     }
 }
