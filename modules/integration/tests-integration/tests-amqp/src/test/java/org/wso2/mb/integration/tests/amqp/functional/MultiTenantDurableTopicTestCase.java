@@ -20,6 +20,7 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
@@ -51,6 +52,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * Testing for multi tenant - Durable subscriber specific test case
@@ -68,15 +70,28 @@ import java.net.URISyntaxException;
  */
 public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
+    public static final String PUBLISHER_ROLE = "topicPublisher";
+
+    private UserManagementClient userManagementClient;
+
     /**
      * Initializing test
      *
      * @throws XPathExpressionException
+     * @throws RemoteException
+     * @throws UserAdminUserAdminException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws XPathExpressionException {
+    public void init() throws XPathExpressionException, RemoteException, UserAdminUserAdminException {
         super.init(TestUserMode.SUPER_TENANT_USER);
         AndesClientUtils.sleepForInterval(15000);
+
+        // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
+        userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
+                "admin");
+
+        String[] publishers = {"topictenantuser1"};
+        userManagementClient.addRole(PUBLISHER_ROLE, publishers, new String[]{});
     }
 
     /**
@@ -97,20 +112,12 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
             AndesClientException, XPathExpressionException, URISyntaxException, SAXException,
             LoginAuthenticationExceptionException, XMLStreamException, LogoutAuthenticationExceptionException,
-            AndesAdminServiceBrokerManagerAdminException, UserAdminUserAdminException,
-            TopicManagerAdminServiceEventAdminExceptionException {
+            AndesAdminServiceBrokerManagerAdminException, TopicManagerAdminServiceEventAdminExceptionException {
 
-        String publisherRole = "topicPublisher";
         String destinationName = "topictenant1.com/durableTenantTopic";
 
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
-
-        // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
-        UserManagementClient userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
-                "admin");
-        String[] publishers = {"topictenantuser1"};
-        userManagementClient.addRole(publisherRole, publishers, new String[]{});
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
@@ -127,7 +134,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Add permission to the created role to be able to publish/subscribe
         TopicRolePermission topicRolePermission = new TopicRolePermission();
-        topicRolePermission.setRoleName(publisherRole);
+        topicRolePermission.setRoleName(PUBLISHER_ROLE);
         topicRolePermission.setAllowedToSubscribe(true);
         topicRolePermission.setAllowedToPublish(true);
 
@@ -247,5 +254,17 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(tenant2ConsumerClient
                                     .getReceivedMessageCount(), sendMessageCount2, "Tenant 2 " +
                                    "Durable subscriber received incorrect number of message count.");
+    }
+
+    /**
+     * Cleans up the test case effects. Deletes created roles.
+     *
+     * @throws java.rmi.RemoteException
+     * @throws UserAdminUserAdminException
+     */
+    @AfterClass(alwaysRun = true)
+    public void cleanUp() throws RemoteException, UserAdminUserAdminException {
+        // Deleting roles of the users used in the test case
+        userManagementClient.deleteRole(PUBLISHER_ROLE);
     }
 }
