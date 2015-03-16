@@ -21,21 +21,34 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.andes.stub.admin.types.QueueRolePermission;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
+import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
+import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
+import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 /**
@@ -79,27 +92,60 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single Tenant Test")
     public void performSingleTenantMultipleUserQueueTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
-                   AndesClientException {
+            AndesClientException, UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            XPathExpressionException, AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            LogoutAuthenticationExceptionException, XMLStreamException {
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
+
+        String publisherRole = "publisher";
+        String destinationName = "topictenant1.com/tenantQueue";
+
+        // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
+        UserManagementClient userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
+                "admin");
+        String[] publishers = {"topictenantuser1"};
+        userManagementClient.addRole(publisherRole, publishers, new String[]{});
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
                 new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin",
-                                            ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
+                                            ExchangeType.QUEUE, destinationName);
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
-
-        // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration tenantPublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
-                             "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/tenantQueue");
-        tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
-        tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
 
         // Creating clients
         AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig, true);
         adminConsumerClient.startClient();
+
+
+        // Add permission to be able to publish
+        QueueRolePermission queueRolePermission = new QueueRolePermission();
+        queueRolePermission.setRoleName(publisherRole);
+        queueRolePermission.setAllowedToConsume(true);
+        queueRolePermission.setAllowedToPublish(true);
+
+        // Get the automation context for the tenant
+        AutomationContext tenantContext = new AutomationContext("MB", "mb001", "topictenant1", "topictenantuser1");
+
+
+        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
+        String sessionCookie = loginLogoutClient.login();
+        AndesAdminClient andesAdminClient =
+                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
+                        .getInstance().getConfigurationContext());
+
+        // Update permissions for the destination queue to be able to publish/subscribe from topictenantuser1
+        andesAdminClient.updatePermissionForQueue(destinationName, queueRolePermission);
+        loginLogoutClient.logout();
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration tenantPublisherConfig =
+                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                             "topictenantuser1", ExchangeType.QUEUE, destinationName);
+        tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
+        tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
+
 
         AndesClient tenantPublisherClient = new AndesClient(tenantPublisherConfig, true);
         tenantPublisherClient.startClient();
