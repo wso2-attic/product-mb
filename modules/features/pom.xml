@@ -42,7 +42,7 @@
 
     <modules>
         <module>product</module>
-        <!--module>service</module-->
+        <module>service</module>
     </modules>
 
    </project>
