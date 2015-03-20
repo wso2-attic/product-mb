@@ -98,7 +98,6 @@
   <path id="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath">
     <pathelement location="${path.variable.maven_repository}/org/eclipse/paho/mqtt-client/0.4.0/mqtt-client-0.4.0.jar"/>
   </path>
-  ``
   <!-- Modules -->
   
   
