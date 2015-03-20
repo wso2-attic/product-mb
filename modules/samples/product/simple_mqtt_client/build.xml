@@ -95,8 +95,8 @@
     <pathelement location="${path.variable.maven_repository}/logkit/logkit/1.0.1/logkit-1.0.1.jar"/>
   </path>
   
-  <path id="library.maven:_org.eclipse.paho:mqtt-client:0.4.1-snapshot.classpath">
-    <pathelement location="${path.variable.maven_repository}/org/eclipse/paho/mqtt-client/0.4.1-SNAPSHOT/mqtt-client-0.4.1-20140602.040113-100.jar"/>
+  <path id="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/eclipse/paho/mqtt-client/0.4.0/mqtt-client-0.4.0.jar"/>
   </path>
   
   <!-- Modules -->
@@ -118,7 +118,7 @@
   </path>
   
   <path id="simple_mqtt_client.module.production.classpath">
-    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
     <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
     <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
     <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -128,7 +128,7 @@
   
   <path id="simple_mqtt_client.runtime.production.module.classpath">
     <pathelement location="${simple_mqtt_client.output.dir}"/>
-    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
     <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
     <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
     <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -138,7 +138,7 @@
   
   <path id="simple_mqtt_client.module.classpath">
     <pathelement location="${simple_mqtt_client.output.dir}"/>
-    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
     <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
     <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
     <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -149,7 +149,7 @@
   <path id="simple_mqtt_client.runtime.module.classpath">
     <pathelement location="${simple_mqtt_client.testoutput.dir}"/>
     <pathelement location="${simple_mqtt_client.output.dir}"/>
-    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
     <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
     <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
     <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
