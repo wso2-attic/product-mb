@@ -115,4 +115,10 @@ public class AndesClientConstants {
     public static final String FILE_PATH_FOR_ONE_KB_SAMPLE_FILE =
             System.getProperty("framework.resource.location") + "sample" + File.separator +
             "sample_1KB_msg.xml";
+
+    /**
+     * System property name of andes acknowledgement wait timeout
+     */
+    public static final String ANDES_ACK_WAIT_TIMEOUT_PROPERTY = "AndesAckWaitTimeOut";
+
 }

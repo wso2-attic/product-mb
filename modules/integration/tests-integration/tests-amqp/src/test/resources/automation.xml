@@ -239,6 +239,20 @@
                     </user>
                 </users>
             </tenant>
+            <tenant domain="dlctenant1.com" key="dlctenant1">
+                <admin>
+                    <user key="admin">
+                        <userName>admin</userName>
+                        <password>admin</password>
+                    </user>
+                </admin>
+                <users>
+                    <user key="dlctenantuser1">
+                        <userName>dlctenantuser1</userName>
+                        <password>dlctenantuser1</password>
+                    </user>
+                </users>
+            </tenant>
         </tenants>
     </userManagement>
     <!--
