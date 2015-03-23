@@ -19,7 +19,6 @@ package org.wso2.mb.integration.common.clients.configurations;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
@@ -32,11 +31,6 @@ import java.io.FileNotFoundException;
  * related to JMS message publishing/sending.
  */
 public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfiguration {
-
-    /**
-     * The logger used in logging information, warnings, errors and etc.
-     */
-    private static Logger log = Logger.getLogger(AndesJMSConsumerClientConfiguration.class);
 
     /**
      * File path to read a string content which would be used to as message content when publishing.
@@ -57,6 +51,11 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      * The message expiry time.
      */
     private long jmsMessageExpiryTime = 0L;
+
+    /**
+     * File path to write messages that are being published
+     */
+    private String filePathToWritePublishedMessages = null;
 
     /**
      * Creates a connection string with default properties.
@@ -140,13 +139,12 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
             numberOfMessagesToSend = config.getLong("base.publisher.numberOfMessagesToSend", 10L);
             jmsMessageExpiryTime = config.getLong("base.publisher.jmsMessageExpiryTime", 0L);
             readMessagesFromFilePath = config.getString("base.publisher.readMessagesFromFilePath", null);
-            jmsMessageType = JMSMessageType.valueOf(config.getString("base.publisher.jmsMessageType", "text"));
+            jmsMessageType = JMSMessageType.valueOf(config.getString("base.publisher.jmsMessageType", "TEXT"));
+            filePathToWritePublishedMessages = config.getString("base.publisher.filePathToWritePublishedMessages", null);
         } catch (ConfigurationException e) {
-            log.error("Error in reading xml configuration file. Make sure the file exists.", e);
             throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid message type used. Use either 'text', 'byte', 'map', 'object' or 'stream'.", e);
-            throw new AndesClientConfigurationException("Invalid message type used. Use either 'text', 'byte', 'map', 'object' or 'stream'.", e);
+            throw new AndesClientConfigurationException("Invalid message type used. Use either 'TEXT', 'BYTE', 'MAP', 'OBJECT' or 'STREAM'.", e);
         }
     }
 
@@ -256,6 +254,26 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
             throw new AndesClientConfigurationException("The number of messages to send cannot be less" +
                                                         " than 1");
         }
+    }
+
+    /**
+     * Gets the file path where published messages are written.
+     *
+     * @return The file path.
+     */
+    public String getFilePathToWritePublishedMessages() {
+        return filePathToWritePublishedMessages;
+    }
+
+    /**
+     * Sets the file path to write messages that are being published by the client.
+     * Suppressing "UnusedDeclaration" warning as the client can be exported and used.
+     *
+     * @param filePathToWritePublishedMessages The file path
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public void setFilePathToWritePublishedMessages(String filePathToWritePublishedMessages) {
+        this.filePathToWritePublishedMessages = filePathToWritePublishedMessages;
     }
 
     /**

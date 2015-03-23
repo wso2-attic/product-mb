@@ -20,7 +20,6 @@ package org.wso2.mb.integration.common.clients.operations.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.AndesClient;
-import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 
 import javax.jms.JMSException;
 import java.io.BufferedReader;
@@ -48,10 +47,15 @@ public class AndesClientUtils {
     private static PrintWriter receivedMessagePrintWriter;
 
     /**
-     * The print write to print statistics such as TPS for consumers and producers and also the
+     * The print writer to print statistics such as TPS for consumers and producers and also the
      * average latency to a file.
      */
     private static PrintWriter statisticsPrintWriter;
+
+    /**
+     * The print writer to print messages that are being sent by the publisher.
+     */
+    private static PrintWriter publishedMessagePrintWriter;
 
     /**
      * Waits until no messages are received. The waiting is done by using a loop checking whether
@@ -140,6 +144,20 @@ public class AndesClientUtils {
     }
 
     /**
+     * Writes published messages to a file.
+     *
+     * @param content  Statistic content.
+     * @param filePath File path where the statistics should be written.
+     */
+    public static void writePublishedMessagesToFile(String content, String filePath) throws IOException {
+        if (publishedMessagePrintWriter == null) {
+            initializePublishedPrintWriter(filePath);
+        }
+
+        publishedMessagePrintWriter.println(content);
+    }
+
+    /**
      * Initialize the message content print writer. This needs to be invoked before each test case.
      *
      * @param filePath The file path to write to.
@@ -172,15 +190,35 @@ public class AndesClientUtils {
     }
 
     /**
+     * Initialize the published messages print writer. This needs to be invoked before each test
+     * case.
+     *
+     * @param filePath The file path to write to.
+     */
+    public static void initializePublishedPrintWriter(String filePath) throws IOException {
+        if (StringUtils.isNotEmpty(filePath)) {
+            File writerFile = new File(filePath);
+            if (writerFile.exists() || writerFile.createNewFile()) {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+                publishedMessagePrintWriter = new PrintWriter(bufferedWriter);
+            }
+        }
+    }
+
+    /**
      * Prints print writers to file paths.
      */
     public static void flushPrintWriters() {
-        if (receivedMessagePrintWriter != null) {
+        if (null != receivedMessagePrintWriter) {
             receivedMessagePrintWriter.flush();
         }
 
-        if (statisticsPrintWriter != null) {
+        if (null != statisticsPrintWriter) {
             statisticsPrintWriter.flush();
+        }
+
+        if (null != publishedMessagePrintWriter) {
+            publishedMessagePrintWriter.flush();
         }
     }
 

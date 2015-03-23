@@ -99,6 +99,10 @@ public class AndesClient {
                                                                        .getFilePathToWriteReceivedMessages());
             }
 
+            if (config instanceof AndesJMSPublisherClientConfiguration) {
+                AndesClientUtils.initializePublishedPrintWriter(((AndesJMSPublisherClientConfiguration) config).getFilePathToWritePublishedMessages());
+            }
+
             for (int i = 0; i < numberOfThreads; i++) {
                 if (config instanceof AndesJMSConsumerClientConfiguration) {
                     consumers
