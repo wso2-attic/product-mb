@@ -70,7 +70,6 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
      * 3. After 10 messages are received rollback session.
      * 4. Do same 5 times. After 50 messages received commit the session and close subscriber.
      * 5. Analyse and see if each message is duplicated five times.
-     * 6. Do another subscription to verify no more messages are received.
      *
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws JMSException
@@ -124,15 +123,9 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
 
         AndesClientUtils.sleepForInterval(2000);
 
-        AndesClient secondaryConsumerClient = new AndesClient(consumerConfig, true);
-        secondaryConsumerClient.startClient();
-
-        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertTrue(expectedCountDelivered, "Expected message count was not delivered.");
-        Assert.assertNotEquals(secondaryConsumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Messages received after the test.");
     }
 }

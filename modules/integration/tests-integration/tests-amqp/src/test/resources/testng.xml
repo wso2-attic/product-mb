@@ -33,7 +33,7 @@
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
