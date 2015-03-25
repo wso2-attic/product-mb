@@ -22,12 +22,14 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
+import org.wso2.andes.kernel.AndesConstants;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceStub;
 import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.andes.stub.admin.types.QueueRolePermission;
+import org.apache.commons.lang3.StringUtils;
 
 import java.rmi.RemoteException;
 
@@ -162,4 +164,31 @@ public class AndesAdminClient {
                                sessionCookie);
         }
     }
+
+    /**
+     * Get dead letter channel queue
+     *
+     * @return queue
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws java.rmi.RemoteException
+     */
+    public Queue getDlcQueue() throws AndesAdminServiceBrokerManagerAdminException,
+                                      java.rmi.RemoteException {
+
+        Queue[] queueList = stub.getAllQueues();
+        Queue dlcQueue = null;
+
+        if (null != queueList) {
+            for (Queue queue : queueList) {
+                String nameOfQueue = queue.getQueueName();
+                if (StringUtils.isNotBlank(nameOfQueue) && nameOfQueue.contains(
+                                           AndesConstants.DEAD_LETTER_QUEUE_SUFFIX)) {
+                    dlcQueue = queue;
+                    break;
+                }
+            }
+        }
+        return dlcQueue;
+    }
+
 }
