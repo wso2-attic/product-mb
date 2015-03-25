@@ -28,7 +28,7 @@
 
             <!-- functional test cases -->
 
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionsSessionCommitRollbackTestCase"/>
@@ -38,25 +38,25 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageRedeliveryWithAckTimeOutTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequentialAndDuplicateTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueSubscriptionsBreakAndReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.SelectorsTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
+
+            <!--Following is commented due to [MB-992] JIRA-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TenantDeadLetterChannelTestCase"/>-->
 
             <!-- Topic -->
 
             <class name="org.wso2.mb.integration.tests.amqp.functional.DifferentSubscriptionsWithDurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>
-            <!--H2 In-memory does not store data during a server restart-->
-            <!--<class  name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.MixedDurableTopicTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.MixedDurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleTopicPublishSubscribeTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantDurableTopicTestCase"/>
@@ -71,6 +71,9 @@
                  in both embedded and in-mem modes since that will require two different configs for two
                  db modes, which is not supported in this test model -->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>-->
+
+            <!--H2 In-memory does not store data during a server restart-->
+            <!--<class  name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>-->
 
             <!-- load test cases-->
 

@@ -85,13 +85,13 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicTest");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
-        consumerConfig1.setDurable(true, "durableSub1");
+        consumerConfig1.setDurable(true, "durableSubToDurableTopic1");
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopic");
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicTest");
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
