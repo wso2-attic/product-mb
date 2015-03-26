@@ -20,7 +20,6 @@ package org.wso2.mb.integration.common.clients.configurations;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -31,10 +30,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
  * JMS only.
  */
 public class AndesJMSClientConfiguration implements Cloneable {
-    /**
-     * The logger used in logging information, warnings, errors and etc.
-     */
-    private static Logger log = Logger.getLogger(AndesJMSClientConfiguration.class);
 
     /**
      * The destination name to be used when a configuration is not passed to the client.
@@ -189,7 +184,7 @@ public class AndesJMSClientConfiguration implements Cloneable {
             XMLConfiguration config = new XMLConfiguration(xmlConfigFilePath);
 
             // Setting values for exchange type and destination name
-            this.exchangeType = ExchangeType.valueOf(config.getString("base.exchangeType"));
+            this.exchangeType = ExchangeType.valueOf(config.getString("base.exchangeType", "QUEUE"));
             this.destinationName = config.getString("base.destinationName", TEMP_DESTINATION_NAME);
 
             // Creating connection string
@@ -207,11 +202,9 @@ public class AndesJMSClientConfiguration implements Cloneable {
             this.printsPerMessageCount = config.getLong("base.printsPerMessageCount", 1L);
             this.runningDelay = config.getLong("base.runningDelay", 0L);
         } catch (ConfigurationException e) {
-            log.error("Error in reading xml configuration file. Make sure the file exists.", e);
             throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
         } catch (IllegalArgumentException e) {
-            log.error("Invalid exchange type used. Use either 'queue' or 'topic'.", e);
-            throw new AndesClientConfigurationException("Invalid exchange type used. Use either 'queue' or 'topic'.", e);
+            throw new AndesClientConfigurationException("Invalid exchange type used. Use either 'QUEUE' or 'TOPIC'.", e);
         }
     }
 
@@ -304,9 +297,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
 
     /**
      * Sets host name for the AMQP connection string.
+     * Suppressing "UnusedDeclaration" warning as the client can be exported and used.
      *
      * @param hostName The host name
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setHostName(String hostName) {
         this.hostName = hostName;
         this.createConnectionString();
@@ -342,9 +337,11 @@ public class AndesJMSClientConfiguration implements Cloneable {
 
     /**
      * Gets the host name used in the AMQP connection string.
+     * Suppressing "UnusedDeclaration" warning as the client can be exported and used.
      *
      * @return The host name.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public String getHostName() {
         return this.hostName;
     }
@@ -487,7 +484,8 @@ public class AndesJMSClientConfiguration implements Cloneable {
     @Override
     public String toString() {
         return "ConnectionString=" + this.connectionString + "\n" + "ExchangeType=" +
-               this.exchangeType + "\n" + "PrintsPerMessageCount=" + this.printsPerMessageCount +
+               this.exchangeType + "\n" + "PrintsPerMessageCount=" + this.printsPerMessageCount
+               +"\n" + "DestinationName=" + this.destinationName +
                "\n" + "RunningDelay=" + this.runningDelay + "\n";
     }
 }

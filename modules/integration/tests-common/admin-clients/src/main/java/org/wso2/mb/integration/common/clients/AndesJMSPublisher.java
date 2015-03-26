@@ -32,6 +32,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -197,7 +198,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                         message = this.session.createTextMessage(this.messageContentFromFile);
                     } else {
                         message = this.session.createTextMessage(MessageFormat
-                                                                         .format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
+                             .format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
                     }
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
@@ -212,6 +213,12 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 if (null != message) {
                     this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig
                             .getJMSMessageExpiryTime());
+
+                    if (message instanceof TextMessage && null != this.publisherConfig.getFilePathToWritePublishedMessages()){
+                        AndesClientUtils.writePublishedMessagesToFile(((TextMessage) message)
+                              .getText(), this.publisherConfig.getFilePathToWritePublishedMessages());
+                    }
+
                     this.sentMessageCount++;
 
                     // TPS calculation
@@ -222,7 +229,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
                     this.lastMessagePublishTimestamp = currentTimeStamp;
                     if (0 == this.sentMessageCount % this.publisherConfig
-                            .getPrintsPerMessageCount()) {
+                                                                .getPrintsPerMessageCount()) {
                         // Logging the sent message details.
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +
@@ -265,10 +272,8 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
             this.stopClient();
         } catch (JMSException e) {
-            log.error("Error while publishing messages", e);
             throw new RuntimeException("Error while publishing messages", e);
         } catch (IOException e) {
-            log.error("Error while writing statistics", e);
             throw new RuntimeException("Error while writing statistics", e);
         }
     }

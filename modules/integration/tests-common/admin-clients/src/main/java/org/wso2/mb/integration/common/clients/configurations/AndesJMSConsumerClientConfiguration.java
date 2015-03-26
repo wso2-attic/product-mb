@@ -180,13 +180,11 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
             this.durable = config.getBoolean("base.consumer.durable", false);
             this.async = config.getBoolean("base.consumer.async", true);
             this.selectors = config.getString("base.consumer.selectors", null);
-            this.acknowledgeMode = JMSAcknowledgeMode.valueOf(config.getString("base.consumer.selectors", "1"));
+            this.acknowledgeMode = JMSAcknowledgeMode.valueOf(config.getString("base.consumer.acknowledgeMode", "AUTO_ACKNOWLEDGE"));
         } catch (ConfigurationException e) {
-            log.error("Error in reading xml configuration file. Make sure the file exists.", e);
             throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid acknowledge mode used. Use a value from range 0-3", e);
-            throw new AndesClientConfigurationException("Invalid acknowledge mode used. Use a value from range 0-3", e);
+            throw new AndesClientConfigurationException("Invalid acknowledge mode used. Use a value either of the values : SESSION_TRANSACTED, AUTO_ACKNOWLEDGE, CLIENT_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE", e);
         }
     }
 
