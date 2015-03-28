@@ -24,6 +24,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.andes.stub.AndesAdminServiceException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
@@ -64,6 +65,16 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
      * The default andes acknowledgement wait timeout.
      */
     private String defaultAndesAckWaitTimeOut = null;
+
+    /**
+     * Name of tenant's dlc queue
+     */
+    private String tenantDlcQueueName = "dlctenant1.com/DeadLetterChannel";
+
+    /**
+     * Name of super tenant's dlc queue
+     */
+    private String superTenantDlcQueueName = "DeadLetterChannel";
 
     /**
      * Initializes the test case.
@@ -129,13 +140,48 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
     public void performTenantDeadLetterChannelTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
                    AndesClientException, LoginAuthenticationExceptionException,
-                   XPathExpressionException,
+                   XPathExpressionException, AndesAdminServiceException,
                    AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
                    LogoutAuthenticationExceptionException, XMLStreamException {
 
         int sendMessageCount = 1;
 
+        Queue tenantUserDlcQueue;
+
+        Queue superAdminDlcQueue;
+
         String destinationName = "dlctenant1.com/tenantQueue";
+
+        // Get the automation context for the dlctenant1
+        AutomationContext tenantContext = new AutomationContext("MB", "mb001", "dlctenant1",
+                                                                "dlctenantuser1");
+
+        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
+        String sessionCookie = loginLogoutClient.login();
+        AndesAdminClient andesClient =
+                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
+                        .getInstance().getConfigurationContext());
+        loginLogoutClient.logout();
+
+        // purge if there are any dlc messages in dlctenant1 user
+        andesClient.purgeQueue(tenantDlcQueueName);
+
+        // Get the automation context for the superTenant
+        AutomationContext superTenantContext =
+                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY,
+                                      FrameworkConstants.SUPER_TENANT_ADMIN);
+
+        LoginLogoutClient loginLogoutSuperTenant = new LoginLogoutClient(superTenantContext);
+        String SuperTenantSessionCookie = loginLogoutSuperTenant.login();
+        AndesAdminClient andesAdminClient =
+                new AndesAdminClient(super.backendURL, SuperTenantSessionCookie,
+                                     ConfigurationContextProvider.getInstance().
+                                             getConfigurationContext());
+        loginLogoutSuperTenant.logout();
+
+        // purge if there are any dlc messages in super tenant admin
+        andesClient.purgeQueue(superTenantDlcQueueName);
+
 
         // Create a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -171,37 +217,8 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient,
                                                     AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Get the automation context for the dlctenant1
-        AutomationContext tenantContext = new AutomationContext("MB", "mb001", "dlctenant1",
-                                                                "dlctenantuser1");
-
-        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
-        String sessionCookie = loginLogoutClient.login();
-        AndesAdminClient andesClient =
-                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
-        loginLogoutClient.logout();
-
-
-        Queue tenantUserDlcQueue;
-
         // Get tenant's dlc queue
         tenantUserDlcQueue = andesClient.getDlcQueue();
-
-        // Get the automation context for the superTenant
-        AutomationContext superTenantContext =
-                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY,
-                                      FrameworkConstants.SUPER_TENANT_ADMIN);
-
-        LoginLogoutClient loginLogoutSuperTenant = new LoginLogoutClient(superTenantContext);
-        String SuperTenantSessionCookie = loginLogoutSuperTenant.login();
-        AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, SuperTenantSessionCookie,
-                                     ConfigurationContextProvider.getInstance().
-                                             getConfigurationContext());
-        loginLogoutSuperTenant.logout();
-
-        Queue superAdminDlcQueue;
 
         // Get super tenant dlc queue
         superAdminDlcQueue = andesAdminClient.getDlcQueue();
