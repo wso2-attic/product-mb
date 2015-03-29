@@ -50,6 +50,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantDeadLetterChannelTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionMessageReceiveOrderTestCase"/>
 
             <!-- Topic -->
 
@@ -71,6 +72,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
 
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>
+
             <!-- load test cases-->
 
             <!-- Queue -->

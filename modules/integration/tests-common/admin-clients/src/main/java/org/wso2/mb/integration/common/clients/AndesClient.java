@@ -286,6 +286,26 @@ public class AndesClient {
     }
 
     /**
+     * This method will check whether received messages are ordered correctly for a single consumer
+     * when rollback. This is not valid when there are multiple consumers.
+     *
+     * @param messagesPerRollback number of messages per each rollback occurrence by subscriber.
+     * @return true if all messages are received in correct order after each rollback,
+     * false otherwise.
+     */
+    public boolean checkIfTransactedRollbackPreservesOrder(long messagesPerRollback)
+            throws IOException {
+        if (0 < consumers.size()) {
+            AndesClientOutputParser andesClientOutputParser =
+                    new AndesClientOutputParser(consumers.get(0).getConfig()
+                                                        .getFilePathToWriteReceivedMessages());
+            return andesClientOutputParser.checkIfTransactedRollbackPreservesOrder(messagesPerRollback);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * This method returns number of duplicate received messages for a single consumer. This is not
      * valid when is comes to multiple consumers.
      *
