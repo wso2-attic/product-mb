@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -241,6 +242,104 @@ public class AndesClientOutputParser {
         AndesClientUtils.flushPrintWriters();
         return result;
     }
+
+    /**
+     * Check whether all the messages are received in-order when subscriber rollbacks
+     * after certain number of messages.
+     *
+     * @param messagesPerRollback Number of messages received per rollback
+     * @return Result as true if transacted rollback operation has successfully
+     * preserved order of all messages.
+     */
+    public boolean checkIfTransactedRollbackPreservesOrder(long messagesPerRollback)
+            throws FileNotFoundException {
+
+        boolean result = true;
+        int count = 0;
+        Long messageIdentifier;
+
+        int rollbackBatchIteration = 1;
+        boolean isFirstMessageBatch = true;
+        BufferedReader br = null;
+
+        Map<Integer, Long> firstMessageBatch = new HashMap<Integer, Long>();
+        try {
+            br = new BufferedReader(new FileReader(filePath));
+
+            String line = br.readLine();
+            while (line != null) {
+
+                messageIdentifier = getMessageIdentifier(line);
+
+                if (firstMessageBatch.containsValue(messageIdentifier)) {
+                    isFirstMessageBatch = false;
+                    if (count != messagesPerRollback * rollbackBatchIteration) {
+                        log.error("failed to check if rollback messages are received in order" +
+                                  " to due to first duplicated message count " + count +
+                                  " not equal to messages per each rollback." +
+                                  messagesPerRollback + ".");
+                        result = false;
+                    }
+                    rollbackBatchIteration++;
+                }
+
+                if (isFirstMessageBatch) {
+                    firstMessageBatch.put(count, messageIdentifier);
+                }
+
+                if (!isFirstMessageBatch) {
+                    for (int i = 0; i < messagesPerRollback; i++) {
+                        messageIdentifier = getMessageIdentifier(line);
+                        if (null != firstMessageBatch.get(i)) {
+                            if (!firstMessageBatch.get(i).equals(messageIdentifier)) {
+                                result = false;
+                                log.error("Error in line :" + line +
+                                          ".Rollback operation failed to keep message order.");
+                            }
+                        }
+                        line = br.readLine();
+                        count++;
+                    }
+                }
+                if (isFirstMessageBatch) {
+                    line = br.readLine();
+                    count++;
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            log.error("Error " + filePath + " the file containing received messages couldn't found", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Error while parsing the file containing received messages", e);
+        } finally {
+            if (null != br) {
+                IOUtils.closeQuietly(br);
+            }
+        }
+
+        AndesClientUtils.flushPrintWriters();
+        return result;
+    }
+
+
+    /**
+     * This method will return message identifier number extracted from given string line.
+     *
+     * @param line string parameter which contains given line of a text file.
+     * @return messageIdentifier which can identify messages uniquely.
+     */
+    private Long getMessageIdentifier(String line) {
+
+        String tempSendMessageString = line.substring(AndesClientConstants.
+                PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
+        Long messageIdentifier = Long.parseLong(tempSendMessageString.
+                substring(0, tempSendMessageString.indexOf(" ")));
+
+        return messageIdentifier;
+    }
+
+
 
     /**
      * Parse the file and get the number of duplicate message IDs.

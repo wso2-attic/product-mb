@@ -45,7 +45,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
-
+            <class name="org.wso2.mb.integration.tests.amqp.functional.JMSSubscriberTransactionMessageReceiveOrderTestCase"/>
             <!--Following is commented due to [MB-992] JIRA-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TenantDeadLetterChannelTestCase"/>-->
 
