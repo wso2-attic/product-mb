@@ -24,7 +24,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
-import org.wso2.carbon.andes.stub.AndesAdminServiceException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
@@ -140,7 +139,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
     public void performTenantDeadLetterChannelTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
                    AndesClientException, LoginAuthenticationExceptionException,
-                   XPathExpressionException, AndesAdminServiceException,
+                   XPathExpressionException,
                    AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
                    LogoutAuthenticationExceptionException, XMLStreamException {
 
