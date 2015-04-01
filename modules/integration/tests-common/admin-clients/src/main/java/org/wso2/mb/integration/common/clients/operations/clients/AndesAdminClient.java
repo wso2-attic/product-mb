@@ -24,7 +24,6 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.wso2.andes.kernel.AndesConstants;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
-import org.wso2.carbon.andes.stub.AndesAdminServiceException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceStub;
 import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
@@ -69,9 +68,9 @@ public class AndesAdminClient {
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws RemoteException
      */
-    public void createQueue(String queue)
+    public void createQueue(String queue, boolean isExclusiveConsumer)
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
-        stub.createQueue(queue);
+        stub.createQueue(queue, isExclusiveConsumer);
     }
 
     /**
@@ -105,13 +104,14 @@ public class AndesAdminClient {
      * Deletes all messages in a queue
      *
      * @param queue the name of the queue
-     * @throws AndesAdminServiceException
      * @throws RemoteException
+     * @throws AndesAdminServiceBrokerManagerAdminException
      */
     public void purgeQueue(String queue)
-            throws AndesAdminServiceException, RemoteException {
+            throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
         stub.purgeMessagesOfQueue(queue);
     }
+
 
     /**
      * Get queue object by queue name
