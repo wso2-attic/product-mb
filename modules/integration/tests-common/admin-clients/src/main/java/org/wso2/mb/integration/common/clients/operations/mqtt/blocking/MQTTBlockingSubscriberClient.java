@@ -79,13 +79,13 @@ public class MQTTBlockingSubscriberClient extends AndesMQTTBlockingClient {
 
 
     /**
-     * Gracefully shutdown the client after un-subscribing to subscribed topic.
-     * Called through ClientEngine shutdown.
+     * Gracefully disconnect the client after un-subscribing to subscribed topic.
+     * Called through ClientEngine disconnect.
      *
      * @throws MqttException
      */
     @Override
-    public void shutdown() throws MqttException {
+    public void disconnect() throws MqttException {
         CallbackHandler callbackHandler = getCallbackHandler();
         if (isConnected()) {
             if (null != callbackHandler) {
