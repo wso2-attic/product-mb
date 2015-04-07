@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.mb.ui.test.dlc;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
@@ -32,6 +33,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerCli
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
@@ -51,14 +53,28 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Test creating DeadLetter Channel and restoring,deleting and rerouting messages of DeadLetter Channel
+ * This test case will test following 3 scenarios from ui which are currently
+ * available in dlc browse page.
+ *      Restore message from dlc.
+ *      Deleting message from dlc.
+ *      Rerouting message from dlc.
  */
-public class DLCTestCase extends MBIntegrationUiBaseTest {
-    private static final Log log = LogFactory.getLog(DLCTestCase.class);
+public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
+    private static final Log log = LogFactory.getLog(DLCQueueTestCase.class);
     private static final int COLUMN_LIST_SIZE = 11;
     private static final int MESSAGE_ID_COLUMN = 1;
     private static final long SEND_COUNT = 15L;
     private static final long EXPECTED_COUNT = 15L;
+
+    /**
+     * The default andes acknowledgement wait timeout.
+     */
+    private String defaultAndesAckWaitTimeOut = null;
+
+    /**
+     * DLC test queue name
+     */
+    private static final String DLC_TEST_QUEUE = "DLCTestQueue";
 
     /**
      * Initializes test
@@ -72,7 +88,9 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
 
     /**
      * Create a DeadLetter channel and send messages to DeadLetter Queue
-     * which are failed to send
+     * which are failed to receive acknowledgements from subscriber.
+     *
+     * Change andes acknowledgement wait time out to 0 milliseconds.
      *
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -81,18 +99,26 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
      * @throws AndesClientException
      */
     @BeforeClass()
-    public void createDLC() throws AndesClientConfigurationException, NamingException, JMSException,
-                                   IOException, AndesClientException {
+    public void addMessagesToDLCQueue() throws AndesClientConfigurationException, NamingException,
+                                               JMSException, IOException, AndesClientException {
+
+        // Get current "AndesAckWaitTimeOut" system property.
+        defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.
+                                                                ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+
+        // Setting system property "AndesAckWaitTimeOut" for andes
+        System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "0");
+
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
+                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, DLC_TEST_QUEUE);
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 200L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
-        consumerConfig.setAcknowledgeAfterEachMessageCount(215L);
+        consumerConfig.setAcknowledgeAfterEachMessageCount(EXPECTED_COUNT + 210L);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "DLCTestQueue");
+                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, DLC_TEST_QUEUE);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -102,17 +128,22 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         publisherClient.startClient();
 
         //Thread sleep until messages sent to DLC after breaching maximum number of retrying
-        AndesClientUtils.sleepForInterval(100000L);
+        AndesClientUtils.sleepForInterval(150000L);
     }
 
     /**
-     * Test restoring,deleting and rerouting messages of DeadLetter Channel
+     * This test case will test restore,delete and reroute messages of
+     * DeadLetter Channel from ui.
+     * 1. Initially this test case will create a new queue to reroute messages.
+     * 2. Delete queue message from dlc and check if message exist in dlc queue.
+     * 3. Reroute queue message from dlc and check if queue message exist in browse queue ui.
+     * 4. Reroute queue message from dlc and check if that queue message exist in reroute
+     *    browse queue ui.
      *
      * @throws Exception
      */
     @Test()
-    public void DLCTest() throws Exception {
-        String qName = "DLCTestQueue";
+    public void performDeadLetterChannelTestCase() throws Exception {
         String rerouteQueue = "rerouteTestQueue";
         String deletingMessageID;
         String restoredMessageID;
@@ -131,30 +162,29 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         Assert.assertEquals(queueAddPage.addQueue(rerouteQueue), true);
         DLCBrowsePage dlcBrowsePage = homePage.getDLCBrowsePage();
         Assert.assertNotNull(dlcBrowsePage.isDLCCreated(),
-                             "DeadLetter Channel not created. " + qName);
+                             "DeadLetter Channel not created. " + DLC_TEST_QUEUE);
         //Testing delete messages
         DLCContentPage dlcContentPage = dlcBrowsePage.getDLCContent();
         deletingMessageID = dlcContentPage.deleteFunction();
-        if (checkMessages(deletingMessageID, qName)) {
-            log.info("Deleting messages of dead letter channel is successful.");
-        } else {
-            log.info("Deleting messages of dead letter channel is unsuccessful.");
-        }
+
+        Assert.assertTrue(checkMessages(deletingMessageID, DLC_TEST_QUEUE),
+                          "Deleting messages of dead letter channel is unsuccessful.");
 
         //Testing restore messages
         restoringMessageID = dlcContentPage.restoreFunction();
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        QueueContentPage queueContentPage = queuesBrowsePage.browseQueue(qName);
+        QueueContentPage queueContentPage = queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.browse.content.table"))) {
-            restoredMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                    .getElement("mb.dlc.restored.message.id")))
-                    .getText();
+            restoredMessageID =
+                    driver.findElement(By.xpath(UIElementMapper.getInstance().
+                            getElement("mb.dlc.restored.message.id"))).getText();
 
-            Assert.assertEquals(restoredMessageID, restoringMessageID, "Restoring messages of DeadLetter Channel is unsuccessful");
+            Assert.assertEquals(restoredMessageID, restoringMessageID,
+                                "Restoring messages of DeadLetter Channel is unsuccessful");
             log.info("Restoring messages of DeadLetter Channel is successful.");
         } else {
-            Assert.fail("No messages in Queue" + qName + "after restoring");
+            Assert.fail("No messages in Queue" + DLC_TEST_QUEUE + "after restoring");
         }
 
         //Testing reroute messages
@@ -165,10 +195,10 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         QueueContentPage queueContentPage1 = queuesBrowsePage1.browseQueue(rerouteQueue);
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.rerouted.queue.table"))) {
-            reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                    .getElement("mb.dlc.rerouted.message.id")))
-                    .getText();
-            Assert.assertEquals(reroutedMessageID, reroutingMessageID, "Rerouting messages of DeadLetter Channel is unsuccessful");
+            reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
+                                                   getElement("mb.dlc.rerouted.message.id"))).getText();
+            Assert.assertEquals(reroutedMessageID, reroutingMessageID,
+                                "Rerouting messages of DeadLetter Channel is unsuccessful");
             log.info("Rerouting messages of dead letter channel is successful.");
         } else {
             Assert.fail("No messages in Queue" + rerouteQueue + "after rerouting");
@@ -197,8 +227,8 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         boolean isSuccessful = true;
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.browse.content.table"))) {
-            WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                        .getElement("mb.dlc.browse.content.table")));
+            WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance().
+                                                       getElement("mb.dlc.browse.content.table")));
             List<WebElement> rowElementList = queueTable.findElements(By.tagName("tr"));
             // Go through table rows and find deleted messageID
             for (WebElement row : rowElementList) {
@@ -216,10 +246,22 @@ public class DLCTestCase extends MBIntegrationUiBaseTest {
         return isSuccessful;
     }
 
+    /**
+     * This class will restore andes acknowledgement time out system property
+     * and quit the ui web driver.
+     *
+     */
     @AfterClass()
     public void tearDown() {
-        //AndesAckWaitTimeOut set to default value.
-        System.setProperty("AndesAckWaitTimeOut", "30000");
+
+        // Setting system property "AndesAckWaitTimeOut" to default value.
+        if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
+            System.clearProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+        } else {
+            System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY,
+                               defaultAndesAckWaitTimeOut);
+        }
+
         driver.quit();
     }
 
