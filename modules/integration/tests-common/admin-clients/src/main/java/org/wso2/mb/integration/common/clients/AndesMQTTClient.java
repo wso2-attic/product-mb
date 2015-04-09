@@ -164,12 +164,19 @@ public abstract class AndesMQTTClient implements Runnable {
     }
 
     /**
-     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or shutdown hook is
+     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or disconnect hook is
      * called.
      *
      * @throws MqttException
      */
-    public abstract void shutdown() throws MqttException;
+    public abstract void disconnect() throws MqttException;
+
+    /**
+     * Connect a mqtt client to the server with given options.
+     *
+     * @throws MqttException
+     */
+    public abstract void connect() throws MqttException;
 
     /**
      * Get the mqtt client Id. Use this to print client Id into logs whenever necessary.

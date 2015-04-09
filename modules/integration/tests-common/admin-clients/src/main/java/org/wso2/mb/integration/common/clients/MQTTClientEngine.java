@@ -84,7 +84,7 @@ public class MQTTClientEngine {
     private int previousSentMessageCount;
 
     /**
-     * Initialises the client engine attaching a shutdown hook to close all the opened connection.
+     * Initialises the client engine attaching a disconnect hook to close all the opened connection.
      * Initialises TPS publishing mechanism.
      */
     public MQTTClientEngine() {
@@ -94,9 +94,9 @@ public class MQTTClientEngine {
             public void run() {
                 try {
                     shutdown();
-                    log.info("All mqtt clients have been shutdown.");
+                    log.info("All mqtt clients have been disconnected.");
                 } catch (MqttException e) {
-                    log.error("Error occurred invoking shutdown hook for " + this.getName(), e);
+                    log.error("Error occurred invoking disconnect for " + this.getName(), e);
                 }
 
             }
@@ -378,7 +378,7 @@ public class MQTTClientEngine {
     }
 
     /**
-     * Wait for subscribers to receive all the messages and shutdown all clients.
+     * Wait for subscribers to receive all the messages and disconnect all clients.
      * Use in test cases before doing assertions so message send/receive will be completed before assertions.
      *
      * @see MQTTClientEngine#waitUntilAllMessageReceived()
@@ -406,7 +406,7 @@ public class MQTTClientEngine {
         int previousMessageCount = 0;
         int currentMessageCount = -1;
 
-        // Check each 10 second if new messages have been received, if not shutdown clients.
+        // Check each 10 second if new messages have been received, if not disconnect clients.
         // If no message are received this will wait for 20 seconds before shutting down clients.
         while (currentMessageCount != previousMessageCount) {
             try {
@@ -470,11 +470,11 @@ public class MQTTClientEngine {
     public void shutdown() throws MqttException {
 
         for (AndesMQTTClient subscriberClient : subscriberList) {
-            subscriberClient.shutdown();
+            subscriberClient.disconnect();
         }
 
         for (AndesMQTTClient publisherClient : publisherList) {
-            publisherClient.shutdown();
+            publisherClient.disconnect();
         }
 
         tpsPublisherSchedule.cancel(true);

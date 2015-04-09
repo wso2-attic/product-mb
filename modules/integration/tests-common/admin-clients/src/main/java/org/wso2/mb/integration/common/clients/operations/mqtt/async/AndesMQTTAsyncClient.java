@@ -57,13 +57,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
         mqttClient = new MqttAsyncClient(this.brokerUrl, clientID, dataStore);
 
         // Connect to the MQTT server
-        log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
-        IMqttToken connectionToken = mqttClient.connect(connectionOptions);
-
-        // Wait until connection is complete. Otherwise test results will be unpredictable
-        connectionToken.waitForCompletion();
-
-        log.info("Client " + mqttClientID + " Connected");
+        connect();
 
         mqttClient.setCallback(callbackHandler);
     }
@@ -104,7 +98,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
         // Wait until subscription is made. Otherwise test results will be unpredictable
         subscriptionToken.waitForCompletion();
 
-        //Will need to wait to receive all messages - subscriber closes on shutdown
+        //Will need to wait to receive all messages - subscriber closes on disconnect
     }
 
     /**
@@ -121,18 +115,34 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     }
 
     /**
-     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or shutdown hook is
+     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or disconnect hook is
      * called.
      *
      * @throws MqttException
      */
-    public void shutdown() throws MqttException {
+    public void disconnect() throws MqttException {
         if (isConnected()) {
             IMqttToken disconnectionToken = mqttClient.disconnect();
 
-            // Wait until shutdown is complete
+            // Wait until disconnect is complete
             disconnectionToken.waitForCompletion();
             log.info("Client " + mqttClientID + " Disconnected");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void connect() throws MqttException {
+        if (!isConnected()) {
+            log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
+            IMqttToken connectionToken = mqttClient.connect(connectionOptions);
+
+            // Wait until connection is complete. Otherwise test results will be unpredictable
+            connectionToken.waitForCompletion();
+
+            log.info("Client " + mqttClientID + " Connected");
         }
     }
 

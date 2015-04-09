@@ -29,6 +29,7 @@
             <class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>
+            <class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>
 
 
             <!-- load test cases -->
