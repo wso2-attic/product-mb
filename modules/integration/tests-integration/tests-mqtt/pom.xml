@@ -17,7 +17,9 @@
   ~   under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>org.wso2.mb.integration.tests</artifactId>
@@ -29,7 +31,6 @@
     <name>MB MQTT based Test Module</name>
     <artifactId>org.wso2.carbon.mb.mqtt.test</artifactId>
     <packaging>jar</packaging>
-
 
     <build>
         <plugins>
@@ -93,7 +94,6 @@
                             </includeArtifactIds>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>copy-secVerifier</id>
                         <phase>compile</phase>
@@ -107,7 +107,6 @@
                             <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>unpack-mar-jks</id>
                         <phase>compile</phase>
@@ -159,7 +158,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
