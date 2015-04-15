@@ -57,10 +57,7 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
         mqttClient = new MqttClient(this.brokerUrl, clientID, dataStore);
 
         // Connect to the MQTT server
-        log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
-        mqttClient.connect(connectionOptions);
-
-        log.info("Client " + mqttClientID + " Connected");
+        connect();
 
         mqttClient.setCallback(callbackHandler);
     }
@@ -98,7 +95,7 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
         log.info("Subscribing to topic \"" + topic + "\" qos " + qos);
         mqttClient.subscribe(topic, qos.getValue());
 
-        //Will need to wait to receive all messages - subscriber closes on shutdown
+        //Will need to wait to receive all messages - subscriber closes on disconnect
     }
 
     /**
@@ -112,16 +109,27 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     }
 
     /**
-     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or shutdown hook is
+     * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or disconnect hook is
      * called.
      *
      * @throws MqttException
      */
-    public void shutdown() throws MqttException {
+    public void disconnect() throws MqttException {
         if (isConnected()) {
             mqttClient.disconnect();
             log.info("Client " + mqttClientID + " Disconnected");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void connect() throws MqttException {
+        log.info("Connecting to " + brokerUrl + " with client ID " + mqttClientID);
+        mqttClient.connect(connectionOptions);
+
+        log.info("Client " + mqttClientID + " Connected");
     }
 
     /**
