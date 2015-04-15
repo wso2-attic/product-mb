@@ -244,7 +244,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
             for (WebElement row : rowElementList) {
                 List<WebElement> columnList = row.findElements(By.tagName("td"));
                 // Assumption: there are eleven columns. MessageID is in second column
-                if ((columnList.size() == COLUMN_LIST_SIZE) && columnList.get(MESSAGE_ID_COLUMN)
+                if ((COLUMN_LIST_SIZE == columnList.size()) && columnList.get(MESSAGE_ID_COLUMN)
                         .getText().equals(deletingMessageID)) {
                     isSuccessful = false;
                     break;
