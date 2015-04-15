@@ -50,7 +50,7 @@ public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
     @Test()
     public void testCase()  throws Exception{
 
-        String topicName = "test:topic";
+        String topicName = "test-topic";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
