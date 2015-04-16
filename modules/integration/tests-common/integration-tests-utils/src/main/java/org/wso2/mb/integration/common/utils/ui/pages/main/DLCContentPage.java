@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.testng.Assert;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 
 import java.io.IOException;
@@ -51,6 +50,32 @@ public class DLCContentPage {
         driver.findElement(By.xpath(UIElementMapper.getInstance()
                                             .getElement("mb.dlc.browse.function.success"))).click();
         return deletingMessageID;
+    }
+
+    /**
+     * Delete all the messages in DeadLetter Channel
+     */
+    public void deleteAllDLCMessages() {
+
+        // Get all elements in dlc table
+        WebElement dlcTable = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                                     .getElement("mb.dlc.browse.content.table")));
+        // Get all the TR elements from the table
+        List<WebElement> allDlcRows = dlcTable.findElements(By.tagName("tr"));
+
+            if(allDlcRows.size() > 0) {
+                log.info("delete all dlc messages");
+                driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                                    .getElement("mb.dlc.browse.table.choose.all.box.xpath")))
+                                                    .click();
+                driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                                    .getElement("mb.dlc.browse.table.delete.button")))
+                                                    .click();
+                driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                                    .getElement("mb.dlc.browse.function.confirm"))).click();
+                driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                                    .getElement("mb.dlc.browse.function.success"))).click();
+            }
     }
 
     /**
