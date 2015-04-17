@@ -291,12 +291,6 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>src/main/resources/cassandra-env.sh</source>
-            <outputDirectory>wso2mb-${pom.version}/bin/</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
-        </file>
-        <file>
             <source>src/main/resources/log4j.properties</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
@@ -370,42 +364,6 @@
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/deployment/server/axis2services/
             </outputDirectory>
-        </file>
-        <!--Cassandra Tools-->
-        <file>
-            <source>src/main/bin/cassandra-cli</source>
-            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
-            <destName>cassandra-cli</destName>
-            <fileMode>755</fileMode>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/bin/nodetool</source>
-            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
-            <destName>nodetool</destName>
-            <fileMode>755</fileMode>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/bin/cqlsh</source>
-            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
-            <destName>cqlsh</destName>
-            <fileMode>755</fileMode>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/cql-internal-only-1.4.1.zip</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/lib</outputDirectory>
-            <destName>cql-internal-only-1.4.1.zip</destName>
-            <fileMode>644</fileMode>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/thrift-python-internal-only-0.7.0.zip</source>
-            <outputDirectory>wso2mb-${pom.version}/repository/lib</outputDirectory>
-            <destName>thrift-python-internal-only-0.7.0.zip</destName>
-            <fileMode>644</fileMode>
-            <filtered>true</filtered>
         </file>
 
         <file>
