@@ -41,6 +41,7 @@
             <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicMessageDeliveringTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.topic.TopicClusterTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.slot.QueueClusterRdbmsSlotTestCase"/>
 
             <!--Running the commented cases resulted in OOM-->
         </classes>
