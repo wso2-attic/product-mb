@@ -388,41 +388,42 @@ public class AndesJMSConsumer extends AndesJMSBase
             }
             this.lastMessageConsumedTimestamp = currentTimeStamp;
 
-            if (message instanceof TextMessage) {
-                this.receivedMessageCount.incrementAndGet();
-                TextMessage textMessage = (TextMessage) message;
-                JMSDeliveryStatus deliveryStatus;
-                // Gets whether the message is original or redelivered
-                if (message.getJMSRedelivered()) {
-                    deliveryStatus = JMSDeliveryStatus.REDELIVERED;
-                } else {
-                    deliveryStatus = JMSDeliveryStatus.ORIGINAL;
-                }
-                // Logging the received message
-                if (0 == this.receivedMessageCount.get() % this.consumerConfig
-                        .getPrintsPerMessageCount()) {
-                    log.info("[RECEIVE] ThreadID:" + threadID + " Destination(" + this.consumerConfig
-                            .getExchangeType().getType() + "):" +
-                             this.consumerConfig.getDestinationName() + " ReceivedMessageCount:" +
-                             this.receivedMessageCount + " MessageToReceive:" +
-                             this.consumerConfig
-                                     .getMaximumMessagesToReceived() + " Original/Redelivered:" + deliveryStatus
-                                     .getStatus());
+            // Incrementing message received count
+            this.receivedMessageCount.incrementAndGet();
+            JMSDeliveryStatus deliveryStatus;
+            // Gets whether the message is original or redelivered
+            if (message.getJMSRedelivered()) {
+                deliveryStatus = JMSDeliveryStatus.REDELIVERED;
+            } else {
+                deliveryStatus = JMSDeliveryStatus.ORIGINAL;
+            }
+            // Logging the received message
+            if (0 == this.receivedMessageCount.get() % this.consumerConfig
+                    .getPrintsPerMessageCount()) {
+                log.info("[RECEIVE] ThreadID:" + threadID + " Destination(" + this.consumerConfig
+                        .getExchangeType().getType() + "):" +
+                         this.consumerConfig.getDestinationName() + " ReceivedMessageCount:" +
+                         this.receivedMessageCount + " MessageToReceive:" +
+                         this.consumerConfig
+                                 .getMaximumMessagesToReceived() + " Original/Redelivered:" + deliveryStatus
+                                 .getStatus());
 
-                }
+            }
+            // Writes the statistics
+            if (null != this.consumerConfig.getFilePathToWriteStatistics()) {
+                String statisticsString = Long.toString(currentTimeStamp) + "," + Double
+                        .toString(this.getConsumerTPS()) + "," + Double
+                                                  .toString(this.getAverageLatency());
+                AndesClientUtils.writeStatisticsToFile(statisticsString, this.consumerConfig
+                        .getFilePathToWriteStatistics());
+            }
+            if (message instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) message;
                 // Writes the received messages
                 if (null != this.consumerConfig.getFilePathToWriteReceivedMessages()) {
                     AndesClientUtils
                             .writeReceivedMessagesToFile(textMessage.getText(), this.consumerConfig
                                     .getFilePathToWriteReceivedMessages());
-                }
-                // Writes the statistics
-                if (null != this.consumerConfig.getFilePathToWriteStatistics()) {
-                    String statisticsString = Long.toString(currentTimeStamp) + "," + Double
-                            .toString(this.getConsumerTPS()) + "," + Double
-                                                      .toString(this.getAverageLatency());
-                    AndesClientUtils.writeStatisticsToFile(statisticsString, this.consumerConfig
-                            .getFilePathToWriteStatistics());
                 }
             }
 

@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -90,22 +91,23 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "sessionTransactedAckQueue");
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "sessionTransactedAckQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
+        consumerConfig.setCommitAfterEachMessageCount(1L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "sessionTransactedAckQueue");
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                         brokerAddress.getPort(), ExchangeType.QUEUE, "sessionTransactedAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -145,21 +147,20 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "autoAcknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                                brokerAddress.getPort(), ExchangeType.QUEUE, "autoAcknowledgeQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "autoAcknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                                 brokerAddress.getPort(), ExchangeType.QUEUE, "autoAcknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -199,23 +200,24 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "clientAcknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "clientAcknowledgeQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
+        consumerConfig.setAcknowledgeAfterEachMessageCount(1L);
         consumerConfig.setRunningDelay(10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "clientAcknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "clientAcknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -254,23 +256,23 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         // Number of messages send
         int sendCount = 2000;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
         consumerConfig.setRunningDelay(10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                             brokerAddress.getPort(), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

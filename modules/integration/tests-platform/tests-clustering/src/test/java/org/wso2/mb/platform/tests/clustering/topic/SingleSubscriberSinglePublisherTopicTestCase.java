@@ -102,7 +102,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                            automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1");
     }
 
     /**
@@ -122,7 +123,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                        automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2");
     }
 
     /**
@@ -143,7 +145,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                        automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3");
     }
 
     /**
@@ -164,7 +167,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                        automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8");
     }
 
     /**
@@ -184,7 +188,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                            automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10");
     }
 
     /**
@@ -205,7 +210,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                            automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5");
     }
 
     /**
@@ -226,7 +232,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                            automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6");
     }
 
     /**
@@ -247,7 +254,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException,
                    AndesClientException {
-        this.runSingleSubscriberSinglePublisherTopicTestCase(automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7");
+        this.runSingleSubscriberSinglePublisherTopicTestCase(
+                            automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7");
     }
 
     /**
@@ -312,6 +320,10 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setRunningDelay(consumerDelay);
 
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
         // Check if topic is created
         TopicNode topic = topicAdminClient1.getTopicByName(destinationName);
         assertTrue(topic.getTopicName()
@@ -330,9 +342,6 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setRunningDelay(publisherDelay);
 
-        // Creating clients
-        AndesClient consumerClient = new AndesClient(consumerConfig, true);
-        consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();

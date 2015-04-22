@@ -97,25 +97,27 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.QUEUE, "clusterSingleQueue1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+                                         ExchangeType.QUEUE, "clusterSingleQueue1");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
         randomInstanceKey = getRandomMBInstance();
         Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("clusterSingleQueue1");
         assertTrue(queue.getQueueName().equalsIgnoreCase("clusterSingleQueue1"), "Queue created in MB node 1 not exist");
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.QUEUE, "clusterSingleQueue1");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                                        Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+                                        ExchangeType.QUEUE, "clusterSingleQueue1");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
-        AndesClient consumerClient = new AndesClient(consumerConfig, true);
-        consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
@@ -188,9 +190,10 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.QUEUE, "clusterSingleQueue3");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+                                         ExchangeType.QUEUE, "clusterSingleQueue3");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -198,9 +201,10 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         randomInstanceKey = getRandomMBInstance();
         tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.QUEUE, "clusterSingleQueue3");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                                        Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+                                        ExchangeType.QUEUE, "clusterSingleQueue3");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 

@@ -76,7 +76,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
         automationContext = getAutomationContextWithKey("mb002");
         topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
                                                 super.login(automationContext), ConfigurationContextProvider
-                .getInstance().getConfigurationContext());
+                                                            .getInstance().getConfigurationContext());
 
     }
 
@@ -149,7 +149,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
     @AfterClass(alwaysRun = true)
     public void destroy()
             throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
-        topicAdminClient.removeTopic("durableTopic1");
+        topicAdminClient.removeTopic("durableTopicMessageDelivering");
 
     }
 }

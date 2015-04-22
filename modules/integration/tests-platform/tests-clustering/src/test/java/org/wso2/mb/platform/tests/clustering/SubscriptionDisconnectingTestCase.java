@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -86,13 +87,17 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         int sendCount = 1000;
         int expectedCount = sendCount / 4;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueSubscription1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription1");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueSubscription1");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                             brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription1");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -152,13 +157,17 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         int sendCount = 1000;
         int expectedCount = sendCount / 4;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueSubscription2");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                            brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription2");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueSubscription2");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                             brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription2");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -170,34 +179,46 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient1");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message " +
+                                                          "receiving failed for consumerClient1");
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
-        consumerConfig2.setConnectionString(getRandomAMQPBrokerAddress());
+        HostAndPort randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
+        consumerConfig2.setHostName(randomAMQPBrokerAddress.getHostText());
+        consumerConfig2.setPort(randomAMQPBrokerAddress.getPort());
         AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient2");
-
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount, "Message " +
+                                                                                      "receiving " +
+                                                                                      "failed for" +
+                                                                                      " consumerClient2");
+        
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig.clone();
-        consumerConfig3.setConnectionString(getRandomAMQPBrokerAddress());
+        randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
+        consumerConfig3.setHostName(randomAMQPBrokerAddress.getHostText());
+        consumerConfig3.setPort(randomAMQPBrokerAddress.getPort());
         AndesClient consumerClient3 = new AndesClient(consumerConfig3, true);
         consumerClient3.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient3");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message " +
+                                                          "receiving failed for consumerClient3");
 
         AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
-        consumerConfig4.setConnectionString(getRandomAMQPBrokerAddress());
+        randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
+        consumerConfig4.setHostName(randomAMQPBrokerAddress.getHostText());
+        consumerConfig4.setPort(randomAMQPBrokerAddress.getPort());
         AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
         consumerClient4.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient4");
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message " +
+                                                          "receiving failed for consumerClient4");
 
         long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() +
                                      consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();

@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -81,7 +82,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     public void testSameNodeSlowSubscriber()
             throws IOException, JMSException, AndesClientConfigurationException, NamingException,
                    XPathExpressionException, AndesClientException {
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, brokerAddress, brokerAddress);
     }
@@ -100,7 +101,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
                    NamingException, AndesClientException {
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
         this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, brokerAddress, brokerAddress);
     }
 
@@ -120,7 +121,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
                    AndesClientConfigurationException,
                    NamingException, AndesClientException {
 
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 10L, 0L,
+                                        getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
 
     /**
@@ -137,7 +139,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
             throws XPathExpressionException, IOException, JMSException,
                    AndesClientConfigurationException,
                    NamingException, AndesClientException {
-        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L, getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
+        this.runDifferentRateSubscriberTestCase("singleQueue1", 0L, 10L,
+                                        getRandomAMQPBrokerAddress(), getRandomAMQPBrokerAddress());
     }
 
     /**
@@ -185,8 +188,8 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      */
     private void runDifferentRateSubscriberTestCase(String destinationName, long consumerDelay,
                                                     long publisherDelay,
-                                                    String consumerBrokerAddress,
-                                                    String publisherBrokerAddress)
+                                                    HostAndPort consumerBrokerAddress,
+                                                    HostAndPort publisherBrokerAddress)
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
                    AndesClientException {
         // Number of messages expected
@@ -195,13 +198,17 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
         long sendCount = 500L;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, destinationName);
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.getHostText(),
+                                consumerBrokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setRunningDelay(consumerDelay);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, destinationName);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.getHostText(),
+                             publisherBrokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setRunningDelay(publisherDelay);
