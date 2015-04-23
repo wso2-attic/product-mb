@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -290,26 +291,21 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
                    JMSException,
                    IOException, AndesClientException {
 
-        // Number of messages expected
-        long expectedCount = 2000L;
         // Number of messages send
         long sendCount = 2000L;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, destinationName);
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                                    brokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
+        consumerConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer
-                        .parseInt(brokerAddress
-                                          .split(":")[1]), ExchangeType.QUEUE, destinationName);
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                                     brokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setJMSMessageType(messageType);
@@ -326,9 +322,8 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
 
         // Evaluating
         Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
+                            .getSentMessageCount(), sendCount * numberOfPublishers, "Message sending failed.");
         Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+                            .getReceivedMessageCount(), sendCount * numberOfPublishers, "Message receiving failed.");
     }
-
 }

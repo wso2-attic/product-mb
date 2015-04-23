@@ -1,23 +1,24 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
 package org.wso2.mb.platform.common.utils;
 
+import com.google.common.net.HostAndPort;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
@@ -36,7 +37,12 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Base class of all MB integration tests
@@ -114,11 +120,14 @@ public class MBPlatformBaseTest {
     }
 
     /**
-     * Get topic admin client for given node
+     * Get topic admin client for given node.
+     * Suppressing "UnusedDeclaration" warning as this method can be used later in writing test
+     * cases.
      *
      * @param key The key for the map which the topic admin clients are stored
      * @return An {@link org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient}.
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected TopicAdminClient getTopicAdminClientWithKey(String key) {
 
         if (topicAdminClients != null && topicAdminClients.size() > 0) {
@@ -204,14 +213,16 @@ public class MBPlatformBaseTest {
                 AutomationContext tempContext = entry.getValue();
                 andesAdminClients.put(entry.getKey(),
                                       new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                                           login(tempContext),
-                                                           ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                                       login(tempContext),
+                                       ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }
 
     /**
      * Create and login topic admin client to nodes in cluster
+     * Suppressing "UnusedDeclaration" warning as this method can be used later in writing test
+     * cases.
      *
      * @throws LoginAuthenticationExceptionException
      * @throws IOException
@@ -220,6 +231,7 @@ public class MBPlatformBaseTest {
      * @throws SAXException
      * @throws XMLStreamException
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void initTopicAdminClients()
             throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
                    URISyntaxException, SAXException, XMLStreamException {
@@ -231,20 +243,23 @@ public class MBPlatformBaseTest {
                 AutomationContext tempContext = entry.getValue();
                 topicAdminClients.put(entry.getKey(),
                                       new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                                           login(tempContext),
-                                                           ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                                   login(tempContext),
+                                   ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }
 
     /**
      * Check whether given queue is deleted from the cluster nodes
+     * Suppressing "UnusedDeclaration" warning as this method can be used later in writing test
+     * cases.
      *
      * @param queue The queue name
      * @return true if queue deleted successfully, false otherwise.
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws RemoteException
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected boolean isQueueDeletedFromCluster(String queue)
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         AndesAdminClient andesAdminClient;
@@ -265,12 +280,15 @@ public class MBPlatformBaseTest {
 
     /**
      * Check whether given queue is created in the cluster nodes
+     * Suppressing "UnusedDeclaration" warning as this method can be used later in writing test
+     * cases.
      *
      * @param queue The queue name
      * @return true if queue exists in cluster, false otherwise.
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws RemoteException
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected boolean isQueueCreatedInCluster(String queue)
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
         AndesAdminClient andesAdminClient;
@@ -295,11 +313,11 @@ public class MBPlatformBaseTest {
      * @return Broker URL in host:port format (E.g "127.0.0.1:5672")
      * @throws XPathExpressionException
      */
-    protected String getRandomAMQPBrokerAddress() throws XPathExpressionException {
+    protected HostAndPort getRandomAMQPBrokerAddress() throws XPathExpressionException {
         String randomInstanceKey = getRandomMBInstance();
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        return tempContext.getInstance().getHosts().get("default") + ":" +
-               tempContext.getInstance().getPorts().get("amqp");
+        return HostAndPort.fromString(tempContext.getInstance().getHosts().get
+                ("default") + ":" + tempContext.getInstance().getPorts().get("amqp"));
     }
 }

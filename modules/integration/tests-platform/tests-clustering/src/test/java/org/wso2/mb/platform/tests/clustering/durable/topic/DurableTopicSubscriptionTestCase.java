@@ -26,10 +26,10 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
-import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
@@ -66,7 +66,7 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
         portInNode1 = Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp"));
         portInNode2 = Integer.parseInt(automationContext2.getInstance().getPorts().get("amqp"));
         topicAdminClient = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
-                                                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
+                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
         super.initAndesAdminClients();
     }
@@ -86,10 +86,12 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
                    AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic1");
         consumerConfig.setDurable(true, "durableTopic1");
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic1");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic1");
         secondConsumerConfig.setDurable(true, "durableTopic1");
 
         // Creating clients
@@ -125,12 +127,14 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Try to connect to a topic with same subscription ID " +
-                                            "which is already a subscription", enabled = true)
+                                            "which is already a subscription", enabled = true,
+            expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*it already has an existing exclusive consumer.*")
     public void multipleSubsWithSameIdTest()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic2");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic2");
         consumerConfig.setDurable(true, "durableTopic2Sub");
 
         // Creating clients
@@ -139,7 +143,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.sleepForInterval(2000L);
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic2");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic2");
         secondConsumerConfig.setDurable(true, "durableTopic2Sub");
 
         AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
@@ -170,10 +175,12 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
                    AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic3");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic3");
         consumerConfig.setDurable(true, "durableTopic3Sub1");
 
-        AndesJMSConsumerClientConfiguration secondaryConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic3");
+        AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic3");
         secondaryConsumerConfig.setDurable(true, "durableTopic3Sub2");
 
         // Creating clients
@@ -210,10 +217,12 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
                    AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic5");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic5");
         consumerConfig.setDurable(true, "durableTopic5Sub1");
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic5");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic5");
         secondConsumerConfig.setDurable(true, "durableTopic5Sub2");
 
         // Creating clients
@@ -251,10 +260,12 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
             throws JMSException, NamingException, IOException, AndesClientConfigurationException,
                    AndesClientException {
         // Creating configurations
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic6");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopic6");
         consumerConfig.setDurable(true, "durableTopic6Sub1");
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic6");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopic6");
         secondConsumerConfig.setDurable(true, "durableTopic7");
 
         // Creating clients
@@ -295,19 +306,23 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
                    AndesClientConfigurationException, IOException, AndesClientException {
 
         // Creating configurations
-        AndesJMSConsumerClientConfiguration firstConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "wso2");
+        AndesJMSConsumerClientConfiguration firstConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "wso2");
         firstConsumerConfig.setDurable(true, "wso2Sub1");
 
-        AndesJMSConsumerClientConfiguration secondConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "wso2");
+        AndesJMSConsumerClientConfiguration secondConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "wso2");
         secondConsumerConfig.setDurable(true, "wso2Sub2");
 
-        AndesJMSConsumerClientConfiguration thirdConsumerConfig = new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "wso2");
+        AndesJMSConsumerClientConfiguration thirdConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "wso2");
 
         String randomInstanceKey = getRandomMBInstance();
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-        AndesJMSConsumerClientConfiguration forthConsumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-                                                                                                          Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")), ExchangeType.QUEUE, "wso2");
+        AndesJMSConsumerClientConfiguration forthConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
+                              Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")), ExchangeType.QUEUE, "wso2");
 
         // Creating clients
         AndesClient firstConsumerClient = new AndesClient(firstConsumerConfig, true);

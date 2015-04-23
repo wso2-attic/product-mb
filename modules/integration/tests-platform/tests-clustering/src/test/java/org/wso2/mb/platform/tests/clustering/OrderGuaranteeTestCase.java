@@ -18,6 +18,7 @@
 
 package org.wso2.mb.platform.tests.clustering;
 
+import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -90,16 +91,20 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         // Number of messages send
         long sendCount = 1000L;
 
-        String brokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
+                                    brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder1");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.split(":")[0], Integer.parseInt(brokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder1");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
+                                 brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder1");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -141,18 +146,22 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         // Number of messages send
         long sendCount = 1000L;
 
-        String consumerBrokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.split(":")[0], Integer.parseInt(consumerBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder2");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.getHostText(),
+                            consumerBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder2");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
-        String publisherBrokerAddress = getRandomAMQPBrokerAddress();
+        HostAndPort publisherBrokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.split(":")[0], Integer.parseInt(publisherBrokerAddress.split(":")[1]), ExchangeType.QUEUE, "singleQueueOrder2");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.getHostText(),
+                         publisherBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder2");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 

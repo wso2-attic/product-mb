@@ -81,10 +81,10 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         automationContextForMB3 = getAutomationContextWithKey("mb003");
 
         topicAdminClientForMB2 = new TopicAdminClient(automationContextForMB2.getContextUrls().getBackEndUrl(),
-                                                      super.login(automationContextForMB2), ConfigurationContextProvider.getInstance().getConfigurationContext());
+          super.login(automationContextForMB2), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
         topicAdminClientForMB3 = new TopicAdminClient(automationContextForMB3.getContextUrls().getBackEndUrl(),
-                                                      super.login(automationContextForMB3), ConfigurationContextProvider.getInstance().getConfigurationContext());
+          super.login(automationContextForMB3), ConfigurationContextProvider.getInstance().getConfigurationContext());
     }
 
     /**
@@ -106,15 +106,17 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.TOPIC, "clusterSingleTopic1");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
+                        Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
+                        ExchangeType.TOPIC, "clusterSingleTopic1");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.TOPIC, "clusterSingleTopic1");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
+                        Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
+                        ExchangeType.TOPIC, "clusterSingleTopic1");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -122,7 +124,8 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         consumerClient.startClient();
 
         TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic1");
-        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in MB node 1 not exist");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in" +
+                                                                             " MB node 1 not exist");
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
@@ -178,24 +181,26 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         long sendCount = 1000L;
         long expectedCount = 1000L;
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
-                                                                                                     Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.TOPIC, "clusterSingleTopic3");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
+                     Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
+                     ExchangeType.TOPIC, "clusterSingleTopic3");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(automationContextForMB3.getInstance().getHosts().get("default"),
-                                                                                                        Integer.parseInt(automationContextForMB3.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.TOPIC, "clusterSingleTopic3");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(automationContextForMB3.getInstance().getHosts().get("default"),
+                    Integer.parseInt(automationContextForMB3.getInstance().getPorts().get("amqp")),
+                    ExchangeType.TOPIC, "clusterSingleTopic3");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic1");
-        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in MB node 1 not exist");
+        TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic3");
+        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic3"), "Topic created in MB node 1 not exist");
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
