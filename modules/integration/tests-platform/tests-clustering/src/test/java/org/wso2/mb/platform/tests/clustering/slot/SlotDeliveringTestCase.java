@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
 package org.wso2.mb.platform.tests.clustering.slot;
 
@@ -46,6 +46,10 @@ import java.rmi.RemoteException;
 
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Test class to test successful message delivery using RDBMS slot implementation
+ */
+
 public class SlotDeliveringTestCase extends MBPlatformBaseTest {
 
 	/**
@@ -60,58 +64,44 @@ public class SlotDeliveringTestCase extends MBPlatformBaseTest {
 	@BeforeClass(alwaysRun = true)
 	public void init()
 			throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
-			       URISyntaxException, SAXException, XMLStreamException, AndesAdminServiceBrokerManagerAdminException {
+			       URISyntaxException, SAXException, XMLStreamException,
+			       AndesAdminServiceBrokerManagerAdminException {
 		super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 		super.initAndesAdminClients();
 
 		String randomInstanceKey = getRandomMBInstance();
 
 		AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
-
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue1") == null) {
-			tempAndesAdminClient.createQueue("clusterSingleQueue1");
-		}
-
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue2") == null) {
-			tempAndesAdminClient.createQueue("clusterSingleQueue2");
-		}
-
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue3") == null) {
-			tempAndesAdminClient.createQueue("clusterSingleQueue3");
-		}
-
 	}
 
 	/**
-	 *
+	 * Test sending and receiving messages without failing in a single queue and single node using
+	 * RDBMS slot information implementation
 	 * @throws Exception
 	 */
 	@Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case")
 	public void testSingleQueueSingleNodeSendReceive() throws Exception {
 
-		long sendCount = 1000L;
-		long expectedCount = 1000L;
+		long sendCount = 10000L;
+		long expectedCount = 10000L;
 
 
 		String randomInstanceKey = getRandomMBInstance();
 
 		AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
 
-		AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-		                                                                                             Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-		                                                                                             ExchangeType.QUEUE, "clusterSingleQueue1");
+		AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration
+				(tempContext.getInstance().getHosts().get("default"),
+				 Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+		         ExchangeType.QUEUE, "slotTestQueue1");
 		consumerConfig.setMaximumMessagesToReceived(expectedCount);
 		consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
+		AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration
+				(tempContext.getInstance().getHosts().get("default"),
+				 Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
+				 ExchangeType.QUEUE, "slotTestQueue1");
 
-		randomInstanceKey = getRandomMBInstance();
-		Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("clusterSingleQueue1");
-
-		assertTrue(queue.getQueueName().equalsIgnoreCase("clusterSingleQueue1"), "Queue created in MB node 1 not exist");
-
-		AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
-		                                                                                                Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-		                                                                                                ExchangeType.QUEUE, "clusterSingleQueue1");
 		publisherConfig.setNumberOfMessagesToSend(sendCount);
 		publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -121,12 +111,19 @@ public class SlotDeliveringTestCase extends MBPlatformBaseTest {
 		AndesClient publisherClient = new AndesClient(publisherConfig, true);
 		publisherClient.startClient();
 
+		randomInstanceKey = getRandomMBInstance();
+		Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("slotTestQueue1");
+
+		assertTrue(queue.getQueueName().equalsIgnoreCase("slotTestQueue1"),
+		           "Queue created in MB node 1 not exist");
+
 		AndesClientUtils
 				.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
 		Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount,
 		                    "Message sending failed.");
-		Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+		Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount,
+		                    "Message receiving failed.");
 
 	}
 
@@ -142,16 +139,8 @@ public class SlotDeliveringTestCase extends MBPlatformBaseTest {
 
 		AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
 
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue1") != null) {
-			tempAndesAdminClient.deleteQueue("clusterSingleQueue1");
-		}
-
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue2") != null) {
-			tempAndesAdminClient.deleteQueue("clusterSingleQueue2");
-		}
-
-		if (tempAndesAdminClient.getQueueByName("clusterSingleQueue3") != null) {
-			tempAndesAdminClient.deleteQueue("clusterSingleQueue3");
+		if (tempAndesAdminClient.getQueueByName("slotTestQueue1") != null) {
+			tempAndesAdminClient.deleteQueue("slotTestQueue1");
 		}
 	}
 
