@@ -159,6 +159,6 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 
         Assert.assertEquals(subscriber.getReceivedMessageCount(), expectedCount, "Incorrect number of messages were " +
-                "received after reconnecting the subscriber");
+                "received after connecting to the subscriber");
     }
 }
