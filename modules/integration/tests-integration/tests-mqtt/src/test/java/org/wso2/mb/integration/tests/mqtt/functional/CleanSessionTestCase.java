@@ -99,4 +99,66 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(subscriber.getReceivedMessageCount(), expectedCount, "Incorrect number of messages were " +
                 "received after reconnecting the subscriber");
     }
+
+    /**
+     * 1. Subscribe to a topic with given Quality of Service setting clean session to false.
+     * 2. Close the subscriber
+     * 3. Un-subscribe from the relevant topic
+     * 3. Publish 3 messages to the same topic one from each QOS level.
+     * 3. Resubscribe with the same settings.
+     * 4. Verify that the messages which were sent had not being consumed
+     *
+     * @param qualityOfService The Quality of Service of the subscriber
+     */
+    @Test(groups = {"wso2.mb", "mqtt"}, dataProvider = "QualityOfServiceDataProvider",
+            dataProviderClass = QualityOfServiceDataProvider.class)
+    public void performCleanSessionWithUnSubscriptionTestCase(QualityOfService qualityOfService) throws MqttException {
+        int noOfMessagesPerQos = 1;
+        int noOfPublishersPerQos = 1;
+        // Only qos 1 and 2 messages are expected, always we should not expect to receive
+        // messages after un-subscribing
+        int expectedCount = 0;
+
+        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+        String topic = "CleanSessionTestTopic";
+
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        configuration.setCleanSession(false);
+
+        //create the subscribers
+        mqttClientEngine.createSubscriberConnection(configuration, topic, qualityOfService, false, ClientMode.BLOCKING);
+
+        // Directly get the 0'th value from the list since we only subscribed one subscriber
+        AndesMQTTClient subscriber = mqttClientEngine.getSubscriberList().get(0);
+
+        //Will unsubscribe
+        subscriber.unsubscribe();
+        // Disconnect the subscriber
+        subscriber.disconnect();
+
+        //Will shut-down any connected client
+        mqttClientEngine.shutdown();
+
+        // Publish qos 0 message
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.MOST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+
+        // Publish qos 1 message
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+
+        // Publish qos 2 message
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.EXACTLY_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+
+
+        // Re connect the subscriber and subscribe to the same topic
+        subscriber.connect();
+        subscriber.subscribe();
+
+        mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
+
+        Assert.assertEquals(subscriber.getReceivedMessageCount(), expectedCount, "Incorrect number of messages were " +
+                "received after connecting to the subscriber");
+    }
 }
