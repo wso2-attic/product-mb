@@ -79,36 +79,36 @@
 
         <!--samples set of product-->
         <fileSet>
-            <directory>../../modules/samples/product/jms_queue_client</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/jms_queue_client</outputDirectory>
+            <directory>../../modules/samples/product/JmsQueueClient</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/JmsQueueClient</outputDirectory>
         </fileSet>
 
         <fileSet>
-            <directory>../../modules/samples/product/jms_topic_client</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/jms_topic_client</outputDirectory>
+            <directory>../../modules/samples/product/JmsTopicClient</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/JmsTopicClient</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/jms_message_listener_client</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/jms_message_listener_client
+            <directory>../../modules/samples/product/JmsMessageListenerClient</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/JmsMessageListenerClient
             </outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/hierarchical_topics_subscriber</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/hierarchical_topics_subscriber
+            <directory>../../modules/samples/product/HierarchicalTopicsSubscriber</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/HierarchicalTopicsSubscriber
             </outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/durable_topic_subscriber</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/durable_topic_subscriber
+            <directory>../../modules/samples/product/DurableTopicSubscriber</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/DurableTopicSubscriber
             </outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/old_jmsclient_sample</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/old_jmsclient_sample</outputDirectory>
+            <directory>../../modules/samples/product/OldJmsClientSample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/OldJmsClientSample</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/jmstransport</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/jmstransport</outputDirectory>
+            <directory>../../modules/samples/product/JmsTransport</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/JmsTransport</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/wsclient</directory>
@@ -119,21 +119,21 @@
             <outputDirectory>wso2mb-${pom.version}/samples/services</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/jms_selectors</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/jms_selectors</outputDirectory>
+            <directory>../../modules/samples/product/JmsSelectors</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/JmsSelectors</outputDirectory>
         </fileSet>
         <!-- MQTT Samples -->
         <fileSet>
-            <directory>../../modules/samples/product/simple_mqtt_client</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/simple_mqtt_client</outputDirectory>
+            <directory>../../modules/samples/product/SimpleMqttClient</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/SimpleMqttClient</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/mqtt_chat_client</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/mqtt_chat_client</outputDirectory>
+            <directory>../../modules/samples/product/MqttChatClient</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/MqttChatClient</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/mqtt_IoTSample</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/mqtt_IoTSample</outputDirectory>
+            <directory>../../modules/samples/product/MqttIoTSample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/MqttIoTSample</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>
