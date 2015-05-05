@@ -23,6 +23,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.andes.configuration.AndesConfigurationManager;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -50,7 +51,7 @@ import static org.testng.Assert.assertTrue;
  * Test class to test successful message delivery using RDBMS slot implementation
  */
 
-public class SlotDeliveringTestCase extends MBPlatformBaseTest {
+public class QueueClusterRdbmsSlotTestCase extends MBPlatformBaseTest {
 
 	/**
 	 * Prepare environment for test
@@ -72,6 +73,7 @@ public class SlotDeliveringTestCase extends MBPlatformBaseTest {
 		String randomInstanceKey = getRandomMBInstance();
 
 		AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+
 	}
 
 	/**
