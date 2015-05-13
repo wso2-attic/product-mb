@@ -66,6 +66,13 @@ public abstract class AndesMQTTClient implements Runnable {
     protected final QualityOfService qos;
 
     /**
+     * MQTT retain parameter
+     * When retain enabled with published topic message, it should retained for future subscribers
+     * for the same topic.
+     */
+    protected final boolean retain;
+
+    /**
      * Store messages until server fetches them
      */
     protected final MqttDefaultFilePersistence dataStore =
@@ -90,6 +97,7 @@ public abstract class AndesMQTTClient implements Runnable {
         String userName = configuration.getBrokerUserName();
         this.topic = topic;
         this.qos = qos;
+        this.retain = configuration.isRetain();
 
         // Construct the connection options object that contains connection parameters
         // such as cleanSession and LWT
