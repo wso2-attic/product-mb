@@ -52,6 +52,14 @@ public class MQTTClientConnectionConfiguration {
     private String brokerUserName = null;
 
     /**
+     * MQTT retain parameter
+     *
+     * When retain enabled with published topic message, it should retained for future subscribers
+     * for the same topic.
+     */
+    private boolean retain = false;
+
+    /**
      * MQTT clean session parameter.
      * <p/>
      * When a client is connected to a broker, and if it has been previously connected and that session information
@@ -65,6 +73,14 @@ public class MQTTClientConnectionConfiguration {
 
     public void setCleanSession(boolean cleanSession) {
         this.cleanSession = cleanSession;
+    }
+
+    public boolean isRetain() {
+        return retain;
+    }
+
+    public void setRetain(boolean retain) {
+        this.retain = retain;
     }
 
     public String getBrokerProtocol() {

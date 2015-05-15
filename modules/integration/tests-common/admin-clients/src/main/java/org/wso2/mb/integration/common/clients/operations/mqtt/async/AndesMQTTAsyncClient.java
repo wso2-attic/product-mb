@@ -77,6 +77,7 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
             // Create and configure message
             MqttMessage message = new MqttMessage(payload);
             message.setQos(qos.getValue());
+            message.setRetained(retain);
 
             for (int i = 0; i < noOfMessages; i++) {
                 // Send message to server, control is either returned or blocked until it has been delivered to the
