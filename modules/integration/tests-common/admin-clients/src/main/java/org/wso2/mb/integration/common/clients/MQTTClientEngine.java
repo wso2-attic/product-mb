@@ -130,21 +130,23 @@ public class MQTTClientEngine {
                                            String topicName, QualityOfService qos,
                                            boolean saveMessages, ClientMode clientMode) throws MqttException {
 
-        AndesMQTTClient mqttClient = null;
+        AndesMQTTClient mqttClient;
 
         if (ClientMode.ASYNC == clientMode) {
             mqttClient = new MQTTAsyncSubscriberClient(configuration, generateClientID(), topicName, qos, saveMessages);
+            subscriberList.add(mqttClient);
+            clientControlSubscriptionThreads.execute(mqttClient);
         } else if (ClientMode.BLOCKING == clientMode) {
             mqttClient = new MQTTBlockingSubscriberClient(configuration, generateClientID(), topicName, qos,
                     saveMessages);
+            subscriberList.add(mqttClient);
+            mqttClient.run();
         } else {
             // Using else since only the above two scenarios are handled. If a new client mode is included,
             // handle it before this
             throw new MqttException(new Throwable("Unidentified clientMode : " + clientMode));
         }
 
-        subscriberList.add(mqttClient);
-        clientControlSubscriptionThreads.execute(mqttClient);
 
         waitForSubscribersToSubscribe();
     }
@@ -197,22 +199,23 @@ public class MQTTClientEngine {
                                           String topicName, QualityOfService qos, byte[] payload,
                                           int noOfMessages, ClientMode clientMode) throws MqttException {
 
-        AndesMQTTClient mqttClient = null;
+        AndesMQTTClient mqttClient;
 
         if (ClientMode.ASYNC == clientMode) {
             mqttClient = new MQTTAsyncPublisherClient(configuration, generateClientID(), topicName, qos, payload,
                     noOfMessages);
+            publisherList.add(mqttClient);
+            clientControlPublisherThreads.execute(mqttClient);
         } else if (ClientMode.BLOCKING == clientMode) {
             mqttClient = new MQTTBlockingPublisherClient(configuration, generateClientID(), topicName, qos, payload,
                     noOfMessages);
+            publisherList.add(mqttClient);
+            mqttClient.run();
         } else {
             // Using else since only the above two scenarios are handled. If a new client mode is included,
             // handle it before this
             throw new MqttException(new Throwable("Unidentified ClientMode : " + clientMode));
         }
-
-        publisherList.add(mqttClient);
-        clientControlPublisherThreads.execute(mqttClient);
     }
 
     /**
@@ -387,7 +390,6 @@ public class MQTTClientEngine {
      */
     public void waitUntilAllMessageReceivedAndShutdownClients() throws MqttException {
         waitUntilAllMessageReceived();
-
         shutdown();
     }
 
