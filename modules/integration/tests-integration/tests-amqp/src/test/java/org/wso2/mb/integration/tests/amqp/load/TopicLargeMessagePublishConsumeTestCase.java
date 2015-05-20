@@ -138,6 +138,7 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
+        // Increasing time limit of waiting for message count update as it takes time to receive 10mb messages.
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 3);
 
