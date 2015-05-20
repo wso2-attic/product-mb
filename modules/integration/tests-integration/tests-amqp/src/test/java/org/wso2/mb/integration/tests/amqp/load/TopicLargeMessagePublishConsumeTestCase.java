@@ -139,7 +139,7 @@ public class TopicLargeMessagePublishConsumeTestCase extends MBIntegrationBaseTe
         publisherClient.startClient();
 
         AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 3);
 
         // Evaluating
         Assert.assertEquals(publisherClient
