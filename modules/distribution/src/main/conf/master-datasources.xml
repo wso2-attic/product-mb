@@ -3,7 +3,8 @@
     <providers>
         <provider>org.wso2.carbon.ndatasource.rdbms.RDBMSDataSourceReader</provider>
 
-        <!-- uncomment either one of the following entry when use external cassandra depending on data source (CQL or Hector) -->
+        <!-- uncomment either one of the following entry when using external cassandra
+        depending on data source (CQL or Hector) -->
         <!--<provider>org.wso2.carbon.cassandra.datareader.cql.CassandraDataSourceReader</provider>-->
         <!--<provider>org.wso2.carbon.cassandra.datareader.hector.HectorBasedDataSourceReader</provider>-->
     </providers>
@@ -85,8 +86,9 @@
             </definition>
         </datasource>
 
-        <!-- WSO2 MB in memory store     -->
-
+        <!-- WSO2 MB in memory store (Experimental feature)
+        NOTE: In memory mode only works on single node mode -->
+<!--
         <datasource>
             <name>WSO2_MB_IN_MEMORY_STORE_DB</name>
             <jndiConfig>
@@ -99,7 +101,7 @@
                 </configuration>
             </definition>
         </datasource>
-
+-->
 
         <!-- external Cassandra data source. please enable either one of datasource (CQL or Hector) based on your preference -->
         <!-- CQL datasource -->
@@ -244,7 +246,7 @@
                 <configuration>
                     <dataSourceClassName>com.microsoft.sqlserver.jdbc.SQLServerXADataSource</dataSourceClassName>
                     <dataSourceProps>
-                <property name = "URL">jdbc:sqlserver://localhost\SQLExpress:1433</property>
+                <property name = "URL">jdbc:sqlserver://localhost/SQLExpress:1433</property>
                 <property name="databaseName">wso2_mb</property>
                         <property name="user">sa</property>
                         <property name="password">sa</property>
