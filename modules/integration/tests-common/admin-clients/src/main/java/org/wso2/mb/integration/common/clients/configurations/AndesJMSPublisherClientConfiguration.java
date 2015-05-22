@@ -58,6 +58,11 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     private String filePathToWritePublishedMessages = null;
 
     /**
+     * Whether the session needs to be transactional or not.
+     */
+    private boolean transactionalSession;
+
+    /**
      * Creates a connection string with default properties.
      */
     public AndesJMSPublisherClientConfiguration() {
@@ -318,5 +323,20 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     @Override
     public AndesJMSPublisherClientConfiguration clone() throws CloneNotSupportedException {
         return (AndesJMSPublisherClientConfiguration) super.clone();
+    }
+
+    /**
+     * Whether the session needs to be transactional or not.
+     */
+    public boolean isTransactionalSession() {
+        return transactionalSession;
+    }
+
+    /**
+     * Set the session transactional. This is for publishers
+     * @param transactionalSession true if session needs to be transactional and false otherwise
+     */
+    public void setTransactionalSession(boolean transactionalSession) {
+        this.transactionalSession = transactionalSession;
     }
 }
