@@ -88,7 +88,7 @@
 
         <!-- WSO2 MB in memory store (Experimental feature)
         NOTE: In memory mode only works on single node mode -->
-<!--
+
         <datasource>
             <name>WSO2_MB_IN_MEMORY_STORE_DB</name>
             <jndiConfig>
@@ -101,7 +101,7 @@
                 </configuration>
             </definition>
         </datasource>
--->
+
 
         <!-- external Cassandra data source. please enable either one of datasource (CQL or Hector) based on your preference -->
         <!-- CQL datasource -->
