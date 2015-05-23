@@ -147,7 +147,7 @@
                                     org.wso2.carbon:org.wso2.carbon.core.runtime.feature:${carbon.kernel.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.storagemgt:org.wso2.carbon.cassandra.datareader.feature:${carbon.storagemgt.version}
+                                    org.wso2.carbon.messaging:org.wso2.carbon.cassandra.datareader.feature:${carbon.messaging.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
                                     org.wso2.carbon.metrics:org.wso2.carbon.metrics.feature:${carbon.metrics.version}
@@ -281,7 +281,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.cassandra.datareader.feature.group</id>
-                                    <version>${carbon.storagemgt.version}</version>
+                                    <version>${carbon.messaging.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.metrics.feature.group</id>
