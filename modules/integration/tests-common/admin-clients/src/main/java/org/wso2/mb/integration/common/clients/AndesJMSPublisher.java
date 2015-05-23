@@ -109,13 +109,16 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     .lookup(AndesClientConstants.CF_NAME);
             connection = connFactory.createConnection();
             connection.start();
-            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            if(config.isTransactionalSession()) {
+                this.session = connection.createSession(true, 0);
+            } else {
+                this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            }
 
             Destination destination = (Destination) super.getInitialContext()
                     .lookup(this.publisherConfig.getDestinationName());
             this.sender = this.session.createProducer(destination);
         }
-
     }
 
     /**
@@ -213,7 +216,10 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 if (null != message) {
                     this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig
                             .getJMSMessageExpiryTime());
-
+                    // need to commit if transactional
+                    if(getConfig().isTransactionalSession()) {
+                        session.commit();
+                    }
                     if (message instanceof TextMessage && null != this.publisherConfig.getFilePathToWritePublishedMessages()){
                         AndesClientUtils.writePublishedMessagesToFile(((TextMessage) message)
                               .getText(), this.publisherConfig.getFilePathToWritePublishedMessages());
