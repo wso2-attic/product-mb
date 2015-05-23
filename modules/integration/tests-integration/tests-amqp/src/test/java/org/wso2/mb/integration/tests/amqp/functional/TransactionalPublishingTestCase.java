@@ -71,7 +71,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      */
     @AfterMethod
-    public void methodCleanup() throws JMSException {
+    public void tearDown() throws JMSException {
 
         if (null != publisherClient1) {
             publisherClient1.stopClient();
