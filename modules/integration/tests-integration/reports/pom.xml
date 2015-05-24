@@ -49,14 +49,12 @@
                 <configuration>
                     <executable>java</executable>
                     <arguments>
-                        <argument>-Demma.home=${basedir}/target/emma</argument>
                         <argument>-Dbasedir=${basedir}</argument>
                         <argument>
                             -Dinstr.file=${basedir}/src/test/java/resources/instrumentation.txt
                         </argument>
                         <argument>-Dfilters.file=${basedir}/src/test/java/resources/filters.txt
                         </argument>
-                        <argument>-Demma.output=${basedir}/target/emma</argument>
                         <argument>-classpath</argument>
                         <classpath />
                         <argument>
@@ -70,16 +68,15 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-emma-dependencies</id>
+                        <id>copy-jacoco-dependencies</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/emma</outputDirectory>
+                            <outputDirectory>${project.build.directory}/jacoco</outputDirectory>
                             <includeTypes>jar</includeTypes>
-                            <includeArtifactIds>emma,
-                            </includeArtifactIds>
+                            <includeArtifactIds>org.jacoco.agent</includeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>

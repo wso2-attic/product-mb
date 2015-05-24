@@ -53,6 +53,10 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
+            <artifactId>andes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>andes-client</artifactId>
         </dependency>
         <dependency>
