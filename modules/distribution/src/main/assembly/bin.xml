@@ -398,5 +398,23 @@
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
+        <file>
+            <source>src/main/resources/ciphertool.bat</source>
+            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/resources/ciphertool.sh</source>
+            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/resources/org.wso2.ciphertool-1.0.0-wso2v2.jar</source>
+            <outputDirectory>wso2mb-${pom.version}/lib</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
     </files>
 </assembly>
