@@ -76,6 +76,8 @@
             <definition type="RDBMS">
                 <configuration>
                     <url>jdbc:h2:repository/database/WSO2MB_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000</url>
+                    <username>wso2carbon</username>
+                    <password>wso2carbon</password>
                     <driverClassName>org.h2.Driver</driverClassName>
                     <maxActive>50</maxActive>
                     <maxWait>60000</maxWait>
@@ -107,7 +109,7 @@
         <!-- CQL datasource -->
 <!--
         <datasource>
-            <name>WSO2_CASSANDRA_DB</name>
+            <name>WSO2_MB_STORE_DB</name>
             <description>The datasource used for cassandra</description>
             <jndiConfig>
                 <name>WSO2MBStoreDB</name>
@@ -166,7 +168,7 @@
         <!-- Hector datasource -->
 <!--
         <datasource>
-            <name>HectorDS</name>
+            <name>WSO2_MB_STORE_DB</name>
             <description>The datasource used for RSS metadata repository</description>
             <jndiConfig>
                 <name>WSO2MBStoreDB</name>
