@@ -60,6 +60,11 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         int noOfPublishersPerQos = 1;
         int expectedCount = noOfMessagesPerQos * 2; // Only qos 1 and 2 messages are expected
 
+        // QOS 0 subscribers shouldn't receive messages after re-connect.
+        if(qualityOfService ==  QualityOfService.MOST_ONCE) {
+            expectedCount = 0;
+        }
+
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         String topic = "CleanSessionTestTopic";
 
