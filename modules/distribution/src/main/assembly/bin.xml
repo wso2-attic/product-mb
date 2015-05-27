@@ -107,10 +107,6 @@
             <outputDirectory>wso2mb-${pom.version}/samples/OldJmsClientSample</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/JmsTransport</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/JmsTransport</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../../modules/samples/product/wsclient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/wsclient</outputDirectory>
         </fileSet>
