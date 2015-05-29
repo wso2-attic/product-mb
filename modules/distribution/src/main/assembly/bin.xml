@@ -136,6 +136,10 @@
             <outputDirectory>wso2mb-${pom.version}/samples/MqttIoTSample</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>../../modules/samples/product/MqttRetainSample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/MqttRetainSample</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/
             </directory>
