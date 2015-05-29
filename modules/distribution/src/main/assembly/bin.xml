@@ -256,6 +256,12 @@
                 <include>jline:jline:jar</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <outputDirectory>wso2mb-${pom.version}/lib</outputDirectory>
+            <includes>
+                <include>org.wso2.ciphertool:org.wso2.ciphertool:jar</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 
     <files>
@@ -389,6 +395,30 @@
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/database/WSO2METRICS_DB.h2.db</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database/</outputDirectory>
             <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/cipher-text.properties</source>
+            <outputDirectory>wso2mb-${pom.version}/repository/conf/security</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/cipher-tool.properties</source>
+            <outputDirectory>wso2mb-${pom.version}/repository/conf/security</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>src/main/resources/ciphertool.bat</source>
+            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/resources/ciphertool.sh</source>
+            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
         </file>
     </files>
 </assembly>
