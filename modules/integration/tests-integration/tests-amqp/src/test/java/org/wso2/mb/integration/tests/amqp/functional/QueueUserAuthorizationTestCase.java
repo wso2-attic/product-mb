@@ -36,6 +36,7 @@ import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.carbon.user.mgt.stub.types.carbon.FlaggedName;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -197,10 +198,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueuePermissionSameRoleUsersWithPublishOrConsume()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   XMLStreamException, LogoutAuthenticationExceptionException, URISyntaxException,
-                   SAXException, AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            XMLStreamException, LogoutAuthenticationExceptionException, URISyntaxException,
+            SAXException, AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authQueue3");
 
         // Adding publish subscribe permissions of 'authQueue3' to 'create_pub_sub_queue_role' role.
@@ -237,10 +238,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueuePermissionSameRoleUsersWithAdminCreated()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   XMLStreamException, LogoutAuthenticationExceptionException, URISyntaxException,
-                   SAXException, AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            XMLStreamException, LogoutAuthenticationExceptionException, URISyntaxException,
+            SAXException, AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         // "superAdmin" refers to the admin
         this.createPublishAndSubscribeFromUser("superAdmin", "authQueue8");
 
@@ -326,10 +327,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueuePermissionSameRoleAssignedPermissions()
             throws IOException, LoginAuthenticationExceptionException, URISyntaxException,
-                   LogoutAuthenticationExceptionException, XMLStreamException,
-                   AndesAdminServiceBrokerManagerAdminException, SAXException,
-                   XPathExpressionException, UserAdminUserAdminException, JMSException,
-                   AndesClientConfigurationException, AndesClientException, NamingException {
+            LogoutAuthenticationExceptionException, XMLStreamException,
+            AndesAdminServiceBrokerManagerAdminException, SAXException,
+            XPathExpressionException, UserAdminUserAdminException, JMSException,
+            AndesClientConfigurationException, AndesClientException, NamingException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authQueue6");
 
         // Adding publish subscribe permissions of 'authQueue6' to 'create_pub_sub_queue_role' role.
@@ -371,11 +372,11 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueuePermissionDifferentRolesAssignedPermissions()
             throws IOException, XPathExpressionException,
-                   AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
-                   XMLStreamException, UserAdminUserAdminException,
-                   LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
-                   JMSException, AndesClientConfigurationException, AndesClientException,
-                   NamingException {
+            AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            XMLStreamException, UserAdminUserAdminException,
+            LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
+            JMSException, AndesClientConfigurationException, AndesClientException,
+            NamingException, AutomationUtilException {
         // "superAdmin" refers to the admin
         this.createPublishAndSubscribeFromUser("superAdmin", "authQueue7");
 
@@ -414,11 +415,11 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"}, expectedExceptions = JMSException.class, expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performQueuePermissionDifferentRolesNoPermissions()
             throws IOException, XPathExpressionException,
-                   AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
-                   XMLStreamException, UserAdminUserAdminException,
-                   LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
-                   JMSException, AndesClientConfigurationException, AndesClientException,
-                   NamingException {
+            AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            XMLStreamException, UserAdminUserAdminException,
+            LoginAuthenticationExceptionException, LogoutAuthenticationExceptionException,
+            JMSException, AndesClientConfigurationException, AndesClientException,
+            NamingException, AutomationUtilException {
         // "superAdmin" refers to the admin
         this.createPublishAndSubscribeFromUser("superAdmin", "authQueue9");
 
@@ -448,11 +449,10 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @AfterClass()
     public void cleanUpQueues()
             throws IOException, XPathExpressionException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   XMLStreamException, LoginAuthenticationExceptionException,
-                   AndesAdminServiceBrokerManagerAdminException {
-        LoginLogoutClient loginLogoutClientForAdmin =
-                                                    new LoginLogoutClient(super.automationContext);
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            XMLStreamException, LoginAuthenticationExceptionException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
+        LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
                 new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
@@ -544,13 +544,12 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     public void updateQueueRoleConsumePublishPermission(String queueName,
                                                         QueueRolePermission permissions)
             throws XPathExpressionException, IOException, URISyntaxException, SAXException,
-                   XMLStreamException, LoginAuthenticationExceptionException,
-                   AndesAdminServiceBrokerManagerAdminException,
-                   LogoutAuthenticationExceptionException,
-                   UserAdminUserAdminException {
+            XMLStreamException, LoginAuthenticationExceptionException,
+            AndesAdminServiceBrokerManagerAdminException,
+            LogoutAuthenticationExceptionException,
+            UserAdminUserAdminException, AutomationUtilException {
 
-        LoginLogoutClient loginLogoutClientForAdmin =
-                new LoginLogoutClient(super.automationContext);
+        LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
                 new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider

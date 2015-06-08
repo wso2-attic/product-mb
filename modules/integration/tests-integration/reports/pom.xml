@@ -71,8 +71,8 @@
                         <argument>
                             -Dcarbon.zip=${basedir}/../../../distribution/target/wso2mb-${project.version}.zip
                         </argument>
-                        <argument>-Dinstr.file=${basedir}/instrumentation.txt</argument>
-                        <argument>-Dfilters.file=${basedir}/filters.txt</argument>
+                        <argument>-Dinstr.file=${basedir}/src/main/resources/instrumentation.txt</argument>
+                        <argument>-Dfilters.file=${basedir}/src/main/resources/filters.txt</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>
@@ -113,6 +113,10 @@
             <groupId>org.wso2.carbon.automationutils</groupId>
             <artifactId>org.wso2.carbon.integration.common.utils</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
         </dependency>
     </dependencies>
 

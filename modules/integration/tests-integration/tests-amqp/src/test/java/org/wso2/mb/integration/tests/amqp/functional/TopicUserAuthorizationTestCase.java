@@ -37,6 +37,7 @@ import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExc
 import org.wso2.carbon.event.stub.internal.xsd.TopicRolePermission;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.carbon.user.mgt.stub.types.carbon.FlaggedName;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -203,11 +204,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicPermissionSameRoleUsersWithPublishOrConsume()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic3");
 
         // Adding publish subscribe permissions of 'authTopic3' to 'create_pub_sub_topic_role' role.
@@ -245,11 +246,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicPermissionSameRoleUsersWithAdminCreated()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         // "superAdmin" refers to the admin
         this.createPublishAndSubscribeFromUser("superAdmin", "authTopic8");
 
@@ -345,11 +346,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicPermissionSameRoleAssignedPermissions()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic6");
 
         // Adding publish subscribe permissions of 'authTopic6' to 'create_pub_sub_topic_role' role.
@@ -393,11 +394,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicPermissionDifferentRolesAssignedPermissions()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("superAdmin", "authTopic7");
 
         // Adding publish subscribe permissions of 'authTopic7' to 'pub_sub_topic_role' role.
@@ -437,11 +438,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performTopicPermissionDifferentRolesNoPermissions()
             throws AndesClientConfigurationException, NamingException, IOException,
-                   XPathExpressionException, AndesClientException, JMSException,
-                   UserAdminUserAdminException, LoginAuthenticationExceptionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
-                   LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
-                   AndesAdminServiceBrokerManagerAdminException {
+            XPathExpressionException, AndesClientException, JMSException,
+            UserAdminUserAdminException, LoginAuthenticationExceptionException,
+            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
+            AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("superAdmin", "authTopic9");
 
         // Adding publish subscribe permissions of 'authTopic9' to 'pub_sub_topic_role' role.
@@ -470,9 +471,9 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     @AfterClass()
     public void cleanUpTopics()
             throws XPathExpressionException, LoginAuthenticationExceptionException, IOException,
-                   XMLStreamException, URISyntaxException, SAXException,
-                   TopicManagerAdminServiceEventAdminExceptionException,
-                   LogoutAuthenticationExceptionException {
+            XMLStreamException, URISyntaxException, SAXException,
+            TopicManagerAdminServiceEventAdminExceptionException,
+            LogoutAuthenticationExceptionException, AutomationUtilException {
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(this.automationContext);
         String sessionCookie = loginLogoutClientForUser.login();
         TopicAdminClient topicAdminClient =
@@ -565,11 +566,11 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     public void updateTopicRoleConsumePublishPermission(String topicName,
                                                         TopicRolePermission permissions)
             throws XPathExpressionException, IOException, URISyntaxException, SAXException,
-                   XMLStreamException, LoginAuthenticationExceptionException,
-                   AndesAdminServiceBrokerManagerAdminException,
-                   LogoutAuthenticationExceptionException,
-                   UserAdminUserAdminException,
-                   TopicManagerAdminServiceEventAdminExceptionException {
+            XMLStreamException, LoginAuthenticationExceptionException,
+            AndesAdminServiceBrokerManagerAdminException,
+            LogoutAuthenticationExceptionException,
+            UserAdminUserAdminException,
+            TopicManagerAdminServiceEventAdminExceptionException, AutomationUtilException {
 
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(automationContext);
         String sessionCookie = loginLogoutClientForUser.login();

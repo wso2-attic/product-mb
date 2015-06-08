@@ -31,6 +31,7 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -108,7 +109,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
             AndesClientException, LoginAuthenticationExceptionException, XPathExpressionException,
             AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
-            LogoutAuthenticationExceptionException, XMLStreamException {
+            LogoutAuthenticationExceptionException, XMLStreamException, AutomationUtilException {
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
 
