@@ -28,6 +28,7 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.Instance;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClient;
 import org.xml.sax.SAXException;
@@ -155,7 +156,7 @@ public class MBPlatformBaseTest {
      */
     protected String login(AutomationContext context)
             throws IOException, XPathExpressionException, URISyntaxException, SAXException,
-                   XMLStreamException, LoginAuthenticationExceptionException {
+            XMLStreamException, LoginAuthenticationExceptionException, AutomationUtilException {
         LoginLogoutClient loginLogoutClient = new LoginLogoutClient(context);
         return loginLogoutClient.login();
     }
@@ -205,16 +206,14 @@ public class MBPlatformBaseTest {
      */
     protected void initAndesAdminClients()
             throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
-                   LoginAuthenticationExceptionException, IOException {
+            LoginAuthenticationExceptionException, IOException, AutomationUtilException {
         andesAdminClients = new HashMap<String, AndesAdminClient>();
 
         if (contextMap != null && contextMap.size() > 0) {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
-                andesAdminClients.put(entry.getKey(),
-                                      new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                       login(tempContext),
-                                       ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                andesAdminClients.put(entry.getKey(), new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
+                        login(tempContext), ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }
@@ -234,17 +233,15 @@ public class MBPlatformBaseTest {
     @SuppressWarnings("UnusedDeclaration")
     protected void initTopicAdminClients()
             throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
-                   URISyntaxException, SAXException, XMLStreamException {
+            URISyntaxException, SAXException, XMLStreamException, AutomationUtilException {
 
         topicAdminClients = new HashMap<String, TopicAdminClient>();
 
         if (contextMap != null && contextMap.size() > 0) {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
-                topicAdminClients.put(entry.getKey(),
-                                      new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                                   login(tempContext),
-                                   ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                topicAdminClients.put(entry.getKey(), new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
+                            login(tempContext), ConfigurationContextProvider.getInstance().getConfigurationContext()));
             }
         }
     }

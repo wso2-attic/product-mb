@@ -196,16 +196,16 @@
         <!--<className>org.wso2.carbon.automation.extentions.servers.wso2server.Wso2ServerExtention</className>-->
         <platformExecutionManager>
             <extentionClasses>
-	<class>
-		<name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
-		<!--<parameter name="-DportOffset" value="0" />-->
-		<!--<parameter name="cmdArg" value="debug 5005" />-->
-	</class>
-	<class>
-		<name>org.wso2.carbon.integration.common.extensions.usermgt.UserPopulateExtension</name>
-		<!--<parameter name="-DportOffset" value="0" />-->
-		<!--<parameter name="cmdArg" value="debug 5005" />-->
-	</class>
+                <class>
+                    <name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
+                    <!--<parameter name="-DportOffset" value="0" />-->
+                    <!--<parameter name="cmdArg" value="debug 5005" />-->
+                </class>
+                <class>
+                    <name>org.wso2.carbon.integration.common.extensions.usermgt.UserPopulateExtension</name>
+                    <!--<parameter name="-DportOffset" value="0" />-->
+                    <!--<parameter name="cmdArg" value="debug 5005" />-->
+                </class>
             </extentionClasses>
         </platformExecutionManager>
 

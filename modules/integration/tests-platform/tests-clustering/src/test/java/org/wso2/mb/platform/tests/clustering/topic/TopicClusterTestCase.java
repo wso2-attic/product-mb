@@ -28,6 +28,7 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -73,7 +74,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init()
             throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
-                   LoginAuthenticationExceptionException, IOException {
+            LoginAuthenticationExceptionException, IOException, AutomationUtilException {
 
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 

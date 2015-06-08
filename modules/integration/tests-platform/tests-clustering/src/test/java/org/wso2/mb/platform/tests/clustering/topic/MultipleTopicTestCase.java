@@ -27,6 +27,7 @@ import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -70,14 +71,13 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init()
             throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
-                   URISyntaxException, SAXException, XMLStreamException {
+            URISyntaxException, SAXException, XMLStreamException, AutomationUtilException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
         automationContext = getAutomationContextWithKey("mb002");
 
         topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
-                                                super.login(automationContext), ConfigurationContextProvider
-                .getInstance().getConfigurationContext());
+                super.login(automationContext), ConfigurationContextProvider.getInstance().getConfigurationContext());
 
     }
 
