@@ -21,9 +21,11 @@ package org.wso2.mb.platform.tests.clustering.durable.topic;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
@@ -33,11 +35,14 @@ import org.wso2.mb.integration.common.clients.operations.clients.TopicAdminClien
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * This class holds set of test cases to verify if durable topic
@@ -53,10 +58,17 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     /**
      * Prepare environment for tests.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws LoginAuthenticationExceptionException
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws AutomationUtilException
      */
     @BeforeClass(alwaysRun = true)
-    public void init() throws Exception {
+    public void init() throws XPathExpressionException, LoginAuthenticationExceptionException, IOException,
+            XMLStreamException, URISyntaxException, SAXException, AutomationUtilException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
         AutomationContext automationContext1 = getAutomationContextWithKey("mb002");
