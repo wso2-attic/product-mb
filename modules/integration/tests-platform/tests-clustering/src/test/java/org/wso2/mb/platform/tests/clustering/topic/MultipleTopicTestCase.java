@@ -25,7 +25,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -77,7 +76,7 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         automationContext = getAutomationContextWithKey("mb002");
 
         topicAdminClient = new TopicAdminClient(automationContext.getContextUrls().getBackEndUrl(),
-                super.login(automationContext), ConfigurationContextProvider.getInstance().getConfigurationContext());
+                super.login(automationContext));
 
     }
 

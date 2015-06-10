@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -78,7 +77,7 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
         portInNode1 = Integer.parseInt(automationContext1.getInstance().getPorts().get("amqp"));
         portInNode2 = Integer.parseInt(automationContext2.getInstance().getPorts().get("amqp"));
         topicAdminClient = new TopicAdminClient(automationContext1.getContextUrls().getBackEndUrl(),
-                super.login(automationContext1), ConfigurationContextProvider.getInstance().getConfigurationContext());
+                super.login(automationContext1));
 
         super.initAndesAdminClients();
     }

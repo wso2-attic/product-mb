@@ -25,7 +25,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
@@ -80,7 +79,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
         automationContextForMB3 = getAutomationContextWithKey("mb003");
 
         topicAdminClient = new TopicAdminClient(automationContextForMB2.getContextUrls().getBackEndUrl(),
-            super.login(automationContextForMB2), ConfigurationContextProvider.getInstance().getConfigurationContext());
+            super.login(automationContextForMB2));
 
     }
 

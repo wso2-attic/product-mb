@@ -28,7 +28,6 @@ import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
@@ -140,8 +139,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
         String sessionCookie = loginLogoutClient.login();
         AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                new AndesAdminClient(super.backendURL, sessionCookie);
 
         // Update permissions for the destination queue to be able to publish/subscribe from topictenantuser1
         andesAdminClient.updatePermissionForQueue(destinationName, queueRolePermission);

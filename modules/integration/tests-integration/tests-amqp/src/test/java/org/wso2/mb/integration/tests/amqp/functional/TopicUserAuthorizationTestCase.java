@@ -32,7 +32,6 @@ import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.User;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicRolePermission;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
@@ -477,8 +476,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(this.automationContext);
         String sessionCookie = loginLogoutClientForUser.login();
         TopicAdminClient topicAdminClient =
-                new TopicAdminClient(this.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                new TopicAdminClient(this.backendURL, sessionCookie);
         topicAdminClient.removeTopic("authTopic1");
         topicAdminClient.removeTopic("authTopic2");
         topicAdminClient.removeTopic("authTopic3");
@@ -575,8 +573,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(automationContext);
         String sessionCookie = loginLogoutClientForUser.login();
         TopicAdminClient topicAdminClient =
-                new TopicAdminClient(backendURL, sessionCookie, ConfigurationContextProvider
-                                                        .getInstance().getConfigurationContext());
+                new TopicAdminClient(backendURL, sessionCookie);
         topicAdminClient.updatePermissionForTopic(topicName, permissions);
         loginLogoutClientForUser.logout();
     }

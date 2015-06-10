@@ -26,7 +26,6 @@ import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.Instance;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
@@ -213,7 +212,7 @@ public class MBPlatformBaseTest {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
                 andesAdminClients.put(entry.getKey(), new AndesAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                        login(tempContext), ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                        login(tempContext)));
             }
         }
     }
@@ -241,7 +240,7 @@ public class MBPlatformBaseTest {
             for (Map.Entry<String, AutomationContext> entry : contextMap.entrySet()) {
                 AutomationContext tempContext = entry.getValue();
                 topicAdminClients.put(entry.getKey(), new TopicAdminClient(tempContext.getContextUrls().getBackEndUrl(),
-                            login(tempContext), ConfigurationContextProvider.getInstance().getConfigurationContext()));
+                            login(tempContext)));
             }
         }
     }

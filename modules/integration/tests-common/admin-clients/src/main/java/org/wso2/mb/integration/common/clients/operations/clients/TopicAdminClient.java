@@ -21,7 +21,6 @@ package org.wso2.mb.integration.common.clients.operations.clients;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.axis2.context.ConfigurationContext;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceStub;
 import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
@@ -36,7 +35,6 @@ public class TopicAdminClient {
 
     String backendUrl = null;
     String SessionCookie = null;
-    ConfigurationContext configurationContext = null;
     TopicManagerAdminServiceStub stub = null;
 
     /**
@@ -44,20 +42,13 @@ public class TopicAdminClient {
      *
      * @param backendUrl           the backend url
      * @param sessionCookie        the session cookie string
-     * @param configurationContext configuration context
      * @throws AxisFault
      */
-    public TopicAdminClient(String backendUrl, String sessionCookie,
-                            ConfigurationContext configurationContext) throws AxisFault {
+    public TopicAdminClient(String backendUrl, String sessionCookie) throws AxisFault {
 
-        this.backendUrl = backendUrl
-                          + "TopicManagerAdminService.TopicManagerAdminServiceHttpsSoap12Endpoint";
+        this.backendUrl = backendUrl + "TopicManagerAdminService.TopicManagerAdminServiceHttpsSoap12Endpoint";
         this.SessionCookie = sessionCookie;
-        this.configurationContext = configurationContext;
-
-        stub = new TopicManagerAdminServiceStub(configurationContext,
-                                                this.backendUrl);
-
+        stub = new TopicManagerAdminServiceStub(this.backendUrl);
         configureCookie(stub._getServiceClient());
 
     }

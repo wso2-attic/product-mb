@@ -33,7 +33,6 @@ import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.User;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
@@ -455,8 +454,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                                                        .getInstance().getConfigurationContext());
+                new AndesAdminClient(super.backendURL, sessionCookie);
 
         andesAdminClient.deleteQueue("authQueue1");
         andesAdminClient.deleteQueue("authQueue2");
@@ -552,8 +550,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
         AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                                                        .getInstance().getConfigurationContext());
+                new AndesAdminClient(super.backendURL, sessionCookie);
         andesAdminClient.updatePermissionForQueue(queueName, permissions);
         loginLogoutClientForAdmin.logout();
     }
