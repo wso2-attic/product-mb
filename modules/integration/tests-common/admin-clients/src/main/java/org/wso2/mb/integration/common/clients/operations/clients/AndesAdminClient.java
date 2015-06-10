@@ -21,14 +21,14 @@ package org.wso2.mb.integration.common.clients.operations.clients;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.axis2.context.ConfigurationContext;
+import org.apache.commons.lang3.StringUtils;
 import org.wso2.andes.kernel.AndesConstants;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceStub;
 import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.andes.stub.admin.types.QueueRolePermission;
-import org.apache.commons.lang3.StringUtils;
+import org.wso2.mb.integration.common.clients.operations.clients.utils.AuthenticateStubUtil;
 
 import java.rmi.RemoteException;
 
@@ -38,7 +38,6 @@ import java.rmi.RemoteException;
 public class AndesAdminClient {
     String backendUrl = null;
     String sessionCookie = null;
-    ConfigurationContext configurationContext = null;
     AndesAdminServiceStub stub = null;
 
     /**
@@ -46,19 +45,14 @@ public class AndesAdminClient {
      *
      * @param backendUrl           the backend url
      * @param sessionCookie        the session cookie string
-     * @param configurationContext configuration context
      * @throws AxisFault
      */
-    public AndesAdminClient(String backendUrl, String sessionCookie,
-                            ConfigurationContext configurationContext) throws AxisFault {
+    public AndesAdminClient(String backendUrl, String sessionCookie) throws AxisFault {
 
-        this.backendUrl = backendUrl
-                          + "AndesAdminService";
+        this.backendUrl = backendUrl + "AndesAdminService";
         this.sessionCookie = sessionCookie;
-        this.configurationContext = configurationContext;
-        stub = new AndesAdminServiceStub(configurationContext,
-                                         this.backendUrl);
-        configureCookie(stub._getServiceClient());
+        stub = new AndesAdminServiceStub(this.backendUrl);
+        AuthenticateStubUtil.authenticateStub(sessionCookie, stub);
     }
 
     /**
@@ -159,7 +153,7 @@ public class AndesAdminClient {
             Options option = client.getOptions();
             option.setManageSession(true);
             option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING,
-                               sessionCookie);
+                    sessionCookie);
         }
     }
 
@@ -171,7 +165,7 @@ public class AndesAdminClient {
      * @throws java.rmi.RemoteException
      */
     public Queue getDlcQueue() throws AndesAdminServiceBrokerManagerAdminException,
-                                      java.rmi.RemoteException {
+            java.rmi.RemoteException {
 
         Queue[] queueList = stub.getAllQueues();
         Queue dlcQueue = null;
@@ -180,7 +174,7 @@ public class AndesAdminClient {
             for (Queue queue : queueList) {
                 String nameOfQueue = queue.getQueueName();
                 if (StringUtils.isNotBlank(nameOfQueue) && nameOfQueue.contains(
-                                           AndesConstants.DEAD_LETTER_QUEUE_SUFFIX)) {
+                        AndesConstants.DEAD_LETTER_QUEUE_SUFFIX)) {
                     dlcQueue = queue;
                     break;
                 }

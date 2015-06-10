@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -65,7 +66,7 @@ public class QueueAutoAckTestCase extends MBPlatformBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init()
             throws LoginAuthenticationExceptionException, IOException, XPathExpressionException,
-                   URISyntaxException, SAXException, XMLStreamException {
+            URISyntaxException, SAXException, XMLStreamException, AutomationUtilException {
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
         super.initAndesAdminClients();
     }

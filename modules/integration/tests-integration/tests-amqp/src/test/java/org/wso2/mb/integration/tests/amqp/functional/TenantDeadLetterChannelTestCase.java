@@ -30,8 +30,8 @@ import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException
 import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -138,10 +138,10 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Tenant dead letter channel test case")
     public void performTenantDeadLetterChannelTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
-                   AndesClientException, LoginAuthenticationExceptionException,
-                   XPathExpressionException,
-                   AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
-                   LogoutAuthenticationExceptionException, XMLStreamException {
+            AndesClientException, LoginAuthenticationExceptionException,
+            XPathExpressionException,
+            AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            LogoutAuthenticationExceptionException, XMLStreamException, AutomationUtilException {
 
         int sendMessageCount = 1;
 
@@ -158,8 +158,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
         String sessionCookie = loginLogoutClient.login();
         AndesAdminClient andesClient =
-                new AndesAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                new AndesAdminClient(super.backendURL, sessionCookie);
         loginLogoutClient.logout();
 
         // purge if there are any dlc messages in dlctenant1 user
@@ -173,9 +172,8 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
         LoginLogoutClient loginLogoutSuperTenant = new LoginLogoutClient(superTenantContext);
         String SuperTenantSessionCookie = loginLogoutSuperTenant.login();
         AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, SuperTenantSessionCookie,
-                                     ConfigurationContextProvider.getInstance().
-                                             getConfigurationContext());
+                new AndesAdminClient(super.backendURL, SuperTenantSessionCookie
+                );
         loginLogoutSuperTenant.logout();
 
         // purge if there are any dlc messages in super tenant admin

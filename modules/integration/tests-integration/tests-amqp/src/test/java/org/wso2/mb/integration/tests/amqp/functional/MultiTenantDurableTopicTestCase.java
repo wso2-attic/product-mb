@@ -28,11 +28,11 @@ import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicRolePermission;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -112,7 +112,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
             AndesClientException, XPathExpressionException, URISyntaxException, SAXException,
             LoginAuthenticationExceptionException, XMLStreamException, LogoutAuthenticationExceptionException,
-            AndesAdminServiceBrokerManagerAdminException, TopicManagerAdminServiceEventAdminExceptionException {
+            AndesAdminServiceBrokerManagerAdminException, TopicManagerAdminServiceEventAdminExceptionException, AutomationUtilException {
 
         String destinationName = "topictenant1.com/durableTenantTopic";
 
@@ -146,8 +146,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         String sessionCookie = loginLogoutClient.login();
 
         TopicAdminClient topicAdminClient =
-                new TopicAdminClient(super.backendURL, sessionCookie, ConfigurationContextProvider
-                        .getInstance().getConfigurationContext());
+                new TopicAdminClient(super.backendURL, sessionCookie);
 
         // Update permissions for the destination queue to be able to publish/subscribe from topictenantuser1
         topicAdminClient.updatePermissionForTopic(destinationName, topicRolePermission);

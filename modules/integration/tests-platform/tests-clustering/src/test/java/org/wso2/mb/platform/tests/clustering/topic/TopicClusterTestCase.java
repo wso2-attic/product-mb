@@ -25,9 +25,9 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.automation.test.utils.axis2client.ConfigurationContextProvider;
 import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -73,7 +73,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init()
             throws XPathExpressionException, URISyntaxException, SAXException, XMLStreamException,
-                   LoginAuthenticationExceptionException, IOException {
+            LoginAuthenticationExceptionException, IOException, AutomationUtilException {
 
         super.initCluster(TestUserMode.SUPER_TENANT_ADMIN);
 
@@ -81,10 +81,10 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         automationContextForMB3 = getAutomationContextWithKey("mb003");
 
         topicAdminClientForMB2 = new TopicAdminClient(automationContextForMB2.getContextUrls().getBackEndUrl(),
-          super.login(automationContextForMB2), ConfigurationContextProvider.getInstance().getConfigurationContext());
+          super.login(automationContextForMB2));
 
         topicAdminClientForMB3 = new TopicAdminClient(automationContextForMB3.getContextUrls().getBackEndUrl(),
-          super.login(automationContextForMB3), ConfigurationContextProvider.getInstance().getConfigurationContext());
+          super.login(automationContextForMB3));
     }
 
     /**
