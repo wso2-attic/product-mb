@@ -184,7 +184,9 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils.sleepForInterval(5000);
+        // Waiting for all messages
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         long msgCountFromClient1 = consumerClient1.getReceivedMessageCount();
