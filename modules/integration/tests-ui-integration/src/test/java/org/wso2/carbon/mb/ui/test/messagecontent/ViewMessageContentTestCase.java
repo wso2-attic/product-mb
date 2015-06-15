@@ -148,5 +148,7 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
 
         //Revert back to original configuration.
         super.serverManager.restoreToLastConfiguration(true);
+
+        driver.quit();
     }
 }
