@@ -27,12 +27,14 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -90,24 +92,39 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Create a DeadLetter channel and send messages to DeadLetter Queue
-     * which are failed to receive acknowledgements from subscriber.
+     * This test case will test restore,delete and reroute messages of
+     * DeadLetter Channel from ui.
+     * 1. Initially this test case will create a new queue to reroute messages.
+     * 2. Delete queue message from dlc and check if message exist in dlc queue.
+     * 3. Reroute queue message from dlc and check if queue message exist in browse queue ui.
+     * 4. Reroute queue message from dlc and check if that queue message exist in reroute
+     * browse queue ui.
      *
-     * Change andes acknowledgement wait time out to 0 milliseconds.
-     *
-     * @throws AndesClientConfigurationException
-     * @throws NamingException
-     * @throws JMSException
+     * @throws XPathExpressionException
      * @throws IOException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
      * @throws AndesClientException
      */
-    @BeforeClass()
-    public void addMessagesToDLCQueue() throws AndesClientConfigurationException, NamingException,
-                                               JMSException, IOException, AndesClientException {
+    @Test()
+    public void performDeadLetterChannelTestCase() throws XPathExpressionException, IOException,
+            AndesAdminServiceBrokerManagerAdminException, AndesClientConfigurationException, JMSException,
+            NamingException, AndesClientException {
+
+        // Number of checks for an update in DLC message count.
+        int tries = 15;
+
+        // Getting message count in DLC prior adding new messages to DLC.
+        AndesAdminClient andesAdminClient = new AndesAdminClient(backendURL, sessionCookie);
+        long messageCountPriorSendingMessages = andesAdminClient.getDlcQueue().getMessageCount();
+
+        log.info("Message count in DLC before sending messages : " + messageCountPriorSendingMessages);
 
         // Get current "AndesAckWaitTimeOut" system property.
         defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.
-                                                                ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+                ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
 
         // Setting system property "AndesAckWaitTimeOut" for andes
         System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "0");
@@ -130,26 +147,22 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        //Thread sleep until messages sent to DLC after breaching maximum number of retrying
-        AndesClientUtils.sleepForInterval(150000L);
+        // Waiting until the message count is different after the message were published.
+        while (messageCountPriorSendingMessages == andesAdminClient.getDlcQueue().getMessageCount()) {
+            if(0 == tries){
+                Assert.fail("Did not receive any message to DLC.");
+            }
+            // Reducing try count
+            tries--;
+            //Thread sleep until message count in DLC is changed
+            AndesClientUtils.sleepForInterval(15000L);
+            log.info("Waiting for message count change.");
+        }
+
+        log.info("Message count in DLC after sending messages : " + andesAdminClient.getDlcQueue().getMessageCount());
 
 
-    }
 
-    /**
-     * This test case will test restore,delete and reroute messages of
-     * DeadLetter Channel from ui.
-     * 1. Initially this test case will create a new queue to reroute messages.
-     * 2. Delete queue message from dlc and check if message exist in dlc queue.
-     * 3. Reroute queue message from dlc and check if queue message exist in browse queue ui.
-     * 4. Reroute queue message from dlc and check if that queue message exist in reroute
-     * browse queue ui.
-     *
-     * @throws XPathExpressionException
-     * @throws IOException
-     */
-    @Test()
-    public void performDeadLetterChannelTestCase() throws XPathExpressionException, IOException {
         String rerouteQueue = "rerouteTestQueue";
         String deletingMessageID;
         String restoredMessageID;
