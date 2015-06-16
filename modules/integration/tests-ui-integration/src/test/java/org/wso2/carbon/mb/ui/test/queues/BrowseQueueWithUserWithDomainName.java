@@ -22,21 +22,32 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+
 /**
  * Test case to browse the queue with a user with a domain name.
  * User will have a domain name attached to the user name
  * eg: WSO2/admin
  */
-public class BrowseQueueWithUserWithDomainName extends MBIntegrationUiBaseTest{
+public class BrowseQueueWithUserWithDomainName extends MBIntegrationUiBaseTest {
 
+    /**
+     * Initializes test case and starts up MB server with WSO2 domain name.
+     *
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws IOException
+     */
     @BeforeClass()
-    public void init() throws Exception {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
         restartServerWithDomainName();  // start with WSO2 domain name
     }
@@ -45,32 +56,35 @@ public class BrowseQueueWithUserWithDomainName extends MBIntegrationUiBaseTest{
      * This test case will add a queue to MB and navigate to browse the queue
      * content.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws XPathExpressionException
      */
     @Test()
-    public void navigateQueueContentPage() throws Exception {
+    public void navigateQueueContentPage() throws IOException, XPathExpressionException {
 
-        String qName = "testQcontent";
+        String queueName = "testQcontent";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant()
-                .getContextUser().getUserName(), mbServer.getContextTenant()
-                .getContextUser().getPassword());
+        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
+                mbServer.getContextTenant().getContextUser().getPassword());
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
-        Assert.assertEquals(queueAddPage.addQueue(qName), true);
+        Assert.assertEquals(queueAddPage.addQueue(queueName), true);
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        Assert.assertNotNull(queuesBrowsePage.browseQueue(qName),
-                "Unable to browse Queue " + qName);
-        Assert.assertEquals(homePage.getQueuesBrowsePage().deleteQueue(qName),
-                true, "Unable to delete the queue " + qName + " after browsing");
-
+        Assert.assertNotNull(queuesBrowsePage.browseQueue(queueName), "Unable to browse Queue " + queueName);
+        Assert.assertEquals(homePage.getQueuesBrowsePage().deleteQueue(queueName), true, "Unable to delete the queue " +
+                                                                                         queueName + " after browsing");
     }
 
+    /**
+     * Shuts down selenium driver and restored earlier configuration.
+     *
+     * @throws IOException
+     * @throws AutomationUtilException
+     */
     @AfterClass()
-    public void tearDown() throws Exception{
+    public void tearDown() throws IOException, AutomationUtilException {
         driver.quit();
         restartInPreviousConfiguration();
     }
-
 }

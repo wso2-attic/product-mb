@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
 package org.wso2.mb.integration.common.utils.backend;
 
@@ -27,13 +27,19 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.automation.extensions.selenium.BrowserManager;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
+/**
+ * The following class is the base class for all the UI test cases for MB.
+ */
 public class MBIntegrationUiBaseTest {
     private static final Log log = LogFactory.getLog(MBIntegrationUiBaseTest.class);
     protected AutomationContext mbServer;
@@ -45,7 +51,15 @@ public class MBIntegrationUiBaseTest {
     /** custom admin role name set with restartServerWithDifferentAdminRoleName() method */
     protected static final String CUSTOM_ADMIN_ROLE_NAME = "administrator";
 
-    protected void init() throws Exception {
+    /**
+     * Initializes the automation context, login client, session cookie and the backend url by {@link org.wso2.carbon
+     * .automation.engine.context.TestUserMode#SUPER_TENANT_ADMIN}.
+     *
+     * @throws AutomationUtilException
+     * @throws MalformedURLException
+     * @throws XPathExpressionException
+     */
+    protected void init() throws AutomationUtilException, MalformedURLException, XPathExpressionException {
         mbServer = new AutomationContext("MB", TestUserMode.SUPER_TENANT_ADMIN);
         loginLogoutClient = new LoginLogoutClient(mbServer);
         sessionCookie = loginLogoutClient.login();
@@ -53,7 +67,17 @@ public class MBIntegrationUiBaseTest {
         this.driver = BrowserManager.getWebDriver();
     }
 
-    protected void init(TestUserMode testUserMode) throws Exception {
+    /**
+     * Initializes the automation context, login client, session cookie and the backend url by a {@link org.wso2
+     * .carbon.automation.engine.context.TestUserMode}.
+     *
+     * @param testUserMode The testing user mode.
+     * @throws XPathExpressionException
+     * @throws AutomationUtilException
+     * @throws MalformedURLException
+     */
+    protected void init(TestUserMode testUserMode) throws XPathExpressionException, AutomationUtilException,
+                                                                                                MalformedURLException {
         mbServer = new AutomationContext("MB", testUserMode);
         loginLogoutClient = new LoginLogoutClient(mbServer);
         sessionCookie = loginLogoutClient.login();
@@ -100,9 +124,12 @@ public class MBIntegrationUiBaseTest {
     /**
      * Restart the testing MB server with WSO2 domain name set under user management
      *
-     * @throws Exception
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws IOException
      */
-    protected void restartServerWithDomainName() throws Exception {
+    protected void restartServerWithDomainName() throws AutomationUtilException, XPathExpressionException,
+            IOException {
         serverManager = new ServerConfigurationManager(mbServer);
 
         // Replace the user-mgt.xml with the new configuration and restarts the server.
@@ -114,11 +141,14 @@ public class MBIntegrationUiBaseTest {
     }
 
     /**
-     * Restart the server with admin role name set to "administrator" instead of default value admin
+     * Restart the server with admin role name set to "administrator" instead of default value admin.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
      */
-    protected void restartServerWithDifferentAdminRoleName() throws Exception {
+    protected void restartServerWithDifferentAdminRoleName() throws IOException, AutomationUtilException,
+            XPathExpressionException {
         serverManager = new ServerConfigurationManager(mbServer);
 
         // Replace the user-mgt.xml with the new configuration and restarts the server.
@@ -129,14 +159,15 @@ public class MBIntegrationUiBaseTest {
                 "user-mgt.xml"), true, true);
     }
 
-
     /**
-     *
      * Restart server with altered maximumRedeliveryAttempts configuration in broker.xml
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
      */
-    protected void restartServerWithAlteredMaximumRediliveryAttempts() throws Exception {
+    protected void restartServerWithAlteredMaximumRedeliveryAttempts() throws IOException, AutomationUtilException,
+            XPathExpressionException {
         serverManager = new ServerConfigurationManager(mbServer);
 
         // Replace the broker.xml with the alter maximumRedeliveryAttempts configuration under amqp
@@ -153,17 +184,29 @@ public class MBIntegrationUiBaseTest {
 
     /**
      * Restart the server with previous configuration.
-     * @throws Exception
+     *
+     * @throws IOException
+     * @throws AutomationUtilException
      */
-    protected void restartInPreviousConfiguration() throws Exception {
+    protected void restartInPreviousConfiguration() throws IOException, AutomationUtilException {
         serverManager.restoreToLastConfiguration(true);
     }
 
-    protected String getLoginURL() throws Exception{
-        return "https://localhost:9443/carbon/admin/login.jsp";
+    /**
+     * Gets the default login url for management console.
+     * @return The URL.
+     */
+    protected String getLoginURL() throws XPathExpressionException {
+        return mbServer.getContextUrls().getWebAppURLHttps() + "/carbon/admin/login.jsp";
     }
 
-    protected LoginPage logout() throws Exception {
+    /**
+     * Logs out from MB management console
+     *
+     * @return The login page.
+     * @throws IOException
+     */
+    protected LoginPage logout() throws IOException {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.sign.out.xpath"))).click();
         return new LoginPage(driver);
     }

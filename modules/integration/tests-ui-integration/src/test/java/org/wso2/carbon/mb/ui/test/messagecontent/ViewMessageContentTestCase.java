@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.mb.ui.test.messagecontent;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -25,9 +26,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
@@ -38,7 +42,12 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueContentPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Refer wso2 jira : https://wso2.org/jira/browse/MB-939 for details.
@@ -51,13 +60,13 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
     private static final int MESSAGE_SIZE_IN_BYTES = 1044375; //Size of MessageContentInput.txt
     private static final String TEST_QUEUE_NAME = "939TestQueue";
     // Input file to read a 1MB message content.
-    private static final String MESSAGE_CONTENT_INPUT_FILE_PATH = System.getProperty("framework.resource.location") + File.separator +
-            "MessageContentInput.txt";
+    private static final String MESSAGE_CONTENT_INPUT_FILE_PATH = System.getProperty("framework.resource.location") +
+                                                                  File.separator + "MessageContentInput.txt";
 
     //private static final String DEFAULT_MB_CONFIG_PATH =
 
     @BeforeClass()
-    public void init() throws Exception {
+    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
@@ -65,7 +74,8 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
      * Increase the managementConsole/maximumMessageDisplayLength to match the large message size that is tested.
      */
     @BeforeClass
-    public void setupConfiguration() throws Exception {
+    public void setupConfiguration() throws AutomationUtilException, XPathExpressionException, IOException,
+            ConfigurationException {
 
         super.serverManager = new ServerConfigurationManager(mbServer);
 
@@ -85,10 +95,19 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Verify that the Message content browse page for the sent message displays the exact length as the original message.
+     * Verify that the Message content browse page for the sent message displays the exact length as the original
+     * message.
+     *
+     * @throws IOException
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws AndesClientException
+     * @throws JMSException
+     * @throws NamingException
      */
     @Test(groups = {"wso2.mb"})
-    public void verifyDisplayedMessageContentLength() throws Exception {
+    public void verifyDisplayedMessageContentLength() throws IOException, AndesClientConfigurationException,
+            XPathExpressionException, AndesClientException, JMSException, NamingException {
 
         boolean testSuccess = false;
         int displayedLength;
@@ -106,7 +125,8 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         long sendCount = 1;
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, TEST_QUEUE_NAME);
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(
+                                                                                ExchangeType.QUEUE, TEST_QUEUE_NAME);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setReadMessagesFromFilePath(MESSAGE_CONTENT_INPUT_FILE_PATH);
 
@@ -121,7 +141,8 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
 
         MessageContentPage messageContentPage = queueContentPage.viewFullMessage(1);
 
-        Assert.assertNotNull(messageContentPage, "Unable to view the fully sent large message to queue : " + TEST_QUEUE_NAME);
+        Assert.assertNotNull(messageContentPage, "Unable to view the fully sent large message to queue : " +
+                                                                                                    TEST_QUEUE_NAME);
 
         displayedLength = messageContentPage.getDisplayedMessageLength();
 
@@ -129,14 +150,20 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
             testSuccess = true;
         }
 
-        Assert.assertTrue(testSuccess, "Sent Large message of " + MESSAGE_SIZE_IN_BYTES + " bytes for queue " + TEST_QUEUE_NAME + " was not displayed correctly. " + "Displayed length : " + displayedLength);
+        Assert.assertTrue(testSuccess, "Sent Large message of " + MESSAGE_SIZE_IN_BYTES + " bytes for queue " +
+                                       TEST_QUEUE_NAME + " was not displayed correctly. " + "Displayed length : " +
+                                       displayedLength);
     }
 
     /**
      * Revert changed configuration, purge and delete the queue.
+     *
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws AutomationUtilException
      */
     @AfterClass()
-    public void cleanup() throws Exception {
+    public void cleanup() throws XPathExpressionException, IOException, AutomationUtilException {
 
         // Delete test queue
         driver.get(getLoginURL());

@@ -25,11 +25,17 @@ import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * The following class contains UI related to permission and queues.
@@ -52,11 +58,9 @@ public class QueuePermissionTestCase extends MBIntegrationUiBaseTest {
 
     /**
      * Initializes the test case
-     *
-     * @throws Exception
      */
     @BeforeClass()
-    public void init() throws Exception {
+    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
@@ -67,10 +71,13 @@ public class QueuePermissionTestCase extends MBIntegrationUiBaseTest {
      * 3. User creates a queue.
      * 4. Validates whether queue is created.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws UserAdminUserAdminException
+     * @throws XPathExpressionException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void createQueuePermissionTestCase() throws Exception {
+    public void createQueuePermissionTestCase() throws IOException, UserAdminUserAdminException,
+            XPathExpressionException {
         String queueName = "queueCreationPermission";
 
         AutomationContext authAutomationContext =
@@ -89,15 +96,14 @@ public class QueuePermissionTestCase extends MBIntegrationUiBaseTest {
                 .updateUserListOfRole(FrameworkConstants.ADMIN_ROLE, null, createPermissionUsers);
 
         // Adding roles along with user
-        userManagementClient
-                .addRole(CREATE_QUEUE_PERMISSION_ROLE, createPermissionUsers, new String[]{ADD_QUEUE_PERMISSION, LOGIN_PERMISSION});
+        userManagementClient.addRole(CREATE_QUEUE_PERMISSION_ROLE, createPermissionUsers,
+                                                                new String[]{ADD_QUEUE_PERMISSION, LOGIN_PERMISSION});
 
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
 
         // Logging in to the the management console
-        HomePage homePage = loginPage
-                .loginAs(contextUser.getUserNameWithoutDomain(), contextUser.getPassword());
+        HomePage homePage = loginPage.loginAs(contextUser.getUserNameWithoutDomain(), contextUser.getPassword());
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
 

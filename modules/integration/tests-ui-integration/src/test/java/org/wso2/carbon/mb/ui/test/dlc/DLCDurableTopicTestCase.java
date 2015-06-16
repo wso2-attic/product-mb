@@ -26,6 +26,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -44,6 +45,7 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.List;
 
@@ -55,15 +57,20 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
     private static final int MESSAGE_ID_COLUMN = 1;
     private static final long SEND_COUNT = 2L;
     private static final long EXPECTED_COUNT = 2L;
+
     /**
      * DLC test queue name
      */
     private static final String DLC_TEST_DURABLE_TOPIC = "DLCTestQueue";
+
     /**
      * Andes consumer client
      */
     private AndesClient consumerClient = null;
 
+    /**
+     * The home page of MB management console
+     */
     private HomePage homePage = null;
 
     /**
@@ -75,21 +82,24 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
      * Initializes test. This class will initialize web driver and
      * restart server with altered broker.xml
      *
-     * @throws Exception
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws IOException
      */
     @BeforeClass()
-    public void init() throws Exception {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
-        super.restartServerWithAlteredMaximumRediliveryAttempts();
+        super.restartServerWithAlteredMaximumRedeliveryAttempts();
     }
 
     /**
      * Purge all messages in dlc before test starts using ui.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws IOException
      */
     @BeforeMethod()
-    public void cleanDeadLetterChannel() throws Exception {
+    public void cleanDeadLetterChannel() throws XPathExpressionException, IOException {
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         homePage = loginPage.loginAs(mbServer.getContextTenant()
@@ -256,17 +266,17 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
         return isSuccessful;
     }
 
-
     /**
      * This method will restore all the configurations back.
      * Following configurations will be restored.
      * 1. AndesAckWaitTimeOut system property.
      * 2. Restore default broker.xml and restart server.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws AutomationUtilException
      */
     @AfterClass()
-    public void tearDown() throws Exception {
+    public void tearDown() throws IOException, AutomationUtilException {
 
         // Setting system property "AndesAckWaitTimeOut" to default value.
         if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
@@ -279,6 +289,4 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
         driver.quit();
         restartInPreviousConfiguration();
     }
-
-
 }
