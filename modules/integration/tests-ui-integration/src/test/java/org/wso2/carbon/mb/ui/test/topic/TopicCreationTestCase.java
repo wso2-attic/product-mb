@@ -22,33 +22,47 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.TopicAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.TopicsBrowsePage;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 /**
  * This tests the creation of a topic from management console
  */
 public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
 
+    /**
+     * Initializes the test case.
+     *
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws MalformedURLException
+     */
     @BeforeClass()
-    public void init() throws Exception {
+    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
     /**
      * Tests the topic creation from UI with colon sign for the name
-     *
+     * <p/>
      * Test Steps:
-     *  - Login to management console
-     *  - Create a topic
-     *  - Go to topic browse page
-     * @throws Exception
+     * - Login to management console
+     * - Create a topic
+     * - Go to topic browse page
+     *
+     * @throws XPathExpressionException
+     * @throws IOException
      */
     @Test()
-    public void testCase()  throws Exception{
+    public void testCase() throws XPathExpressionException, IOException {
 
         String topicName = "test-topic";
         driver.get(getLoginURL());
@@ -59,9 +73,11 @@ public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
         Assert.assertEquals(topicAddPage.addTopic(topicName), true);
         TopicsBrowsePage topicBrowsePage = homePage.getTopicsBrowsePage();
         Assert.assertEquals(topicBrowsePage.isTopicPresent(topicName), true);
-
     }
 
+    /**
+     * Shuts down the selenium web driver.
+     */
     @AfterClass()
     public void tearDown() {
         driver.quit();

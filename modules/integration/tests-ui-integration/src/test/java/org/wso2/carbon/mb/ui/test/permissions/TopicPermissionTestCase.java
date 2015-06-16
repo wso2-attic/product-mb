@@ -26,11 +26,17 @@ import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.carbon.user.mgt.stub.UserAdminUserAdminException;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.TopicAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.TopicsBrowsePage;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * The following class contains UI related to permission and topics.
@@ -53,10 +59,13 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
 
     /**
      * Initializes test case
-     * @throws Exception
+     *
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws MalformedURLException
      */
     @BeforeClass()
-    public void init() throws Exception {
+    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
@@ -67,10 +76,12 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
      * 3. User creates a topic.
      * 4. Validates whether topic is created.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws UserAdminUserAdminException
      */
     @Test(groups = {"wso2.mb", "topic"})
-    public void createTopicPermissionTestCase() throws Exception {
+    public void createTopicPermissionTestCase() throws XPathExpressionException, IOException, UserAdminUserAdminException {
         String topicName = "topicCreationPermission";
 
         AutomationContext authAutomationContext =
@@ -85,8 +96,7 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
                 new UserManagementClient(super.backendURL, "admin", "admin");
 
         // Removing admin permission for user
-        userManagementClient
-                .updateUserListOfRole(FrameworkConstants.ADMIN_ROLE, null, createPermissionUser);
+        userManagementClient.updateUserListOfRole(FrameworkConstants.ADMIN_ROLE, null, createPermissionUser);
 
         // Adding roles along with users
         userManagementClient
@@ -95,8 +105,7 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         // Logging in to the the management console
-        HomePage homePage = loginPage
-                .loginAs(contextUser.getUserNameWithoutDomain(), contextUser.getPassword());
+        HomePage homePage = loginPage.loginAs(contextUser.getUserNameWithoutDomain(), contextUser.getPassword());
 
         TopicAddPage topicAddPage =
                 homePage.getTopicAddPage("home.mb.topics.add.without.queue.xpath");
@@ -104,8 +113,7 @@ public class TopicPermissionTestCase extends MBIntegrationUiBaseTest {
         // Creating a topic by the user and check whether valid dialog pop up is shown
         Assert.assertEquals(topicAddPage.addTopic(topicName), true);
 
-        TopicsBrowsePage topicsBrowsePage =
-                homePage.getTopicsBrowsePage("home.mb.topics.browse.without.queue.xpath");
+        TopicsBrowsePage topicsBrowsePage = homePage.getTopicsBrowsePage("home.mb.topics.browse.without.queue.xpath");
 
         // Checks whether topic is created in the browsing page
         Assert.assertEquals(topicsBrowsePage.isTopicPresent(topicName), true);

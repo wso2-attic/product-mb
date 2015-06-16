@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2005-2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*
+*  WSO2 Inc. licenses this file to you under the Apache License,
+*  Version 2.0 (the "License"); you may not use this file except
+*  in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
 package org.wso2.carbon.mb.ui.test.dlc;
 
@@ -27,7 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -44,12 +44,13 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.DLCBrowsePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.DLCContentPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
-import org.wso2.mb.integration.common.utils.ui.pages.main.QueueContentPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 /**
@@ -77,12 +78,14 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
     private static final String DLC_TEST_QUEUE = "DLCTestQueue";
 
     /**
-     * Initializes test
+     * Initializes the test case.
      *
-     * @throws Exception
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws MalformedURLException
      */
     @BeforeClass()
-    public void init() throws Exception {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
@@ -129,6 +132,8 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
 
         //Thread sleep until messages sent to DLC after breaching maximum number of retrying
         AndesClientUtils.sleepForInterval(150000L);
+
+
     }
 
     /**
@@ -138,12 +143,13 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
      * 2. Delete queue message from dlc and check if message exist in dlc queue.
      * 3. Reroute queue message from dlc and check if queue message exist in browse queue ui.
      * 4. Reroute queue message from dlc and check if that queue message exist in reroute
-     *    browse queue ui.
+     * browse queue ui.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
+     * @throws IOException
      */
     @Test()
-    public void performDeadLetterChannelTestCase() throws Exception {
+    public void performDeadLetterChannelTestCase() throws XPathExpressionException, IOException {
         String rerouteQueue = "rerouteTestQueue";
         String deletingMessageID;
         String restoredMessageID;
@@ -173,7 +179,7 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         //Testing restore messages
         restoringMessageID = dlcContentPage.restoreFunction();
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        QueueContentPage queueContentPage = queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
+        queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.browse.content.table"))) {
             restoredMessageID =
@@ -192,7 +198,7 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         DLCContentPage dlcContentPage1 = dlcBrowsePage1.getDLCContent();
         reroutingMessageID = dlcContentPage1.rerouteFunction(rerouteQueue);
         QueuesBrowsePage queuesBrowsePage1 = homePage.getQueuesBrowsePage();
-        QueueContentPage queueContentPage1 = queuesBrowsePage1.browseQueue(rerouteQueue);
+        queuesBrowsePage1.browseQueue(rerouteQueue);
         if (isElementPresent(UIElementMapper.getInstance()
                                      .getElement("mb.dlc.rerouted.queue.table"))) {
             reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
@@ -264,5 +270,4 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
 
         driver.quit();
     }
-
 }

@@ -22,9 +22,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * This class allows a test case to edit the main server configuration (currently broker.xml) and apply it to the
@@ -77,11 +79,15 @@ public class ConfigurationEditor {
 
     /**
      * Apply modified configuration and restart server
+     *
      * @param serverConfigurationManager Server configuration manager object from automation engine.
      * @return true if the update was successful.
-     * @throws Exception
+     * @throws IOException
+     * @throws AutomationUtilException
+     * @throws ConfigurationException
      */
-    public boolean applyUpdatedConfigurationAndRestartServer(ServerConfigurationManager serverConfigurationManager) throws Exception {
+    public boolean applyUpdatedConfigurationAndRestartServer(ServerConfigurationManager serverConfigurationManager)
+            throws IOException, AutomationUtilException, ConfigurationException {
 
         //Rename original configuration file to original_broker.xml
         String originalConfigFileDirectory = originalConfigFilePath.substring(0,originalConfigFilePath.lastIndexOf(File.separator));

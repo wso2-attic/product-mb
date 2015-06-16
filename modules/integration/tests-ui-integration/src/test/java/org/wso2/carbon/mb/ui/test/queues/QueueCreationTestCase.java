@@ -22,33 +22,47 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 /**
  * This tests the creation of a queue from management console
  */
 public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
 
+    /**
+     * Initializes the test case.
+     *
+     * @throws AutomationUtilException
+     * @throws XPathExpressionException
+     * @throws MalformedURLException
+     */
     @BeforeClass()
-    public void init() throws Exception {
+    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
         super.init();
     }
 
     /**
      * Tests the queue creation from UI with colon sign for the name
-     *
+     * <p/>
      * Test Steps:
-     *  - login to management console
-     *  - create a queue
-     *  - Go to queue browse page
-     * @throws Exception
+     * - login to management console
+     * - create a queue
+     * - Go to queue browse page
+     *
+     * @throws IOException
+     * @throws XPathExpressionException
      */
     @Test()
-    public void testCase()  throws Exception{
+    public void testCase() throws IOException, XPathExpressionException {
 
         String qName = "test:test";
         driver.get(getLoginURL());
@@ -62,6 +76,9 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
 
     }
 
+    /**
+     * Shuts down the selenium web driver
+     */
     @AfterClass()
     public void tearDown() {
         driver.quit();
