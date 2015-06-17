@@ -150,6 +150,8 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
                 "Expected message count not received after commit");
+
+        consumerClient1 = null;
     }
 
     /**
@@ -219,11 +221,12 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         BufferedReader inputFileReader =
                 new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
         outputContent = inputFileReader.readLine();
-
+        inputFileReader.close();
         // Evaluating
         Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
                 "Expected message count not received after commit");
         Assert.assertEquals(outputContent, transactionMessage, "Message content has been modified.");
+        consumerClient1 = null;
     }
 
     /**
@@ -320,6 +323,9 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         // Test for consumer 2
         Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount,
                 "Expected message count not received after commit");
+
+        consumerClient1 = null;
+        consumerClient2 = null;
     }
 
     /**
@@ -477,6 +483,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         BufferedReader inputFileReader =
                 new BufferedReader(new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB));
         inputFileReader.read(inputContent);
+        inputFileReader.close();
 
         Message message = publisher1.getSession().createTextMessage(new String(inputContent));
 
