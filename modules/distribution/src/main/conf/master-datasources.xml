@@ -181,6 +181,8 @@
                     <clusterName>TestCluster</clusterName>
                     <maxActive>200</maxActive>
                     <enableSecurity>false</enableSecurity>
+                    <retryDownedHosts>true</retryDownedHosts>
+                    <retryDownedHostsDelayInSeconds>5</retryDownedHostsDelayInSeconds>
                 </configuration>
             </definition>
         </datasource>
