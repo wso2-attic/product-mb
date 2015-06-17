@@ -110,6 +110,8 @@ public class Main {
             log.info("Clients Disconnected!");
         } catch (MqttException e) {
             log.error("Error running the sample", e);
+        } finally {
+            bufferReader.close();
         }
 
     }
@@ -132,13 +134,13 @@ public class Main {
         } else {
             log.info("Topic name not valid. Continuing with default topic name : " + topic);
         }
-        log.info("Set retain enable [Y/N] : ");
+        log.info("Set retain flag [Y/N] : ");
         bufferReaderString = bufferReader.readLine();
 
-        if (bufferReaderString.contentEquals("Y")) {
+        if (bufferReaderString.equalsIgnoreCase("Y")) {
             // set retain enable
             retained = true;
-        } else if (bufferReaderString.contentEquals("N")) {
+        } else if (bufferReaderString.equalsIgnoreCase("N")) {
             // set retain disable
             retained = false;
         } else {
@@ -149,9 +151,12 @@ public class Main {
                  "Enter N to revise parameters [Y/N] : ");
 
         bufferReaderString = bufferReader.readLine();
-        if (bufferReaderString.contentEquals("N")) {
+        if (bufferReaderString.equalsIgnoreCase("N")) {
             getUserInputs(bufferReader);
         }
+
+
+
     }
 
     /**

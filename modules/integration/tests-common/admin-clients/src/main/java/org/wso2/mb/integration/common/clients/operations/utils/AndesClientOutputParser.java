@@ -18,11 +18,13 @@
 
 package org.wso2.mb.integration.common.clients.operations.utils;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -260,14 +262,14 @@ public class AndesClientOutputParser {
 
         int rollbackBatchIteration = 1;
         boolean isFirstMessageBatch = true;
-        BufferedReader br = null;
+        LineIterator iterator = null;
 
         Map<Integer, Long> firstMessageBatch = new HashMap<Integer, Long>();
         try {
-            br = new BufferedReader(new FileReader(filePath));
+            iterator = FileUtils.lineIterator(new File(filePath));
 
-            String line = br.readLine();
-            while (line != null) {
+            String line = iterator.nextLine();
+            while (iterator.hasNext()) {
 
                 messageIdentifier = getMessageIdentifier(line);
 
@@ -283,10 +285,6 @@ public class AndesClientOutputParser {
                     rollbackBatchIteration++;
                 }
 
-                if (isFirstMessageBatch) {
-                    firstMessageBatch.put(count, messageIdentifier);
-                }
-
                 if (!isFirstMessageBatch) {
                     for (int i = 0; i < messagesPerRollback; i++) {
                         messageIdentifier = getMessageIdentifier(line);
@@ -297,12 +295,14 @@ public class AndesClientOutputParser {
                                           ".Rollback operation failed to keep message order.");
                             }
                         }
-                        line = br.readLine();
-                        count++;
+                        if (iterator.hasNext()) {
+                            line = iterator.nextLine();
+                            count++;
+                        }
                     }
-                }
-                if (isFirstMessageBatch) {
-                    line = br.readLine();
+                } else if (isFirstMessageBatch) {
+                    firstMessageBatch.put(count, messageIdentifier);
+                    line = iterator.nextLine();
                     count++;
                 }
             }
@@ -313,9 +313,7 @@ public class AndesClientOutputParser {
         } catch (IOException e) {
             log.error("Error while parsing the file containing received messages", e);
         } finally {
-            if (null != br) {
-                IOUtils.closeQuietly(br);
-            }
+            iterator.close();
         }
 
         AndesClientUtils.flushPrintWriters();
@@ -325,6 +323,7 @@ public class AndesClientOutputParser {
 
     /**
      * This method will return message identifier number extracted from given string line.
+     * sample string line "Sending Message:36 ThreadID:7,335".
      *
      * @param line string parameter which contains given line of a text file.
      * @return messageIdentifier which can identify messages uniquely.
@@ -338,7 +337,6 @@ public class AndesClientOutputParser {
 
         return messageIdentifier;
     }
-
 
 
     /**

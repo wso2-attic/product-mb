@@ -261,7 +261,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
                 }
             }
         } else {
-            Assert.fail("No messages in Queue" + queueName + "after deleting");
+            Assert.fail("No messages in Queue " + queueName + " after deleting");
         }
         return isSuccessful;
     }
@@ -279,6 +279,8 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
     public void tearDown() throws IOException, AutomationUtilException {
 
         // Setting system property "AndesAckWaitTimeOut" to default value.
+        // This will set andes ack wait timeout to 0. To send messages to
+        // DLC fast wait time has set to 0.
         if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
             System.clearProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
         } else {

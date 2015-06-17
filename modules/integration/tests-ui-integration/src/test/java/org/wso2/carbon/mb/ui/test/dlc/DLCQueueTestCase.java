@@ -127,6 +127,8 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
                 ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
 
         // Setting system property "AndesAckWaitTimeOut" for andes
+        // This will set andes ack wait timeout to 0. To send messages to
+        // DLC fast wait time has set to 0.
         System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "0");
 
         // Creating a initial JMS consumer client configuration
