@@ -49,7 +49,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
     /**
      * Initialize super class.
      *
-     * @throws Exception
+     * @throws XPathExpressionException
      */
     @BeforeClass
     public void prepare() throws XPathExpressionException {
