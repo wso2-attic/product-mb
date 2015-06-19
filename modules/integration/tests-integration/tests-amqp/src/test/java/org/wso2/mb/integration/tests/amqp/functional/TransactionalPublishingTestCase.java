@@ -51,12 +51,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
 
-    // References to clients used in tests
-    private AndesClient publisherClient1;
-    private AndesClient publisherClient2;
-    private AndesClient consumerClient1;
-    private AndesClient consumerClient2;
-
     /**
      * Initializes the test case
      * @throws XPathExpressionException
@@ -64,34 +58,6 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         init(TestUserMode.SUPER_TENANT_ADMIN);
-    }
-
-    /**
-     * Close all clients after each test
-     * @throws JMSException
-     */
-    @AfterMethod
-    public void tearDown() throws JMSException {
-
-        if (null != publisherClient1) {
-            publisherClient1.stopClient();
-            publisherClient1 = null;
-        }
-
-        if (null != publisherClient2) {
-            publisherClient2.stopClient();
-            publisherClient2 = null;
-        }
-
-        if (null != consumerClient1) {
-            consumerClient1.stopClient();
-            consumerClient1 = null;
-        }
-
-        if (null != consumerClient2) {
-            consumerClient2.stopClient();
-            consumerClient2 = null;
-        }
     }
 
     /**
@@ -130,28 +96,31 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
                 new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
         publisherConfig.setTransactionalSession(true);
         // Creating clients
-        consumerClient1 = new AndesClient(consumerConfig, true);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        publisherClient1 = new AndesClient(publisherConfig, true);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
         AndesJMSPublisher publisher = publisherClient1.getPublishers().get(0);
 
-        Message message = publisher.getSession().createTextMessage("transactional message");
-        publisher.getSender().send(message);
+        try {
+            Message message = publisher.getSession().createTextMessage("transactional message");
+            publisher.getSender().send(message);
 
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
+            TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received! send messages are not committed hence no message should be received");
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received! send messages are not committed hence no message should be received");
 
-        publisher.getSession().commit();
+            publisher.getSession().commit();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
-                "Expected message count not received after commit");
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
+                    "Expected message count not received after commit");
+        } finally {
+            publisherClient1.stopClient();
+        }
 
-        consumerClient1 = null;
     }
 
     /**
@@ -193,40 +162,43 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         publisherConfig.setTransactionalSession(true);
 
         // Creating clients
-        consumerClient1 = new AndesClient(consumerConfig, true);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         AndesJMSPublisher publisher = publisherClient.getPublishers().get(0);
 
-        Message message = publisher.getSession().createTextMessage("rollback message");
-        publisher.getSender().send(message);
+        try {
+            Message message = publisher.getSession().createTextMessage("rollback message");
+            publisher.getSender().send(message);
 
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
+            TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received! send messages are not committed hence no message should be received");
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received! send messages are not committed hence no message should be received");
 
-        publisher.getSession().rollback();
+            publisher.getSession().rollback();
 
-        message = publisher.getSession().createTextMessage(transactionMessage);
-        publisher.getSender().send(message);
-        publisher.getSession().commit();
+            message = publisher.getSession().createTextMessage(transactionMessage);
+            publisher.getSender().send(message);
+            publisher.getSession().commit();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Reading received message content
-        String outputContent;
+            // Reading received message content
+            String outputContent;
 
-        BufferedReader inputFileReader =
-                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-        outputContent = inputFileReader.readLine();
-        inputFileReader.close();
-        // Evaluating
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
-                "Expected message count not received after commit");
-        Assert.assertEquals(outputContent, transactionMessage, "Message content has been modified.");
-        consumerClient1 = null;
+            BufferedReader inputFileReader =
+                    new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
+            outputContent = inputFileReader.readLine();
+            inputFileReader.close();
+            // Evaluating
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
+                    "Expected message count not received after commit");
+            Assert.assertEquals(outputContent, transactionMessage, "Message content has been modified.");
+        } finally {
+            publisherClient.stopClient();
+        }
     }
 
     /**
@@ -275,57 +247,58 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         publisherConfig2.setTransactionalSession(true);
 
         // Creating clients
-        consumerClient1 = new AndesClient(consumerConfig1, true);
-        consumerClient2 = new AndesClient(consumerConfig2, true);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient1.startClient();
         consumerClient2.startClient();
 
-
-        publisherClient1 = new AndesClient(publisherConfig1, true);
-        publisherClient2 = new AndesClient(publisherConfig2, true);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, true);
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
         AndesJMSPublisher publisher1 = publisherClient1.getPublishers().get(0);
         AndesJMSPublisher publisher2 = publisherClient2.getPublishers().get(0);
 
-        Message message1 = publisher1.getSession().createTextMessage("message1");
-        Message message2 = publisher2.getSession().createTextMessage("message2");
+        try {
+            Message message1 = publisher1.getSession().createTextMessage("message1");
+            Message message2 = publisher2.getSession().createTextMessage("message2");
 
-        publisher1.getSender().send(message1);
-        publisher2.getSender().send(message2);
+            publisher1.getSender().send(message1);
+            publisher2.getSender().send(message2);
 
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
+            TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received for " + queueName1 + " ! send messages are not committed hence " +
-                        "no message should be received");
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received for " + queueName1 + " ! send messages are not committed hence " +
+                            "no message should be received");
 
-        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received for " + queueName2 + " ! send messages are not committed hence " +
-                        "no message should be received");
+            Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received for " + queueName2 + " ! send messages are not committed hence " +
+                            "no message should be received");
 
-        publisher1.getSession().commit();
+            publisher1.getSession().commit();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Test for consumer 1
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
-                "Expected message count not received after commit");
+            // Test for consumer 1
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
+                    "Expected message count not received after commit");
 
-        // Test for consumer 2
-        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received for " + queueName2 + " ! send messages are not committed hence " +
-                        "no message should be received");
+            // Test for consumer 2
+            Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received for " + queueName2 + " ! send messages are not committed hence " +
+                            "no message should be received");
 
-        // commit for client two
-        publisher2.getSession().commit();
+            // commit for client two
+            publisher2.getSession().commit();
 
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Test for consumer 2
-        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount,
-                "Expected message count not received after commit");
-
-        consumerClient1 = null;
-        consumerClient2 = null;
+            // Test for consumer 2
+            Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedCount,
+                    "Expected message count not received after commit");
+        } finally {
+            publisherClient1.stopClient();
+            publisherClient2.stopClient();
+        }
     }
 
     /**
@@ -379,64 +352,69 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         publisherConfig2.setTransactionalSession(true);
 
         // Creating clients
-        consumerClient1 = new AndesClient(consumerConfig, true);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        publisherClient1 = new AndesClient(publisherConfig1, true);
-        publisherClient2 = new AndesClient(publisherConfig2, true);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, true);
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
         AndesJMSPublisher publisher1 = publisherClient1.getPublishers().get(0);
         AndesJMSPublisher publisher2 = publisherClient2.getPublishers().get(0);
 
-        Message message1 = publisher1.getSession().createTextMessage("rollback message 1");
-        Message message2 = publisher2.getSession().createTextMessage("rollback message 2");
-
-        publisher1.getSender().send(message1);
-        publisher2.getSender().send(message2);
-
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
-
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
-                "Message received for " + queueName + " ! send messages are not committed hence " +
-                        "no message should be received");
-
-        publisher1.getSession().rollback();
-
-        message1 = publisher1.getSession().createTextMessage(transactionMessage1);
-        publisher1.getSender().send(message1);
-        publisher1.getSession().commit();
-
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.flushPrintWriters();
-        // Reading received message content
-        String outputContent;
         BufferedReader inputFileReader =
                 new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-        outputContent = inputFileReader.readLine();
+        try {
+            Message message1 = publisher1.getSession().createTextMessage("rollback message 1");
+            Message message2 = publisher2.getSession().createTextMessage("rollback message 2");
 
-        // Test whether message received
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCountAfterPub1Commit,
-                "Expected message count not received after commit");
+            publisher1.getSender().send(message1);
+            publisher2.getSender().send(message2);
 
-        Assert.assertEquals(outputContent, transactionMessage1, "Message content has been modified.");
+            TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Commit for client two after rollback
-        publisher2.getSession().rollback();
-        message2 = publisher2.getSession().createTextMessage(transactionMessage2);
-        publisher2.getSender().send(message2);
-        publisher2.getSession().commit();
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedBeforeCommit,
+                    "Message received for " + queueName + " ! send messages are not committed hence " +
+                            "no message should be received");
 
-        TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.flushPrintWriters();
+            publisher1.getSession().rollback();
 
-        outputContent = inputFileReader.readLine();
+            message1 = publisher1.getSession().createTextMessage(transactionMessage1);
+            publisher1.getSender().send(message1);
+            publisher1.getSession().commit();
 
-        // Test for consumer 1
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCountAfterPub2Commit,
-                "Expected message count not received after commit");
+            TimeUnit.MILLISECONDS.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.flushPrintWriters();
+            // Reading received message content
+            String outputContent;
+            outputContent = inputFileReader.readLine();
 
-        Assert.assertEquals(outputContent, transactionMessage2, "Message content has been modified.");
+            // Test whether message received
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCountAfterPub1Commit,
+                    "Expected message count not received after commit");
 
-        inputFileReader.close();
+            Assert.assertEquals(outputContent, transactionMessage1, "Message content has been modified.");
+
+            // Commit for client two after rollback
+            publisher2.getSession().rollback();
+            message2 = publisher2.getSession().createTextMessage(transactionMessage2);
+            publisher2.getSender().send(message2);
+            publisher2.getSession().commit();
+
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+            AndesClientUtils.flushPrintWriters();
+
+            outputContent = inputFileReader.readLine();
+
+            // Test for consumer 1
+            Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCountAfterPub2Commit,
+                    "Expected message count not received after commit");
+
+            Assert.assertEquals(outputContent, transactionMessage2, "Message content has been modified.");
+        } finally {
+            inputFileReader.close();
+            publisherClient1.stopClient();
+            publisherClient2.stopClient();
+        }
+
     }
 
     /**
@@ -455,7 +433,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "queue", "transaction" },
             description = "Test the commit batch size limit check functionality",
-            expectedExceptions = JMSAMQException.class)
+            expectedExceptions = JMSException.class)
     public void exceedCommitBatchSizeTest() throws IOException, JMSException, AndesClientException,
             NamingException, AndesClientConfigurationException {
 
@@ -472,25 +450,31 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         consumerConfig.setMaximumMessagesToReceived(messageCount);
 
         // Creating clients
-        consumerClient1 = new AndesClient(consumerConfig, true);
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
-        publisherClient1 = new AndesClient(publisherConfig, true);
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
         AndesJMSPublisher publisher1 = publisherClient1.getPublishers().get(0);
+
 
         // Reading message content
         char[] inputContent = new char[messageSize];
         BufferedReader inputFileReader =
                 new BufferedReader(new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB));
-        inputFileReader.read(inputContent);
-        inputFileReader.close();
+        try {
+            inputFileReader.read(inputContent);
+            inputFileReader.close();
 
-        Message message = publisher1.getSession().createTextMessage(new String(inputContent));
+            Message message = publisher1.getSession().createTextMessage(new String(inputContent));
 
-        for (int i = 0; i < messageCount; i++) {
-            publisher1.getSender().send(message);
+            for (int i = 0; i < messageCount; i++) {
+                publisher1.getSender().send(message);
+            }
+
+            publisher1.getSession().commit();
+        } finally {
+            publisherClient1.stopClient();
+            consumerClient1.stopClient();
         }
-
-        publisher1.getSession().commit();
     }
 }
