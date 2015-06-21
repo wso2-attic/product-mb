@@ -42,7 +42,7 @@
             <class name="org.wso2.carbon.mb.ui.test.log.ViewLogsTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.BrowseQueueWithUserWithDomainName"/>
             <class name="org.wso2.carbon.mb.ui.test.configure.AdminWithDifferentAdminRoleName"/>
-            <class name="org.wso2.carbon.mb.ui.test.messagecontent.ViewMessageContentTestCase"/>
+            <!--<class name="org.wso2.carbon.mb.ui.test.messagecontent.ViewMessageContentTestCase"/>-->
             <class name="org.wso2.carbon.mb.ui.test.permissions.QueuePermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.permissions.TopicPermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteWithSubscriber"/>
