@@ -252,12 +252,6 @@
                 <include>jline:jline:jar</include>
             </includes>
         </dependencySet>
-        <dependencySet>
-            <outputDirectory>wso2mb-${pom.version}/lib</outputDirectory>
-            <includes>
-                <include>org.wso2.ciphertool:org.wso2.ciphertool:jar</include>
-            </includes>
-        </dependencySet>
     </dependencySets>
 
     <files>
@@ -396,6 +390,7 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/database/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
+        <!-- Cipher Tool Files -->
         <file>
             <source>src/main/conf/cipher-text.properties</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/security</outputDirectory>
@@ -409,16 +404,18 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>src/main/resources/ciphertool.bat</source>
-            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
-            <filtered>true</filtered>
+            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/bin/ciphertool.sh</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/bin</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/resources/ciphertool.sh</source>
-            <outputDirectory>wso2mb-${pom.version}/bin</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>755</fileMode>
+            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/bin/ciphertool.bat</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/bin</outputDirectory>
         </file>
+        <file>
+            <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/lib/org.wso2.ciphertool-${cipher.tool.version}.jar</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
+        </file>
+        <!--End of Cipher Tool Files-->
     </files>
 </assembly>
