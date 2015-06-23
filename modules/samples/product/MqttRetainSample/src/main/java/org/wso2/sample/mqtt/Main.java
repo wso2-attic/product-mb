@@ -126,7 +126,7 @@ public class Main {
 
         String lineSeparator = System.getProperty("line.separator");
 
-        log.info("Enter topic name : ");
+        log.info("Enter topic name: ");
         String bufferReaderString = bufferReader.readLine();
 
         if (!bufferReaderString.isEmpty()) {
@@ -134,7 +134,7 @@ public class Main {
         } else {
             log.info("Topic name not valid. Continuing with default topic name : " + topic);
         }
-        log.info("Set retain flag [Y/N] : ");
+        log.info("Set retain flag [Y/N]: ");
         bufferReaderString = bufferReader.readLine();
 
         if (bufferReaderString.equalsIgnoreCase("Y")) {
@@ -144,11 +144,11 @@ public class Main {
             // set retain disable
             retained = false;
         } else {
-            log.info("Retain state not valid. Continuing with default retain state : " + retained);
+            log.info("Retain state not valid. Continuing with default retain state: " + retained);
         }
         log.info(lineSeparator + "Enter Y to continue with " + topic + " topic name and" +
                  " retain state " + retained + "." + lineSeparator +
-                 "Enter N to revise parameters [Y/N] : ");
+                 "Enter N to revise parameters [Y/N]: ");
 
         bufferReaderString = bufferReader.readLine();
         if (bufferReaderString.equalsIgnoreCase("N")) {
