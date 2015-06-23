@@ -162,7 +162,9 @@
                                 <featureArtifactDef>
                                     org.wso2.mb:org.wso2.stratos.mb.dashboard.ui.feature:${product.mb.version}
                                 </featureArtifactDef>
-
+                                <featureArtifactDef>
+                                    org.wso2.ciphertool:org.wso2.ciphertool.feature:${cipher.tool.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -298,6 +300,11 @@
                                 <feature>
                                     <id>org.wso2.mb.styles.feature.group</id>
                                     <version>${product.mb.version}</version>
+                                </feature>
+                                <!--cipher tool-->
+                                <feature>
+                                    <id>org.wso2.ciphertool.feature.group</id>
+                                    <version>${cipher.tool.version}</version>
                                 </feature>
                             </features>
                         </configuration>

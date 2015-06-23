@@ -311,11 +311,6 @@
                 <artifactId>org.jacoco.agent</artifactId>
                 <version>${jacoco.agent.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.ciphertool</groupId>
-                <artifactId>org.wso2.ciphertool</artifactId>
-                <version>${ciphertool.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -425,7 +420,7 @@
         <apache.commons.jxpath.version>1.3</apache.commons.jxpath.version>
         <org.apache.commons.version>3.3.2</org.apache.commons.version>
         <jacoco.agent.version>0.7.4.201502262128</jacoco.agent.version>
-        <ciphertool.version>1.0.0-wso2v2</ciphertool.version>
+        <cipher.tool.version>1.0.0-wso2v3</cipher.tool.version>
     </properties>
 
     <build>

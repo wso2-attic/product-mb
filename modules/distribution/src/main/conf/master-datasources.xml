@@ -67,6 +67,7 @@
         </datasource>
 
         <!-- WSO2 MB embedded H2 Store     -->
+        
         <datasource>
             <name>WSO2_MB_STORE_DB</name>
             <description>The datasource used for message broker database</description>
@@ -192,7 +193,7 @@
         <!-- MySQL data source -->
 <!--
         <datasource>
-             <name>MYSQL_DATA_SOURCE</name>
+             <name>WSO2_MB_STORE_DB</name>
              <jndiConfig>
                  <name>WSO2MBStoreDB</name>
              </jndiConfig>
@@ -262,7 +263,7 @@
 
 <!--
         <datasource>
-            <name>ORACLE_DATA_SOURCE</name>
+            <name>WSO2_MB_STORE_DB</name>
             <jndiConfig>
                 <name>WSO2MBStoreDB</name>
             </jndiConfig>

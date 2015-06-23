@@ -67,10 +67,6 @@
             <groupId>jline</groupId>
             <artifactId>jline</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.ciphertool</groupId>
-            <artifactId>org.wso2.ciphertool</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
