@@ -98,10 +98,8 @@ public class TopicCreationDifferentNodeIDTestCase extends MBIntegrationUiBaseTes
         TopicAddPage topicAddPage = homePage.getTopicAddPage();
         Assert.assertEquals(topicAddPage.addTopic(topicName), true);
 
-        // Check if topic is present
-        TopicsBrowsePage topicBrowsePage = homePage.getTopicsBrowsePage();
-
         // Adding subscription
+        TopicsBrowsePage topicBrowsePage = homePage.getTopicsBrowsePage();
         TopicSubscribePage topicSubscribePage = topicBrowsePage.addSubscription(topicName);
         boolean subscriptionAdded = topicSubscribePage.addSubscription("Topic Only", "http://www.google.com", null);
         Assert.assertTrue(subscriptionAdded, "Subscription was not added successfully");
