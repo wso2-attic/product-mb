@@ -126,6 +126,17 @@ public class HomePage extends MBPage {
     }
 
     /**
+     * Click on the topic subscriptions page.
+     *
+     * @return A {@link org.wso2.mb.integration.common.utils.ui.pages.main.TopicSubscriptionsPage}
+     * @throws IOException
+     */
+    public TopicSubscriptionsPage getTopicSubscriptionsPage() throws IOException {
+        this.clickOnMenuItem("home.mb.topic.subscriptions.xpath");
+        return new TopicSubscriptionsPage(driver);
+    }
+
+    /**
      * Clicks on a menu item with a given xPath
      *
      * @param xPathForMenuItem The xPath for the menu item.
