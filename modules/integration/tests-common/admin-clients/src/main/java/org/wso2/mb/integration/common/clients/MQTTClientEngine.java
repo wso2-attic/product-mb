@@ -422,6 +422,45 @@ public class MQTTClientEngine {
     }
 
     /**
+     * Wait for subscriber to receive given number of messages and exit.
+     * Use in test cases before doing assertions so message send/receive will be completed before
+     * assertions.
+     * <p/>
+     * This method will exit regardless of the number of messages received if maximum wait time
+     * is reached.
+     *
+     * @param expectedNumberOfMessages expected number of messages to be received by subscriber.
+     * @param maxWaitTime              maximum wait time in milliseconds before stop waiting for messages.
+     * @throws org.eclipse.paho.client.mqttv3.MqttException
+     */
+    public void waitUntilExpectedNumberOfMessagesReceived(int expectedNumberOfMessages,
+                                                          long maxWaitTime) throws MqttException {
+
+        // max system wait time
+        long maxWaitSystemTime = System.currentTimeMillis() + maxWaitTime;
+
+        // this loop will exit if system time is larger or equal than maximum system wait time.
+        while (System.currentTimeMillis() <= maxWaitSystemTime) {
+            try {
+
+                TimeUnit.MILLISECONDS.sleep(2000L);
+
+            } catch (InterruptedException e) {
+                log.error("Error waiting for receiving messages.", e);
+            }
+
+            // if expected number of messages received by the subscriber it will break the loop.
+            // without waiting further.
+            if (expectedNumberOfMessages <= getReceivedMessageCount()) {
+                log.info("Expected message count received by subscriber.");
+                break;
+            }
+
+        }
+
+    }
+
+    /**
      * Calculate the TPS for the last (messageCount) messages.
      *
      * @param timeDiffMillis Time took in milliseconds to receive (messageCount) messages.
