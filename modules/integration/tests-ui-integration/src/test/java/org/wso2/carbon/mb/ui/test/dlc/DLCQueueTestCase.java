@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.mb.ui.test.dlc;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
@@ -27,18 +27,22 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
+import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
+import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
@@ -51,8 +55,10 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -70,25 +76,31 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
     private static final long EXPECTED_COUNT = 15L;
 
     /**
-     * The default andes acknowledgement wait timeout.
-     */
-    private String defaultAndesAckWaitTimeOut = null;
-
-    /**
      * DLC test queue name
      */
     private static final String DLC_TEST_QUEUE = "DLCTestQueue";
 
     /**
-     * Initializes the test case.
+     * Initializes the test case and changes the number of delivery attempts of a message to 1.
      *
      * @throws AutomationUtilException
      * @throws XPathExpressionException
      * @throws MalformedURLException
      */
     @BeforeClass()
-    public void initialize() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException,
+                                                                                                ConfigurationException {
         super.init();
+
+        // Updating the redelivery attempts to 1 to speed up the test case.
+        super.serverManager = new ServerConfigurationManager(mbServer);
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() + File.separator + "repository" +
+                                            File.separator + "conf" + File.separator + "broker.xml";
+        ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
+        // Changing "maximumRedeliveryAttempts" value to "1" in broker.xml
+        configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_AMQP_MAXIMUM_REDELIVERY_ATTEMPTS, "1");
+        // Restarting server
+        configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
 
     /**
@@ -107,29 +119,21 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
      * @throws JMSException
      * @throws NamingException
      * @throws AndesClientException
+     * @throws AutomationUtilException
+     * @throws LogoutAuthenticationExceptionException
      */
     @Test()
     public void performDeadLetterChannelTestCase() throws XPathExpressionException, IOException,
             AndesAdminServiceBrokerManagerAdminException, AndesClientConfigurationException, JMSException,
-            NamingException, AndesClientException {
+            NamingException, AndesClientException, AutomationUtilException, LogoutAuthenticationExceptionException {
 
         // Number of checks for an update in DLC message count.
         int tries = 15;
 
         // Getting message count in DLC prior adding new messages to DLC.
-        AndesAdminClient andesAdminClient = new AndesAdminClient(backendURL, sessionCookie);
-        long messageCountPriorSendingMessages = andesAdminClient.getDlcQueue().getMessageCount();
+        long messageCountPriorSendingMessages = this.getDLCMessageCount();
 
         log.info("Message count in DLC before sending messages : " + messageCountPriorSendingMessages);
-
-        // Get current "AndesAckWaitTimeOut" system property.
-        defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.
-                ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
-
-        // Setting system property "AndesAckWaitTimeOut" for andes
-        // This will set andes ack wait timeout to 0. To send messages to
-        // DLC fast wait time has set to 0.
-        System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "0");
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -149,8 +153,8 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        // Waiting until the message count is different after the message were published.
-        while (messageCountPriorSendingMessages == andesAdminClient.getDlcQueue().getMessageCount()) {
+        // Waiting until the message count in DLC is different after the message were published.
+        while (messageCountPriorSendingMessages == this.getDLCMessageCount()) {
             if(0 == tries){
                 Assert.fail("Did not receive any message to DLC.");
             }
@@ -161,9 +165,10 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
             log.info("Waiting for message count change.");
         }
 
-        log.info("Message count in DLC after sending messages : " + andesAdminClient.getDlcQueue().getMessageCount());
+        log.info("Message count in DLC after sending messages : " + this.getDLCMessageCount());
 
-
+        // Stops consuming messages
+        consumerClient.stopClient();
 
         String rerouteQueue = "rerouteTestQueue";
         String deletingMessageID;
@@ -178,48 +183,52 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
                                                       .getContextUser().getUserName(), mbServer
                                                       .getContextTenant().getContextUser()
                                                       .getPassword());
-        //Add an queue to test rerouting messages of DLC
+        // Add an queue to test rerouting messages of DLC
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(rerouteQueue), true);
         DLCBrowsePage dlcBrowsePage = homePage.getDLCBrowsePage();
-        Assert.assertNotNull(dlcBrowsePage.isDLCCreated(),
-                             "DeadLetter Channel not created. " + DLC_TEST_QUEUE);
-        //Testing delete messages
+        Assert.assertNotNull(dlcBrowsePage.isDLCCreated(), "DeadLetter Channel not created. " + DLC_TEST_QUEUE);
+
+        // Testing delete messages
         DLCContentPage dlcContentPage = dlcBrowsePage.getDLCContent();
         deletingMessageID = dlcContentPage.deleteFunction();
 
         Assert.assertTrue(checkMessages(deletingMessageID, DLC_TEST_QUEUE),
                           "Deleting messages of dead letter channel is unsuccessful.");
 
-        //Testing restore messages
+        // Testing restore messages
         restoringMessageID = dlcContentPage.restoreFunction();
+
+        // Waiting till back end completes.
+        AndesClientUtils.sleepForInterval(5000);
+
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
         queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
-        if (isElementPresent(UIElementMapper.getInstance()
-                                     .getElement("mb.dlc.browse.content.table"))) {
-            restoredMessageID =
-                    driver.findElement(By.xpath(UIElementMapper.getInstance().
-                            getElement("mb.dlc.restored.message.id"))).getText();
+        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.dlc.browse.content.table"))) {
+            restoredMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
+                                                                getElement("mb.dlc.restored.message.id"))).getText();
 
-            Assert.assertEquals(restoredMessageID, restoringMessageID,
-                                "Restoring messages of DeadLetter Channel is unsuccessful");
+            Assert.assertEquals(restoredMessageID, restoringMessageID, "Restoring messages of DeadLetter Channel is " +
+                                                                                                        "unsuccessful");
             log.info("Restoring messages of DeadLetter Channel is successful.");
         } else {
             Assert.fail("No messages in Queue" + DLC_TEST_QUEUE + "after restoring");
         }
 
-        //Testing reroute messages
+        // Testing reroute messages
         DLCBrowsePage dlcBrowsePage1 = homePage.getDLCBrowsePage();
         DLCContentPage dlcContentPage1 = dlcBrowsePage1.getDLCContent();
         reroutingMessageID = dlcContentPage1.rerouteFunction(rerouteQueue);
+
+        // Waiting till back end completes.
+        AndesClientUtils.sleepForInterval(5000);
         QueuesBrowsePage queuesBrowsePage1 = homePage.getQueuesBrowsePage();
         queuesBrowsePage1.browseQueue(rerouteQueue);
-        if (isElementPresent(UIElementMapper.getInstance()
-                                     .getElement("mb.dlc.rerouted.queue.table"))) {
+        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.dlc.rerouted.queue.table"))) {
             reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
                                                    getElement("mb.dlc.rerouted.message.id"))).getText();
-            Assert.assertEquals(reroutedMessageID, reroutingMessageID,
-                                "Rerouting messages of DeadLetter Channel is unsuccessful");
+            Assert.assertEquals(reroutedMessageID, reroutingMessageID, "Rerouting messages of DeadLetter Channel is " +
+                                                                                                        "unsuccessful");
             log.info("Rerouting messages of dead letter channel is successful.");
         } else {
             Assert.fail("No messages in Queue" + rerouteQueue + "after rerouting");
@@ -271,18 +280,34 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
      * This class will restore andes acknowledgement time out system property
      * and quit the ui web driver.
      *
+     * @throws IOException
+     * @throws AutomationUtilException
+     * @throws LogoutAuthenticationExceptionException
      */
     @AfterClass()
-    public void tearDown() {
-
-        // Setting system property "AndesAckWaitTimeOut" to default value.
-        if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
-            System.clearProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
-        } else {
-            System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY,
-                               defaultAndesAckWaitTimeOut);
-        }
-
+    public void tearDown() throws IOException, AutomationUtilException, LogoutAuthenticationExceptionException {
+        //Revert back to original configuration.
+        super.serverManager.restoreToLastConfiguration(true);
         driver.quit();
+    }
+
+    /**
+     * Gets the number of messages in the DLC queue.
+     *
+     * @return The number of messages.
+     * @throws AutomationUtilException
+     * @throws RemoteException
+     * @throws LogoutAuthenticationExceptionException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     */
+    private long getDLCMessageCount() throws AutomationUtilException, RemoteException,
+            LogoutAuthenticationExceptionException, AndesAdminServiceBrokerManagerAdminException {
+        LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(mbServer);
+        String sessionCookie = loginLogoutClientForAdmin.login();
+        AndesAdminClient andesAdminClient = new AndesAdminClient(backendURL, sessionCookie);
+        long messageCount = andesAdminClient.getDlcQueue().getMessageCount();
+        loginLogoutClientForAdmin.logout();
+
+        return messageCount;
     }
 }

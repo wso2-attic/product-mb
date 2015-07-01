@@ -19,6 +19,8 @@
 package org.wso2.carbon.mb.ui.test.dlc;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
@@ -53,6 +55,7 @@ import java.util.List;
  * This test case will test dead letter channel operations for durable topic messages.
  */
 public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
+    private static final Log log = LogFactory.getLog(DLCDurableTopicTestCase.class);
     private static final int COLUMN_LIST_SIZE = 11;
     private static final int MESSAGE_ID_COLUMN = 1;
     private static final long SEND_COUNT = 2L;
@@ -61,7 +64,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
     /**
      * DLC test queue name
      */
-    private static final String DLC_TEST_DURABLE_TOPIC = "DLCTestQueue";
+    private static final String DLC_TEST_DURABLE_TOPIC = "DLCTestDurableTopic";
 
     /**
      * Andes consumer client
@@ -127,8 +130,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
             throws AndesClientConfigurationException, NamingException,
                    JMSException, IOException, AndesClientException {
         // Get current "AndesAckWaitTimeOut" system property.
-        defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.
-                                                                ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+        defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
 
         // Setting system property "AndesAckWaitTimeOut" for andes
         System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "0");
@@ -153,7 +155,18 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        waitUntilMessagesReceived(6L);
+        int tries = 15;
+
+        while (6L != consumerClient.getReceivedMessageCount()) {
+            if(0 == tries){
+                Assert.fail("Expected amount of messages were not received");
+            }
+            // Reducing try count
+            tries--;
+            //Thread sleep until message count in DLC is changed
+            AndesClientUtils.sleepForInterval(15000L);
+            log.info("Waiting for message count change.");
+        }
 
         //Thread sleep until messages sent to DLC after breaching maximum number of retrying
         AndesClientUtils.sleepForInterval(80000L);
@@ -174,55 +187,50 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
     @Test()
     public void performDurableTopicDeadLetterChannelTestCase() throws IOException {
 
+        // Number of checks for an update in consumer message count.
+        int tries = 15;
+
         String deletingMessageID;
         String restoringMessageID;
 
         DLCBrowsePage dlcBrowsePage = homePage.getDLCBrowsePage();
-        Assert.assertNotNull(dlcBrowsePage.isDLCCreated(),
-                             "DeadLetter Channel not created. " + DLC_TEST_DURABLE_TOPIC);
+        Assert.assertNotNull(dlcBrowsePage.isDLCCreated(), "DeadLetter Channel not created. " + DLC_TEST_DURABLE_TOPIC);
+
         //Testing delete messages
         DLCContentPage dlcContentPage = dlcBrowsePage.getDLCContent();
         deletingMessageID = dlcContentPage.deleteFunction();
 
         Assert.assertTrue(checkMessages(deletingMessageID, DLC_TEST_DURABLE_TOPIC),
-                          "Deleting messages of dead letter channel is unsuccessful.");
+                "Deleting messages of dead letter channel is unsuccessful.");
 
         // number of messages received by consumer client before restore function triggered.
-        Long beforeRestoreMessageReceivedCount = consumerClient.getReceivedMessageCount();
+        long beforeRestoreMessageReceivedCount = consumerClient.getReceivedMessageCount();
 
         //Testing restore messages
         restoringMessageID = dlcContentPage.restoreFunction();
-        waitUntilMessagesReceived(9L);
 
-        //Thread sleep until messages sent to DLC after breaching maximum number of retrying
-        AndesClientUtils.sleepForInterval(80000L);
+        // Waiting until the message count is different after the message were published.
+        while (beforeRestoreMessageReceivedCount == consumerClient.getReceivedMessageCount()) {
+            if(0 == tries){
+                Assert.fail("Consumer did not receive any messages.");
+            }
+            // Reducing try count
+            tries--;
+            //Thread sleep until message count in DLC is changed
+            AndesClientUtils.sleepForInterval(15000L);
+            log.info("Waiting for message count change in consumer.");
+        }
 
         // number of messages received by consumer client after restore function triggered.
-        Long afterRestoreMessageReceivedCount = consumerClient.getReceivedMessageCount();
+        long afterRestoreMessageReceivedCount = consumerClient.getReceivedMessageCount();
+
+        log.info("Message count in consumer after restoring messages : " + afterRestoreMessageReceivedCount);
 
         // This assertion will check if consumer client has received messages messages after
         // restore function triggered from ui. If it receives messages after restore function triggered
         // this assertion will be success.
         Assert.assertTrue(beforeRestoreMessageReceivedCount < afterRestoreMessageReceivedCount,
-                          restoringMessageID + " Durable topic message not successfully restored.");
-    }
-
-    /**
-     * This method will wait until given number of messages received by the consumer client.
-     *
-     * @param numberOfMessages this will specify number of messages to wait before proceed
-     *
-     */
-    public void waitUntilMessagesReceived(Long numberOfMessages) {
-
-
-        while (true) {
-            Long count = consumerClient.getReceivedMessageCount();
-            if (count >= numberOfMessages) {
-                break;
-            }
-            AndesClientUtils.sleepForInterval(1000L);
-        }
+                restoringMessageID + " Durable topic message not successfully restored.");
     }
 
 
