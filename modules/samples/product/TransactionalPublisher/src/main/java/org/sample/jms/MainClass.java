@@ -24,8 +24,8 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 
 /**
- * The following class contains a publisher transactional sample. This sample uses publisher acknowledgements so that
- * it would help in recovering published messages in case if the server goes down. This helps to prevent message loss.
+ * The following class contains a publisher transactional sample. This sample uses publisher transactions so that it
+ * would help in recovering published messages in case if the server goes down. This helps to prevent message loss.
  */
 public class MainClass {
     private static final Logger log = Logger.getLogger(MainClass.class);
@@ -70,7 +70,7 @@ public class MainClass {
         // Publishes a messages
         transactionalQueuePublisher.sendMessage("My Unique Message.");
 
-        // Attempts to receive a message. No messages were received here as the send message was not committed.
+        // Attempts to receive a message. No messages were received here as the sent message was not committed.
         queueConsumer.receiveMessage();
 
         // Rollbacks all published messages. This can be used in-case if the server has gone down and in need of
@@ -86,7 +86,7 @@ public class MainClass {
         // Receives a message.
         queueConsumer.receiveMessage();
 
-        // Attempts to receive a message. No messages were received here as the send message was not committed.
+        // Attempts to receive a message. No messages were received here as all the messages were received.
         queueConsumer.receiveMessage();
 
         // Shutting down the sample.

@@ -33,7 +33,7 @@ import javax.naming.NamingException;
 import java.util.Properties;
 
 /**
- * This class contains methods and properties relate to Queue Sender (Publisher)
+ * This class contains methods which is used in creating and using a transactional JMS message publisher.
  */
 public class TransactionalQueuePublisher {
 
@@ -129,7 +129,8 @@ public class TransactionalQueuePublisher {
         queueConnection = connFactory.createQueueConnection();
         queueConnection.start();
 
-        // Create JMS session object
+        // Create JMS session object. Here we mentioned that the messages will be published transactionally to the
+        // broker.
         queueSession = queueConnection.createQueueSession(true, QueueSession.SESSION_TRANSACTED);
 
         // Look up a JMS queue

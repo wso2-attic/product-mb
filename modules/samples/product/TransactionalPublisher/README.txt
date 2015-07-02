@@ -1,5 +1,5 @@
-This sample client demonstrate how messages can be published transactionally to a queue destination. This sample uses
- publisher acknowledgements to recover sent messages in-case if the messages has gone down unexpectedly.
+This sample client demonstrate how messages can be published transactionally to a queue destination. This implementation
+can be used to recover sent messages in-case if the server goes down.
 
 To run this sample
 
