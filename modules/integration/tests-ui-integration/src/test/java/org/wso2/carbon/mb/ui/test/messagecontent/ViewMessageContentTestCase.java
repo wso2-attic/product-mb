@@ -32,6 +32,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
@@ -133,6 +134,8 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
+        // Waiting till back end completes.
+        AndesClientUtils.sleepForInterval(5000);
 
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
 
