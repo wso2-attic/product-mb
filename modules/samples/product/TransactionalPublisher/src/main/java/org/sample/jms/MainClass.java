@@ -68,7 +68,7 @@ public class MainClass {
         log.info("------Sample for Message Sending, Rollback and Committing.------");
 
         // Publishes a messages
-        transactionalQueuePublisher.sendMessage("My Unique Message.");
+        transactionalQueuePublisher.sendMessage("My Third Message.");
 
         // Attempts to receive a message. No messages were received here as the sent message was not committed.
         queueConsumer.receiveMessage();
@@ -78,7 +78,7 @@ public class MainClass {
         transactionalQueuePublisher.rollbackMessages();
 
         // Publishes a messages
-        transactionalQueuePublisher.sendMessage("My Unique Message.");
+        transactionalQueuePublisher.sendMessage("My Forth Message.");
 
         // Committing all published messages.
         transactionalQueuePublisher.commitMessages();
