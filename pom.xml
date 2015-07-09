@@ -311,6 +311,11 @@
                 <artifactId>org.jacoco.agent</artifactId>
                 <version>${jacoco.agent.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitmq.amqp.client.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -421,6 +426,7 @@
         <org.apache.commons.version>3.3.2</org.apache.commons.version>
         <jacoco.agent.version>0.7.4.201502262128</jacoco.agent.version>
         <cipher.tool.version>1.0.0-wso2v3</cipher.tool.version>
+        <rabbitmq.amqp.client.version>3.5.3</rabbitmq.amqp.client.version>
     </properties>
 
     <build>

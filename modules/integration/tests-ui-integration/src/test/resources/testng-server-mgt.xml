@@ -46,6 +46,7 @@
             <class name="org.wso2.carbon.mb.ui.test.permissions.QueuePermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.permissions.TopicPermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteWithSubscriber"/>
+            <class name="org.wso2.carbon.mb.ui.test.queues.EmptyHeadersTestCase"/>
         </classes>
     </test>
 </suite>
