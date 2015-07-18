@@ -48,6 +48,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.SelectorsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.SSLSendReceiveTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantCreateQueueTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.TenantDeleteQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.InterTenantQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactedAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TenantDeadLetterChannelTestCase"/>
