@@ -35,6 +35,7 @@
             <!-- load test cases -->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.load.MultiThreadedMQTTTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.load.QOSLoadTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.mqtt.load.OneMBMessageTestCase"/>
         </classes>
     </test>
 </suite>
