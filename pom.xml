@@ -311,6 +311,22 @@
                 <artifactId>org.jacoco.agent</artifactId>
                 <version>${jacoco.agent.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.metrics</groupId>
+                <artifactId>org.wso2.carbon.metrics.data.common</artifactId>
+                <version>${carbon.metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.metrics</groupId>
+                <artifactId>org.wso2.carbon.metrics.data.service.stub</artifactId>
+                <version>${carbon.metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.metrics</groupId>
+                <artifactId>org.wso2.carbon.metrics.impl</artifactId>
+                <version>${carbon.metrics.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

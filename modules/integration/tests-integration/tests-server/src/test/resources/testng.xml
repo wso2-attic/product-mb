@@ -26,8 +26,8 @@
             <!--<package name="org.wso2.carbon.mb.server.test.*"/>-->
         <!--</packages>-->
 
-        <!--<classes>-->
-            <!--<class name="org.wso2.carbon.mb.server.test.ShutdownTestCase"/>-->
-        <!--</classes>-->
+        <classes>
+            <class name="org.wso2.mb.integration.tests.server.mgt.MetricsTestCase"/>
+        </classes>
     </test>
 </suite>
