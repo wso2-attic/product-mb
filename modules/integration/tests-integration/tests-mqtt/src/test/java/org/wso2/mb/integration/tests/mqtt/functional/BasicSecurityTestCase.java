@@ -18,10 +18,6 @@
 
 package org.wso2.mb.integration.tests.mqtt.functional;
 
-import java.util.List;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -41,6 +37,9 @@ import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingPublisherClient;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.List;
 
 
 /**
@@ -135,6 +134,7 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
                 mqttClientEngine.getDefaultConfigurations();
         
         Tenant tenant = automationContext.getContextTenant();
+        topic = tenant.getDomain() + "/" + topic;
         User user = tenant.getContextUser();
         configuration.setBrokerUserName(user.getUserName());
         configuration.setBrokerPassword(user.getPassword());
