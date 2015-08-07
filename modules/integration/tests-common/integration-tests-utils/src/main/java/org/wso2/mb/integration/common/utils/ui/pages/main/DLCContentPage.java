@@ -63,7 +63,9 @@ public class DLCContentPage {
         // Get all the TR elements from the table
         List<WebElement> allDlcRows = dlcTable.findElements(By.tagName("tr"));
 
-            if(allDlcRows.size() > 0) {
+            //The table header row always exists
+            //Therefore, if messages are there in the dlc, the number of rows will be > 1
+            if(allDlcRows.size() > 1) {
                 log.info("delete all dlc messages");
                 driver.findElement(By.xpath(UIElementMapper.getInstance()
                                                     .getElement("mb.dlc.browse.table.choose.all.box.xpath")))
