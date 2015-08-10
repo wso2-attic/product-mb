@@ -62,6 +62,7 @@
                     <testOnBorrow>true</testOnBorrow>
                     <validationQuery>SELECT 1</validationQuery>
                     <validationInterval>30000</validationInterval>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                 </configuration>
             </definition>
         </datasource>
@@ -85,6 +86,7 @@
                     <testOnBorrow>true</testOnBorrow>
                     <validationQuery>SELECT 1</validationQuery>
                     <validationInterval>30000</validationInterval>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                 </configuration>
             </definition>
         </datasource>
@@ -101,6 +103,7 @@
                 <configuration>
                     <url>jdbc:h2:mem:msg_store;DB_CLOSE_DELAY=-1</url>
                     <driverClassName>org.h2.Driver</driverClassName>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                 </configuration>
             </definition>
         </datasource>
@@ -209,6 +212,7 @@
                      <testOnBorrow>true</testOnBorrow>
                      <validationQuery>SELECT 1</validationQuery>
                     <validationInterval>30000</validationInterval>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                  </configuration>
              </definition>
          </datasource>
@@ -235,6 +239,7 @@
                     <testOnBorrow>true</testOnBorrow>
                     <validationQuery>SELECT 1</validationQuery>
                     <validationInterval>30000</validationInterval>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                 </configuration>
             </definition>
         </datasource>
@@ -249,6 +254,7 @@
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                     <dataSourceClassName>com.microsoft.sqlserver.jdbc.SQLServerXADataSource</dataSourceClassName>
                     <dataSourceProps>
                 <property name = "URL">jdbc:sqlserver://localhost/SQLExpress:1433</property>
@@ -279,6 +285,7 @@
                     <validationInterval>30000</validationInterval>
                     <username>scott</username>
                     <password>tiger</password>
+                    <defaultAutoCommit>false</defaultAutoCommit>
                 </configuration>
             </definition>
         </datasource>
