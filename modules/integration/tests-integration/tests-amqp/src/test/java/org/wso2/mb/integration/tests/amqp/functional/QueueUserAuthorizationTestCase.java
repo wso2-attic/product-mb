@@ -295,7 +295,8 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 
         // Removing authUser1 from create_pub_sub_queue_role and Internal/Q_authQueue5
         userManagementClient
-                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_authQueue5"});
+                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE},
+                                      new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_authQueue5"});
         log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_authQueue5");
 
         this.createPublishAndSubscribeFromUser("authUser1", "authQueue5");
@@ -342,7 +343,8 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
 
         // Removing authUser1 from create_pub_sub_queue_role and Internal/Q_authQueue6
         userManagementClient
-                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE}, new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_authQueue6"});
+                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_QUEUE_ROLE},
+                                      new String[]{CREATE_PUB_SUB_QUEUE_ROLE, "Internal/Q_authQueue6"});
         log.info("Removing authUser1 from " + CREATE_PUB_SUB_QUEUE_ROLE + " and Internal/Q_authQueue6");
 
         this.createPublishAndSubscribeFromUser("authUser2", "authQueue6");

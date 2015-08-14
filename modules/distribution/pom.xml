@@ -119,6 +119,11 @@
                                         <include name="wso2mb-${product.mb.version}.zip" />
                                     </fileset>
                                 </unzip>
+                                <!-- Disabling default way of checking authorizations due to https://wso2.org/jira/browse/IDENTITY-3489-->
+                                <replace
+                                        file="target/wso2carbon-core-${carbon.kernel.version}/repository/conf/user-mgt.xml"
+                                        token="&lt;Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property&gt;"
+                                        value="&lt;!--Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property--&gt;"/>
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/" overwrite="false">
                                     <fileset dir="${tempdir}/wso2mb-${product.mb.version}/repository/components/">
                                     </fileset>

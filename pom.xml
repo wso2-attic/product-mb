@@ -420,7 +420,7 @@
         <carbon.messaging.version>3.0.0-SNAPSHOT</carbon.messaging.version>
         <carbon.multitenancy.version>4.4.0</carbon.multitenancy.version>
         <carbon.metrics.version>1.1.0-SNAPSHOT</carbon.metrics.version>
-        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.version>4.4.1</carbon.kernel.version>
         <andes.version>3.0.0-SNAPSHOT</andes.version>
         <!--product version-->
         <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
