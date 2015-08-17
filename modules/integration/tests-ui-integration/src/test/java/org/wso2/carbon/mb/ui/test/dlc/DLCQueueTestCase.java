@@ -204,7 +204,7 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
 
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
         queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
-        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.dlc.browse.content.table"))) {
+        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.queue.browse.content.table"))) {
             restoredMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
                                                                 getElement("mb.dlc.restored.message.id"))).getText();
 
