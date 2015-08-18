@@ -67,6 +67,9 @@ import java.util.Map;
  */
 public class MetricsTestCase extends MBIntegrationBaseTest {
 
+	/**
+	 * Session cookie is used maintain communication session with metrics view client
+	 */
 	private String sessionCookie;
 
 	/**
@@ -82,7 +85,7 @@ public class MetricsTestCase extends MBIntegrationBaseTest {
 
 		LoginLogoutClient loginLogoutClientForAdmin =
 				new LoginLogoutClient(super.automationContext);
-		sessionCookie = loginLogoutClientForAdmin.login("admin", "admin", "localhost");
+		sessionCookie = loginLogoutClientForAdmin.login();
 	}
 
 
