@@ -125,8 +125,8 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientException
      */
 
-    @Test(groups = "wso2.mb", description = "Let messages get moved to DLC and check messages deleted in DLC in queue" +
-            " purge and deletion")
+    @Test(groups = "wso2.mb", description = "Let messages get moved to DLC and check messages deleted in DLC in queue"
+                                            + " purge and deletion")
     public void performQueuePurgeTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
             AndesClientException, AndesAdminServiceBrokerManagerAdminException, AutomationUtilException,
@@ -197,8 +197,11 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         //Purging 'purgeTestQueue' queue
         admin.purgeQueue(TEST_QUEUE_PURGE);
 
+        //Put a thread sleep so that we can make sure that the queue is deleted before testing its existence
+        AndesClientUtils.sleepForInterval(1000);
+
         //Testing if the queue is deleted, it should not have been deleted
-        Assert.assertNotNull(admin.getQueueByName(TEST_QUEUE_DELETE), "The queue has not been deleted");
+        Assert.assertNotNull(admin.getQueueByName(TEST_QUEUE_PURGE), "The queue has been deleted");
 
         //Testing if messages for queue are removed from DLC as well
         //Remaining number of messages in DLC should be 75 (destined to deleteTestQueue)
@@ -208,6 +211,9 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
 
         //Deleting 'deleteTestQueue'
         admin.deleteQueue(TEST_QUEUE_DELETE);
+
+        //Put a thread sleep so that we can make sure that the queue is deleted before testing its existence
+        AndesClientUtils.sleepForInterval(1000);
 
         //Testing if queue is not deleted
         Assert.assertNull(admin.getQueueByName(TEST_QUEUE_DELETE), "Queue is not deleted");
