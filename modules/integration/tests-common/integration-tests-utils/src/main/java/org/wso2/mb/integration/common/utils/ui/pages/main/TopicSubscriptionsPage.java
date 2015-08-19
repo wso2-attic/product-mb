@@ -65,4 +65,21 @@ public class TopicSubscriptionsPage extends MBPage {
             return 0;
         }
     }
+
+    /**
+     * Gets the number of durable in-active subscriptions.
+     *
+     * @return The number of subscriptions.
+     */
+    public int getDurableInActiveSubscriptionsCount() {
+        List<WebElement> tempDurableInActiveTables = driver.findElements(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.subscriptions.topics.page.durable.inactive.table.xpath")));
+        // Checks whether the table exists.
+        if (0 < tempDurableInActiveTables.size()) {
+            return tempDurableInActiveTables.get(0).findElement(By.tagName("tbody")).findElements(By.tagName("tr")).size();
+        } else {
+            log.warn("Durable In-Active Subscriptions table does not exists.");
+            return 0;
+        }
+    }
 }

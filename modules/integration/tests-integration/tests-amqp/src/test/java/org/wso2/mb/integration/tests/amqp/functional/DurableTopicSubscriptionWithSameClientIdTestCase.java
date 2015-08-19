@@ -51,7 +51,8 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
      * subscribers are unknown but the total should be the same amount as sent
      */
     private static final long EXPECTED_COUNT = 500L;
-    private static final long SEND_COUNT = 12L;
+    private static final long SEND_COUNT_12 = 12L;
+    private static final long SEND_COUNT_8 = 8L;
 
     /**
      * Prepare environment for durable topic subscription with same client Id tests
@@ -60,21 +61,17 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
      */
     @BeforeClass
     public void prepare() throws Exception {
-
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
 
         super.serverManager = new ServerConfigurationManager(automationContext);
 
         // Replace the broker.xml with the allowSharedTopicSubscriptions configuration enabled under amqp
         // and restarts the server.
-        super.serverManager.applyConfiguration(new File(FrameworkPathUtil
-                                                                .getSystemResourceLocation() + File.separator +
-                                                        "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator +
-                                                        "allowSharedTopicSubscriptionsConfig" + File.separator + "broker.xml"),
-                                               new File(ServerConfigurationManager.getCarbonHome() +
-                                                        File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml"),
-                                               true, true);
+        super.serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
+                "artifacts" + File.separator + "mb" + File.separator + "config" + File.separator +
+                "allowSharedTopicSubscriptionsConfig" + File.separator + "broker.xml"),
+                new File(ServerConfigurationManager.getCarbonHome() + File.separator + "repository" + File.separator +
+                                                                "conf" + File.separator + "broker.xml"), true, true);
 
     }
 
@@ -90,9 +87,7 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
      * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void performDurableTopicWithSameClientIdTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+    public void performDurableTopicWithSameClientIdTestCase() throws Exception {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -103,7 +98,7 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
         // Creating a JMS consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
-        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT_12);
 
         // Creating clients
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
@@ -127,11 +122,105 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         // Evaluating
         Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+                                    .getSentMessageCount(), SEND_COUNT_12, "Message sending failed.");
         long totalReceivingMessageCount =
                 consumerClient1.getReceivedMessageCount() + consumerClient2
                         .getReceivedMessageCount() + consumerClient3.getReceivedMessageCount();
-        Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT, "Message receive count not equal to sent message count.");
+        Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT_12, "Message receive count not equal to sent message count.");
 
+    }
+
+    /**
+     * Start 6 durable subscribers with 3 for 2 topics each. Start publishers which sends 12 messages each. Get the total count
+     * received by all durable subscribers for each topic and compare with sent message count of the publisher.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws CloneNotSupportedException
+     * @throws AndesClientException
+     */
+    @Test(groups = {"wso2.mb", "durableTopic"})
+    public void performDurableTopicMultiClientTestCase() throws Exception {
+
+        // Creating a JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig1.setDurable(true, "sameClientIDSub2");
+
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig2.setDurable(true, "sameClientIDSub3");
+
+        // Creating a JMS consumer client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig1 =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
+        publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT_12);
+
+        AndesJMSPublisherClientConfiguration publisherConfig2 =
+                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
+        publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_8);
+
+        // Creating clients
+        // Publishers and Consumers for "durableTopicSameClientIDTopic1"
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
+
+        AndesClient consumerClient2 = new AndesClient(consumerConfig1, true);
+        consumerClient2.startClient();
+
+        AndesClient consumerClient3 = new AndesClient(consumerConfig1, true);
+        consumerClient3.startClient();
+
+        AndesClient publisherClient1 = new AndesClient(publisherConfig1, true);
+        publisherClient1.startClient();
+
+        // Publishers and Consumers for "durableTopicSameClientIDTopic2"
+        AndesClient consumerClient4 = new AndesClient(consumerConfig2, true);
+        consumerClient4.startClient();
+
+        AndesClient consumerClient5 = new AndesClient(consumerConfig2, true);
+        consumerClient5.startClient();
+
+        AndesClient consumerClient6 = new AndesClient(consumerConfig2, true);
+        consumerClient6.startClient();
+
+        AndesClient publisherClient2 = new AndesClient(publisherConfig2, true);
+        publisherClient2.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient6, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient1
+                .getSentMessageCount(), SEND_COUNT_12, "Message sending failed for 'durableTopicSameClientIDTopic1'");
+        Assert.assertEquals(publisherClient2
+                .getSentMessageCount(), SEND_COUNT_8, "Message sending failed for 'durableTopicSameClientIDTopic2'");
+
+        long totalReceivingMessageCount =
+                consumerClient1.getReceivedMessageCount() + consumerClient2
+                        .getReceivedMessageCount() + consumerClient3.getReceivedMessageCount();
+        Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT_12, "Message receive count not equal to sent message " +
+                                                                    "count for 'durableTopicSameClientIDTopic1'.");
+
+        totalReceivingMessageCount =
+                consumerClient4.getReceivedMessageCount() + consumerClient5
+                        .getReceivedMessageCount() + consumerClient6.getReceivedMessageCount();
+        Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT_8, "Message receive count not equal to sent message " +
+                                                                    "count for 'durableTopicSameClientIDTopic2'.");
     }
 }
