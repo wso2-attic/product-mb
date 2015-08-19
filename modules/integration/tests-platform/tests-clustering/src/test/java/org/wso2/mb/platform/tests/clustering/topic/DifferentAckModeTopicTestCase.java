@@ -109,6 +109,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                         ExchangeType.TOPIC, "sessionTransactedAckTopic");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
+        consumerConfig.setCommitAfterEachMessageCount(1);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -231,7 +232,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                         ExchangeType.TOPIC, "clientAcknowledgeTopic");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
-
+        consumerConfig.setAcknowledgeAfterEachMessageCount(1);
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(automationContext.getInstance().getHosts()
