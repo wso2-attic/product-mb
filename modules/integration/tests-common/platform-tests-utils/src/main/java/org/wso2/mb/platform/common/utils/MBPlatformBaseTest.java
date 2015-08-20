@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -315,5 +316,13 @@ public class MBPlatformBaseTest {
 
         return HostAndPort.fromString(tempContext.getInstance().getHosts().get
                 ("default") + ":" + tempContext.getInstance().getPorts().get("amqp"));
+    }
+
+    /**
+     * Give collection of all automation context instances
+     * @return collection of automation context
+     */
+    protected Collection<AutomationContext> getAllInstances(){
+        return contextMap.values();
     }
 }
