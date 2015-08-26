@@ -20,6 +20,8 @@
 
 <suite name="transport-test-suite">
     <parameter name="useDefaultListeners" value="false"/>
+    <parameter name="messageCount" value="1000" />
+
     <test name="tests-transports" preserve-order="true" parallel="false">
 
         <classes>
@@ -42,7 +44,7 @@
             <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicMessageDeliveringTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.topic.TopicClusterTestCase"/>
-            
+
             <!-- MQTT Test Cases -->
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.ClusteredSecurityTestCase"/>
               <class name="org.wso2.mb.platform.tests.clustering.mqtt.MQTTClusterTestCase"/>

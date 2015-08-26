@@ -22,6 +22,7 @@ import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -36,7 +37,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -51,6 +54,8 @@ import java.rmi.RemoteException;
  * This class includes subscription disconnecting and reconnecting tests
  */
 public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -80,27 +85,29 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
      * @throws IOException
      */
     @Test(groups = "wso2.mb", description = "Same node subscription reconnecting test")
-    public void testSameNodeSubscriptionReconnecting()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodeSubscriptionReconnecting(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
 
-        int sendCount = 1000;
-        int expectedCount = sendCount / 4;
+        long sendCount = messageCount;
+        long expectedCount = sendCount / 4;
+        long printDivider = 10L;
+        String queueName = "singleQueueSubscription1";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription1");
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                             brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription1");
+                             brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
@@ -138,6 +145,11 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -151,26 +163,28 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
      * @throws CloneNotSupportedException
      */
     @Test(groups = "wso2.mb", description = "Random node subscription reconnecting test")
-    public void testDifferentNodeSubscriptionReconnecting()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, CloneNotSupportedException, AndesClientException {
-        int sendCount = 1000;
-        int expectedCount = sendCount / 4;
+    @Parameters({"messageCount"})
+    public void testDifferentNodeSubscriptionReconnecting(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, CloneNotSupportedException, AndesClientException, DataAccessUtilException {
+        long sendCount = messageCount;
+        long expectedCount = sendCount / 4;
+        long printDivider = 10L;
+        String queueName = "singleQueueSubscription2";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription2");
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                             brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueSubscription2");
+                             brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
@@ -180,8 +194,8 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Message " +
-                                                          "receiving failed for consumerClient1");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount,
+                            "Message " + "receiving failed for consumerClient1");
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
         HostAndPort randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
@@ -206,8 +220,8 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message " +
-                                                          "receiving failed for consumerClient3");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount,
+                            "Message " + "receiving failed for consumerClient3");
 
         AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
@@ -226,6 +240,11 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**

@@ -22,6 +22,7 @@ import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -37,7 +38,9 @@ import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfiguratio
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -52,6 +55,8 @@ import java.rmi.RemoteException;
  * This class includes test cases to test different ack modes for queues
  */
 public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -83,32 +88,34 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for queue")
-    public void testSessionTransactedAckModeForQueueTestCase()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSessionTransactedAckModeForQueueTestCase(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Expected message count
-        int expectedCount = 2000;
+        long expectedCount = messageCount;
         // Number of messages send
-        int sendCount = 2000;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "sessionTransactedAckQueue";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "sessionTransactedAckQueue");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
         consumerConfig.setCommitAfterEachMessageCount(1L);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                         brokerAddress.getPort(), ExchangeType.QUEUE, "sessionTransactedAckQueue");
+                         brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -117,14 +124,18 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -139,29 +150,31 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "AUTO_ACKNOWLEDGE ack mode test case for queue")
-    public void testAutoAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testAutoAcknowledgeModeForQueue(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Expected message count
-        int expectedCount = 2000;
+        long expectedCount = messageCount;
         // Number of messages send
-        int sendCount = 2000;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "autoAcknowledgeQueue";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                                brokerAddress.getPort(), ExchangeType.QUEUE, "autoAcknowledgeQueue");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+                                brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                                 brokerAddress.getPort(), ExchangeType.QUEUE, "autoAcknowledgeQueue");
+                                 brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -170,14 +183,18 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -192,33 +209,35 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "CLIENT_ACKNOWLEDGE ack mode test case for queue")
-    public void testClientAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testClientAcknowledgeModeForQueue(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Expected message count
-        int expectedCount = 2000;
+        long expectedCount = messageCount;
         // Number of messages send
-        int sendCount = 2000;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "clientAcknowledgeQueue";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "clientAcknowledgeQueue");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig.setAcknowledgeAfterEachMessageCount(1L);
         consumerConfig.setRunningDelay(10L);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "clientAcknowledgeQueue");
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -227,14 +246,18 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -248,32 +271,34 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "DUPS_OK_ACKNOWLEDGE ack mode test case for queue")
-    public void testDupOkAcknowledgeModeForQueue()
-            throws XPathExpressionException, AndesClientConfigurationException, JMSException,
-                   NamingException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDupOkAcknowledgeModeForQueue(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, JMSException, NamingException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Expected message count
-        int expectedCount = 2000;
+        long expectedCount = messageCount;
         // Number of messages send
-        int sendCount = 2000;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "dupsOkAcknowledgeQueue";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                            brokerAddress.getPort(), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+                            brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
         consumerConfig.setRunningDelay(10L);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                             brokerAddress.getPort(), ExchangeType.QUEUE, "dupsOkAcknowledgeQueue");
+                             brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -282,14 +307,18 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**

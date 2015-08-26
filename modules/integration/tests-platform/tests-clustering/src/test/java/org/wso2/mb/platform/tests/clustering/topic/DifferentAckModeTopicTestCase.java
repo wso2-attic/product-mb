@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -37,7 +38,9 @@ import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfiguratio
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -54,6 +57,7 @@ import java.rmi.RemoteException;
 public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
     private AutomationContext automationContext;
     private TopicAdminClient topicAdminClient;
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -89,14 +93,15 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "SESSION_TRANSACTED ack mode test case for topic", enabled = true)
-    public void testSessionTransactedAckModeForTopic()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSessionTransactedAckModeForTopic(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
         // Expected message count
-        long expectedCount = 2000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 2000L;
+        long sendCount = messageCount;
+        String destinationName = "sessionTransactedAckTopic";
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -106,7 +111,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                  .getInstance()
                                                                                  .getPorts()
                                                                                  .get("amqp")),
-                                                        ExchangeType.TOPIC, "sessionTransactedAckTopic");
+                                                        ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
         consumerConfig.setCommitAfterEachMessageCount(1);
@@ -119,7 +124,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                   .getInstance()
                                                                                   .getPorts()
                                                                                   .get("amqp")),
-                                                         ExchangeType.TOPIC, "sessionTransactedAckTopic");
+                                                         ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -133,10 +138,13 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 
     /**
@@ -151,14 +159,15 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "AUTO_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testAutoAcknowledgeModeForTopic()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testAutoAcknowledgeModeForTopic(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
         // Expected message count
-        long expectedCount = 2000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 2000L;
+        long sendCount = messageCount;
+        String destinationName = "autoAcknowledgeTopic";
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -168,7 +177,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                  .getInstance()
                                                                                  .getPorts()
                                                                                  .get("amqp")),
-                                                        ExchangeType.TOPIC, "autoAcknowledgeTopic");
+                                                        ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
 
@@ -180,7 +189,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                   .getInstance()
                                                                                   .getPorts()
                                                                                   .get("amqp")),
-                                                         ExchangeType.TOPIC, "autoAcknowledgeTopic");
+                                                         ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -194,10 +203,14 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
+
     }
 
     /**
@@ -212,14 +225,15 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "CLIENT_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testClientAcknowledgeModeForTopic()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testClientAcknowledgeModeForTopic(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
         // Expected message count
-        int expectedCount = 2000;
+        long expectedCount = messageCount;
         // Number of messages send
-        int sendCount = 2000;
+        long sendCount = messageCount;
+        String destinationName = "clientAcknowledgeTopic";
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -229,7 +243,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                  .getInstance()
                                                                                  .getPorts()
                                                                                  .get("amqp")),
-                                                        ExchangeType.TOPIC, "clientAcknowledgeTopic");
+                                                        ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig.setAcknowledgeAfterEachMessageCount(1);
@@ -241,7 +255,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                                                                                   .getInstance()
                                                                                   .getPorts()
                                                                                   .get("amqp")),
-                                                         ExchangeType.TOPIC, "clientAcknowledgeTopic");
+                                                         ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -255,10 +269,13 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 
     /**
@@ -273,12 +290,13 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "DUPS_OK_ACKNOWLEDGE ack mode test case for topic", enabled = true)
-    public void testDupOkAcknowledgeModeForTopic()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
-        long expectedCount = 2000L;
-        long sendCount = 2000L;
+    @Parameters({"messageCount"})
+    public void testDupOkAcknowledgeModeForTopic(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
+        long expectedCount = messageCount;
+        long sendCount = messageCount;
+        String destinationName = "dupsOkAcknowledgeTopic";
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -314,10 +332,13 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 
     /**

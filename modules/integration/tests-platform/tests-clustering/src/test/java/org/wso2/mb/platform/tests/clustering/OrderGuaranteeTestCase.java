@@ -22,7 +22,9 @@ import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
@@ -36,7 +38,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -51,6 +55,8 @@ import java.rmi.RemoteException;
  * This class includes all order guaranteeing tests
  */
 public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -82,32 +88,33 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node ordered delivery test case")
-    public void testSameNodeOrderedDelivery() throws XPathExpressionException,
-                                                     AndesClientConfigurationException,
-                                                     NamingException,
-                                                     JMSException, IOException,
-                                                     AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodeOrderedDelivery(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, AndesException, DataAccessUtilException, InterruptedException {
         // Number of messages expected
-        long expectedCount = 1000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 1000L;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "singleQueueOrder1";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
-                                    brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder1");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+                                    brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
-                                 brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder1");
+                                 brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -117,6 +124,8 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
@@ -124,6 +133,12 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         // Evaluating
         Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
         Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
+
     }
 
     /**
@@ -138,23 +153,25 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Different node ordered delivery test case")
-    public void testDifferentNodeOrderedDelivery()
-            throws AndesClientConfigurationException, XPathExpressionException, JMSException,
-                   NamingException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDifferentNodeOrderedDelivery(long messageCount)
+            throws AndesClientConfigurationException, XPathExpressionException, JMSException, NamingException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Number of messages expected
-        long expectedCount = 1000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 1000L;
+        long sendCount = messageCount;
+        long printDivider = 10L;
+        String queueName = "singleQueueOrder2";
 
         HostAndPort consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.getHostText(),
-                            consumerBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder2");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+                            consumerBrokerAddress.getPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         HostAndPort publisherBrokerAddress = getRandomAMQPBrokerAddress();
@@ -162,9 +179,9 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.getHostText(),
-                         publisherBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueueOrder2");
+                         publisherBrokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -174,6 +191,8 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
@@ -181,6 +200,11 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         // Evaluating
         Assert.assertTrue(consumerClient.checkIfMessagesAreInOrder(), "Messages did not receive in order.");
         Assert.assertEquals(consumerClient.checkIfMessagesAreDuplicated().size(), 0, "Messages are not duplicated.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**

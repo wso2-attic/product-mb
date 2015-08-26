@@ -257,6 +257,10 @@
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

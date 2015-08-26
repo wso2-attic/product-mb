@@ -21,7 +21,9 @@ package org.wso2.mb.platform.tests.clustering;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -37,11 +39,15 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.crypto.Data;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
@@ -54,6 +60,8 @@ import static org.testng.Assert.assertTrue;
  * Test class to test queues in clusters
  */
 public class QueueClusterTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -84,15 +92,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      * @throws JMSException
      */
     @Test(groups = "wso2.mb", description = "Single queue Single node send-receive test case")
-    public void testSingleQueueSingleNodeSendReceive() throws XPathExpressionException,
-                                                              AndesAdminServiceBrokerManagerAdminException,
-                                                              IOException,
-                                                              AndesClientConfigurationException,
-                                                              NamingException,
-                                                              JMSException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSingleQueueSingleNodeSendReceive(long messageCount)
+            throws XPathExpressionException, AndesAdminServiceBrokerManagerAdminException, IOException,
+                   AndesClientConfigurationException, NamingException, JMSException, AndesClientException,
+                   DataAccessUtilException, InterruptedException {
 
-        long sendCount = 1000L;
-        long expectedCount = 1000L;
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+        long printRate = 10L;
+        String queueName = "clusterSingleQueue1";
 
         String randomInstanceKey = getRandomMBInstance();
 
@@ -101,32 +110,39 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                          Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                         ExchangeType.QUEUE, "clusterSingleQueue1");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+                                         ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printRate);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         randomInstanceKey = getRandomMBInstance();
-        Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName("clusterSingleQueue1");
-        assertTrue(queue.getQueueName().equalsIgnoreCase("clusterSingleQueue1"), "Queue created in MB node 1 not exist");
+        Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName(queueName);
+        assertTrue(queue.getQueueName().equalsIgnoreCase(queueName), "Queue created in MB node 1 not exist");
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                        ExchangeType.QUEUE, "clusterSingleQueue1");
+                                        ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printRate);
 
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -137,8 +153,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single queue replication")
     public void testSingleQueueReplication()
-            throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
-        String queueName = "singleQueue2";
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException, DataAccessUtilException{
+        String queueName = "clusterSingleQueue2";
 
         String randomInstanceKey = getRandomMBInstance();
 
@@ -162,8 +178,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
         queue = tempAndesAdminClient.getQueueByName(queueName);
 
-        assertTrue(queue == null,
-                   "Queue created in MB node instance not replicated in other MB node instance");
+        assertTrue(queue == null, "Queue created in MB node instance not replicated in other MB node instance");
 
     }
 
@@ -178,14 +193,15 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      * @throws JMSException
      */
     @Test(groups = "wso2.mb", description = "Single queue Multi node send-receive test case")
-    public void testSingleQueueMultiNodeSendReceive() throws XPathExpressionException,
-                                                             AndesAdminServiceBrokerManagerAdminException,
-                                                             IOException,
-                                                             AndesClientConfigurationException,
-                                                             NamingException, JMSException,
-                                                             AndesClientException {
-        long sendCount = 1000L;
-        long expectedCount = 1000L;
+    @Parameters({"messageCount"})
+    public void testSingleQueueMultiNodeSendReceive(long messageCount)
+            throws XPathExpressionException, AndesAdminServiceBrokerManagerAdminException, IOException,
+                   AndesClientConfigurationException, NamingException, JMSException, AndesClientException,
+                   DataAccessUtilException, InterruptedException {
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+        long printRate = 10L;
+        String queueName = "clusterSingleQueue3";
 
         String randomInstanceKey = getRandomMBInstance();
 
@@ -194,9 +210,9 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                          Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                         ExchangeType.QUEUE, "clusterSingleQueue3");
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+                                         ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printRate);
 
 
         randomInstanceKey = getRandomMBInstance();
@@ -205,9 +221,9 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
-                                        ExchangeType.QUEUE, "clusterSingleQueue3");
+                                        ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printRate);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
@@ -216,9 +232,16 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate message left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**

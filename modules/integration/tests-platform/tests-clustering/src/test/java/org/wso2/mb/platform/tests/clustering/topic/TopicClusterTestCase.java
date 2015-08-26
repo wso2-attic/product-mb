@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -37,7 +38,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -59,6 +62,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     private AutomationContext automationContextForMB3;
     private TopicAdminClient topicAdminClientForMB2;
     private TopicAdminClient topicAdminClientForMB3;
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -99,41 +103,53 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single topic Single node send-receive test case")
-    public void testSingleTopicSingleNodeSendReceive()
+    @Parameters({"messageCount"})
+    public void testSingleTopicSingleNodeSendReceive(long messageCount)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException,
-                   AndesClientException {
-        long sendCount = 1000L;
-        long expectedCount = 1000L;
+                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException, AndesClientException,
+                   InterruptedException, DataAccessUtilException {
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+        long printDivider = 10L;
+        String destinationName = "clusterSingleTopic1";
 
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
                         Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                        ExchangeType.TOPIC, "clusterSingleTopic1");
+                        ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
                         Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                        ExchangeType.TOPIC, "clusterSingleTopic1");
+                        ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic1");
-        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic1"), "Topic created in" +
+        TopicNode topic = topicAdminClientForMB2.getTopicByName(destinationName);
+        assertTrue(topic.getTopicName().equalsIgnoreCase(destinationName), "Topic created in" +
                                                                              " MB node 1 not exist");
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate message left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
+
+
     }
 
     /**
@@ -174,41 +190,51 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single topic Multi node send-receive test case")
-    public void testSingleTopicMultiNodeSendReceive()
+    @Parameters({"messageCount"})
+    public void testSingleTopicMultiNodeSendReceive(long messageCount)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException,
-                   AndesClientException {
-        long sendCount = 1000L;
-        long expectedCount = 1000L;
+                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException, AndesClientException,
+                   InterruptedException, DataAccessUtilException {
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+        long printDivider = 10L;
+        String destinationName = "clusterSingleTopic3";
 
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(automationContextForMB2.getInstance().getHosts().get("default"),
                      Integer.parseInt(automationContextForMB2.getInstance().getPorts().get("amqp")),
-                     ExchangeType.TOPIC, "clusterSingleTopic3");
+                     ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
 
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(automationContextForMB3.getInstance().getHosts().get("default"),
                     Integer.parseInt(automationContextForMB3.getInstance().getPorts().get("amqp")),
-                    ExchangeType.TOPIC, "clusterSingleTopic3");
+                    ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
-        TopicNode topic = topicAdminClientForMB2.getTopicByName("clusterSingleTopic3");
-        assertTrue(topic.getTopicName().equalsIgnoreCase("clusterSingleTopic3"), "Topic created in MB node 1 not exist");
+        TopicNode topic = topicAdminClientForMB2.getTopicByName(destinationName);
+        assertTrue(topic.getTopicName().equalsIgnoreCase(destinationName), "Topic created in MB node 1 not exist");
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate message left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 
     /**
