@@ -73,8 +73,8 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
 
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>-->
-            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TransactionalPublishingTestCase"/>-->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.TransactionalPublishingTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.PurgeMessagesTestCase"/>
 
             <!-- load test cases-->
