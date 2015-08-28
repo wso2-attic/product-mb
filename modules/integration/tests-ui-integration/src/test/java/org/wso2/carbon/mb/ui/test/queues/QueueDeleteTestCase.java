@@ -23,12 +23,19 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -74,6 +81,55 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
         Assert.assertEquals(queuesBrowsePage.deleteQueue(qName), true);
 
+        logout();
+    }
+
+    /**
+     * 1. Creates a queue.
+     * 2. Publish messages to the queue.
+     * 3. Delete the queue.
+     * 4. Check if queue exists still without refreshing the page.
+     *
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
+     * @throws AndesClientConfigurationException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performPublishDeleteCheck() throws XPathExpressionException, IOException, JMSException,
+            NamingException, AndesClientException, AndesClientConfigurationException {
+        String queueName = "Delete-queue-ui";
+
+        // Logging into management console
+        driver.get(getLoginURL());
+        LoginPage loginPage = new LoginPage(driver);
+        HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
+
+        // Adding the queue
+        QueueAddPage queueAddPage = homePage.getQueueAddPage();
+        Assert.assertEquals(queueAddPage.addQueue(queueName), true);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType
+                .QUEUE, queueName);
+        publisherConfig.setNumberOfMessagesToSend(1000);
+        publisherConfig.setPrintsPerMessageCount(100L);
+
+        // Publishing messages
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        // Delete queue
+        QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+        Assert.assertEquals(queuesBrowsePage.deleteQueue(queueName), true);
+
+        // Check if queue is deleted
+        queuesBrowsePage.isQueuePresent(queueName);
+
+        // Logout
+        logout();
     }
 
     /**
