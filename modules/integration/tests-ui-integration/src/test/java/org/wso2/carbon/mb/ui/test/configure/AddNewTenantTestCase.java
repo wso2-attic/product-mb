@@ -75,7 +75,7 @@ public class AddNewTenantTestCase extends MBIntegrationUiBaseTest {
         String adminPasswordRepeat = "password";
         String adminEmail = "bob.dilon@gmail.com";
 
-        addNewTenantPage.add(domain, usagePlanName, firstName, lastName, adminUserName,
+        addNewTenantPage.add(domain, firstName, lastName, adminUserName,
                 adminPassword, adminPasswordRepeat, adminEmail);
         homePage.logout();
 
