@@ -47,7 +47,6 @@ public class AddNewTenantPage {
     /**
      * Add a new tenant
      * @param domain domain of the tenant
-     * @param usagePlanName tenants usage plan
      * @param firstName tenant first name
      * @param lastName tenant last name
      * @param adminUserName admin users' user name
@@ -57,7 +56,7 @@ public class AddNewTenantPage {
      * @param adminEmail admin users' email
      * @return true if tenant successfully created. false otherwise
      */
-    public boolean add(final String domain, final String usagePlanName, final String firstName, final String lastName,
+    public boolean add(final String domain, final String firstName, final String lastName,
                        final String adminUserName, final String adminPassword, final String adminPasswordRepeat, final String adminEmail) {
         boolean isSuccessful = false;
 
