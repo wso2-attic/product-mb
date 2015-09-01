@@ -1,8 +1,8 @@
 ================================================================================
-                        WSO2 Message Broker Server 2.5.0
+                        WSO2 Message Broker Server 3.0.0 - Alpha2
 ================================================================================
 
-Welcome to the WSO2 MB 2.5.0 release
+Welcome to the WSO2 MB 3.0.0-Alpha2 release
 
 WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
 Server (MB) which is available under the Apache Software License v2.0.
@@ -24,20 +24,16 @@ message brokering engine under apache license which is using Cassandra as its st
 
 • JMS Queuing support
 • JMS Pub/Sub mechanism for topics
-• WS-Eventing support
 • Hierarchical Topics Subscriptions
 • Queue Message browsing with added UI support 
-• In memory message store 
 • Message Re-Delivery Tries Configuration
 • Message Re delivery Header Field support
 • Sample text message sender tool in UI
 • Queue purging support
-• Clustering according to 5 deployment patterns
-• Sorted queue lists based on the message count
-• Port-offset configuration in standalone mode
+• Simple clustering machanism based on carbon clustering
 • Ability to view details of the cluster using Management Console
-• Message delivery fine tuning capabilities 
-• Cassandra replication factor and read/write consistency levels configuration
+• Message delivery fine tuning capabilities
+• Relational databases as a storage machanism
 
 The Message Broker is compliant with the latest WS-Eventing specification.
 
@@ -48,7 +44,7 @@ consuming your events using two different standard API's.
 
 System Requirements
 =======================
-1. Minimum memory - 1GB
+1. Minimum memory - 2GB
 2. Processor      - Pentium 800MHz or equivalent at minimum
 3. Java SE Development Kit 1.6.24 or higher
 4. The Management Console requires you to enable Javascript of the Web browser,
@@ -58,16 +54,16 @@ System Requirements
 5. To compile and run the sample clients, an Ant version is required. Ant 1.7.0
    version is recommended
 6. To build WSO2 MB from the Source distribution, it is necessary that you have
-   JDK 1.6.24 version and Maven 3.0.4 or later
+   JDK 7  and Maven 3.0.4 or later
 
 
 For more details see
-    https://docs.wso2.com/display/Carbon420/Installation+Prerequisites
+    https://docs.wso2.com/display/MB300/Installation+Prerequisites
 
 Installation & Running
 ==================================
 
-1. Extract the wso2mb-2.5.0.zip and go to the extracted directory
+1. Extract the wso2mb-3.0.0.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
@@ -80,7 +76,7 @@ Installation & Running
 
    
 
-WSO2 MB 2.5.0 distribution directory structure
+WSO2 MB 3.0.0 distribution directory structure
 =============================================
 
 	CARBON_HOME
@@ -92,6 +88,7 @@ WSO2 MB 2.5.0 distribution directory structure
 		|   |-- components <folder>
 		|   |-- conf <folder>
 		|       |-- Advanced <folder>
+            |-- datasources <folder>
 		|   |-- database <folder>
 		|   |-- deployment <folder>
 		|   |-- logs <folder>
@@ -105,7 +102,7 @@ WSO2 MB 2.5.0 distribution directory structure
 		`-- release-notes.html <file>
 
     - bin
-	  Contains various scripts .sh & .bat scripts
+	    Contains various scripts .sh & .bat scripts
 
     - dbscripts
       Contains the SQL scripts for setting up the database on a variety of
@@ -128,9 +125,8 @@ WSO2 MB 2.5.0 distribution directory structure
       
         - conf
           Contains configuration files
-
-          -Advanced
-              Contains configuration files related to Andes and its storage
+             - datasources
+                contains configuration for setting up databases.
          
         - database
           Contains the database
@@ -216,5 +212,5 @@ Crypto Notice
    Bouncycastle     : http://www.bouncycastle.org/
 
 --------------------------------------------------------------------------------
-(c) Copyright 2013 WSO2 Inc.
+(c) Copyright 2015 WSO2 Inc.
 

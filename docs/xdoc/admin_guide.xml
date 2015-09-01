@@ -122,136 +122,120 @@ the hardware configuration of your system. The first time startup can take up
 few additional seconds since some first time configuration logic is run by the
 MB. If the server started up cleanly you should get an output similar to the
 following on the console. </p>
-<pre>[2011-02-07 16:18:14,748]  INFO {org.wso2.carbon.server.Main} -  Initializing system...
-[2011-02-07 16:18:15,121]  INFO {org.wso2.carbon.server.TomcatCarbonWebappDeployer} -  Deployed Carbon webapp: StandardEngine[carbonEngine].StandardHost[defaulthost].StandardContext[/]
-[2011-02-07 16:18:20,721]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Starting WSO2 Carbon...
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Operating System : Linux 2.6.32-27-generic, i386
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Home        : /opt/softwares/jdk1.6.0_17/jre
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Version     : 1.6.0_17
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java VM          : Java HotSpot(TM) Server VM 14.3-b01,Sun Microsystems Inc.
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Carbon Home      : /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Temp Dir    : /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/tmp
-[2011-02-07 16:18:20,744]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  User             : shammi, en-US, Asia/Colombo
-[2011-02-07 16:18:25,531]  INFO {org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent} -  Registry Mode    : READ-WRITE
-[2011-02-07 16:18:26,833]  INFO {org.apache.qpid.wso2.internal.QpidBundleActivator} -  Setting BundleContext in PluginManager
-[Broker] BRK-1006 : Using configuration : /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/conf/qpid/etc/config.xml
-Logging configuration error: unable to read file /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/conf/qpid/etc/log4j.xml
-Using the fallback internal log4j.properties configuration
-[2011-02-07 16:18:26,976]  INFO {org.apache.qpid.server.registry.ApplicationRegistry} -  Initialising Application Registry(org.apache.qpid.server.registry.ConfigurationFileApplicationRegistry@1adff28):1
-[2011-02-07 16:18:27,008]  INFO {org.apache.qpid.server.plugins.PluginManager} -  Opened service trackers
-[2011-02-07 16:18:27,022]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Elements to lookup:
-[2011-02-07 16:18:27,022]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'queue'
-[2011-02-07 16:18:27,022]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'virtualhosts'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'com'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'common'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'catalina'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'package'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'QPID_HOME'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'line'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'cache-directory'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'security'
-[2011-02-07 16:18:27,027]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'conf'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'osgi'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'wso2'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'sun'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'tomcat'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'javax'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'carbon'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'file'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'advanced'
-[2011-02-07 16:18:27,028]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'path'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'plugin-directory'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'work'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'shared'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'os'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'impl'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'status-updates'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'axis2'
-[2011-02-07 16:18:27,029]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'heartbeat'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'prefix'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'wso2carbon'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'connector'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'java'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'server'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'components'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'management'
-[2011-02-07 16:18:27,030]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'user'
-[2011-02-07 16:18:27,038]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'amqj'
-[2011-02-07 16:18:27,038]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'log4j'
-[2011-02-07 16:18:27,042]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Elements to lookup:security
-[2011-02-07 16:18:27,042]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'msg-auth'
-[2011-02-07 16:18:27,042]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'principal-databases'
-[2011-02-07 16:18:27,042]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'jmx'
-[2011-02-07 16:18:27,047]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Elements to lookup:security.principal-databases
-[2011-02-07 16:18:27,047]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'principal-database'
-[2011-02-07 16:18:27,047]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Elements to lookup:security.jmx
-[2011-02-07 16:18:27,047]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'principal-database'
-[2011-02-07 16:18:27,047]  INFO {org.apache.qpid.server.configuration.plugins.ConfigurationPlugin} -  Tag:'access'
-[Broker] BRK-1001 : Startup : Version: 0.9 Build: 1041962M
-[2011-02-07 16:18:27,163]  INFO {qpid.message.broker.startup} -  [Broker] BRK-1001 : Startup : Version: 0.9 Build: 1041962M
-[2011-02-07 16:18:27,166]  INFO {org.apache.qpid.server.management.JMXManagedObjectRegistry} -  Initialising managed object registry using platform MBean server
-[2011-02-07 16:18:27,173]  INFO {org.apache.qpid.server.security.auth.database.ConfigurationFilePrincipalDatabaseManager} -  Initialising PrincipalDatabase authentication manager
-[2011-02-07 16:18:27,177]  INFO {org.apache.qpid.server.security.auth.database.ConfigurationFilePrincipalDatabaseManager} -  Initialised principal database 'carbon-user-store' successfully
-[2011-02-07 16:18:27,178]  INFO {org.apache.qpid.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Initialising Default PrincipalDatabase authentication manager.
-[2011-02-07 16:18:27,179]  INFO {org.apache.qpid.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Initialised PLAIN SASL provider successfully
-[2011-02-07 16:18:27,211]  INFO {org.apache.qpid.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Additional SASL providers successfully registered.
-[Broker] MNG-1001 : Startup
-[2011-02-07 16:18:27,243]  INFO {qpid.message.managementconsole.startup} -  [Broker] MNG-1001 : Startup
-[Broker] MNG-1004 : Ready : Using the platform JMX Agent
-[2011-02-07 16:18:27,244]  INFO {qpid.message.managementconsole.ready} -  [Broker] MNG-1004 : Ready : Using the platform JMX Agent
-[2011-02-07 16:18:27,249]  INFO {qpid.message.virtualhost.created} -  [Broker] VHT-1001 : Created : carbon
-[2011-02-07 16:18:27,290]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: headers Name: amq.match
-[2011-02-07 16:18:27,295]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: topic Name: amq.topic
-[2011-02-07 16:18:27,297]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: direct Name: amq.direct
-[2011-02-07 16:18:27,299]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: fanout Name: amq.fanout
-[2011-02-07 16:18:27,302]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: direct Name: default
-[2011-02-07 16:18:27,309]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Durable Type: direct Name: carbon.direct
-[2011-02-07 16:18:27,310]  INFO {qpid.message.exchange.created} -  [Broker] EXH-1001 : Create : Type: topic Name: carbon.topic
-[2011-02-07 16:18:27,322]  INFO {qpid.message.configstore.created} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] CFG-1001 : Created : org.apache.qpid.server.store.DerbyMessageStore
-[2011-02-07 16:18:27,510]  INFO {qpid.message.messagestore.store_location} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] MST-1002 : Store location : /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/database/qpid/derbystore
-[2011-02-07 16:18:29,360]  INFO {qpid.message.messagestore.recovery_start} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] MST-1004 : Recovery Start
-[2011-02-07 16:18:29,362]  INFO {qpid.message.transactionlog.recovery_start} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] TXN-1004 : Recovery Start
-[2011-02-07 16:18:29,381]  INFO {org.apache.qpid.server.store.DerbyMessageStore} -  Recovering bindings...
-[2011-02-07 16:18:29,399]  INFO {qpid.message.messagestore.created} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] MST-1001 : Created : org.apache.qpid.server.store.DerbyMessageStore
-[2011-02-07 16:18:29,406]  INFO {qpid.message.transactionlog.created} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] TXN-1001 : Created : org.apache.qpid.server.store.DerbyMessageStore
-[2011-02-07 16:18:29,415]  INFO {qpid.message.transactionlog.recovery_complete} -  [Broker] [vh(/carbon)/ms(DerbyMessageStore)] TXN-1006 : Recovery Complete
-[2011-02-07 16:18:29,416]  INFO {org.apache.qpid.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Initialising 'carbon' PrincipalDatabase authentication manager.
-[Broker] BRK-1002 : Starting : Listening on TCP port 5672
-[2011-02-07 16:18:29,484]  INFO {qpid.message.broker.listening} -  [Broker] BRK-1002 : Starting : Listening on TCP port 5672
-[Broker] BRK-1004 : Qpid Broker Ready
-[2011-02-07 16:18:29,485]  INFO {qpid.message.broker.ready} -  [Broker] BRK-1004 : Qpid Broker Ready
-[2011-02-07 16:18:29,685]  INFO {org.wso2.carbon.messagebox.internal.ds.MessageBoxServiceComponent} -  MessageBoxService bundle is activated successfully
-[2011-02-07 16:18:29,686]  INFO {org.wso2.carbon.event.core.internal.builder.EventBrokerBuilderDS} -  Successfully registered the event broker
-[2011-02-07 16:18:29,746]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Starting Carbon initialization...
-[2011-02-07 16:18:29,997]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Creating super-tenant Axis2 ConfigurationContext
-[2011-02-07 16:18:30,444]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Clustering has been disabled
-[2011-02-07 16:18:30,780]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 module: rahas-1.60-wso2v1 {super-tenant}
-[2011-02-07 16:18:30,950]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 module: wso2xfer-3.20-SNAPSHOT {super-tenant}
-[2011-02-07 16:18:31,121]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 module: rampart-1.60-wso2v1 {super-tenant}
-[2011-02-07 16:18:31,388]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 module: addressing-3.20-SNAPSHOT {super-tenant}
-[2011-02-07 16:18:31,421]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 module: wso2mex-3.20-SNAPSHOT {super-tenant}
-[2011-02-07 16:18:31,534]  INFO {org.apache.axis2.transport.tcp.TCPTransportSender} -  TCP Sender started
-[2011-02-07 16:18:31,974]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: version {super-tenant}
-[2011-02-07 16:18:32,280]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Version.aar - file:/home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/deployment/server/axis2services/Version.aar
-[2011-02-07 16:18:32,364]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Completed super-tenant Axis2 ConfigurationContext creation in 2.367 sec
-[2011-02-07 16:18:32,460]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: addressing-SNAPSHOT - file:/home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/deployment/client/modules/addressing-SNAPSHOT.mar
-[2011-02-07 16:18:32,464]  INFO {org.apache.axis2.transport.tcp.TCPTransportSender} -  TCP Sender started
-[2011-02-07 16:18:33,070]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: TopicManagerAdminService {super-tenant}
-[2011-02-07 16:18:33,550]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.event.admin - 
-[2011-02-07 16:18:34,926]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.tryit - 
-[2011-02-07 16:18:35,724]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Repository       : /home/shammi/wso2/checkouts/carbon-trunk/carbon/products/mb/modules/distribution/target/wso2mb-1.0.0-SNAPSHOT/repository/deployment/server/
-[2011-02-07 16:18:35,884]  INFO {org.wso2.carbon.core.internal.permission.update.PermissionUpdater} -  Permission cache updated for tenant 0
-[2011-02-07 16:18:35,884]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  ConfigurationContextService registered in 160ms
-[2011-02-07 16:18:35,902]  WARN {org.apache.axis2.engine.ListenerManager} -  ConfigurationContext provided for the ListenerManager initialization is null. ListenerManager will not be initialized
-[2011-02-07 16:18:35,902]  INFO {org.wso2.carbon.core.transports.http.HttpsTransportListener} -  HTTPS port       : 9443
-[2011-02-07 16:18:35,902]  INFO {org.wso2.carbon.core.transports.http.HttpTransportListener} -  HTTP port        : 9763
-[2011-02-07 16:18:37,207]  INFO {org.wso2.carbon.ui.internal.CarbonUIServiceComponent} -  Mgt Console URL  : https://10.100.0.164:9443/carbon/
-[2011-02-07 16:18:37,242]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  Started Transport Listener Manager
-[2011-02-07 16:18:37,242]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  Server           :  WSO2 MB -1.0.0-SNAPSHOT
-[2011-02-07 16:18:37,242]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  WSO2 Carbon started in 21 sec
-
-
-
+<pre>TID: [] [] [2015-09-01 11:21:41,266]  WARN {org.apache.axiom.util.stax.dialect.StAXDialectDetector} -  Unable to determine dialect of the StAX implementation at bundleresource://12.fwk18928212/ {org.apache.axiom.util.stax.dialect.StAXDialectDetector}
+TID: [] [] [2015-09-01 11:21:41,266]  WARN {org.apache.axiom.util.stax.dialect.StAXDialectDetector} -  Unable to determine dialect of the StAX implementation at bundleresource://12.fwk18928212/ {org.apache.axiom.util.stax.dialect.StAXDialectDetector}
+TID: [] [] [2015-09-01 11:21:41,236]  INFO {org.wso2.andes.wso2.internal.QpidBundleActivator} -  Setting BundleContext in PluginManager {org.wso2.andes.wso2.internal.QpidBundleActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,786]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Starting WSO2 Carbon... {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,786]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Operating System : Linux 3.13.0-62-generic, amd64 {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,786]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Home        : /usr/lib/jvm/java-7-oracle/jre {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,786]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Version     : 1.7.0_80 {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,786]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java VM          : Java HotSpot(TM) 64-Bit Server VM 24.80-b11,Oracle Corporation {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,787]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Carbon Home      : /mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,787]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  Java Temp Dir    : /mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/tmp {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,787]  INFO {org.wso2.carbon.core.internal.CarbonCoreActivator} -  User             : admin, en-US, Asia/Colombo {org.wso2.carbon.core.internal.CarbonCoreActivator}
+TID: [-1234] [] [2015-09-01 11:21:41,866]  WARN {org.wso2.carbon.core.bootup.validator.util.ValidationResultPrinter} -  Carbon is configured to use the default keystore (wso2carbon.jks). To maximize security when deploying to a production environment, configure a new keystore with a unique password in the production server profile. {org.wso2.carbon.core.bootup.validator.util.ValidationResultPrinter}
+TID: [] [] [2015-09-01 11:21:41,871]  INFO {org.wso2.carbon.databridge.agent.thrift.AgentHolder} -  Agent created ! {org.wso2.carbon.databridge.agent.thrift.AgentHolder}
+TID: [] [] [2015-09-01 11:21:41,886]  INFO {org.wso2.carbon.databridge.agent.thrift.internal.AgentDS} -  Successfully deployed Agent Client {org.wso2.carbon.databridge.agent.thrift.internal.AgentDS}
+TID: [-1234] [] [2015-09-01 11:21:43,005]  INFO {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService} -  Configured Registry in 58ms {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService}
+TID: [-1234] [] [2015-09-01 11:21:43,029]  INFO {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService} -  Connected to mount at wso2govregistry in 2ms {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService}
+TID: [-1234] [] [2015-09-01 11:21:43,114]  INFO {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService} -  Connected to mount at wso2govregistry in 0ms {org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService}
+TID: [-1234] [] [2015-09-01 11:21:43,124]  INFO {org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent} -  Registry Mode    : READ-WRITE {org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:43,184]  INFO {org.wso2.carbon.metrics.impl.MetricServiceImpl} -  Creating JDBC reporter for Metrics with source 'ramith-laptop', data source 'jdbc/WSO2MetricsDB' and 60 seconds polling period {org.wso2.carbon.metrics.impl.MetricServiceImpl}
+TID: [-1234] [] [2015-09-01 11:21:43,185]  INFO {org.wso2.carbon.metrics.impl.reporter.AbstractReporter} -  Started JMX reporter for Metrics {org.wso2.carbon.metrics.impl.reporter.AbstractReporter}
+TID: [-1234] [] [2015-09-01 11:21:43,189]  INFO {org.wso2.carbon.metrics.impl.reporter.AbstractReporter} -  Started JDBC reporter for Metrics {org.wso2.carbon.metrics.impl.reporter.AbstractReporter}
+TID: [-1234] [] [2015-09-01 11:21:43,395]  INFO {org.wso2.carbon.user.core.internal.UserStoreMgtDSComponent} -  Carbon UserStoreMgtDSComponent activated successfully. {org.wso2.carbon.user.core.internal.UserStoreMgtDSComponent}
+TID: [-1234] [] [2015-09-01 11:21:47,171]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Clustering has been enabled {org.apache.axis2.deployment.ClusterBuilder}
+TID: [-1234] [] [2015-09-01 11:21:47,171]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Clustering has been enabled {org.apache.axis2.deployment.ClusterBuilder}
+TID: [-1234] [] [2015-09-01 11:21:47,173]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Running in application mode {org.apache.axis2.deployment.ClusterBuilder}
+TID: [-1234] [] [2015-09-01 11:21:47,173]  INFO {org.apache.axis2.deployment.ClusterBuilder} -  Running in application mode {org.apache.axis2.deployment.ClusterBuilder}
+TID: [-1234] [] [2015-09-01 11:21:47,281]  INFO {org.wso2.carbon.identity.user.store.configuration.deployer.UserStoreConfigurationDeployer} -  User Store Configuration Deployer initiated. {org.wso2.carbon.identity.user.store.configuration.deployer.UserStoreConfigurationDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,281]  INFO {org.wso2.carbon.identity.user.store.configuration.deployer.UserStoreConfigurationDeployer} -  User Store Configuration Deployer initiated. {org.wso2.carbon.identity.user.store.configuration.deployer.UserStoreConfigurationDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,345]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: addressing-1.6.1-wso2v14 - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/client/modules/addressing-1.6.1-wso2v14.mar {org.apache.axis2.deployment.ModuleDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,345]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: addressing-1.6.1-wso2v14 - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/client/modules/addressing-1.6.1-wso2v14.mar {org.apache.axis2.deployment.ModuleDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,348]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: rampart-1.6.1-wso2v10 - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/client/modules/rampart-1.6.1-wso2v10.mar {org.apache.axis2.deployment.ModuleDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,348]  INFO {org.apache.axis2.deployment.ModuleDeployer} -  Deploying module: rampart-1.6.1-wso2v10 - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/client/modules/rampart-1.6.1-wso2v10.mar {org.apache.axis2.deployment.ModuleDeployer}
+TID: [-1234] [] [2015-09-01 11:21:47,516]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.andes.admin-3.0.0.SNAPSHOT -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:47,516]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.andes.admin-3.0.0.SNAPSHOT -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:47,524]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: AndesManagerService {super-tenant} {org.wso2.carbon.core.deployment.DeploymentInterceptor}
+TID: [-1234] [] [2015-09-01 11:21:47,524]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.andes.cluster.mgt-3.0.0.SNAPSHOT -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:47,524]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.andes.cluster.mgt-3.0.0.SNAPSHOT -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:47,715]  WARN {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator} -  We don't support method overloading. Ignoring [validateAudienceRestriction] {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator}
+TID: [-1234] [] [2015-09-01 11:21:47,715]  WARN {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator} -  We don't support method overloading. Ignoring [validateAudienceRestriction] {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator}
+TID: [-1234] [] [2015-09-01 11:21:48,129]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.tryit-4.4.0 -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:48,129]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: org.wso2.carbon.tryit-4.4.0 -  {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:48,198]  WARN {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator} -  We don't support method overloading. Ignoring [getAttributeName] {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator}
+TID: [-1234] [] [2015-09-01 11:21:48,198]  WARN {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator} -  We don't support method overloading. Ignoring [getAttributeName] {org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator}
+TID: [-1234] [] [2015-09-01 11:21:48,314]  INFO {org.wso2.carbon.core.init.CarbonServerManager} -  Repository       : /mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/ {org.wso2.carbon.core.init.CarbonServerManager}
+TID: [-1234] [] [2015-09-01 11:21:48,324]  INFO {org.wso2.carbon.andes.core.internal.ds.QueueManagerServiceDS} -  Successfully created the queue manager service {org.wso2.carbon.andes.core.internal.ds.QueueManagerServiceDS}
+TID: [-1234] [] [2015-09-01 11:21:48,327]  INFO {org.wso2.carbon.andes.core.internal.ds.SubscriptionManagerServiceDS} -  Successfully created the subscription manager service {org.wso2.carbon.andes.core.internal.ds.SubscriptionManagerServiceDS}
+TID: [-1234] [] [2015-09-01 11:21:48,364]  INFO {org.wso2.carbon.core.multitenancy.eager.TenantLoadingConfig} -  Using tenant lazy loading policy... {org.wso2.carbon.core.multitenancy.eager.TenantLoadingConfig}
+TID: [-1234] [] [2015-09-01 11:21:48,380]  INFO {org.wso2.carbon.core.internal.permission.update.PermissionUpdater} -  Permission cache updated for tenant -1234 {org.wso2.carbon.core.internal.permission.update.PermissionUpdater}
+TID: [-1234] [] [2015-09-01 11:21:48,391]  INFO {org.wso2.andes.configuration.AndesConfigurationManager} -  Main andes configuration located at : /mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/conf/broker.xml {org.wso2.andes.configuration.AndesConfigurationManager}
+TID: [-1234] [] [2015-09-01 11:21:49,213]  INFO {org.wso2.carbon.core.transports.http.HttpsTransportListener} -  HTTPS port       : 9443 {org.wso2.carbon.core.transports.http.HttpsTransportListener}
+TID: [-1234] [] [2015-09-01 11:21:49,213]  INFO {org.wso2.carbon.core.transports.http.HttpTransportListener} -  HTTP port        : 9763 {org.wso2.carbon.core.transports.http.HttpTransportListener}
+TID: [-1234] [] [2015-09-01 11:21:49,226]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Cluster domain: wso2.carbon.domain {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [-1234] [] [2015-09-01 11:21:49,227]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Using wka based membership management scheme {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [-1234] [] [2015-09-01 11:21:49,228]  INFO {org.wso2.carbon.core.clustering.hazelcast.util.MemberUtils} -  Added member: Host:10.100.1.165, Remote Host:null, Port: 4100, HTTP:-1, HTTPS:-1, Domain: null, Sub-domain:null, Active:true {org.wso2.carbon.core.clustering.hazelcast.util.MemberUtils}
+TID: [-1234] [] [2015-09-01 11:21:50,523]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Hazelcast initialized in 1290ms {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [-1234] [] [2015-09-01 11:21:50,565]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Local member: [868f5bd2-6452-40e0-ad2f-b240bd2ccd71] - Host:10.100.1.165, Remote Host:null, Port: 4000, HTTP:9763, HTTPS:9443, Domain: wso2.carbon.domain, Sub-domain:worker, Active:true {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [-1234] [] [2015-09-01 11:21:50,573]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Elected this member [868f5bd2-6452-40e0-ad2f-b240bd2ccd71] as the Coordinator node {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [] [] [2015-09-01 11:21:50,574]  INFO {org.wso2.carbon.core.clustering.hazelcast.util.MemberUtils} -  Added member: Host:10.100.1.165, Remote Host:null, Port: 4000, HTTP:9763, HTTPS:9443, Domain: wso2.carbon.domain, Sub-domain:worker, Active:true {org.wso2.carbon.core.clustering.hazelcast.util.MemberUtils}
+TID: [-1234] [] [2015-09-01 11:21:50,653]  INFO {org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent} -  Initializing Hazelcast Agent {org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent}
+TID: [-1234] [] [2015-09-01 11:21:50,657]  INFO {org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent} -  Successfully initialized Hazelcast Agent {org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent}
+TID: [-1234] [] [2015-09-01 11:21:50,658]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  Activating Andes Message Broker Engine... {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:50,664]  INFO {org.wso2.andes.server.Broker} -  Starting Qpid using configuration : /mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/conf/advanced/qpid-config.xml {org.wso2.andes.server.Broker}
+TID: [-1234] [] [2015-09-01 11:21:50,681]  INFO {org.wso2.andes.server.registry.ApplicationRegistry} -  Initialising Application Registry(org.wso2.andes.server.registry.ConfigurationFileApplicationRegistry@35a572cb) {org.wso2.andes.server.registry.ApplicationRegistry}
+TID: [-1234] [] [2015-09-01 11:21:50,693]  INFO {org.wso2.andes.server.plugins.PluginManager} -  Opened service trackers {org.wso2.andes.server.plugins.PluginManager}
+TID: [-1234] [] [2015-09-01 11:21:50,746]  INFO {org.wso2.andes.server.management.JMXManagedObjectRegistry} -  Initialising managed object registry using platform MBean server {org.wso2.andes.server.management.JMXManagedObjectRegistry}
+TID: [-1234] [] [2015-09-01 11:21:50,748]  INFO {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  PrincipalDatabase concrete implementation : org.wso2.carbon.andes.authentication.andes.CarbonBasedPrincipalDatabase {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager}
+TID: [-1234] [] [2015-09-01 11:21:50,750]  INFO {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Initialised PLAIN SASL provider successfully {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager}
+TID: [-1234] [] [2015-09-01 11:21:50,750]  INFO {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Additional SASL providers successfully registered. {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager}
+TID: [-1234] [] [2015-09-01 11:21:50,750]  INFO {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager} -  Registering UserManagementMBean {org.wso2.andes.server.security.auth.manager.PrincipalDatabaseAuthenticationManager}
+TID: [-1234] [] [2015-09-01 11:21:50,779]  INFO {org.wso2.andes.store.rdbms.RDBMSConnection} -  JDBC connection established with jndi config WSO2MBStoreDB {org.wso2.andes.store.rdbms.RDBMSConnection}
+TID: [-1234] [] [2015-09-01 11:21:50,787]  INFO {org.wso2.andes.store.rdbms.RDBMSAndesContextStoreImpl} -  Andes Context Store initialised {org.wso2.andes.store.rdbms.RDBMSAndesContextStoreImpl}
+TID: [-1234] [] [2015-09-01 11:21:50,787]  INFO {org.wso2.andes.kernel.AndesKernelBoot} -  AndesContextStore initialised with org.wso2.andes.store.rdbms.RDBMSAndesContextStoreImpl {org.wso2.andes.kernel.AndesKernelBoot}
+TID: [-1234] [] [2015-09-01 11:21:50,797]  INFO {org.wso2.andes.store.rdbms.RDBMSConnection} -  JDBC connection established with jndi config WSO2MBStoreDB {org.wso2.andes.store.rdbms.RDBMSConnection}
+TID: [-1234] [] [2015-09-01 11:21:50,810]  INFO {org.wso2.andes.store.rdbms.RDBMSMessageStoreImpl} -  Message Store initialised {org.wso2.andes.store.rdbms.RDBMSMessageStoreImpl}
+TID: [-1234] [] [2015-09-01 11:21:50,810]  INFO {org.wso2.andes.kernel.AndesKernelBoot} -  Andes MessageStore initialised with org.wso2.andes.store.rdbms.RDBMSMessageStoreImpl {org.wso2.andes.kernel.AndesKernelBoot}
+TID: [-1234] [] [2015-09-01 11:21:50,874]  INFO {org.wso2.andes.kernel.Andes} -  Andes API initialised. {org.wso2.andes.kernel.Andes}
+TID: [-1234] [] [2015-09-01 11:21:50,880]  INFO {org.wso2.andes.kernel.AndesKernelBoot} -  Slots stored in last session were cleared to avoid duplicates when recovering. {org.wso2.andes.kernel.AndesKernelBoot}
+TID: [-1234] [] [2015-09-01 11:21:50,912]  INFO {org.wso2.andes.kernel.AndesChannel} -  Channel created (ID: 1) {org.wso2.andes.kernel.AndesChannel}
+TID: [-1234] [] [2015-09-01 11:21:50,941]  INFO {qpid.message.broker.listening} -  [Broker] BRK-1002 : Starting : Listening on TCP port 5672 {qpid.message.broker.listening}
+TID: [-1234] [] [2015-09-01 11:21:50,943]  INFO {qpid.message.broker.listening} -  [Broker] BRK-1002 : Starting : Listening on TCP/SSL port 8672 {qpid.message.broker.listening}
+TID: [-1234] [] [2015-09-01 11:21:50,946]  INFO {org.wso2.andes.server.cluster.HazelcastClusterAgent} -  This node is elected as the Slot Coordinator. Registering localhost:7611 {org.wso2.andes.server.cluster.HazelcastClusterAgent}
+TID: [-1234] [] [2015-09-01 11:21:50,947]  INFO {org.wso2.andes.server.cluster.ClusterManager} -  Handling cluster gossip: Node NODE/10.100.1.165:4000  Joined the Cluster {org.wso2.andes.server.cluster.ClusterManager}
+TID: [-1234] [] [2015-09-01 11:21:50,947]  INFO {org.wso2.andes.server.cluster.ClusterManager} -  Initializing Cluster Mode. Current Node ID:NODE/10.100.1.165:4000 {org.wso2.andes.server.cluster.ClusterManager}
+TID: [-1234] [] [2015-09-01 11:21:50,948]  INFO {org.wso2.andes.server.cluster.ClusterManager} -  Clearing the Persisted State of Node with ID NODE/10.100.1.165:4000 {org.wso2.andes.server.cluster.ClusterManager}
+TID: [-1234] [] [2015-09-01 11:21:50,951]  INFO {org.wso2.andes.kernel.AndesKernelBoot} -  Syncing exchanges, queues, bindings and subscriptions {org.wso2.andes.kernel.AndesKernelBoot}
+TID: [-1234] [] [2015-09-01 11:21:50,952]  WARN {org.wso2.andes.kernel.AndesRecoveryTask} -  Recovering node. Adding queue [DeadLetterChannel] OW=admin/X=false/Dtrue/LPT0 {org.wso2.andes.kernel.AndesRecoveryTask}
+TID: [-1234] [] [2015-09-01 11:21:50,979]  INFO {org.wso2.andes.server.virtualhost.VirtualHostConfigSynchronizer} -  Queue sync - Added Queue: DeadLetterChannel, Owner: admin, IsExclusive: false, Arguments: null {org.wso2.andes.server.virtualhost.VirtualHostConfigSynchronizer}
+TID: [-1234] [] [2015-09-01 11:21:50,990]  INFO {org.wso2.andes.thrift.MBThriftServer} -  Starting the Message Broker Thrift server on host 'localhost' on port '7611'... {org.wso2.andes.thrift.MBThriftServer}
+TID: [] [] [2015-09-01 11:21:50,992]  INFO {org.wso2.andes.kernel.MessagingEngine} -  Starting SlotDelivery Workers. {org.wso2.andes.kernel.MessagingEngine}
+TID: [-1234] [] [2015-09-01 11:21:50,992]  INFO {org.wso2.andes.kernel.Andes} -  Starting Safe Zone Calculator for slots. {org.wso2.andes.kernel.Andes}
+TID: [] [] [2015-09-01 11:21:50,993]  INFO {org.wso2.andes.kernel.MessagingEngine} -  Start Disruptor writing messages to store. {org.wso2.andes.kernel.MessagingEngine}
+TID: [] [] [2015-09-01 11:21:51,041]  INFO {org.wso2.andes.mqtt.MQTTopicManager} -  MQTT andes connecting bridge initialized successfully {org.wso2.andes.mqtt.MQTTopicManager}
+TID: [-1234] [] [2015-09-01 11:21:51,067]  INFO {org.dna.mqtt.moquette.server.netty.NettyAcceptor} -  Server binded host: 0.0.0.0, port: 1883 {org.dna.mqtt.moquette.server.netty.NettyAcceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,367]  INFO {org.dna.mqtt.moquette.server.netty.NettyAcceptor} -  Starting SSL on port 8883 {org.dna.mqtt.moquette.server.netty.NettyAcceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,368]  INFO {org.dna.mqtt.moquette.server.netty.NettyAcceptor} -  Server binded host: 0.0.0.0, port: 8883 {org.dna.mqtt.moquette.server.netty.NettyAcceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,370]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  AMQP Host Address : 0.0.0.0 Port : 5672 {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,370]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  Successfully connected to AMQP server on port 5672 {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,371]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  MQTT Host Address : 0.0.0.0 Port : 1883 {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,371]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  Successfully connected to MQTT server on port 1883 {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,371]  INFO {org.wso2.carbon.andes.internal.QpidServiceComponent} -  WSO2 Message Broker is started. {org.wso2.carbon.andes.internal.QpidServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,413]  INFO {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent} -  Cluster initialization completed {org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent}
+TID: [-1234] [] [2015-09-01 11:21:51,420]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: echo {super-tenant} {org.wso2.carbon.core.deployment.DeploymentInterceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,421]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Echo.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/Echo.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,421]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Echo.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/Echo.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,427]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: EventSinkService {super-tenant} {org.wso2.carbon.core.deployment.DeploymentInterceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,427]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: EventSinkService.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/EventSinkService.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,427]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: EventSinkService.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/EventSinkService.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,439]  INFO {org.wso2.carbon.core.deployment.DeploymentInterceptor} -  Deploying Axis2 service: Version {super-tenant} {org.wso2.carbon.core.deployment.DeploymentInterceptor}
+TID: [-1234] [] [2015-09-01 11:21:51,439]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Version.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/Version.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,439]  INFO {org.apache.axis2.deployment.DeploymentEngine} -  Deploying Web service: Version.aar - file:/mb/cluster/mb1/wso2mb-3.0.0-SNAPSHOT/repository/deployment/server/axis2services/Version.aar {org.apache.axis2.deployment.DeploymentEngine}
+TID: [-1234] [] [2015-09-01 11:21:51,477]  INFO {org.wso2.carbon.core.init.JMXServerManager} -  JMX Service URL  : service:jmx:rmi://localhost:11111/jndi/rmi://localhost:9999/jmxrmi {org.wso2.carbon.core.init.JMXServerManager}
+TID: [-1234] [] [2015-09-01 11:21:51,477]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  Server           :  WSO2 Message Broker-3.0.0 {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,477]  INFO {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent} -  WSO2 Carbon started in 11 sec {org.wso2.carbon.core.internal.StartupFinalizerServiceComponent}
+TID: [-1234] [] [2015-09-01 11:21:51,665]  INFO {org.wso2.carbon.ui.internal.CarbonUIServiceComponent} -  Mgt Console URL  : https://10.100.1.165:9443/carbon/ {org.wso2.carbon.ui.internal.CarbonUIServiceComponent}
 </pre>
 
 <p>To verify that the MB is up and running fire off your Web browser and go to
@@ -458,27 +442,12 @@ get priority over what is defined in the actual log4j.properties file. </p>
 <p>By default WSO2 MB comes with the following log appenders configured. </p>
 <ul>
   <li>CARBON_CONSOLE (Logs to the console when the server is running) </li>
-  <li>CARBON_LOGFILE (Writes the logs to MB_HOME/logs/wso2-MB.log) </li>
+  <li>CARBON_LOGFILE (Writes the logs to MB_HOME/repository/logs/wso2carbon.log) </li>
   <li>CARBON_MEMORY </li>
   <li>CARBON_SYS_LOG </li>
-  <li>SERVICE_APPENDER (Writes mediation time audit messages to
-    MB_HOME/logs/wso2-MB-service.log) </li>
   <li>TRACE_APPENDER (Writes mediation time tracing/debug messages to the
-    MB_HOME/logs/wso2-MB-trace.log for tracing enabled services) </li>
+    MB_HOME/repository/logs/wso2carbon-trace-messages.log for tracing enabled services) </li>
   <li>TRACE_MEMORYAPPENDER </li>
 </ul>
-
-<p>Tracing can be enabled for individual mediation sequences and proxy services
-from the 'Mediation Sequences' home page and the 'Service Dashboard' page
-respectively. Click on the 'Sequences' link under 'Mediation' in the 'Manage'
-menu of the left navigation bar to access the 'Mediation Sequences' page. This
-page lists all the deployed sequences. Each sequence gives you the options to
-enable/disable tracing. To access the service dashboard for a proxy service go
-to the Services List page and click on the proxy service that you are
-interested in. Once a sequence or a proxy service is tracing enabled you can
-view the generated log messages by visiting the 'Mediation Tracer' page under
-the 'Monitor' menu. The 'Monitor' menu also gives you access to the system logs
-and the SOAP tracer logs all through the Web interface itself. </p>
-<img src="images/logs.PNG" alt="Logs" />
  </body>
 </html>

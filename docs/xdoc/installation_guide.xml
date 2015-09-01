@@ -124,12 +124,12 @@
                         </a>
                     </td>
                     <td>
-                        1.6.x (For instructions on setting up the JDK on different operating
+                        1.7.x or later (For instructions on setting up the JDK on different operating
                         systems, visit <a href="http://java.sun.com">http://java.sun.com</a>)
                         <p/>
                         <p>
                             To build WSO2 MB from the Source distribution, it is necessary
-                            that you have JDK 1.6.x version and Maven 2.1.0 or later
+                            that you have JDK 1.7.x version and Maven 3.1.x or later
                         </p>
                     </td>
                 </tr>
@@ -142,7 +142,7 @@
                     </td>
                     <td>
                         To build the WSO2 MB from its source distribution, you will need
-                        Maven 2.1.0 or later
+                        Maven 3.1.x or later
                     </td>
                 </tr>
                 <tr>
@@ -163,11 +163,9 @@
                     <td>
                         Memory
                     </td>
-                    <td>
-                        No minimum requirement - A heap size of 256~512MB is generally
-                        sufficient to process typical SOAP messages. Requirements may vary
+                    <td> Requirements may vary
                         with larger message size and on the number of messages processed
-                        concurrently
+                        concurrently but the recommended minimum is 2GB heap size
                     </td>
                 </tr>
                 <tr>
@@ -175,7 +173,7 @@
                         Disk
                     </td>
                     <td>
-                        No minimum requirement. The installation will require ~125 MB
+                        No minimum requirement. The installation will require ~190 MB
                         excluding space allocated for log files and Databases.
                     </td>
                 </tr>
@@ -184,9 +182,9 @@
                         Operating System
                     </td>
                     <td>
-                        Linux, Solaris, MS Windows - XP/ Vista (Not fully tested on Windows
+                        Linux, Solaris, MS Windows - 7 (Not fully tested on Windows
                         Vista). Since WSO2 MB is a Java application, it will generally be
-                        possible to run it on other operating systems with a JDK 1.6.x
+                        possible to run it on other operating systems with a JDK 1.7.x or later
                         runtime.
                     </td>
                 </tr>
@@ -281,7 +279,7 @@
                         </a>
                     </td>
                     <td>
-                        1.6.x (For instructions on setting up the JDK in different operating
+                        1.7.x (For instructions on setting up the JDK in different operating
                         systems, visit <a href="http://java.sun.com">http://java.sun.com</a>)
                     </td>
                 </tr>
@@ -292,7 +290,7 @@
                     </td>
                     <td>
                         To build the WSO2 MB from its source distribution, you will need
-                        Maven 2.1.0 or later
+                        Maven 3.1.x or later
                     </td>
                 </tr>
                 <tr>
@@ -300,7 +298,7 @@
                         Operating System
                     </td>
                     <td>
-                        Linux, Solaris, MS Windows - XP/ Vista (Not fully tested on Windows
+                        Linux, Solaris, MS Windows 7 (Not fully tested on Windows
                         Vista)
                     </td>
                 </tr>
@@ -316,8 +314,8 @@
         </p>
         <p>
             The WSO2 MB build is based on <a href="http://maven.apache.org/">Apache
-            Maven 2</a>. Hence, it is a prerequisite to have Maven (version 2.1.0 or later)
-            and JDK (version 1.6.x) installed in order to build WSO2 MB from the
+            Maven 2</a>. Hence, it is a prerequisite to have Maven (version 3.1.0 or later)
+            and JDK (version 1.7.x) installed in order to build WSO2 MB from the
             source distribution. Extensive instructions on using Maven 2 are available
             on the Maven website.
         </p>
@@ -366,7 +364,7 @@
             <li>
                 Make sure that the system variable
                 <a href="setting_java_home.html">JAVA_HOME</a>
-                is set to the location of your JDK, e.g., C:\Program Files\Java\jdk1.5
+                is set to the location of your JDK, e.g., C:\Program Files\Java\jdk1.7
             </li>
             <li>
                 Run mvn --version to verify that it is correctly installed.

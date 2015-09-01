@@ -23,7 +23,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"/>
-        <title>WSO2 Message Broker 2.2.0 Released!</title>
+        <title>WSO2 Message Broker 3.0.0 Alpha2 Released!</title>
         <link href="css/mb-docs.css" rel="stylesheet"/>
         <link href="styles/dist-docs.css" rel="stylesheet" type="text/css"
               media="all"/>
@@ -33,12 +33,12 @@
         </div>
 
         <div id="main-content">
-            <h1>WSO2 Message Broker (MB) 2.2.0 Released!</h1>
+            <h1>WSO2 Message Broker (MB) 3.0.0 Alpha2 Released!</h1>
 
             <p>
-                The WSO2 Message Broker team is pleased to announce the 2.2.0 release of WSO2 Message Broker (MB).
+                The WSO2 Message Broker team is pleased to announce the 3.0.0 Alpha2 release of WSO2 Message Broker (MB).
             </p>
-            <p>WSO2 Message Broker (WSO2 MB) 2.2.0  is fast, lightweight and user friendly open source
+            <p>WSO2 Message Broker (WSO2 MB) v 3.0.0  is fast, lightweight and user friendly open source
                 distributed message brokering system under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">
                 Apache Software License v2.0</a>. WSO2 MB allows system administrators and developers to
                 easily configure jms queues and topics which could be used in message routing, message stores,
@@ -46,7 +46,7 @@
                 Message Queueing Protocol Version 0-91 and Java Message Service Specification version 1.1.
             </p>
             <p>
-                WSO2 MB 2.2.0 is developed on top of the revolutionary
+                WSO2 MB v 3.0.0 is developed on top of the revolutionary
                 <a href="http://wso2.org/projects/carbon">WSO2 Carbon platform</a> (Middleware a' la carte),
                 an OSGi based framework that provides seamless modularity to your SOA via
                 componentization. This release also contains many new features and a range of optional
@@ -79,11 +79,11 @@
             </ol>
 
 
-            <h2>New Features of WSO2 MB 2.2.0</h2>
+            <h2>New Features of WSO2 MB 3.0.0</h2>
 
             <p>This release of Message Broker comes with a horde of new features and bug fixes. </p>
 
-	    <h2>New Features</h2>
+	          <h2>New Features</h2>
 
             <p><a href="https://wso2.org/jira/browse/MB-614">MB-614</a> Dead Letter Channel Support </p>
             <p><a href="https://wso2.org/jira/browse/MB-615">MB-615</a> Message Flow Controlling Support </p>
@@ -104,21 +104,21 @@
                 <li>JMS Queuing</li>
                 <li>JMS Pub/Sub </li>
                 <li>WS-Eventing</li>
-		<li>Message Browsing</li>
-		<li>Clustering Support</li>
-		<li>User based authorization for queues</li>
-		<li>Role based authorization for topics</li>
-		<li>Hierarchical Topics Subscriptions </li>
-		<li>Queue Message browsing with added UI support </li>
-		<li>Message Re-Delivery Tries Configuration </li>
-		<li>Message Re delivery Header Field support </li>
-		<li>Clustering according to 5 deployment patterns </li>
-		<li>Sample text message sender tool in UI </li>
-		<li>Queue purging support </li>
-		<li>Message delivery fine tuning capabilities  </li>
-		<li>Viewing details of the cluster using Management Console  </li>
-		<li>Cassandra replication factor and read/write consistency levels configurations </li>
-            </ul>
+								<li>Message Browsing</li>
+								<li>Clustering Support</li>
+								<li>User based authorization for queues</li>
+								<li>Role based authorization for topics</li>
+								<li>Hierarchical Topics Subscriptions </li>
+								<li>Queue Message browsing with added UI support </li>
+								<li>Message Re-Delivery Tries Configuration </li>
+								<li>Message Re delivery Header Field support </li>
+								<li>Clustering according to 5 deployment patterns </li>
+								<li>Sample text message sender tool in UI </li>
+								<li>Queue purging support </li>
+								<li>Message delivery fine tuning capabilities  </li>
+								<li>Viewing details of the cluster using Management Console  </li>
+								<li>Cassandra replication factor and read/write consistency levels configurations </li>
+						</ul>
 
 
             <p>The underlying JMS engine handles WS-Eventing/JMS synchronisation that enables
@@ -136,14 +136,9 @@
 
                 </li>
                 <li>
-                    <strong>Library:</strong>
-                    <a href="http://www.wso2.org/library/mb">http://www.wso2.org/library/mb</a>
-
-                </li>
-                <li>
                     <strong>Wiki:</strong>
-                    <a href="http://www.wso2.org/wiki/display/mb/java">
-                        http://www.wso2.org/wiki/display/mb/java
+                    <a href="https://docs.wso2.com/display/MB300/WSO2+Message+Broker+Documentation">
+                        https://docs.wso2.com/display/MB300/WSO2+Message+Broker+Documentation
                     </a>
 
                 </li>
@@ -158,7 +153,7 @@
             <p>
                 This release of WSO2 MB comes with a number of bug fixes, both in the base
                 framework and the MB specific components. All the issues which have been
-                fixed in MB 2.2.0 are recorded at following locations:
+                fixed in MB v 3.0.0 are recorded at following locations:
             </p>
             <ul>
                                                             
@@ -168,12 +163,12 @@
             </ul>
             <h2>Known Issues</h2>
             <p>
-                All the open issues pertaining to WSO2 MB 2.2.0 are reported at following
+                All the open issues pertaining to WSO2 MB v 3.0.0 are reported at following
                 locations:
             </p>
             <ul>
                 <li><a href="https://wso2.org/jira/issues/?filter=11883">
-                    WSO2 MB 2.2.0 component issues</a></li>
+                    WSO2 MB 3.0.0 component issues</a></li>
             </ul>
 
 
