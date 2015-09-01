@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0-ALPHA2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -120,10 +120,7 @@
                                     </fileset>
                                 </unzip>
                                 <!-- Disabling default way of checking authorizations due to https://wso2.org/jira/browse/IDENTITY-3489-->
-                                <replace
-                                        file="target/wso2carbon-core-${carbon.kernel.version}/repository/conf/user-mgt.xml"
-                                        token="&lt;Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property&gt;"
-                                        value="&lt;!--Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property--&gt;"/>
+                                <replace file="target/wso2carbon-core-${carbon.kernel.version}/repository/conf/user-mgt.xml" token="&lt;Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property&gt;" value="&lt;!--Property name=&quot;GetAllRolesOfUserEnabled&quot;&gt;true&lt;/Property--&gt;" />
                                 <copy todir="target/wso2carbon-core-${carbon.kernel.version}/repository/components/" overwrite="false">
                                     <fileset dir="${tempdir}/wso2mb-${product.mb.version}/repository/components/">
                                     </fileset>
