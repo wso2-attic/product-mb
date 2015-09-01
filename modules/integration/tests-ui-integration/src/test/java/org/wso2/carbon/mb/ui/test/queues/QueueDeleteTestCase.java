@@ -27,6 +27,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
@@ -79,6 +80,9 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+
+        AndesClientUtils.sleepForInterval(3000);
+
         Assert.assertEquals(queuesBrowsePage.deleteQueue(qName), true);
 
         logout();
