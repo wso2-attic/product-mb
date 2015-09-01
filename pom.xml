@@ -424,7 +424,7 @@
         <orbit.version.rampart>1.6.1.wso2v10</orbit.version.rampart>
         <!--Apache Derby-->
         <version.wso2.derby>10.3.2.1wso2v1</version.wso2.derby>
-        <carbon.commons.version>4.4.0</carbon.commons.version>
+        <carbon.commons.version>4.4.5</carbon.commons.version>
         <carbon.identity.version>4.4.0</carbon.identity.version>
         <carbon.registry.version>4.4.1</carbon.registry.version>
         <carbon.messaging.version>3.0.0-SNAPSHOT</carbon.messaging.version>
