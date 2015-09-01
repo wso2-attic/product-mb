@@ -274,7 +274,7 @@ while [ "$status" = "$START_EXIT_STATUS" ]
 do
         $JAVACMD \
         -Xbootclasspath/a:"$CARBON_XBOOTCLASSPATH" \
-        -Xms1024m -Xmx2048m -XX:MaxPermSize=256m \
+        -Xms2048m -Xmx2048m -XX:MaxPermSize=256m \
         -XX:+HeapDumpOnOutOfMemoryError \
         -XX:HeapDumpPath="$CARBON_HOME/repository/logs/heap-dump.hprof" \
         $JAVA_OPTS \
