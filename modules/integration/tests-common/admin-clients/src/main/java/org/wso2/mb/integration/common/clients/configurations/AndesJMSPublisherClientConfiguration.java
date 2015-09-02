@@ -97,6 +97,20 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     }
 
     /**
+     * Creates a publisher with a given host name, port for connection string and exchange type and
+     * destination name.
+     *
+     * @param port            The port for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
+    public AndesJMSPublisherClientConfiguration(int port,
+                                                ExchangeType exchangeType,
+                                                String destinationName) {
+        super(port, exchangeType, destinationName);
+    }
+
+    /**
      * Creates a publisher with a given user name, password, for connection
      * string and exchange type and destination name.
      *

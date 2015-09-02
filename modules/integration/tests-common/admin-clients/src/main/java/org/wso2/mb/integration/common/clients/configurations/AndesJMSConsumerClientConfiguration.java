@@ -126,6 +126,21 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     }
 
     /**
+     * Creates a consumer with a given port for connection string and exchange type and
+     * destination name.
+     *
+     * @param port            The port for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
+    public AndesJMSConsumerClientConfiguration( int port,
+                                               ExchangeType exchangeType,
+                                               String destinationName) {
+        super(port, exchangeType, destinationName);
+    }
+
+
+    /**
      * Creates a consumer with a given user name, password, for connection
      * string and exchange type and destination name.
      *
