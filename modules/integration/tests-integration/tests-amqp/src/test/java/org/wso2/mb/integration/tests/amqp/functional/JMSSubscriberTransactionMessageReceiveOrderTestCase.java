@@ -35,6 +35,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 /**
@@ -86,11 +87,11 @@ public class JMSSubscriberTransactionMessageReceiveOrderTestCase extends MBInteg
     @Test(groups = {"wso2.mb", "queue", "transactions"})
     public void performJMSSubscriberTransactionMessageReceiveOrderTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Create a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new
-                AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, QUEUE_DESTINATION);
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, QUEUE_DESTINATION);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
         consumerConfig.setCommitAfterEachMessageCount(EXPECTED_COUNT);
         consumerConfig.setRollbackAfterEachMessageCount(SEND_COUNT);
@@ -100,8 +101,8 @@ public class JMSSubscriberTransactionMessageReceiveOrderTestCase extends MBInteg
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Create JMS publisher configurations
-        AndesJMSPublisherClientConfiguration publisherConfig = new
-                AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, QUEUE_DESTINATION);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, QUEUE_DESTINATION);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Initialize consumer client

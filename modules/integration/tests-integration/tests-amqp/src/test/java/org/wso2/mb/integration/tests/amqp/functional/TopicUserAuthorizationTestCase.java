@@ -517,14 +517,14 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration
                 consumerConfig =
-                new AndesJMSConsumerClientConfiguration(
+                new AndesJMSConsumerClientConfiguration( getAMQPPort(),
                                 contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                                 ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(
+                new AndesJMSPublisherClientConfiguration( getAMQPPort(),
                         contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                         ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);

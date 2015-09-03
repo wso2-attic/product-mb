@@ -116,7 +116,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "admin!topictenant1.com", "admin",
                                             ExchangeType.QUEUE, destinationName);
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
@@ -147,7 +147,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenantPublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                              "topictenantuser1", ExchangeType.QUEUE, destinationName);
         tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
         tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
@@ -181,7 +181,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantQueueTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         int sendMessageCount1 = 80;
         int sendMessageCount2 = 120;
@@ -189,26 +189,26 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                         "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                         "topictenantuser1", ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                      "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount1);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount1 / 10L);
 
         AndesJMSPublisherClientConfiguration tenant2PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                      "topictenantuser1", ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendMessageCount2);
         tenant2PublisherConfig.setPrintsPerMessageCount(sendMessageCount2 / 10L);

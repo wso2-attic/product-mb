@@ -82,26 +82,26 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
             expectedExceptionsMessageRegExp = ".*Permission denied.*")
     public void performSingleTenantMultipleUserTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
         int sendMessageCount = 200;
         int expectedMessageCount = 200;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration adminConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("admin!topictenant1.com", "admin",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "admin!topictenant1.com", "admin",
                                                 ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                             "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("admin!topictenant1.com", "admin",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "admin!topictenant1.com", "admin",
                                                  ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount / 10L);
@@ -149,33 +149,33 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Multiple Tenant Single Users Test")
     public void performMultipleTenantTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
         int sendMessageCount1 = 120;
         int sendMessageCount2 = 80;
         int expectedMessageCount = 200;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                         "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/multitenantTopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration("topictenantuser1!topictenant2.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                         "topictenantuser1", ExchangeType.TOPIC, "topictenant2.com/multitenantTopic");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant1.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                     "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/multitenantTopic");
         tenant1PublisherConfig.setNumberOfMessagesToSend(sendMessageCount1);
         tenant1PublisherConfig.setPrintsPerMessageCount(sendMessageCount1 / 10L);
 
         AndesJMSPublisherClientConfiguration tenant2PublisherConfig =
-                new AndesJMSPublisherClientConfiguration("topictenantuser1!topictenant2.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                      "topictenantuser1", ExchangeType.TOPIC, "topictenant2.com/multitenantTopic");
         tenant2PublisherConfig.setNumberOfMessagesToSend(sendMessageCount2);
         tenant2PublisherConfig.setPrintsPerMessageCount(sendMessageCount2 / 10L);

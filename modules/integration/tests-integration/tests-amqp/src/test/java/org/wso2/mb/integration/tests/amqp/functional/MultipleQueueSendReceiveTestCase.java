@@ -76,10 +76,12 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"},enabled = false)
     public void performMultipleQueueSendReceiveTestCase()
             throws AndesClientConfigurationException, AndesClientException, JMSException,
-                   IOException, NamingException, CloneNotSupportedException {
+                   IOException, NamingException, CloneNotSupportedException,
+                   XPathExpressionException {
 
         // Creating a consumer client configurations
-        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "multipleQueue1");
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleQueue1");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
@@ -87,7 +89,8 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
         consumerConfig2.setDestinationName("multipleQueue2");
 
         // Creating a publisher client configurations
-        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "multipleQueue1");
+        AndesJMSPublisherClientConfiguration publisherConfig1 =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleQueue1");
         publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig1.setPrintsPerMessageCount(SEND_COUNT/10L);
 

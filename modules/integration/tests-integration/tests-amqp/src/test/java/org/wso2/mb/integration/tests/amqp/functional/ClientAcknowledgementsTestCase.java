@@ -81,11 +81,11 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue"})
     public void performClientAcknowledgementsTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "clientAckTestQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig
                 .setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
@@ -95,7 +95,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "clientAckTestQueue");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "clientAckTestQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

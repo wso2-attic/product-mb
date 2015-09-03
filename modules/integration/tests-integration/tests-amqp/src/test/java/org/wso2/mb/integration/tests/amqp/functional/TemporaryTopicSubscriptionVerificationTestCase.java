@@ -57,20 +57,22 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
             description = "Single topic subscriber subscribe-close-re-subscribe test case")
     public void performSingleTopicSubscribeCloseResubscribeTest()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         long sendCount = 1000L;
         long expectedCount = 200L;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration initialConsumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
@@ -87,7 +89,8 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
 
         // Creating a second consumer client configuration
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
         secondaryConsumerConfig.setMaximumMessagesToReceived(1L);
 
         // Creating a seconds publisher client configuration
@@ -125,7 +128,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
     public void performMultipleTopicSubscribeCloseResubscribeTest()
             throws ExecutionException, AndesClientConfigurationException, NamingException,
                    JMSException,
-                   IOException, AndesClientException {
+                   IOException, AndesClientException, XPathExpressionException {
 
         long sendCount = 1000L;
         long expectedCountByClient1 = 1000L;
@@ -135,13 +138,15 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration initialConsumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCountByClient1);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCountByClient1 / 10L);
         initialConsumerConfig.setRunningDelay(100L); // Setting a delay in consuming each message.
 
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
         secondaryConsumerConfig.setMaximumMessagesToReceived(expectedCountByClient2);
         secondaryConsumerConfig.setPrintsPerMessageCount(expectedCountByClient2 / 10L);
         secondaryConsumerConfig
@@ -149,7 +154,8 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
@@ -207,7 +213,8 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
             // Re-subscribe and see if messages are coming
             // Creating a  consumer client configuration
             AndesJMSConsumerClientConfiguration newConsumerConfig =
-                    new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
+                    new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                            ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
             newConsumerConfig.setMaximumMessagesToReceived(1L);
 
             // Creating clients

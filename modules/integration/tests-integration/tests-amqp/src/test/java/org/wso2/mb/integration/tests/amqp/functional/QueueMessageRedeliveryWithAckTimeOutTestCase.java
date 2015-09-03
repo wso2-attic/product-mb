@@ -81,19 +81,21 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueueMessageRedeliveryWithAckTimeOutTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Setting system property "AndesAckWaitTimeOut" for andes
         System.setProperty("AndesAckWaitTimeOut", Long.toString(DEFAULT_ACK_WAIT_TIMEOUT * 1000L));
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "redeliveryQueue");
         consumerConfig.setMaximumMessagesToReceived(5L);
         consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "redeliveryQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "redeliveryQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients

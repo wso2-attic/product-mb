@@ -81,17 +81,17 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performDurableTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicTest");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicTest");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig1.setDurable(true, "durableSubToDurableTopic1");
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicTest");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicTest");
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 

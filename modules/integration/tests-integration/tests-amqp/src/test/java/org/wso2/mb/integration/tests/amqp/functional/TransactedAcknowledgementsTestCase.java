@@ -80,10 +80,12 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case with transactions")
     public void transactedAcknowledgements()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "transactedAckTestQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE, "transactedAckTestQueue");
         consumerConfig.setMaximumMessagesToReceived(100L);
         consumerConfig.setRunningDelay(100L);   // Setting a delay publishing each message
         consumerConfig.setRollbackAfterEachMessageCount(10);   // Roll back session after given message count
@@ -92,7 +94,9 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // Write received messages to file
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactedAckTestQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "transactedAckTestQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients

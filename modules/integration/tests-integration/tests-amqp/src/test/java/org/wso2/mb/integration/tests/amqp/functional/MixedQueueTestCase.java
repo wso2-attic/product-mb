@@ -67,7 +67,7 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single queue send-receive test case with 50% expired messages")
     public void performSingleQueueExpirySendReceiveTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Message send count
         long sendCount = 1000L;
@@ -79,15 +79,18 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         long expirationTime = 1L;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueWithExpiration");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiration");
         consumerConfig.setMaximumMessagesToReceived(sendCountWithoutExpiration);
         consumerConfig.setPrintsPerMessageCount(sendCountWithoutExpiration / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "queueWithExpiration");
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiration");
         publisherConfigWithoutExpiration.setNumberOfMessagesToSend(sendCountWithoutExpiration);
         publisherConfigWithoutExpiration.setPrintsPerMessageCount(sendCountWithoutExpiration / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "queueWithExpiration");
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiration");
         publisherConfigWithExpiration.setNumberOfMessagesToSend(sendCountWithExpiration);
         publisherConfigWithExpiration.setPrintsPerMessageCount(sendCountWithExpiration / 10L);
         publisherConfigWithExpiration.setJMSMessageExpiryTime(expirationTime); // setting expiration time
@@ -124,7 +127,7 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "send messages to a queue which has two consumers with jms expiration")
     public void performManyQueueExpirySendReceiveTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Message send count
         long sendCount = 1000L;
@@ -138,20 +141,24 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         long expirationTime = 1L;
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
+        AndesJMSConsumerClientConfiguration initialConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCountByOneSubscriber);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCountByOneSubscriber / 10L);
 
-        AndesJMSConsumerClientConfiguration secondaryConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
+        AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         secondaryConsumerConfig.setMaximumMessagesToReceived(expectedCountByOneSubscriber);
         secondaryConsumerConfig.setPrintsPerMessageCount(expectedCountByOneSubscriber / 10L);
 
         // Creating a consumer client configuration
-        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         publisherConfigWithoutExpiration.setNumberOfMessagesToSend(sendCountWithoutExpiration);
         publisherConfigWithoutExpiration.setPrintsPerMessageCount(sendCountWithoutExpiration / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         publisherConfigWithExpiration.setPrintsPerMessageCount(sendCountWithExpiration / 10L);
         publisherConfigWithExpiration.setNumberOfMessagesToSend(sendCountWithExpiration);
         publisherConfigWithExpiration.setJMSMessageExpiryTime(expirationTime);

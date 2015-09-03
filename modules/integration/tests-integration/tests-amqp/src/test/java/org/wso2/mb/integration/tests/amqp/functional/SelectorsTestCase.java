@@ -78,17 +78,19 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "send-receive test case with jms selectors without conforming messages")
     public void performQueueSendWithReceiverHavingSelectorsButNoModifiedPublisherSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("JMSType='AAA'");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -122,17 +124,19 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb")
     public void performQueueSendWithModifiedPublisherSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("JMSType='AAA'");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients
@@ -174,18 +178,20 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb")
     public void performQueueSendWithTimestampBasedSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("JMSTimestamp > " + Long
                 .toString(System.currentTimeMillis() + 1000L));
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setRunningDelay(300L);  // Setting publishing delay
 
@@ -221,19 +227,22 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyBasedSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.trace'");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -289,19 +298,25 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyAndJMSTypeBasedSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE,
+                                                        "jmsSelectorSubscriberCustomPropertyAndJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.trace' AND JMSType='myMessage'");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE,
+                                                         "jmsSelectorSubscriberCustomPropertyAndJMSType");
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyAndJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE,
+                                                         "jmsSelectorSubscriberCustomPropertyAndJMSType");
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -358,20 +373,26 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb")
     public void performQueueReceiverCustomPropertyOrJMSTypeBasedSelectors()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.QUEUE,
+                                                        "jmsSelectorSubscriberCustomPropertyOrJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.palmGrove' OR JMSType='myMessage'");
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE,
+                                                         "jmsSelectorSubscriberCustomPropertyOrJMSType");
 
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "jmsSelectorSubscriberCustomPropertyOrJMSType");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.QUEUE,
+                                                         "jmsSelectorSubscriberCustomPropertyOrJMSType");
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
