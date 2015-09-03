@@ -29,6 +29,8 @@ import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * Test different combinations of MQTT wildcards.
  *
@@ -66,7 +68,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
      * @throws MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Test multi level wildcard")
-    public void performMultiLevelWildcardTestCase() throws MqttException {
+    public void performMultiLevelWildcardTestCase() throws MqttException, XPathExpressionException {
         int noOfTopLevelSubscribers = 1;
         int noOfMidLevelSubscribers = 1;
 
@@ -76,18 +78,18 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         // Receive all the messages
         mqttClientEngine.createSubscriberConnection(multiLevelWildCard, QualityOfService.LEAST_ONCE,
-                noOfTopLevelSubscribers, false, ClientMode.BLOCKING);
+                noOfTopLevelSubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Receive messages published to 'multi/level' and all it's sub levels
         mqttClientEngine.createSubscriberConnection("multi/level/" + multiLevelWildCard, QualityOfService.LEAST_ONCE,
-                noOfMidLevelSubscribers, false, ClientMode.BLOCKING);
+                noOfMidLevelSubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Creating Publishers
 
         // Publish to 'multi/level/wild/card'
         mqttClientEngine.createPublisherConnection("multi/level/wild/card", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceived();
         int receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -101,7 +103,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         // Publish to 'multi'
         mqttClientEngine.createPublisherConnection("multi", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -127,7 +129,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
      * @throws MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Test single level wildcard")
-    public void performSingleLevelWildcardTest() throws MqttException {
+    public void performSingleLevelWildcardTest() throws MqttException, XPathExpressionException {
         int noOfTopLevelOnlySubscribers = 1;
         int noOfMidLevelOnlySubscribers = 1;
         int noOfLeafLevelOnlySubscribers = 1;
@@ -138,23 +140,23 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         // Receive all the messages published to top nodes only
         mqttClientEngine.createSubscriberConnection(singleLevelWildCard, QualityOfService.LEAST_ONCE,
-                noOfTopLevelOnlySubscribers, false, ClientMode.BLOCKING);
+                noOfTopLevelOnlySubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Receive messages published to 'single/<any>' and all it's sub levels
         mqttClientEngine.createSubscriberConnection("single/" + singleLevelWildCard,
                 QualityOfService.LEAST_ONCE,
-                noOfMidLevelOnlySubscribers, false, ClientMode.BLOCKING);
+                noOfMidLevelOnlySubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Receive messages published to 'single/level/<any>' and all it's sub levels
         mqttClientEngine.createSubscriberConnection("single/level/" + singleLevelWildCard, QualityOfService.LEAST_ONCE,
-                noOfLeafLevelOnlySubscribers, false, ClientMode.BLOCKING);
+                noOfLeafLevelOnlySubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Creating Publishers
 
         // Publish to 'single'
         mqttClientEngine.createPublisherConnection("single", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceived();
         int receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -166,7 +168,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         // Publish to 'single/level'
         mqttClientEngine.createPublisherConnection("single/level", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceived();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -179,7 +181,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         // Publish to 'single/level/wildcard'
         mqttClientEngine.createPublisherConnection("single/level/wildcard", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -204,7 +206,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Test single level and multi level wildcards in conjunction",
             enabled = false)
-    public void performMixWildcardTestCase() throws MqttException { // Disabled due to MQTT Client not supporting
+    public void performMixWildcardTestCase() throws MqttException, XPathExpressionException { // Disabled due to MQTT Client not supporting
         int noOfAllLevelSubscribers = 1;
         int noOfMidAnySubscribers = 1;
         int noOfStartWithAnySubscribers = 1;
@@ -216,26 +218,29 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         // Receive all the messages published - '+/#'
         mqttClientEngine.createSubscriberConnection(singleLevelWildCard + "/" + multiLevelWildCard,
-                QualityOfService.LEAST_ONCE, noOfAllLevelSubscribers, false, ClientMode.BLOCKING);
+                QualityOfService.LEAST_ONCE, noOfAllLevelSubscribers, false, ClientMode.BLOCKING,
+                automationContext);
 
         // Receive all the messages published to 'mixed/<any>/wild' and all it's sub topics
         mqttClientEngine.createSubscriberConnection("mixed/" + singleLevelWildCard + "/wild/" + multiLevelWildCard,
-                QualityOfService.LEAST_ONCE, noOfMidAnySubscribers, false, ClientMode.BLOCKING);
+                QualityOfService.LEAST_ONCE, noOfMidAnySubscribers, false, ClientMode.BLOCKING, automationContext);
 
         // Receive all the messages published to '<any>/level' and all it's sub topics
         mqttClientEngine.createSubscriberConnection(singleLevelWildCard + "/level/" + multiLevelWildCard,
-                QualityOfService.LEAST_ONCE, noOfStartWithAnySubscribers, false, ClientMode.BLOCKING);
+                QualityOfService.LEAST_ONCE, noOfStartWithAnySubscribers, false, ClientMode.BLOCKING,
+                automationContext);
 
         // Receive all the messages published to sub trees of 'mixed/level' but not 'mixed/level'
         mqttClientEngine.createSubscriberConnection("mixed/level" + singleLevelWildCard + "/" + multiLevelWildCard,
-                QualityOfService.LEAST_ONCE, noOfAdjacentWildcardSubscribers, false, ClientMode.BLOCKING);
+                QualityOfService.LEAST_ONCE, noOfAdjacentWildcardSubscribers, false, ClientMode.BLOCKING,
+                automationContext );
 
         // Creating Publishers
 
         // Publish to 'mixed'
         mqttClientEngine.createPublisherConnection("mixed", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceived();
         int receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -248,7 +253,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         // Publish to 'mixed/level'
         mqttClientEngine.createPublisherConnection("mixed/level", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceived();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
@@ -262,7 +267,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         // Publish to 'mixed/level/wild/card'
         mqttClientEngine.createPublisherConnection("mixed/level/wild/card", QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
-                noOfMessagesPerPublisher, ClientMode.BLOCKING);
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();

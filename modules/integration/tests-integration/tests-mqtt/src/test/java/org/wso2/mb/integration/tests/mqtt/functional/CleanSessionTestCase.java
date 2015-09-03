@@ -32,6 +32,8 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvider;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * Verify MQTT clean session option by sending messages with clean session = false
  * and disconnecting the subscriber.
@@ -55,7 +57,8 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, dataProvider = "QualityOfServiceDataProvider",
             dataProviderClass = QualityOfServiceDataProvider.class)
-    public void performCleanSessionTestCase(QualityOfService qualityOfService) throws MqttException {
+    public void performCleanSessionTestCase(QualityOfService qualityOfService)
+            throws MqttException, XPathExpressionException {
         int noOfMessagesPerQos = 1;
         int noOfPublishersPerQos = 1;
         int expectedCount = noOfMessagesPerQos * 2; // Only qos 1 and 2 messages are expected
@@ -68,7 +71,7 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         String topic = "CleanSessionTestTopic";
 
-        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setCleanSession(false);
 
         //create the subscribers
@@ -84,15 +87,18 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
 
         // Publish qos 0 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.MOST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
         // Publish qos 1 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
         // Publish qos 2 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.EXACTLY_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
 
         // Re connect the subscriber and subscribe to the same topic
@@ -117,7 +123,8 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, dataProvider = "QualityOfServiceDataProvider",
             dataProviderClass = QualityOfServiceDataProvider.class)
-    public void performCleanSessionWithUnSubscriptionTestCase(QualityOfService qualityOfService) throws MqttException {
+    public void performCleanSessionWithUnSubscriptionTestCase(QualityOfService qualityOfService)
+            throws MqttException, XPathExpressionException {
         int noOfMessagesPerQos = 1;
         int noOfPublishersPerQos = 1;
         // Only qos 1 and 2 messages are expected, always we should not expect to receive
@@ -127,7 +134,7 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         String topic = "CleanSessionTestTopic";
 
-        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setCleanSession(false);
 
         //create the subscribers
@@ -146,15 +153,18 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
 
         // Publish qos 0 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.MOST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
         // Publish qos 1 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
         // Publish qos 2 message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.EXACTLY_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishersPerQos, noOfMessagesPerQos, ClientMode.BLOCKING,
+                automationContext);
 
 
         // Re connect the subscriber and subscribe to the same topic

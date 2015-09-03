@@ -34,6 +34,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvider;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -63,7 +64,8 @@ public class OneMBMessageTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send and receive large Message of 1 MB",
             dataProvider = "QualityOfServiceDataProvider", dataProviderClass = QualityOfServiceDataProvider.class)
-    public void performOneMBLoadTestCase(QualityOfService qualityOfService) throws MqttException, IOException {
+    public void performOneMBLoadTestCase(QualityOfService qualityOfService)
+            throws MqttException, IOException, XPathExpressionException {
         int sendCount = 10;
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -79,10 +81,10 @@ public class OneMBMessageTestCase extends MBIntegrationBaseTest {
 
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, false,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(topicName, qualityOfService, oneMBBytes, noOfPublishers, sendCount,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

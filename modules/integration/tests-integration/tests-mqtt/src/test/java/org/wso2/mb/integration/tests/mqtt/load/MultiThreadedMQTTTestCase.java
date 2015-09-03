@@ -30,6 +30,8 @@ import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * Send and receive via multiple publisher and multiple subscribers.
  */
@@ -52,7 +54,7 @@ public class MultiThreadedMQTTTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send a large amount of messages and receive via multiple MQTT " +
             "clients")
-    public void performMultiThreadedMQTTTestCase() throws MqttException {
+    public void performMultiThreadedMQTTTestCase() throws MqttException, XPathExpressionException {
         String topicName = "MultiThreadedTopic";
         int sendCount = 100000;
         int noOfPublishers = 10;
@@ -62,10 +64,11 @@ public class MultiThreadedMQTTTestCase extends MBIntegrationBaseTest {
 
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topicName, QualityOfService.MOST_ONCE, noOfSubscribers, false,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(topicName, QualityOfService.MOST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING);
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING,
+                automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 
