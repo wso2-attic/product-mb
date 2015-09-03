@@ -128,7 +128,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
     @BeforeMethod(dependsOnMethods = {"cleanDeadLetterChannel"})
     public void addDurableTopicMessagesToDLC()
             throws AndesClientConfigurationException, NamingException,
-                   JMSException, IOException, AndesClientException {
+                   JMSException, IOException, AndesClientException, XPathExpressionException {
         // Get current "AndesAckWaitTimeOut" system property.
         defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
 
@@ -137,7 +137,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new
-                AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, DLC_TEST_DURABLE_TOPIC);
+                AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, DLC_TEST_DURABLE_TOPIC);
         // Amount of message to receive
         consumerConfig.setDurable(true, DLC_TEST_DURABLE_TOPIC);
         consumerConfig.setSubscriptionID("durable-topic-sub-1");
@@ -146,7 +146,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
         consumerConfig.setAcknowledgeAfterEachMessageCount(EXPECTED_COUNT + 200L);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, DLC_TEST_DURABLE_TOPIC);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, DLC_TEST_DURABLE_TOPIC);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         consumerClient = new AndesClient(consumerConfig, true);

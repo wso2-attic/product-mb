@@ -126,8 +126,8 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
         long sendCount = 1;
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(
-                                                                                ExchangeType.QUEUE, TEST_QUEUE_NAME);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_QUEUE_NAME);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setReadMessagesFromFilePath(MESSAGE_CONTENT_INPUT_FILE_PATH);
 

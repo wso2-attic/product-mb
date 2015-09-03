@@ -95,7 +95,8 @@ public class TopicTenantTestCase extends MBIntegrationUiBaseTest {
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
-        MQTTClientConnectionConfiguration mqttClientConnectionConfiguration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration mqttClientConnectionConfiguration =
+                mqttClientEngine.getConfigurations(mbServer);
         mqttClientConnectionConfiguration.setBrokerUserName("bob!home.com");
         mqttClientConnectionConfiguration.setBrokerPassword("marleyandme");
 

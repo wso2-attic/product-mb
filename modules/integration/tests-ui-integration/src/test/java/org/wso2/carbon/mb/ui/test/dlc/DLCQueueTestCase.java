@@ -175,14 +175,14 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, DLC_TEST_QUEUE);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, DLC_TEST_QUEUE);
         // Amount of message to receive
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 200L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig.setAcknowledgeAfterEachMessageCount(EXPECTED_COUNT + 210L);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, DLC_TEST_QUEUE);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, DLC_TEST_QUEUE);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

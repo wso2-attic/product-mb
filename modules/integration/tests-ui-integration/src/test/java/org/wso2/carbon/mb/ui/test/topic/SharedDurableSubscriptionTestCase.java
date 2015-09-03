@@ -88,7 +88,7 @@ public class SharedDurableSubscriptionTestCase extends MBIntegrationUiBaseTest {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "sharedDurableTopic1");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "sharedDurableTopic1");
         consumerConfig.setDurable(true, "client-id-shared-1");
 
         // Creating clients
@@ -174,11 +174,11 @@ public class SharedDurableSubscriptionTestCase extends MBIntegrationUiBaseTest {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "sharedDurableTopic4");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "sharedDurableTopic4");
         consumerConfig1.setDurable(true, "client-id-shared-4");
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "sharedDurableTopic4");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "sharedDurableTopic4");
         consumerConfig2.setDurable(true, "client-id-shared-5");
 
         // Creating clients
@@ -263,11 +263,11 @@ public class SharedDurableSubscriptionTestCase extends MBIntegrationUiBaseTest {
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "sharedDurableTopic2");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "sharedDurableTopic2");
         consumerConfig1.setDurable(true, "client-id-shared-2");
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "sharedDurableTopic3");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "sharedDurableTopic3");
         consumerConfig2.setDurable(true, "client-id-shared-3");
 
         // Creating clients

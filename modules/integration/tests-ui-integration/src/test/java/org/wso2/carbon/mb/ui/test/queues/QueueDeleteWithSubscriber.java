@@ -88,8 +88,8 @@ public class QueueDeleteWithSubscriber extends MBIntegrationUiBaseTest {
         Assert.assertEquals(queueAddPage.addQueue(queueName), true);
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(
-                                                                                    ExchangeType.QUEUE, queueName);
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
 
         // Creating a subscriber and listens.
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
