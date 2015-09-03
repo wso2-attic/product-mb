@@ -28,6 +28,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
+import org.wso2.andes.server.queue.DLCQueueUtils;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
@@ -70,15 +71,52 @@ import java.util.List;
  */
 public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
     private static final Log log = LogFactory.getLog(DLCQueueTestCase.class);
-    private static final int COLUMN_LIST_SIZE = 11;
-    private static final int MESSAGE_ID_COLUMN = 1;
+
+    /**
+     * The index of the messageID column in queue content table. Assumed to be the second column
+     */
+    private static final int MESSAGE_ID_COLUMN_IN_QUEUE = 1;
+
+    /**
+     * The index of the messageID column in DLC content table. Assumed to be the third column
+     */
+    private static final int MESSAGE_ID_COLUMN_IN_DLC = 2;
+
+    /**
+     * The message count that will be sent by the publisher
+     */
     private static final long SEND_COUNT = 15L;
+
+    /**
+     * The message count that is expected to be received by the consumer
+     */
     private static final long EXPECTED_COUNT = 15L;
+
+    /**
+     * Home page instance for the test case
+     */
+    private HomePage homePage;
 
     /**
      * DLC test queue name
      */
     private static final String DLC_TEST_QUEUE = "DLCTestQueue";
+
+    /**
+     * The Queue name of the queue for which the message is being re-routed
+     */
+    private static final String REROUTE_QUEUE = "rerouteTestQueue";
+
+    /**
+     * The XPath for the message content table once the dlc is browsed
+     */
+    private static final String DLC_MESSAGE_CONTENT_TABLE = "mb.dlc.browse.content.table";
+
+    /**
+     * The XPath for the message content table once a queue is browsed
+     */
+    private static final String QUEUE_MESSAGE_CONTENT_TABLE = "mb.queue.browse.content.table";
+
 
     /**
      * Initializes the test case and changes the number of delivery attempts of a message to 1.
@@ -154,9 +192,10 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         publisherClient.startClient();
 
         // Waiting until the message count in DLC is different after the message were published.
-        while (messageCountPriorSendingMessages == this.getDLCMessageCount()) {
-            if(0 == tries){
-                Assert.fail("Did not receive any message to DLC.");
+        while (EXPECTED_COUNT > this.getDLCMessageCount()) {
+            if (0 == tries) {
+                Assert.assertEquals(this.getDLCMessageCount(), EXPECTED_COUNT,
+                        "Did not receive the expected number of message to DLC.");
             }
             // Reducing try count
             tries--;
@@ -170,76 +209,79 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
         // Stops consuming messages
         consumerClient.stopClient();
 
-        String rerouteQueue = "rerouteTestQueue";
         String deletingMessageID;
-        String restoredMessageID;
         String restoringMessageID;
         String reroutingMessageID;
-        String reroutedMessageID;
 
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
-        HomePage homePage = loginPage.loginAs(mbServer.getContextTenant()
-                                                      .getContextUser().getUserName(), mbServer
-                                                      .getContextTenant().getContextUser()
-                                                      .getPassword());
+        homePage = loginPage.loginAs(mbServer.getContextTenant().getContextUser().getUserName(),
+                                     mbServer.getContextTenant().getContextUser().getPassword());
+
         // Add an queue to test rerouting messages of DLC
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
-        Assert.assertEquals(queueAddPage.addQueue(rerouteQueue), true);
+        Assert.assertEquals(queueAddPage.addQueue(REROUTE_QUEUE), true);
         DLCBrowsePage dlcBrowsePage = homePage.getDLCBrowsePage();
+
+        // Make sure that the dead letter channel is created
         Assert.assertNotNull(dlcBrowsePage.isDLCCreated(), "DeadLetter Channel not created. " + DLC_TEST_QUEUE);
 
         // Testing delete messages
-        DLCContentPage dlcContentPage = dlcBrowsePage.getDLCContent();
-        deletingMessageID = dlcContentPage.deleteFunction();
+        deletingMessageID = dlcBrowsePage.getDLCContent().deleteFunction();
 
-        Assert.assertTrue(checkMessages(deletingMessageID, DLC_TEST_QUEUE),
-                          "Deleting messages of dead letter channel is unsuccessful.");
+        // Waiting till back end completes
+        AndesClientUtils.sleepForInterval(5000);
+
+        // Check if message is still present in the dead letter channel
+        Assert.assertFalse(checkMessages(deletingMessageID,
+                        DLCQueueUtils.identifyTenantInformationAndGenerateDLCString(DLC_TEST_QUEUE)),
+                "Deleting messages from DLC is unsuccessful. Message present in DLC.");
+
+        // Check if the message is present in the original queue
+        Assert.assertFalse(checkMessages(deletingMessageID, DLC_TEST_QUEUE),
+                           "Deleting messages from DLC is unsuccessful. Message present in queue.");
+
+        log.info("Deleting messages in DLC is successful.");
 
         // Testing restore messages
-        restoringMessageID = dlcContentPage.restoreFunction();
+        restoringMessageID = homePage.getDLCBrowsePage().getDLCContent().restoreFunction();
 
-        // Waiting till back end completes.
+        // Waiting till back end completes
         AndesClientUtils.sleepForInterval(5000);
 
-        QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        queuesBrowsePage.browseQueue(DLC_TEST_QUEUE);
-        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.queue.browse.content.table"))) {
-            restoredMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
-                                                                getElement("mb.dlc.restored.message.id"))).getText();
+        // Check if the message is present in the original queue
+        Assert.assertTrue(checkMessages(restoringMessageID, DLC_TEST_QUEUE),
+                          "Restoring messages of DeadLetter Channel is unsuccessful. Message not present in queue.");
 
-            Assert.assertEquals(restoredMessageID, restoringMessageID, "Restoring messages of DeadLetter Channel is " +
-                                                                                                        "unsuccessful");
-            log.info("Restoring messages of DeadLetter Channel is successful.");
-        } else {
-            Assert.fail("No messages in Queue" + DLC_TEST_QUEUE + "after restoring");
-        }
+        // Check if message is deleted from the dead letter channel
+        Assert.assertFalse(checkMessages(restoringMessageID,
+                        DLCQueueUtils.identifyTenantInformationAndGenerateDLCString(DLC_TEST_QUEUE)),
+                "Restoring messages of DeadLetter Channel is unsuccessful. Message present in DLC.");
+
+        log.info("Restoring messages of DeadLetter Channel is successful.");
 
         // Testing reroute messages
-        DLCBrowsePage dlcBrowsePage1 = homePage.getDLCBrowsePage();
-        DLCContentPage dlcContentPage1 = dlcBrowsePage1.getDLCContent();
-        reroutingMessageID = dlcContentPage1.rerouteFunction(rerouteQueue);
+        reroutingMessageID = homePage.getDLCBrowsePage().getDLCContent().rerouteFunction(REROUTE_QUEUE);
 
-        // Waiting till back end completes.
+        // Waiting till back end completes
         AndesClientUtils.sleepForInterval(5000);
-        QueuesBrowsePage queuesBrowsePage1 = homePage.getQueuesBrowsePage();
-        queuesBrowsePage1.browseQueue(rerouteQueue);
-        if (isElementPresent(UIElementMapper.getInstance().getElement("mb.dlc.rerouted.queue.table"))) {
-            reroutedMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance().
-                                                   getElement("mb.dlc.rerouted.message.id"))).getText();
-            Assert.assertEquals(reroutedMessageID, reroutingMessageID, "Rerouting messages of DeadLetter Channel is " +
-                                                                                                        "unsuccessful");
-            log.info("Rerouting messages of dead letter channel is successful.");
-        } else {
-            Assert.fail("No messages in Queue" + rerouteQueue + "after rerouting");
-        }
 
+        // Check if the message is present in the re-routed queue
+        Assert.assertTrue(checkMessages(reroutingMessageID, REROUTE_QUEUE),
+                "Re-routing messages of DeadLetter Channel is unsuccessful. Message not present in queue.");
+
+        // Check if message is deleted from the dead letter channel
+        Assert.assertFalse(checkMessages(reroutingMessageID,
+                        DLCQueueUtils.identifyTenantInformationAndGenerateDLCString(DLC_TEST_QUEUE)),
+                "Re-routing messages of DeadLetter Channel is unsuccessful. Message present in DLC.");
+
+        log.info("Re-routing messages of DeadLetter Channel is successful.");
     }
 
     /**
-     * Check whether element is present or not
+     * Check whether element is present or not.
      *
-     * @param id - which element check for its availability
+     * @param id which element check for its availability
      * @return availability of the element
      */
     public boolean isElementPresent(String id) {
@@ -247,33 +289,63 @@ public class DLCQueueTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Search messageID through all messages in the queue
+     * Search messageID through all messages in a given queue.
      *
-     * @param deletingMessageID - Searching messageID
-     * @param qName             - Searching queue
-     * @return whether messageID available or not
+     * @param messageID searching messageID
+     * @param queueName searching queue
+     * @return true if the message is present
      */
-    public boolean checkMessages(String deletingMessageID, String qName) {
-        boolean isSuccessful = true;
-        if (isElementPresent(UIElementMapper.getInstance()
-                                     .getElement("mb.dlc.browse.content.table"))) {
-            WebElement queueTable = driver.findElement(By.xpath(UIElementMapper.getInstance().
-                                                       getElement("mb.dlc.browse.content.table")));
-            List<WebElement> rowElementList = queueTable.findElements(By.tagName("tr"));
-            // Go through table rows and find deleted messageID
-            for (WebElement row : rowElementList) {
-                List<WebElement> columnList = row.findElements(By.tagName("td"));
-                // Assumption: there are eleven columns. MessageID is in second column
-                if ((columnList.size() == COLUMN_LIST_SIZE) && columnList.get(MESSAGE_ID_COLUMN)
-                        .getText().equals(deletingMessageID)) {
-                    isSuccessful = false;
-                    break;
-                }
+    public boolean checkMessages(String messageID, String queueName) throws IOException {
+        //if the queue is the DLC, check messages in DLC content table
+        if (DLCQueueUtils.isDeadLetterQueue(queueName)) {
+            //browse the dlc
+            homePage.getDLCBrowsePage().getDLCContent();
+
+            //if the table isn't empty, check whether the message is present
+            if (isElementPresent(UIElementMapper.getInstance().getElement(DLC_MESSAGE_CONTENT_TABLE))) {
+
+                return checkMessagesInTable(driver.findElement(By.xpath(UIElementMapper.getInstance().
+                        getElement(DLC_MESSAGE_CONTENT_TABLE))), messageID, MESSAGE_ID_COLUMN_IN_DLC);
+            } else {
+                log.debug("No messages in: " + queueName);
+                return false;
             }
-        } else {
-            Assert.fail("No messages in Queue" + qName + "after deleting");
         }
-        return isSuccessful;
+        //if the queue is a storage queue, check messages in the queue content table
+        else {
+            //browse the queue
+            homePage.getQueuesBrowsePage().browseQueue(queueName);
+
+            //if the table isn't empty, check whether the message is present the queue content table
+            if (isElementPresent(UIElementMapper.getInstance().getElement(QUEUE_MESSAGE_CONTENT_TABLE))) {
+
+                return checkMessagesInTable(driver.findElement(By.xpath(UIElementMapper.getInstance().
+                        getElement(QUEUE_MESSAGE_CONTENT_TABLE))), messageID, MESSAGE_ID_COLUMN_IN_QUEUE);
+            } else {
+                log.debug("No messages in: " + queueName);
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Search message ID through a message content table.
+     *
+     * @param table           the table in which the message should be in
+     * @param messageID       messageID to be located
+     * @param messageIdColumn the index of the column which has messageIDs
+     * @return true if message is found
+     */
+    private boolean checkMessagesInTable(WebElement table, String messageID, int messageIdColumn) {
+        List<WebElement> rowElementList = table.findElements(By.tagName("tr"));
+        // Go through table rows and find the messageID
+        for (WebElement row : rowElementList) {
+            List<WebElement> columnList = row.findElements(By.tagName("td"));
+            if ((columnList.get(messageIdColumn)).getText().equals(messageID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
