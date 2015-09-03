@@ -141,7 +141,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
 
 
     /**
-     * Creates a consumer with a given user name, password, for connection
+     * Creates a consumer with a given username, password, for connection
      * string and exchange type and destination name.
      *
      * @param userName        The user name for the connection string.
@@ -154,6 +154,22 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
                                                String destinationName) {
         super(userName, password, exchangeType, destinationName);
     }
+
+    /**
+     * Creates a consumer with a given port, username, password, for connection
+     * string and exchange type and destination name.
+     *
+     * @param userName        The user name for the connection string.
+     * @param password        The password for the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
+    public AndesJMSConsumerClientConfiguration(int port, String userName, String password,
+                                               ExchangeType exchangeType,
+                                               String destinationName) {
+        super(port, userName, password, exchangeType, destinationName);
+    }
+
 
     /**
      * Creates a consumer with a given user name, password, host name, port for connection

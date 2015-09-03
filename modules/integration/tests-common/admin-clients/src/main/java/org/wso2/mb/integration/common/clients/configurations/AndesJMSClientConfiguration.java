@@ -157,6 +157,21 @@ public class AndesJMSClientConfiguration implements Cloneable {
     }
 
     /**
+     * Creates a connection string with a given port, username, password, exchange type
+     * and destination name.
+     *
+     * @param userName        The username to be used in creating the connection string.
+     * @param password        The password to be used in creating the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
+    public AndesJMSClientConfiguration(int port, String userName, String password,ExchangeType exchangeType,
+                                       String destinationName) {
+        this(userName, password, AndesClientConstants.DEFAULT_HOST_NAME,
+                                       port, exchangeType, destinationName);
+    }
+
+    /**
      * Creates a connection string with a given username, password, hostname, port, exchange type
      * and destination name.
      *

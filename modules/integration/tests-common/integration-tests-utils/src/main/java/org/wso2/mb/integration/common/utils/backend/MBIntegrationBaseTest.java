@@ -104,6 +104,16 @@ public class MBIntegrationBaseTest {
     }
 
     /**
+     * Returns AMQP port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getSecureAMQPPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("sslamqp"));
+
+    }
+
+
+    /**
      * Returns MQTT port based on automation.xml configurations
      * @throws Exception
      */
