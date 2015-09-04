@@ -99,6 +99,10 @@ public class TopicsBrowsePage extends MBPage {
                 WebElement topicSubscribeLink = liNode.findElement(By.className("topicSubscribeStyle"));
                 topicSubscribeLink.click();
                 browsePage = new TopicSubscribePage(driver);
+                //We don't need to search through topics any more
+                //Continuing in the loop will cause an error when trying to find the next topic in the
+                //topic list since we have already browed the add subscription page
+                break;
             }
         }
 
