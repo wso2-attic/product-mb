@@ -80,11 +80,11 @@ public class DurableTopicServerRestartTestCase extends MBIntegrationBaseTest {
             throws Exception {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableServerRestartTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableServerRestartTopic");
         consumerConfig.setDurable(true, "restartServerSub");
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableServerRestartTopic");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableServerRestartTopic");
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 

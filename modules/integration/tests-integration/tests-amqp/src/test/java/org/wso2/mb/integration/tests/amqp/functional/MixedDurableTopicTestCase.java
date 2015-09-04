@@ -95,20 +95,23 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single durable topic send-receive test case with jms expiration")
     public void performExpiryDurableTopicTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Creating a subscriber client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicWithExpiration");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicWithExpiration");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_BY_ONE_SUBSCRIBER);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT_BY_ONE_SUBSCRIBER / 10L);
         consumerConfig.setDurable(true, "expirationSub");
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicWithExpiration");
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicWithExpiration");
         publisherConfigWithoutExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITHOUT_EXPIRATION);
         publisherConfigWithoutExpiration.setPrintsPerMessageCount(SEND_COUNT_WITHOUT_EXPIRATION / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicWithExpiration");
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicWithExpiration");
         publisherConfigWithExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITH_EXPIRATION);
         publisherConfigWithExpiration.setPrintsPerMessageCount(SEND_COUNT_WITH_EXPIRATION / 10L);
         publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME); // Setting expiry time

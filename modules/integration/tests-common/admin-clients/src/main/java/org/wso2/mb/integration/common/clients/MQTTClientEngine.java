@@ -28,10 +28,13 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncPublisherClient;
 import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncSubscriberClient;
 import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingPublisherClient;
 import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingSubscriberClient;
+
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * Handle all MQTT operations for MQTT tests.
@@ -229,10 +232,12 @@ public class MQTTClientEngine {
      * @throws MqttException
      */
     public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
-                                           boolean saveMessages, ClientMode clientMode) throws MqttException {
-        MQTTClientConnectionConfiguration defaultConfigurations = getDefaultConfigurations();
+                                           boolean saveMessages, ClientMode clientMode,
+                                           AutomationContext automationContext)
+                                           throws MqttException, XPathExpressionException {
+        MQTTClientConnectionConfiguration configurations = getConfigurations(automationContext);
         for (int i = 0; i < noOfSubscribers; i++) {
-            createSubscriberConnection(defaultConfigurations, topicName, qos, saveMessages, clientMode);
+            createSubscriberConnection(configurations, topicName, qos, saveMessages, clientMode);
         }
     }
     
@@ -270,9 +275,11 @@ public class MQTTClientEngine {
      * @throws MqttException
      */
     public void createPublisherConnection(String topicName, QualityOfService qos, byte[] payload,
-                                          int noOfPublishers, int noOfMessages, ClientMode clientMode) throws
-            MqttException {
-    	createPublisherConnection(topicName, qos, payload, noOfPublishers, noOfMessages, clientMode, getDefaultConfigurations());
+                                          int noOfPublishers, int noOfMessages, ClientMode clientMode,
+                                          AutomationContext automationContext)
+                                          throws MqttException, XPathExpressionException {
+    	createPublisherConnection(topicName, qos, payload, noOfPublishers, noOfMessages, clientMode,
+                                  getConfigurations(automationContext));
     }
 
     /**
@@ -303,7 +310,7 @@ public class MQTTClientEngine {
      *
      * @return Default MQTTClientConnectionConfigurations
      */
-    public MQTTClientConnectionConfiguration getDefaultConfigurations() {
+    private MQTTClientConnectionConfiguration getDefaultConfigurations() {
         MQTTClientConnectionConfiguration configuration = new MQTTClientConnectionConfiguration();
 
         configuration.setBrokerHost(MQTTConstants.BROKER_HOST);
@@ -315,6 +322,25 @@ public class MQTTClientEngine {
 
         return configuration;
     }
+
+    /**
+     * Retrieve default MQTT client configurations and change if there are configuration changes in
+     * automation xml.
+     *
+     * @return Default MQTTClientConnectionConfigurations
+     */
+    public MQTTClientConnectionConfiguration getConfigurations(AutomationContext automationContext)
+            throws XPathExpressionException {
+
+        MQTTClientConnectionConfiguration configuration = getDefaultConfigurations();
+
+        if(!automationContext.getInstance().getPorts().get("mqtt").isEmpty()) {
+            configuration.setBrokerPort(automationContext.getInstance().getPorts().get("mqtt"));
+        }
+
+        return configuration;
+    }
+
 
     /**
      * Get received messages from all subscriber clients.

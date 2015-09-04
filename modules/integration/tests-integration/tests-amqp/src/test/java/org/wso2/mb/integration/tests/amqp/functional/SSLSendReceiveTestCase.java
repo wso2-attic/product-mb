@@ -79,7 +79,7 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue", "security"})
     public void performSingleQueueSendReceiveTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
         // Creating ssl connection string elements
         // The following keystore path and truststore path should be as follows regardless the OS(platform).
         String keyStorePath = System.getProperty("carbon.home").replace("\\", "/") + "/repository/resources/security/" +
@@ -92,7 +92,7 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(
-                        "admin", "admin", "127.0.0.1", 8672, ExchangeType.QUEUE, "SSLSingleQueue",
+                        "admin", "admin", "127.0.0.1", getSecureAMQPPort(), ExchangeType.QUEUE, "SSLSingleQueue",
                         "RootCA", trustStorePath, trustStorePassword, keyStorePath,
                         keyStorePassword);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
@@ -101,7 +101,7 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(
-                        "admin", "admin", "127.0.0.1", 8672, ExchangeType.QUEUE, "SSLSingleQueue",
+                        "admin", "admin", "127.0.0.1", getSecureAMQPPort(), ExchangeType.QUEUE, "SSLSingleQueue",
                         "RootCA", trustStorePath, trustStorePassword, keyStorePath,
                         keyStorePassword);
 

@@ -31,6 +31,8 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvider;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * Send a large number of message via multiple MQTT clients for each QOS level.
  */
@@ -55,7 +57,8 @@ public class QOSLoadTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send and receive large number of message via QOS 0",
             dataProvider = "QualityOfServiceDataProvider", dataProviderClass = QualityOfServiceDataProvider.class)
-    public void performQOS0LoadTestCase(QualityOfService qualityOfService) throws MqttException {
+    public void performQOS0LoadTestCase(QualityOfService qualityOfService)
+            throws MqttException, XPathExpressionException {
         int sendCount = 100000;
         int noOfSubscribers = 10;
         int noOfPublishers = 10;
@@ -65,10 +68,10 @@ public class QOSLoadTestCase extends MBIntegrationBaseTest {
 
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, false,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(topicName, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD,
-                noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING);
+                noOfPublishers, sendCount / noOfPublishers, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

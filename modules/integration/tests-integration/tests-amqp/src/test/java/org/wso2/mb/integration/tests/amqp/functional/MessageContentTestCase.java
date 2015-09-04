@@ -84,7 +84,7 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Message content validation test case")
     public void performQueueContentSendReceiveTestCase()
             throws AndesClientConfigurationException, IOException, JMSException, NamingException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Reading message content
         char[] inputContent = new char[SIZE_TO_READ];
@@ -100,17 +100,20 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "QueueContentSendReceive");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // writing received messages.
         consumerConfig
-                .setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
+                .setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "QueueContentSendReceive");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "QueueContentSendReceive");
+
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        // message content will be read from this path and published
         publisherConfig
-                .setReadMessagesFromFilePath(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB); // message content will be read from this path and published
+                .setReadMessagesFromFilePath(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_1MB);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

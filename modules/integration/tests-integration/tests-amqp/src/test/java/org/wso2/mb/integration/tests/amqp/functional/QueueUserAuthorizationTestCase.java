@@ -497,14 +497,14 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration
                 consumerConfig =
-                new AndesJMSConsumerClientConfiguration(
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                         contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                         ExchangeType.QUEUE, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                         contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                         ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);

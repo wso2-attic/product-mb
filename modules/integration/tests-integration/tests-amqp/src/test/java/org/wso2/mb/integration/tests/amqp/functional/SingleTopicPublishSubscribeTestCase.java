@@ -77,15 +77,18 @@ public class SingleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performSingleTopicPublishSubscribeTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "hasitha");
-        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 10); // To check if more than expected messages are received
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "hasitha");
+        // To check if more than expected messages are received
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 10);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "hasitha");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "hasitha");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

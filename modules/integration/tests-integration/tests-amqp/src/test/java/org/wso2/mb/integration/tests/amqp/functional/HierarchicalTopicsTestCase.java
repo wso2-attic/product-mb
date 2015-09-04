@@ -82,7 +82,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsTopicOnlyTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         /**
          * topic only option. Here we subscribe to games.cricket and verify that only messages
@@ -146,7 +146,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsImmediateChildrenTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating clients
         AndesClient consumerClient3 = getConsumerClientForTopic("games.*");
@@ -223,7 +223,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "topic"})
     public void performHierarchicalTopicsChildrenTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         //we should  get any message here
         AndesClient consumerClient6 = getConsumerClientForTopic("games.#");
@@ -273,10 +273,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      */
     private AndesClient getConsumerClientForTopic(String topicName)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, topicName);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, topicName);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
@@ -296,10 +296,10 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      */
     private AndesClient getPublishingClientForTopic(String topicName)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, topicName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, topicName);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

@@ -81,19 +81,23 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "queue", "transaction" }, description = "Send message and check whether message is received, " +
             "and commit and check whether message is received")
     public void enqueueAndCheckCommitAndCheckTestCase() throws IOException, JMSException,
-            AndesClientException, NamingException, AndesClientConfigurationException, InterruptedException {
+                                                               AndesClientException,
+                                                               NamingException,
+                                                               AndesClientConfigurationException,
+                                                               InterruptedException,
+                                                               XPathExpressionException {
 
         int expectedCount = 1;
         int expectedBeforeCommit = 0;
         String queueName = "Transactional-enqueueAndCheckCommitAndCheckTestCase";
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setTransactionalSession(true);
         // Creating clients
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
@@ -142,8 +146,10 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
      * @throws InterruptedException
      */
     @Test(groups = {"wso2.mb", "queue", "transaction" }, description = "Test for rollback functionality")
-    public void enqueueAndRollbackEnqueueAndCommitTestCase() throws AndesClientConfigurationException,
-            IOException, JMSException, AndesClientException, NamingException, InterruptedException {
+    public void enqueueAndRollbackEnqueueAndCommitTestCase()
+            throws AndesClientConfigurationException,
+                   IOException, JMSException, AndesClientException, NamingException,
+                   InterruptedException, XPathExpressionException {
 
         int expectedCount = 1;
         int expectedBeforeCommit = 0;
@@ -152,13 +158,13 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig
                 .setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setTransactionalSession(true);
 
         // Creating clients
@@ -220,8 +226,10 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
      * @throws InterruptedException
      */
     @Test(groups = {"wso2.mb", "queue", "transaction" }, description = "Test transactions with multiple publishers")
-    public void multiplePublisherEnqueueAndCheckCommitAndCheckTestCase() throws AndesClientConfigurationException,
-            IOException, JMSException, AndesClientException, NamingException, InterruptedException {
+    public void multiplePublisherEnqueueAndCheckCommitAndCheckTestCase()
+            throws AndesClientConfigurationException,
+                   IOException, JMSException, AndesClientException, NamingException,
+                   InterruptedException, XPathExpressionException {
 
         int expectedCount = 1;
         int expectedBeforeCommit = 0;
@@ -230,20 +238,20 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName1);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName1);
         consumerConfig1.setMaximumMessagesToReceived(expectedCount);
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName2);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName2);
         consumerConfig2.setMaximumMessagesToReceived(expectedCount);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName1);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName1);
         publisherConfig1.setTransactionalSession(true);
 
         AndesJMSPublisherClientConfiguration publisherConfig2 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName2);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName2);
         publisherConfig2.setTransactionalSession(true);
 
         // Creating clients
@@ -323,8 +331,10 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "queue", "transaction" },
             description = "Test rollback functionality with multiple publishers")
-    public void multiplePublisherEnqueueAndRollbackEnqueueAndCommitTestCase() throws AndesClientConfigurationException,
-            IOException, JMSException, AndesClientException, NamingException, InterruptedException {
+    public void multiplePublisherEnqueueAndRollbackEnqueueAndCommitTestCase()
+            throws AndesClientConfigurationException,
+                   IOException, JMSException, AndesClientException, NamingException,
+                   InterruptedException, XPathExpressionException {
 
         int expectedCountAfterPub1Commit = 1;
         int expectedCountAfterPub2Commit = 2;
@@ -337,18 +347,18 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
 
         // Creating a initial JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(waitForMessages);
         consumerConfig.
                 setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig1.setTransactionalSession(true);
 
         AndesJMSPublisherClientConfiguration publisherConfig2 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig2.setTransactionalSession(true);
 
         // Creating clients
@@ -435,18 +445,20 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
             description = "Test the commit batch size limit check functionality",
             expectedExceptions = JMSException.class)
     public void exceedCommitBatchSizeTest() throws IOException, JMSException, AndesClientException,
-            NamingException, AndesClientConfigurationException {
+                                                   NamingException,
+                                                   AndesClientConfigurationException,
+                                                   XPathExpressionException {
 
         String queueName = "Transactional-exceedCommitBatchSizeTest";
         int messageSize = 1024 * 1024;
         int messageCount = 20;
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setTransactionalSession(true);
 
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, queueName);
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(messageCount);
 
         // Creating clients

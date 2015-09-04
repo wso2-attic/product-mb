@@ -94,7 +94,7 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
         MQTTClientConnectionConfiguration configuration =
-                                                          mqttClientEngine.getDefaultConfigurations();
+                               mqttClientEngine.getConfigurations(automationContext);
         
         String invalidUserName = "invalidUserName";        
         Tenant currentTenant = automationContext.getContextTenant();
@@ -131,7 +131,7 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         
         MQTTClientConnectionConfiguration configuration =
-                mqttClientEngine.getDefaultConfigurations();
+                mqttClientEngine.getConfigurations(automationContext);
         
         Tenant tenant = automationContext.getContextTenant();
         topic = tenant.getDomain() + "/" + topic;

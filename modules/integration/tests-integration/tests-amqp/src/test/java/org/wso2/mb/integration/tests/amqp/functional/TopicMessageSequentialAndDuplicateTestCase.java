@@ -73,16 +73,21 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
     @Test(groups = {"wso2.mb", "topic"})
     public void performTopicMessageSequentialAndDuplicateTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleTopicSequentialAndDuplicate");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "singleTopicSequentialAndDuplicate");
         consumerConfig.setMaximumMessagesToReceived(SEND_COUNT);
         consumerConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // file path to write received messages
+        // file path to write received messages
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleTopicSequentialAndDuplicate");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                         ExchangeType.TOPIC, "singleTopicSequentialAndDuplicate");
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 

@@ -80,18 +80,19 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
                                                                AndesClientConfigurationException,
                                                                JMSException,
                                                                NamingException,
-                                                               AndesClientException {
+                                                               AndesClientException,
+                                                               XPathExpressionException {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration("tenant1user1!testtenant1.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "tenant1user1!testtenant1.com",
                                         "tenant1user1", ExchangeType.QUEUE, "testtenant1.com/www");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration("tenant1user1!testtenant1.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "tenant1user1!testtenant1.com",
                                          "tenant1user1", ExchangeType.QUEUE, "testtenant1.com/www");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);

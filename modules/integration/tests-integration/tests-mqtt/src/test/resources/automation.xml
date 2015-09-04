@@ -203,8 +203,10 @@
                     <host type="default">localhost</host>
                 </hosts>
                 <ports>
-                    <port type="http">9763</port>
-                    <port type="https">9443</port>
+                    <port type="http">11063</port>
+                    <port type="https">10743</port>
+                    <port type="mqtt">3183</port>
+                    <port type="sslmqtt">10183</port>
                 </ports>
                 <properties>
 
@@ -220,7 +222,7 @@
             <extentionClasses>
 	<class>
 		<name>org.wso2.carbon.automation.extensions.servers.carbonserver.CarbonServerExtension</name>
-		<!--<parameter name="-DportOffset" value="0" />-->
+		<parameter name="-DportOffset" value="1300" />
 		<!--<parameter name="cmdArg" value="debug 5005" />-->
 	</class>
 	<class>

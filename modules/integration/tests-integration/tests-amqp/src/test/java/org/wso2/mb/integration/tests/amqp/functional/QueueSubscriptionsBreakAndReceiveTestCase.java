@@ -86,15 +86,17 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
     @Test(groups = {"wso2.mb", "queue"})
     public void performQueueSubscriptionsBreakAndReceiveTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "breakSubscriberQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "breakSubscriberQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_BY_EACH_SUBSCRIBER);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT_BY_EACH_SUBSCRIBER / 10L);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "breakSubscriberQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "breakSubscriberQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

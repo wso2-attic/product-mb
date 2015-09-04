@@ -91,13 +91,13 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientID");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setDurable(true, "sameClientIDSub1");
 
         // Creating a JMS consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientID");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientID");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT_12);
 
         // Creating clients
@@ -146,22 +146,22 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         // Creating a JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setDurable(true, "sameClientIDSub2");
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig2.setDurable(true, "sameClientIDSub3");
 
         // Creating a JMS consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
         publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT_12);
 
         AndesJMSPublisherClientConfiguration publisherConfig2 =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
         publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_8);
 
         // Creating clients

@@ -61,14 +61,15 @@ public class InterTenantQueueTestCase extends MBIntegrationBaseTest {
      * @throws javax.naming.NamingException
      */
     @Test(groups = "wso2.mb", description = "Inter tenant queue publish test case")
-    public void performSingleQueueSendReceiveTestCase() throws NamingException, JMSException {
+    public void performSingleQueueSendReceiveTestCase()
+            throws NamingException, JMSException, XPathExpressionException {
         String queueName = "testtenant1.com/tenant1queue";
         InitialContext subscriberInitialContext = JMSClientHelper
                 .getInitialContextForQueue("tenant1user1!testtenant1.com", "tenant1user1",
-                                           "localhost", "5672", queueName);
+                                           "localhost", getAMQPPort().toString(), queueName);
         InitialContext publisherInitialContext = JMSClientHelper
                 .getInitialContextForQueue("tenant2user1!testtenant2.com", "tenant2user1",
-                                           "localhost", "5672", queueName);
+                                           "localhost", getAMQPPort().toString(), queueName);
 
         // Initialize subscriber
         ConnectionFactory subscriberConnectionFactory = (ConnectionFactory) subscriberInitialContext.lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);

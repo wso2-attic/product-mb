@@ -31,6 +31,7 @@ import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvider;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
 /**
@@ -59,7 +60,8 @@ public class QOSTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send message and receive in QOS 0",
             dataProvider = "QualityOfServiceDataProvider", dataProviderClass = QualityOfServiceDataProvider.class)
-    public void performQOS0TestCase(QualityOfService qualityOfService) throws MqttException {
+    public void performQOS0TestCase(QualityOfService qualityOfService)
+            throws MqttException, XPathExpressionException {
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
@@ -67,10 +69,10 @@ public class QOSTestCase extends MBIntegrationBaseTest {
 
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topicName, qualityOfService, noOfSubscribers, true,
-                ClientMode.ASYNC);
+                ClientMode.ASYNC, automationContext);
 
         mqttClientEngine.createPublisherConnection(topicName, qualityOfService, MQTTConstants.TEMPLATE_PAYLOAD,
-                noOfPublishers, noOfMessages, ClientMode.ASYNC);
+                noOfPublishers, noOfMessages, ClientMode.ASYNC, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

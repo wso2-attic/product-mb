@@ -210,4 +210,20 @@ public class MBIntegrationUiBaseTest {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("home.mb.sign.out.xpath"))).click();
         return new LoginPage(driver);
     }
+
+    /**
+     * Returns MQTT port based on automation.xml configurations
+     * @throws XPathExpressionException
+     */
+    protected Integer getMQTTPort() throws XPathExpressionException {
+        return Integer.parseInt(mbServer.getInstance().getPorts().get("mqtt"));
+    }
+
+    /**
+     * Returns MQTT port based on automation.xml configurations
+     * @throws XPathExpressionException
+     */
+    protected Integer getAMQPPort() throws XPathExpressionException {
+        return Integer.parseInt(mbServer.getInstance().getPorts().get("amqp"));
+    }
 }

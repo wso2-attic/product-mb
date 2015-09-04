@@ -116,8 +116,8 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         Assert.assertEquals(queueAddPage.addQueue(queueName), true);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType
-                .QUEUE, queueName);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(1000);
         publisherConfig.setPrintsPerMessageCount(100L);
 

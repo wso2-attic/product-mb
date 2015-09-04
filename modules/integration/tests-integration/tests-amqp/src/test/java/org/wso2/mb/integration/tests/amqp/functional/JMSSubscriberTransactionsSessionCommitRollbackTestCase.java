@@ -35,6 +35,7 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -80,10 +81,11 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
     @Test(groups = {"wso2.mb", "queue", "transactions"})
     public void performJMSSubscriberTransactionsSessionCommitRollbackTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   CloneNotSupportedException, AndesClientException {
+                   CloneNotSupportedException, AndesClientException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "transactionQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "transactionQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);
         consumerConfig.setCommitAfterEachMessageCount(EXPECTED_COUNT);
         consumerConfig.setRollbackAfterEachMessageCount(SEND_COUNT);
@@ -91,7 +93,8 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "transactionQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "transactionQueue");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
 
         // Creating clients

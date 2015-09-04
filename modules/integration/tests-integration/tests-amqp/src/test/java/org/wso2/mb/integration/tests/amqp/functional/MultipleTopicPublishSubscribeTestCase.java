@@ -75,23 +75,27 @@ public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest
     @Test(groups = {"wso2.mb", "topic"})
     public void performMultipleTopicPublishSubscribeTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configurations
-        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic2");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_4010);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
 
-        AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "multipleTopic1");
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic1");
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
         consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_1010 / 10);
 
         // Creating a publisher client configurations
-        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic2");
+        AndesJMSPublisherClientConfiguration publisherConfig1 =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic2");
         publisherConfig1.setPrintsPerMessageCount(100L);
         publisherConfig1.setNumberOfMessagesToSend(SEND_COUNT_2000);
 
-        AndesJMSPublisherClientConfiguration publisherConfig2 = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "multipleTopic1");
+        AndesJMSPublisherClientConfiguration publisherConfig2 =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic1");
         publisherConfig2.setPrintsPerMessageCount(100L);
         publisherConfig2.setNumberOfMessagesToSend(SEND_COUNT_1000);
 

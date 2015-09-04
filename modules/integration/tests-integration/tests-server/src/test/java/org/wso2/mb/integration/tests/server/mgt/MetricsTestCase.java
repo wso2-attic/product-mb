@@ -112,13 +112,13 @@ public class MetricsTestCase extends MBIntegrationBaseTest {
 
 		// Creating a consumer client configuration
 		AndesJMSConsumerClientConfiguration consumerConfig =
-				new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+				new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "singleQueue");
 		consumerConfig.setMaximumMessagesToReceived(msgCount * 2);
 		consumerConfig.setPrintsPerMessageCount(msgCount / 10L);
 
 		// Creating a publisher client configuration
 		AndesJMSPublisherClientConfiguration publisherConfig =
-				new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+				new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "singleQueue");
 		publisherConfig.setNumberOfMessagesToSend(msgCount);
 		publisherConfig.setPrintsPerMessageCount(msgCount / 10L);
 
@@ -190,13 +190,13 @@ public class MetricsTestCase extends MBIntegrationBaseTest {
 
 		// Creating a consumer client configuration
 		AndesJMSConsumerClientConfiguration consumerConfig =
-				new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "singleTopic");
+				new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "singleTopic");
 		consumerConfig.setMaximumMessagesToReceived(msgCount * 2);
 		consumerConfig.setPrintsPerMessageCount(msgCount / 10L);
 
 		// Creating a publisher client configuration
 		AndesJMSPublisherClientConfiguration publisherConfig =
-				new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "singleTopic");
+				new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "singleTopic");
 		publisherConfig.setNumberOfMessagesToSend(msgCount);
 		publisherConfig.setPrintsPerMessageCount(msgCount / 10L);
 
@@ -256,19 +256,20 @@ public class MetricsTestCase extends MBIntegrationBaseTest {
 	 */
 	@Test(groups = "wso2.mb", description = "Metrics report test case")
 	public void performMetricsReportTestCase()
-			throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-			       AndesClientException, InterruptedException, MalformedObjectNameException {
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+                   AndesClientException, InterruptedException, MalformedObjectNameException,
+                   XPathExpressionException {
 		long msgCount = 1000L;
 
 		// Creating a consumer client configuration
 		AndesJMSConsumerClientConfiguration consumerConfig =
-				new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+				new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "singleQueue");
 		consumerConfig.setMaximumMessagesToReceived(msgCount * 2);
 		consumerConfig.setPrintsPerMessageCount(msgCount / 10L);
 
 		// Creating a publisher client configuration
 		AndesJMSPublisherClientConfiguration publisherConfig =
-				new AndesJMSPublisherClientConfiguration(ExchangeType.QUEUE, "singleQueue");
+				new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "singleQueue");
 		publisherConfig.setNumberOfMessagesToSend(msgCount);
 		publisherConfig.setPrintsPerMessageCount(msgCount / 10L);
 
@@ -443,9 +444,15 @@ public class MetricsTestCase extends MBIntegrationBaseTest {
 	 * @throws IOException
 	 * @throws MalformedObjectNameException
 	 */
-	private void invokeJMXReportOperation() throws IOException, MalformedObjectNameException{
+	private void invokeJMXReportOperation()
+            throws IOException, MalformedObjectNameException, XPathExpressionException {
+
+        int JMXServicePort = getJMXServerPort();
+        int RMIRegistryPort = getRMIRegistryPort();
+
 		JMXServiceURL url =
-				new JMXServiceURL("service:jmx:rmi://localhost:11111/jndi/rmi://localhost:9999/jmxrmi");
+				new JMXServiceURL("service:jmx:rmi://localhost:" + JMXServicePort +
+                                  "/jndi/rmi://localhost:" + RMIRegistryPort + "/jmxrmi");
 		Map<String, String[]> env = new HashMap<>();
 		String[] credentials = {"admin", "admin"};
 		env.put(JMXConnector.CREDENTIALS, credentials);

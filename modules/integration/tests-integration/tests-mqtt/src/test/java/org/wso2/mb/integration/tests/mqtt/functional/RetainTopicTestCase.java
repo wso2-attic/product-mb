@@ -62,7 +62,8 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
      * @throws org.eclipse.paho.client.mqttv3.MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt retain message send receive test case")
-    public void performSendReceiveRetainTopicTestCase() throws MqttException {
+    public void performSendReceiveRetainTopicTestCase()
+            throws MqttException, XPathExpressionException {
         String topic = "topic";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -72,12 +73,12 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
-        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setRetain(retained);
 
         //create the subscriber to receive retain topic message
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.MOST_ONCE, noOfSubscribers,
-                                                    saveMessages, ClientMode.BLOCKING);
+                                                    saveMessages, ClientMode.BLOCKING, automationContext);
 
         // create publisher to publish retain topic message
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.MOST_ONCE,
@@ -108,7 +109,8 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
      * @throws org.eclipse.paho.client.mqttv3.MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt retain message send receive test case")
-    public void performSendReceiveRetainTopicForLateSubscriberTestCase() throws MqttException {
+    public void performSendReceiveRetainTopicForLateSubscriberTestCase()
+            throws MqttException, XPathExpressionException {
         String topic = "topic1";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -118,7 +120,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
-        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setRetain(retained);
 
         //First, create publisher and publish retain topic message
@@ -129,7 +131,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         //Finally,create the subscriber to receive retain topic message
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.MOST_ONCE, noOfSubscribers,
-                                                    saveMessages, ClientMode.BLOCKING);
+                                                    saveMessages, ClientMode.BLOCKING, automationContext);
 
         // wait until all messages received by subscriber and shut down clients.
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
@@ -166,7 +168,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
      * @throws org.eclipse.paho.client.mqttv3.MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Remove MQTT retain test case")
-    public void performRemoveRetainTopicTestCase() throws MqttException {
+    public void performRemoveRetainTopicTestCase() throws MqttException, XPathExpressionException {
         String topic = "topic2";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -176,7 +178,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
-        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getDefaultConfigurations();
+        MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         // Set retain flag into configurations.
         configuration.setRetain(retained);
 
@@ -188,7 +190,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         //Create the subscriber to receive retain topic message
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.MOST_ONCE, noOfSubscribers,
-                                                    saveMessages, ClientMode.BLOCKING);
+                                                    saveMessages, ClientMode.BLOCKING, automationContext);
 
 
         // wait until all messages received by subscriber.
@@ -222,7 +224,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
 
         //Create the new subscriber to receive retain topic message.
         mqttClientEngine1.createSubscriberConnection(topic, QualityOfService.MOST_ONCE, noOfSubscribers,
-                                                    saveMessages, ClientMode.BLOCKING);
+                                                    saveMessages, ClientMode.BLOCKING, automationContext);
 
         // wait until messages received by subscriber.
         mqttClientEngine1.waitUntilExpectedNumberOfMessagesReceived(0,20000L);

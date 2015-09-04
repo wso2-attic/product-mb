@@ -69,37 +69,44 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
     public void performDifferentTopicSubscriptionsWithDurableTopicTest()
             throws AndesClientConfigurationException, CloneNotSupportedException, JMSException,
                    NamingException,
-                   IOException, AndesClientException {
+                   IOException, AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configurations
-        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         durableTopicConsumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableTopicConsumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig1.setDurable(true, "diffSub1"); // durable topic
 
-        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig2 = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        AndesJMSConsumerClientConfiguration durableTopicConsumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         durableTopicConsumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableTopicConsumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig2.setDurable(true, "diffSub2"); // durable topic
 
-        AndesJMSConsumerClientConfiguration normalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        AndesJMSConsumerClientConfiguration normalTopicConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         normalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         normalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
+        AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
         normalHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        AndesJMSConsumerClientConfiguration durableHierarchicalTopicConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
+        AndesJMSConsumerClientConfiguration durableHierarchicalTopicConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
         durableHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableHierarchicalTopicConsumerConfig.setDurable(true, "diffSub3"); // durable topic
 
-        AndesJMSConsumerClientConfiguration queueConsumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.QUEUE, TOPIC_NAME); // queue consumer
+        AndesJMSConsumerClientConfiguration queueConsumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TOPIC_NAME); // queue consumer
         queueConsumerConfig.setMaximumMessagesToReceived(10L);  // To wait if any message does received
 
         // Creating a publisher client configurations
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, TOPIC_NAME);
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

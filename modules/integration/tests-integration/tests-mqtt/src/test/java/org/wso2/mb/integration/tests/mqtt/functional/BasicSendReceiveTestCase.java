@@ -30,6 +30,7 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
      * @throws MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performBasicSendReceiveTestCase() throws MqttException {
+    public void performBasicSendReceiveTestCase() throws MqttException, XPathExpressionException {
         String topic = "topic";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -65,11 +66,11 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, ClientMode.BLOCKING);
+                noOfMessages, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 
@@ -88,7 +89,8 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
      * @throws MqttException
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performBasicSendReceiveMultipleMessagesTestCase() throws MqttException {
+    public void performBasicSendReceiveMultipleMessagesTestCase()
+            throws MqttException, XPathExpressionException {
         String topic = "topic";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
@@ -97,11 +99,11 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, ClientMode.BLOCKING);
+                noOfMessages, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

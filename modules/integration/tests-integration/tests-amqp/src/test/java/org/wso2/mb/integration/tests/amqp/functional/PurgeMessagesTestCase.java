@@ -143,8 +143,8 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         String sessionCookie = loginLogoutClientForAdmin.login();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(ExchangeType
-                .QUEUE, TEST_QUEUE_PURGE);
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_QUEUE_PURGE);
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig1.setMaximumMessagesToReceived(expectedMessageCount);
         consumerConfig1.setPrintsPerMessageCount(expectedMessageCount / 100L);
@@ -160,14 +160,14 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         consumerClient2.startClient();
 
         // Creating publisher configuration with destination queue = 'purgeTestQueue' and message count = 25
-        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(ExchangeType
-                .QUEUE, TEST_QUEUE_PURGE);
+        AndesJMSPublisherClientConfiguration publisherConfig1 =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_QUEUE_PURGE);
         publisherConfig1.setNumberOfMessagesToSend(sendToPurgeQueueCount);
         publisherConfig1.setPrintsPerMessageCount(sendToPurgeQueueCount / 5L);
 
         // Creating publisher configuration with destination queue = 'deleteTestQueue' and message count = 75
-        AndesJMSPublisherClientConfiguration publisherConfig2 = new AndesJMSPublisherClientConfiguration(ExchangeType
-                .QUEUE, TEST_QUEUE_DELETE);
+        AndesJMSPublisherClientConfiguration publisherConfig2 =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_QUEUE_DELETE);
         publisherConfig2.setNumberOfMessagesToSend(sendToDeleteQueueCount);
         publisherConfig2.setPrintsPerMessageCount(sendToDeleteQueueCount / 5L);
 

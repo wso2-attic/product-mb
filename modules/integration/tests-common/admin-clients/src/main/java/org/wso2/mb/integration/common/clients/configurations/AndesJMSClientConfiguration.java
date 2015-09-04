@@ -128,6 +128,20 @@ public class AndesJMSClientConfiguration implements Cloneable {
     }
 
     /**
+     * Creates a connection string with default username, password, hostname and a given port. Also
+     * sets exchangeType and destination name used for publishing/consuming jms messages.
+     *
+     * @param port            The port used in the AMQP transport connection string.
+     * @param exchangeType    The exchange type used for publishing/consuming jms messages.
+     * @param destinationName The destination name used for publishing/consuming jms messages.
+     */
+    public AndesJMSClientConfiguration(int port, ExchangeType exchangeType,
+                                       String destinationName) {
+        this(AndesClientConstants.DEFAULT_USERNAME, AndesClientConstants.DEFAULT_PASSWORD,
+                            AndesClientConstants.DEFAULT_HOST_NAME, port, exchangeType, destinationName);
+    }
+
+    /**
      * Creates a connection string with a given username, password, exchange type
      * and destination name.
      *
@@ -140,6 +154,21 @@ public class AndesJMSClientConfiguration implements Cloneable {
                                        String destinationName) {
         this(userName, password, AndesClientConstants.DEFAULT_HOST_NAME,
                             AndesClientConstants.DEFAULT_PORT, exchangeType, destinationName);
+    }
+
+    /**
+     * Creates a connection string with a given port, username, password, exchange type
+     * and destination name.
+     *
+     * @param userName        The username to be used in creating the connection string.
+     * @param password        The password to be used in creating the connection string.
+     * @param exchangeType    The exchange type.
+     * @param destinationName The destination name.
+     */
+    public AndesJMSClientConfiguration(int port, String userName, String password,ExchangeType exchangeType,
+                                       String destinationName) {
+        this(userName, password, AndesClientConstants.DEFAULT_HOST_NAME,
+                                       port, exchangeType, destinationName);
     }
 
     /**

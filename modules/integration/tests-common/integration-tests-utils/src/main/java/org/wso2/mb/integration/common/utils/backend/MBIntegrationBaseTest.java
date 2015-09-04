@@ -28,6 +28,7 @@ import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.xml.sax.SAXException;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
@@ -83,4 +84,58 @@ public class MBIntegrationBaseTest {
         serverManager = new ServerConfigurationManager(automationContext);
         serverManager.restartGracefully();
     }
+
+    /**
+     * Returns wso2 https server port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getHttpsServerPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("https"));
+
+    }
+
+    /**
+     * Returns AMQP port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getAMQPPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("amqp"));
+
+    }
+
+    /**
+     * Returns AMQP port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getSecureAMQPPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("sslamqp"));
+
+    }
+
+
+    /**
+     * Returns MQTT port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getMQTTPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("mqtt"));
+    }
+
+    /**
+     * Returns JMX RMI Server port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getJMXServerPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("jmxserver"));
+    }
+
+    /**
+     * Returns JMX RMI Registry port based on automation.xml configurations
+     * @throws Exception
+     */
+    protected Integer getRMIRegistryPort() throws XPathExpressionException {
+        return Integer.parseInt(automationContext.getInstance().getPorts().get("rmiregistry"));
+    }
+
+
 }

@@ -30,6 +30,7 @@ import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
 
 /**
@@ -51,18 +52,18 @@ public class LongTopicTestCase extends MBIntegrationBaseTest {
      * Send message and receive for a long topic hierarchy.
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send message and receive for a long topic hierarchy")
-    public void performLongTopicTestCase() throws MqttException {
+    public void performLongTopicTestCase() throws MqttException, XPathExpressionException {
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
 
         String longTopic = "1/2/3/this_is_a_long_topic_that_needs_to/work/4/5/6/7/8";
 
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(longTopic, QualityOfService.LEAST_ONCE, 1, true,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.createPublisherConnection(longTopic, QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, 1, 1,
-                ClientMode.BLOCKING);
+                ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 

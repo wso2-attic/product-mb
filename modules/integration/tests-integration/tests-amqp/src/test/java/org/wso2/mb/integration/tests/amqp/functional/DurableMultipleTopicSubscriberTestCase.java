@@ -73,11 +73,11 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
     @Test(groups = {"wso2.mb", "durableTopic"})
     public void performMultipleDurableTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a first JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicMultiple");
         consumerConfig1
                 .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
@@ -85,14 +85,14 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
 
         // Creating a second JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicMultiple");
         consumerConfig2
                 .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
         consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig2.setDurable(true, "multipleSub2");
 
         AndesJMSPublisherClientConfiguration publisherConfig =
-                new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "durableTopicMultiple");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicMultiple");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 

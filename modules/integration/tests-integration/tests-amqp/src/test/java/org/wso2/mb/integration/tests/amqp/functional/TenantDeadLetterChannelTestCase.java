@@ -182,7 +182,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
 
         // Create a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-                new AndesJMSConsumerClientConfiguration("dlctenantuser1!dlctenant1.com",
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "dlctenantuser1!dlctenant1.com",
                                                         "dlctenantuser1", ExchangeType.QUEUE,
                                                         destinationName);
         // Add manual client acknowledgement in configuration
@@ -200,7 +200,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
 
         // Create a publisher client configuration
         AndesJMSPublisherClientConfiguration tenantPublisherConfig =
-                new AndesJMSPublisherClientConfiguration("dlctenantuser1!dlctenant1.com",
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "dlctenantuser1!dlctenant1.com",
                                                          "dlctenantuser1", ExchangeType.QUEUE,
                                                          destinationName);
         tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);

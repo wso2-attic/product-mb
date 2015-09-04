@@ -93,18 +93,21 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "Single topic send-receive test case with jms expiration")
     public void performSingleExpiryTopicSendReceiveTestCase()
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   AndesClientException {
+                   AndesClientException, XPathExpressionException {
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "topicWithExpiry");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
+        AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "topicWithExpiry");
         publisherConfigWithoutExpiration.setPrintsPerMessageCount(SEND_COUNT_WITHOUT_EXPIRATION / 10L);
         publisherConfigWithoutExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITHOUT_EXPIRATION);
 
-        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration = new AndesJMSPublisherClientConfiguration(ExchangeType.TOPIC, "topicWithExpiry");
+        AndesJMSPublisherClientConfiguration publisherConfigWithExpiration =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "topicWithExpiry");
         publisherConfigWithExpiration.setPrintsPerMessageCount(SEND_COUNT_WITH_EXPIRATION / 10L);
         publisherConfigWithExpiration.setNumberOfMessagesToSend(SEND_COUNT_WITH_EXPIRATION);
         publisherConfigWithExpiration.setJMSMessageExpiryTime(EXPIRATION_TIME); // Setting expiry time
