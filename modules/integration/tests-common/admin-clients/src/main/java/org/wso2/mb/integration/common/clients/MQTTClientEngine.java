@@ -155,48 +155,6 @@ public class MQTTClientEngine {
     }
 
     /**
-     * Create a given number of subscribers.
-     *
-     * @param topicName       Topic to subscribe to
-     * @param qos             Quality of Service
-     * @param noOfSubscribers Number of subscriber connections to create
-     * @param saveMessages    Save receiving messages
-     * @param clientMode      Client connection mode
-     * @throws MqttException
-     */
-    public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
-                                           boolean saveMessages, ClientMode clientMode,
-                                           AutomationContext automationContext)
-                                           throws MqttException, XPathExpressionException {
-        MQTTClientConnectionConfiguration configurations = getConfigurations(automationContext);
-        for (int i = 0; i < noOfSubscribers; i++) {
-            createSubscriberConnection(configurations, topicName, qos, saveMessages, clientMode);
-        }
-    }
-    
-    
-    /**
-     * Create a given number of subscribers.
-     *
-     * @param topicName       Topic to subscribe to
-     * @param qos             Quality of Service
-     * @param noOfSubscribers Number of subscriber connections to create
-     * @param saveMessages    Save receiving messages
-     * @param clientMode      Client connection mode
-     * @param configuration   Configuration to use
-     * @throws MqttException
-     */
-    public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
-                                           boolean saveMessages, ClientMode clientMode, 
-                                           MQTTClientConnectionConfiguration configuration) throws MqttException {
-        
-        for (int i = 0; i < noOfSubscribers; i++) {
-            createSubscriberConnection(configuration, topicName, qos, saveMessages, clientMode);
-        }
-    }
-    
-    
-    /**
      * Wait until all the subscriber are subscribed to the topics and ready to receive messages.
      * Before creating publishers, this should be called otherwise while subscribers are being subscribed publishers
      * will start to publish and those messages will be lost.
@@ -263,8 +221,48 @@ public class MQTTClientEngine {
         }
     }
 
+    /**
+     * Create a given number of subscribers.
+     *
+     * @param topicName       Topic to subscribe to
+     * @param qos             Quality of Service
+     * @param noOfSubscribers Number of subscriber connections to create
+     * @param saveMessages    Save receiving messages
+     * @param clientMode      Client connection mode
+     * @throws MqttException
+     */
+    public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
+                                           boolean saveMessages, ClientMode clientMode,
+                                           AutomationContext automationContext)
+                                           throws MqttException, XPathExpressionException {
+        MQTTClientConnectionConfiguration configurations = getConfigurations(automationContext);
+        for (int i = 0; i < noOfSubscribers; i++) {
+            createSubscriberConnection(configurations, topicName, qos, saveMessages, clientMode);
+        }
+    }
     
     
+    /**
+     * Create a given number of subscribers.
+     *
+     * @param topicName       Topic to subscribe to
+     * @param qos             Quality of Service
+     * @param noOfSubscribers Number of subscriber connections to create
+     * @param saveMessages    Save receiving messages
+     * @param clientMode      Client connection mode
+     * @param configuration   Configuration to use
+     * @throws MqttException
+     */
+    public void createSubscriberConnection(String topicName, QualityOfService qos, int noOfSubscribers,
+                                           boolean saveMessages, ClientMode clientMode, 
+                                           MQTTClientConnectionConfiguration configuration) throws MqttException {
+        
+        for (int i = 0; i < noOfSubscribers; i++) {
+            createSubscriberConnection(configuration, topicName, qos, saveMessages, clientMode);
+        }
+    }
+    
+
     /**
      * Create a given number of publishers.
      *
@@ -305,7 +303,7 @@ public class MQTTClientEngine {
         }
     }
     
-   
+    
     /**
      * Retrieve default MQTT client configurations. Always retrieve configurations from this unless there is a
      * specific requirement.
@@ -549,4 +547,5 @@ public class MQTTClientEngine {
         tpsPublisherSchedule.cancel(true);
         scheduleExecutor.shutdown();
     }
+
 }
