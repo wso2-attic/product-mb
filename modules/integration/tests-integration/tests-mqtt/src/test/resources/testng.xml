@@ -30,7 +30,7 @@
             <class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.PermissionTestCase"/>-->
 
             <!-- load test cases -->
