@@ -22,6 +22,7 @@ import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -37,7 +38,9 @@ import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfiguratio
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -54,6 +57,8 @@ import java.rmi.RemoteException;
  * stream) which can be sent to a topic.
  */
 public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -86,12 +91,12 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "single publisher single subscriber byte messages",
             enabled = true)
-    public void testByteMessageSingleSubSinglePub()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testByteMessageSingleSubSinglePub(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
 
-        this.runMessageTypeTestCase(JMSMessageType.BYTE, 1, "byteMessageQueue1");
+        this.runMessageTypeTestCase(JMSMessageType.BYTE, 1, "byteMessageQueue1", messageCount);
     }
 
     /**
@@ -107,12 +112,12 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "multiple publisher multiple subscriber byte " +
                                             "messages", enabled = true)
-    public void testByteMessageMultipleSubMultiplePub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void testByteMessageMultipleSubMultiplePub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
 
-        this.runMessageTypeTestCase(JMSMessageType.BYTE, 10, "byteMessageQueue2");
+        this.runMessageTypeTestCase(JMSMessageType.BYTE, 10, "byteMessageQueue2", messageCount);
     }
 
     /**
@@ -128,11 +133,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "single publisher single subscriber map messages",
             enabled = true)
-    public void testMapMessageSingleSubSinglePub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.MAP, 1, "mapMessageQueue1");
+    @Parameters({"messageCount"})
+    public void testMapMessageSingleSubSinglePub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.MAP, 1, "mapMessageQueue1", messageCount);
     }
 
     /**
@@ -148,11 +153,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "multiple publisher multiple subscriber map " +
                                             "messages", enabled = true)
-    public void testMapMessageMultiplePubMultipleSub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.MAP, 10, "mapMessageQueue2");
+    @Parameters({"messageCount"})
+    public void testMapMessageMultiplePubMultipleSub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.MAP, 10, "mapMessageQueue2", messageCount);
     }
 
     /**
@@ -168,11 +173,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "single publisher single subscriber object messages",
             enabled = true)
-    public void testObjectMessageSingleSubSinglePub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.OBJECT, 1, "objectMessageQueue1");
+    @Parameters({"messageCount"})
+    public void testObjectMessageSingleSubSinglePub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.OBJECT, 1, "objectMessageQueue1", messageCount);
     }
 
     /**
@@ -187,11 +192,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "multiple publisher multiple subscriber object " +
                                             "messages", enabled = true)
-    public void testObjectMessageMultiplePubMultipleSub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.OBJECT, 10, "objectMessageQueue2");
+    @Parameters({"messageCount"})
+    public void testObjectMessageMultiplePubMultipleSub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.OBJECT, 10, "objectMessageQueue2", messageCount);
     }
 
     /**
@@ -207,11 +212,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "single publisher single subscriber stream messages",
             enabled = true)
-    public void testStreamMessageSingleSubSinglePub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.STREAM, 1, "streamMessageQueue1");
+    @Parameters({"messageCount"})
+    public void testStreamMessageSingleSubSinglePub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.STREAM, 1, "streamMessageQueue1", messageCount);
     }
 
     /**
@@ -227,11 +232,11 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "multiple publisher multiple subscriber stream " +
                                             "messages", enabled = true)
-    public void testStreamMessageMultiplePubMultipleSub()
-            throws IOException, JMSException, AndesClientConfigurationException,
-                   XPathExpressionException,
-                   NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.STREAM, 10, "streamMessageQueue2");
+    @Parameters({"messageCount"})
+    public void testStreamMessageMultiplePubMultipleSub(long messageCount)
+            throws IOException, JMSException, AndesClientConfigurationException, XPathExpressionException,
+                   NamingException, AndesClientException, DataAccessUtilException {
+        this.runMessageTypeTestCase(JMSMessageType.STREAM, 10, "streamMessageQueue2", messageCount);
     }
 
     /**
@@ -287,13 +292,15 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     private void runMessageTypeTestCase(JMSMessageType messageType, int numberOfPublishers,
-                                        String destinationName)
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+                                        String destinationName, long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
+
+
 
         // Number of messages send
-        long sendCount = 2000L;
+        long sendCount = messageCount;
+        long printDivider = 10L;
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
@@ -301,14 +308,15 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(),
                                     brokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
-        consumerConfig.setPrintsPerMessageCount(sendCount / 10L);
+        consumerConfig.setMaximumMessagesToReceived(sendCount * numberOfPublishers);
+        consumerConfig.setPrintsPerMessageCount(sendCount / printDivider);
 
         // Creating publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(),
                                      brokerAddress.getPort(), ExchangeType.QUEUE, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
         publisherConfig.setJMSMessageType(messageType);
 
         // Creating clients
@@ -322,9 +330,14 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                            .getSentMessageCount(), sendCount * numberOfPublishers, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                            .getReceivedMessageCount(), sendCount * numberOfPublishers, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount * numberOfPublishers,
+                            "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), sendCount * numberOfPublishers,
+                            "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 }

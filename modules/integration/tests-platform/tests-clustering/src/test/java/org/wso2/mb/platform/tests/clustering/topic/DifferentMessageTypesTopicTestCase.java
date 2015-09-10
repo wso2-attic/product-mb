@@ -22,6 +22,7 @@ package org.wso2.mb.platform.tests.clustering.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -93,12 +94,13 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber byte messages", enabled = true)
-    public void testByteMessageSingleSubSinglePubTopic()
+    @Parameters({"messageCount"})
+    public void testByteMessageSingleSubSinglePubTopic(long messageCount)
             throws IOException, JMSException, AndesClientConfigurationException,
                    XPathExpressionException,
                    NamingException, AndesClientException {
 
-        this.runMessageTypeTestCase(JMSMessageType.BYTE, "byteTopic1");
+        this.runMessageTypeTestCase(JMSMessageType.BYTE, "byteTopic1", messageCount);
     }
 
     /**
@@ -114,11 +116,12 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber map messages",
             enabled = true)
-    public void testMapMessageSingleSubSinglePubTopic()
+    @Parameters({"messageCount"})
+    public void testMapMessageSingleSubSinglePubTopic(long messageCount)
             throws IOException, JMSException, AndesClientConfigurationException,
                    XPathExpressionException,
                    NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.MAP, "mapTopic1");
+        this.runMessageTypeTestCase(JMSMessageType.MAP, "mapTopic1", messageCount);
     }
 
     /**
@@ -134,11 +137,12 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber object messages",
             enabled = true)
-    public void testObjectMessageSingleSubSinglePubTopic()
+    @Parameters({"messageCount"})
+    public void testObjectMessageSingleSubSinglePubTopic(long messageCount)
             throws IOException, JMSException, AndesClientConfigurationException,
                    XPathExpressionException,
                    NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.OBJECT, "objectTopic1");
+        this.runMessageTypeTestCase(JMSMessageType.OBJECT, "objectTopic1", messageCount);
     }
 
     /**
@@ -154,11 +158,12 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single publisher single subscriber stream messages",
             enabled = true)
-    public void testStreamMessageSingleSubSinglePubTopic()
+    @Parameters({"messageCount"})
+    public void testStreamMessageSingleSubSinglePubTopic(long messageCount)
             throws IOException, JMSException, AndesClientConfigurationException,
                    XPathExpressionException,
                    NamingException, AndesClientException {
-        this.runMessageTypeTestCase(JMSMessageType.STREAM, "streamTopic1");
+        this.runMessageTypeTestCase(JMSMessageType.STREAM, "streamTopic1", messageCount);
     }
 
     /**
@@ -190,15 +195,15 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * @throws IOException
      * @throws AndesClientException
      */
-    private void runMessageTypeTestCase(JMSMessageType messageType, String destinationName)
+    private void runMessageTypeTestCase(JMSMessageType messageType, String destinationName, long messageCount)
             throws XPathExpressionException, AndesClientConfigurationException, NamingException,
                    JMSException,
                    IOException, AndesClientException {
 
         // Number of expected messages
-        long expectedCount = 2000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 2000L;
+        long sendCount = messageCount;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(automationContext.getInstance().getHosts().get("default"),

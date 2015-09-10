@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -52,8 +53,6 @@ import java.rmi.RemoteException;
  */
 public class MultipleTopicTestCase extends MBPlatformBaseTest {
 
-    private static final long EXPECTED_COUNT = 2000L;
-    private static final long SEND_COUNT = 2000L;
     private AutomationContext automationContext;
     private TopicAdminClient topicAdminClient;
 
@@ -91,21 +90,28 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case")
-    public void testMultipleTopicSingleNode()
+    @Parameters({"messageCount"})
+    public void testMultipleTopicSingleNode(long messageCount)
             throws JMSException, AndesClientConfigurationException, XPathExpressionException,
                    NamingException,
                    IOException, AndesClientException {
+
+        // Number of expected messages
+        long expectedCount = messageCount;
+        // Number of messages send
+        long sendCount = messageCount;
+
         // Creating receiver clients
-        AndesClient receivingClient1 = getAndesReceiverClient("topic1", EXPECTED_COUNT);
-        AndesClient receivingClient2 = getAndesReceiverClient("topic2", EXPECTED_COUNT);
-        AndesClient receivingClient3 = getAndesReceiverClient("topic3", EXPECTED_COUNT);
-        AndesClient receivingClient4 = getAndesReceiverClient("topic4", EXPECTED_COUNT);
-        AndesClient receivingClient5 = getAndesReceiverClient("topic5", EXPECTED_COUNT);
-        AndesClient receivingClient6 = getAndesReceiverClient("topic6", EXPECTED_COUNT);
-        AndesClient receivingClient7 = getAndesReceiverClient("topic7", EXPECTED_COUNT);
-        AndesClient receivingClient8 = getAndesReceiverClient("topic8", EXPECTED_COUNT);
-        AndesClient receivingClient9 = getAndesReceiverClient("topic9", EXPECTED_COUNT);
-        AndesClient receivingClient10 = getAndesReceiverClient("topic10", EXPECTED_COUNT);
+        AndesClient receivingClient1 = getAndesReceiverClient("topic1", expectedCount);
+        AndesClient receivingClient2 = getAndesReceiverClient("topic2", expectedCount);
+        AndesClient receivingClient3 = getAndesReceiverClient("topic3", expectedCount);
+        AndesClient receivingClient4 = getAndesReceiverClient("topic4", expectedCount);
+        AndesClient receivingClient5 = getAndesReceiverClient("topic5", expectedCount);
+        AndesClient receivingClient6 = getAndesReceiverClient("topic6", expectedCount);
+        AndesClient receivingClient7 = getAndesReceiverClient("topic7", expectedCount);
+        AndesClient receivingClient8 = getAndesReceiverClient("topic8", expectedCount);
+        AndesClient receivingClient9 = getAndesReceiverClient("topic9", expectedCount);
+        AndesClient receivingClient10 = getAndesReceiverClient("topic10", expectedCount);
 
         // Starting up receiver clients
         receivingClient1.startClient();
@@ -120,16 +126,16 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         receivingClient10.startClient();
 
         // Creating publisher clients
-        AndesClient sendingClient1 = getAndesSenderClient("topic1", SEND_COUNT);
-        AndesClient sendingClient2 = getAndesSenderClient("topic2", SEND_COUNT);
-        AndesClient sendingClient3 = getAndesSenderClient("topic3", SEND_COUNT);
-        AndesClient sendingClient4 = getAndesSenderClient("topic4", SEND_COUNT);
-        AndesClient sendingClient5 = getAndesSenderClient("topic5", SEND_COUNT);
-        AndesClient sendingClient6 = getAndesSenderClient("topic6", SEND_COUNT);
-        AndesClient sendingClient7 = getAndesSenderClient("topic7", SEND_COUNT);
-        AndesClient sendingClient8 = getAndesSenderClient("topic8", SEND_COUNT);
-        AndesClient sendingClient9 = getAndesSenderClient("topic9", SEND_COUNT);
-        AndesClient sendingClient10 = getAndesSenderClient("topic10", SEND_COUNT);
+        AndesClient sendingClient1 = getAndesSenderClient("topic1", sendCount);
+        AndesClient sendingClient2 = getAndesSenderClient("topic2", sendCount);
+        AndesClient sendingClient3 = getAndesSenderClient("topic3", sendCount);
+        AndesClient sendingClient4 = getAndesSenderClient("topic4", sendCount);
+        AndesClient sendingClient5 = getAndesSenderClient("topic5", sendCount);
+        AndesClient sendingClient6 = getAndesSenderClient("topic6", sendCount);
+        AndesClient sendingClient7 = getAndesSenderClient("topic7", sendCount);
+        AndesClient sendingClient8 = getAndesSenderClient("topic8", sendCount);
+        AndesClient sendingClient9 = getAndesSenderClient("topic9", sendCount);
+        AndesClient sendingClient10 = getAndesSenderClient("topic10", sendCount);
 
         // Starting up publisher clients
         sendingClient1.startClient();
@@ -166,46 +172,46 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
 
         // Evaluating
         Assert.assertEquals(sendingClient1
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 1");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 1");
         Assert.assertEquals(sendingClient2
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 2");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 2");
         Assert.assertEquals(sendingClient3
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 3");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 3");
         Assert.assertEquals(sendingClient4
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 4");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 4");
         Assert.assertEquals(sendingClient5
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 5");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 5");
         Assert.assertEquals(sendingClient6
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 6");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 6");
         Assert.assertEquals(sendingClient7
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 7");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 7");
         Assert.assertEquals(sendingClient8
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 8");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 8");
         Assert.assertEquals(sendingClient9
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 9");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 9");
         Assert.assertEquals(sendingClient10
-                                    .getSentMessageCount(), SEND_COUNT, "Messaging sending failed in sender 10");
+                                    .getSentMessageCount(), sendCount, "Messaging sending failed in sender 10");
 
         Assert.assertEquals(receivingClient1
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 1");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 1");
         Assert.assertEquals(receivingClient2
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 2");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 2");
         Assert.assertEquals(receivingClient3
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 3");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 3");
         Assert.assertEquals(receivingClient4
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 4");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 4");
         Assert.assertEquals(receivingClient5
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 5");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 5");
         Assert.assertEquals(receivingClient6
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 6");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 6");
         Assert.assertEquals(receivingClient7
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 7");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 7");
         Assert.assertEquals(receivingClient8
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 8");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 8");
         Assert.assertEquals(receivingClient9
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 9");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 9");
         Assert.assertEquals(receivingClient10
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive all the messages in receiving client 10");
+                                    .getReceivedMessageCount(), expectedCount, "Did not receive all the messages in receiving client 10");
 
     }
 

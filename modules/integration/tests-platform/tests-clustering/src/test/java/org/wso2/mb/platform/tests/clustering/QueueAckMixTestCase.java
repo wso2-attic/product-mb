@@ -34,7 +34,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -49,6 +51,8 @@ import java.net.URISyntaxException;
  * receiver.
  */
 public class QueueAckMixTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     private static final long SEND_COUNT = 100000L;
     private static final long EXPECTED_COUNT = SEND_COUNT;
@@ -92,10 +96,11 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
     @Test(groups = "wso2.mb", description = "50 publishers and Receive them via 50 AUTO_ACKNOWLEDGE subscribers and 10 " +
                                             "CLIENT_ACKNOWLEDGE subscribers who receive 10% of the messages", enabled = true)
     public void performMillionMessageTenPercentReturnTestCase()
-            throws XPathExpressionException, AndesClientConfigurationException, NamingException,
-                   JMSException,
-                   IOException, AndesClientException {
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException {
 
+
+        String queueName = "TenPercentReturnQueue";
 
         String randomInstanceKeyForReceiver = getRandomMBInstance();
 
@@ -104,14 +109,15 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
                                                                                                      Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
-                                                                                                     ExchangeType.QUEUE, "TenPercentReturnQueue");
+                                                                                                     ExchangeType
+                                                                                                             .QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(NO_OF_RETURN_MESSAGES);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
 
         AndesJMSConsumerClientConfiguration consumerReturnConfig = new AndesJMSConsumerClientConfiguration(tempContextForReceiver.getInstance().getHosts().get("default"),
                                                                                                            Integer.parseInt(tempContextForReceiver.getInstance().getPorts().get("amqp")),
-                                                                                                           ExchangeType.QUEUE, "TenPercentReturnQueue");
+                                                                                                           ExchangeType.QUEUE, queueName);
         consumerReturnConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerReturnConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerReturnConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
@@ -123,7 +129,8 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(tempContextForSender.getInstance().getHosts().get("default"),
                                                                                                         Integer.parseInt(tempContextForSender.getInstance().getPorts().get("amqp")),
-                                                                                                        ExchangeType.QUEUE, "TenPercentReturnQueue");
+                                                                                                        ExchangeType
+                                                                                                                .QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
         publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
 
@@ -143,5 +150,10 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 }

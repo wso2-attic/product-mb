@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -37,7 +38,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -58,6 +61,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     private AutomationContext automationContextForMB2;
     private AutomationContext automationContext2;
     private TopicAdminClient topicAdminClient1;
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -96,13 +100,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Same node publisher subscriber test case",
             enabled = true)
-    public void testSameNodePubSub()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodePubSub(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1");
+                            automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1", messageCount);
     }
 
     /**
@@ -117,13 +121,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Same node publisher, slow subscriber test case",
             enabled = true)
-    public void testSameNodeSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodeSlowSubscriber(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2");
+                        automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2", messageCount);
     }
 
     /**
@@ -139,13 +143,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Same node slow publisher test case",
             enabled = true)
-    public void testSameNodeSlowPublisher()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodeSlowPublisher(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3");
+                        automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3", messageCount);
     }
 
     /**
@@ -161,13 +165,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Single node slow publisher slow subscriber test case",
             enabled = true)
-    public void testSingleNodeSlowPublisherSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSingleNodeSlowPublisherSlowSubscriber(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8");
+                        automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8", messageCount);
     }
 
     /**
@@ -182,13 +186,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Different node publisher subscriber test case",
             enabled = true)
-    public void testDifferentNodePubSub()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDifferentNodePubSub(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10");
+                            automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10", messageCount);
     }
 
     /**
@@ -204,13 +208,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Different node slow subscriber test case",
             enabled = true)
-    public void testDifferentNodeSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDifferentNodeSlowSubscriber(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5");
+                            automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5", messageCount);
     }
 
     /**
@@ -226,13 +230,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Different node slow publisher test case",
             enabled = true)
-    public void testDifferentNodeSlowPublisher()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDifferentNodeSlowPublisher(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6");
+                            automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6", messageCount);
     }
 
     /**
@@ -248,13 +252,13 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      */
     @Test(groups = "wso2.mb", description = "Different node slow publisher slow subscriber test " +
                                             "case", enabled = true)
-    public void testDifferentNodeSlowPublisherSlowSubscriber()
-            throws TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientConfigurationException,
-                   XPathExpressionException, NamingException, JMSException, IOException,
-                   AndesClientException {
+    @Parameters({"messageCount"})
+    public void testDifferentNodeSlowPublisherSlowSubscriber(long messageCount)
+            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+                   XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
+                   DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7");
+                            automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7", messageCount);
     }
 
     /**
@@ -297,14 +301,15 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     private void runSingleSubscriberSinglePublisherTopicTestCase(
             AutomationContext contextForConsumer,
             AutomationContext contextForPublisher, long consumerDelay,
-            long publisherDelay, String destinationName)
+            long publisherDelay, String destinationName, long messageCount)
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   XPathExpressionException, TopicManagerAdminServiceEventAdminExceptionException,
-                   AndesClientException {
+                   XPathExpressionException, TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+                   DataAccessUtilException {
         // Number of messages expected
-        long expectedCount = 2000L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 2000L;
+        long sendCount = messageCount;
+        long printDivider = 10L;
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -315,8 +320,8 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                                                                                  .getPorts()
                                                                                  .get("amqp")),
                                                         ExchangeType.TOPIC, destinationName);
-        consumerConfig.setMaximumMessagesToReceived(expectedCount);
-        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount * 2);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / printDivider);
         consumerConfig.setRunningDelay(consumerDelay);
 
         // Creating clients
@@ -338,7 +343,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                                                                                   .get("amqp")),
                                                          ExchangeType.TOPIC, destinationName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
-        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+        publisherConfig.setPrintsPerMessageCount(sendCount / printDivider);
         publisherConfig.setRunningDelay(publisherDelay);
 
 
@@ -349,9 +354,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), sendCount, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 }

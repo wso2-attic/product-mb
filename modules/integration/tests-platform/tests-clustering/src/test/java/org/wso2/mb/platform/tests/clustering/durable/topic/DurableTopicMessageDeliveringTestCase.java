@@ -21,6 +21,7 @@ package org.wso2.mb.platform.tests.clustering.durable.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -36,7 +37,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -54,8 +57,7 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
 
     private AutomationContext automationContext;
     private TopicAdminClient topicAdminClient;
-    private static final long SEND_COUNT = 500L;
-    private static final long EXPECTED_COUNT = SEND_COUNT;
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -90,10 +92,14 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = {"wso2.mb", "durableTopic"})
-    public void pubSubDurableTopicTestCase()
-            throws AndesClientConfigurationException, NamingException, JMSException,
-                   XPathExpressionException,
-                   IOException, AndesClientException {
+    @Parameters({"messageCount"})
+    public void pubSubDurableTopicTestCase(long messageCount)
+            throws AndesClientConfigurationException, NamingException, JMSException, XPathExpressionException,
+                   IOException, AndesClientException, DataAccessUtilException {
+
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+        String destinationName = "durableTopicMessageDelivering";
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
@@ -103,12 +109,11 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
                                                                                  .getInstance()
                                                                                  .getPorts()
                                                                                  .get("amqp")),
-                                                        ExchangeType.TOPIC, "durableTopicMessageDelivering");
-        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+                                                        ExchangeType.TOPIC, destinationName);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
         consumerConfig.setDurable(true, "durableTopicSub5");    // durable topic
         consumerConfig
-                .setUnSubscribeAfterEachMessageCount(500L);   // Un-Subscribes messages at this message count
+                .setUnSubscribeAfterEachMessageCount(expectedCount);   // Un-Subscribes messages at this message count
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -118,9 +123,9 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
                                                                                   .getInstance()
                                                                                   .getPorts()
                                                                                   .get("amqp")),
-                                                         ExchangeType.TOPIC, "durableTopicMessageDelivering");
-        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
+                                                         ExchangeType.TOPIC, destinationName);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating andes client
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -133,10 +138,13 @@ public class DurableTopicMessageDeliveringTestCase extends MBPlatformBaseTest {
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+        // Evaluate message left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(destinationName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(destinationName), 0, "Slots left in database");
     }
 
     /**

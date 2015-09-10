@@ -84,7 +84,8 @@ public class AndesClientOutputParser {
                 String line = br.readLine();
                 while (line != null) {
                     String tempSendMessageString = line.substring(AndesClientConstants.PUBLISH_MESSAGE_FORMAT.indexOf("Sending Message:") + "Sending Message:".length());
-                    long messageIdentifier = Long.parseLong(tempSendMessageString.substring(0, tempSendMessageString.indexOf(" ")));
+                    long messageIdentifier = Long.valueOf(tempSendMessageString.substring(0, tempSendMessageString
+                            .indexOf(" ")).replace(",",""));
                     this.addMessage(messageIdentifier);
                     line = br.readLine();
                 }

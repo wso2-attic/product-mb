@@ -20,6 +20,7 @@ package org.wso2.mb.platform.tests.clustering.durable.topic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
@@ -54,8 +55,6 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
     private int portInNode1;
     private int portInNode2;
     private TopicAdminClient topicAdminClient;
-    private static final long SEND_COUNT = 500L;
-    private static final long EXPECTED_COUNT = SEND_COUNT;
 
     /**
      * Prepare environment for tests.
@@ -96,9 +95,14 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Reconnect to topic with same sub ID after " +
                                             "disconnecting", enabled = true)
-    public void subscribeDisconnectAndSubscribeAgainTest()
+    @Parameters({"messageCount"})
+    public void subscribeDisconnectAndSubscribeAgainTest(long messageCount)
             throws JMSException, NamingException, AndesClientConfigurationException, IOException,
             AndesClientException {
+
+        long sendCount = messageCount;
+        long expectedCount = messageCount;
+
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(hostNode1, portInNode1, ExchangeType.TOPIC, "durableTopicPublishing1");
@@ -106,8 +110,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(hostNode2, portInNode2, ExchangeType.TOPIC, "durableTopicPublishing1");
-        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -119,8 +123,8 @@ public class DurableTopicSubscriptionTestCase extends MBPlatformBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
-        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
     }
 
     /**

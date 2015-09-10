@@ -22,6 +22,7 @@ import com.google.common.net.HostAndPort;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -36,7 +37,9 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
+import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -51,6 +54,8 @@ import java.rmi.RemoteException;
  * This class tests broker with multiple publisher and subscribers
  */
 public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseTest {
+
+    private DataAccessUtil dataAccessUtil = new DataAccessUtil();
 
     /**
      * Prepare environment for tests.
@@ -82,24 +87,25 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
      */
     @Test(groups = "wso2.mb", description = "Same node single queue multiple subscriber " +
                                             "publisher test case")
-    public void testSameNodeSingleQueueMultipleSubscriberPublisher() throws
-                                                                     XPathExpressionException,
-                                                                     AndesClientConfigurationException,
-                                                                     NamingException, JMSException,
-                                                                     IOException,
-                                                                     AndesClientException {
+    @Parameters({"messageCount"})
+    public void testSameNodeSingleQueueMultipleSubscriberPublisher(long messageCount)
+            throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
+                   IOException, AndesClientException, DataAccessUtilException, InterruptedException {
         // Number of messages expected
-        long expectedCount = 250L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 250L;
+        long sendCount = messageCount;
+        String queueName = "singleQueue1";
 
         HostAndPort brokerAddress = getRandomAMQPBrokerAddress();
 
-        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress.getHostText(), brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue1");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(brokerAddress
+                                                .getHostText(), brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress.getHostText(), brokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue1");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(brokerAddress
+                                                .getHostText(), brokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -125,6 +131,8 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+        // Wait until consumers are closed
+        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient1.getSentMessageCount(), sendCount, "Message sending failed by publisherClient1.");
         Assert.assertEquals(publisherClient2.getSentMessageCount(), sendCount, "Message sending failed by publisherClient2.");
@@ -135,10 +143,17 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient3.");
         Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed by consumerClient4.");
 
-        long totalMessagesSent = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount() + publisherClient3.getSentMessageCount() + publisherClient4.getSentMessageCount();
-        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() + consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
+        long totalMessagesSent = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount()
+                                 + publisherClient3.getSentMessageCount() + publisherClient4.getSentMessageCount();
+        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount()
+                                     + consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
         Assert.assertEquals(totalMessagesSent, totalMessagesReceived, "Message receiving failed by all consumers");
         Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers does not match the message count that was sent");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -153,25 +168,28 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
      */
     @Test(groups = "wso2.mb", description = "Multiple node single queue multiple subscriber " +
                                             "publisher test case")
-    public void testMultiNodeSingleQueueMultipleSubscriberPublisher()
-            throws AndesClientConfigurationException, XPathExpressionException, NamingException,
-                   JMSException, IOException, AndesClientException, CloneNotSupportedException {
+    @Parameters({"messageCount"})
+    public void testMultiNodeSingleQueueMultipleSubscriberPublisher(long messageCount)
+            throws AndesClientConfigurationException, XPathExpressionException, NamingException, JMSException,
+                   IOException, AndesClientException, CloneNotSupportedException, DataAccessUtilException,
+                   InterruptedException {
         // Number of messages expected
-        long expectedCount = 250L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 250L;
+        long sendCount = messageCount;
+        String queueName = "singleQueue2";
         HostAndPort consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
         AndesJMSConsumerClientConfiguration consumerConfig1 =
                 new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.getHostText(),
-                            consumerBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue2");
+                            consumerBrokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         consumerConfig1.setMaximumMessagesToReceived(expectedCount);
         consumerConfig1.setPrintsPerMessageCount(expectedCount / 10L);
 
         HostAndPort publisherBrokerAddress = getRandomAMQPBrokerAddress();
         AndesJMSPublisherClientConfiguration publisherConfig1 =
                 new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.getHostText(),
-                             publisherBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue2");
+                             publisherBrokerAddress.getPort(), ExchangeType.QUEUE, queueName);
         publisherConfig1.setNumberOfMessagesToSend(sendCount);
         publisherConfig1.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -251,6 +269,11 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers" +
                                                               " does not match the message count " +
                                                               "that was sent");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queueName), 0, "Slots left in database");
     }
 
     /**
@@ -266,24 +289,25 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
      */
     @Test(groups = "wso2.mb", description = "Multiple node Multiple queue multiple subscriber " +
                                             "publisher test case")
-    public void testMultiNodeMultipleQueueMultipleSubscriberPublisher() throws
-                                                                        AndesClientConfigurationException,
-                                                                        NamingException,
-                                                                        JMSException,
-                                                                        XPathExpressionException,
-                                                                        IOException,
-                                                                        CloneNotSupportedException,
-                                                                        AndesClientException {
+    @Parameters({"messageCount"})
+    public void testMultiNodeMultipleQueueMultipleSubscriberPublisher(long messageCount)
+            throws AndesClientConfigurationException, NamingException, JMSException, XPathExpressionException,
+                   IOException, CloneNotSupportedException, AndesClientException, DataAccessUtilException,
+                   InterruptedException {
         // Number of messages expected
-        long expectedCount = 250L;
+        long expectedCount = messageCount;
         // Number of messages send
-        long sendCount = 250L;
+        long sendCount = messageCount;
+        String queue3 = "singleQueue3";
+        String queue4 = "singleQueue4";
+        String queue5 = "singleQueue5";
+        String queue6 = "singleQueue6";
 
         HostAndPort consumerBrokerAddress = getRandomAMQPBrokerAddress();
 
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(consumerBrokerAddress.getHostText(),
-                                consumerBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue3");
+                                consumerBrokerAddress.getPort(), ExchangeType.QUEUE, queue3);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
 
@@ -291,7 +315,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(publisherBrokerAddress.getHostText(),
-                             publisherBrokerAddress.getPort(), ExchangeType.QUEUE, "singleQueue3");
+                             publisherBrokerAddress.getPort(), ExchangeType.QUEUE, queue3);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -299,7 +323,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         consumerClient1.startClient();
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
-        consumerConfig2.setDestinationName("singleQueue4");
+        consumerConfig2.setDestinationName(queue4);
         HostAndPort randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         consumerConfig2.setHostName(randomAMQPBrokerAddress.getHostText());
         consumerConfig2.setPort(randomAMQPBrokerAddress.getPort());
@@ -307,7 +331,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         consumerClient2.startClient();
 
         AndesJMSConsumerClientConfiguration consumerConfig3 = consumerConfig.clone();
-        consumerConfig3.setDestinationName("singleQueue5");
+        consumerConfig3.setDestinationName(queue5);
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         consumerConfig3.setHostName(randomAMQPBrokerAddress.getHostText());
         consumerConfig3.setPort(randomAMQPBrokerAddress.getPort());
@@ -315,7 +339,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         consumerClient3.startClient();
 
         AndesJMSConsumerClientConfiguration consumerConfig4 = consumerConfig.clone();
-        consumerConfig4.setDestinationName("singleQueue6");
+        consumerConfig4.setDestinationName(queue6);
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         consumerConfig4.setHostName(randomAMQPBrokerAddress.getHostText());
         consumerConfig4.setPort(randomAMQPBrokerAddress.getPort());
@@ -326,7 +350,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         publisherClient1.startClient();
 
         AndesJMSPublisherClientConfiguration publisherConfig2 = publisherConfig.clone();
-        publisherConfig2.setDestinationName("singleQueue4");
+        publisherConfig2.setDestinationName(queue4);
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         publisherConfig2.setHostName(randomAMQPBrokerAddress.getHostText());
         publisherConfig2.setPort(randomAMQPBrokerAddress.getPort());
@@ -334,7 +358,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         publisherClient2.startClient();
 
         AndesJMSPublisherClientConfiguration publisherConfig3 = publisherConfig.clone();
-        publisherConfig3.setDestinationName("singleQueue5");
+        publisherConfig3.setDestinationName(queue5);
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         publisherConfig3.setHostName(randomAMQPBrokerAddress.getHostText());
         publisherConfig3.setPort(randomAMQPBrokerAddress.getPort());
@@ -342,7 +366,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         publisherClient3.startClient();
 
         AndesJMSPublisherClientConfiguration publisherConfig4 = publisherConfig.clone();
-        publisherConfig4.setDestinationName("singleQueue6");
+        publisherConfig4.setDestinationName(queue6);
         randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
         publisherConfig4.setHostName(randomAMQPBrokerAddress.getHostText());
         publisherConfig4.setPort(randomAMQPBrokerAddress.getPort());
@@ -376,6 +400,17 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         Assert.assertEquals(totalMessagesSent, sendCount * 4, "Message receiving by all consumers" +
                                                               " does not match the message count " +
                                                               "that was sent");
+
+        // Evaluate messages left in database
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queue3), 0, "Messages left in database");
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queue4), 0, "Messages left in database");
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queue5), 0, "Messages left in database");
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queue6), 0, "Messages left in database");
+        // Evaluate slots left in database
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queue3), 0, "Slots left in database");
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queue4), 0, "Slots left in database");
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queue5), 0, "Slots left in database");
+        Assert.assertEquals(dataAccessUtil.getAssignedSlotCountForQueue(queue6), 0, "Slots left in database");
     }
 
     /**
