@@ -94,6 +94,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send and receive messages in a single node for a topic
      *
+     * @param messageCount  Number of message to send and receive
      * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException
@@ -181,6 +182,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send messages from one node and received messages from another node.
      *
+     * @param messageCount  Number of message to send and receive
      * @throws AndesClientConfigurationException
      * @throws JMSException
      * @throws NamingException

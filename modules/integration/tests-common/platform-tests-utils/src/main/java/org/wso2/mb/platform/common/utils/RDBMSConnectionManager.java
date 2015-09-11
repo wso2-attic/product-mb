@@ -29,14 +29,14 @@ import java.sql.SQLException;
  */
 public class RDBMSConnectionManager {
 
-    // Set JDBC URL
-    private static String url = "jdbc:mysql://localhost/WSO2_MB";
-    private static String driverName = "com.mysql.jdbc.Driver";
     // Set database username
-    private static String username = "";
+    private static final String username = "";
     // Set database password
-    private static String password = "";
-    private static Connection conn;
+    private static final String password = "";
+    // Set JDBC URL
+    private static final String url = "jdbc:mysql://localhost/WSO2_MB";
+    // Set JDBC Driver
+    private static final String driverName = "com.mysql.jdbc.Driver";
 
     /**
      * Get database connection.
@@ -46,7 +46,7 @@ public class RDBMSConnectionManager {
     public static Connection getConnection() throws DataAccessUtilException {
         try {
             Class.forName(driverName);
-            conn = DriverManager.getConnection(url, username, password);
+            Connection conn = DriverManager.getConnection(url, username, password);
             return conn;
         } catch (SQLException e) {
             throw new DataAccessUtilException("SQL error occurred while getting message count for queue", e);

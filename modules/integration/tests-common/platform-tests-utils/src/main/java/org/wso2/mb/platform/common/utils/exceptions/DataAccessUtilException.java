@@ -24,11 +24,6 @@ package org.wso2.mb.platform.common.utils.exceptions;
 public class DataAccessUtilException extends Exception {
 
     /**
-     * Error message for exception
-     */
-    public String errorMessage;
-
-    /**
      * Creates Data Access Util exception.
      */
     public DataAccessUtilException() {
@@ -41,7 +36,6 @@ public class DataAccessUtilException extends Exception {
      */
     public DataAccessUtilException(String message) {
         super(message);
-        errorMessage = message;
     }
 
     /**
@@ -52,7 +46,6 @@ public class DataAccessUtilException extends Exception {
      */
     public DataAccessUtilException(String message, Throwable cause) {
         super(message, cause);
-        errorMessage = message;
     }
 
     /**
@@ -69,6 +62,6 @@ public class DataAccessUtilException extends Exception {
      */
     @Override
     public String getMessage() {
-        return errorMessage;
+        return super.getMessage();
     }
 }

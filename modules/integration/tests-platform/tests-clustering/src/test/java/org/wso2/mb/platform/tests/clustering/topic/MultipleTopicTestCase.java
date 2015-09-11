@@ -82,6 +82,7 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
     /**
      * Publish messages to a topic in a single node and receive from the same node
      *
+     * @param messageCount  Number of message to send and receive
      * @throws JMSException
      * @throws AndesClientConfigurationException
      * @throws XPathExpressionException

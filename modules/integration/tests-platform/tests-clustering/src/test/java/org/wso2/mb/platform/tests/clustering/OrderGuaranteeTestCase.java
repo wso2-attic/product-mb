@@ -80,6 +80,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * Publish message to a single node and receive from the same node and check for any out of
      * order delivery and message duplication.
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -145,6 +146,7 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
      * Publish message to a single node and receive from another node and check for any out of order
      * delivery and message duplication.
      *
+     * @param messageCount  Number of message to send and receive
      * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws JMSException

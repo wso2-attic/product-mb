@@ -84,6 +84,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send and receive messages in a single node for a queue
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws IOException
@@ -154,10 +155,9 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     @Test(groups = "wso2.mb", description = "Single queue replication")
     public void testSingleQueueReplication()
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException, DataAccessUtilException{
+
         String queueName = "clusterSingleQueue2";
-
         String randomInstanceKey = getRandomMBInstance();
-
         AndesAdminClient tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
 
         if (tempAndesAdminClient.getQueueByName(queueName) != null) {
@@ -185,6 +185,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
     /**
      * Send messages from one node and received messages from another node.
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws IOException

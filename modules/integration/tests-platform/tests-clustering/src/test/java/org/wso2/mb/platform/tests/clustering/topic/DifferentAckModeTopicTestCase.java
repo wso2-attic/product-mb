@@ -85,6 +85,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in single node and receive from the same node with
      * session_transacted acknowledge mode
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -151,6 +152,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in single node and receive from the same node with
      * auto acknowledge mode
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -217,6 +219,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in single node and receive from the same node with client
      * acknowledge mode
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -282,6 +285,7 @@ public class DifferentAckModeTopicTestCase extends MBPlatformBaseTest {
      * Publish messages to a topic in single node and receive from the same node with
      * duplicate acknowledge mode
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
