@@ -164,7 +164,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
             tempAndesAdminClient.deleteQueue(queueName);
         }
 
-        tempAndesAdminClient.createQueue(queueName);
+        tempAndesAdminClient.createQueue(queueName, false);
 
         randomInstanceKey = getRandomMBInstance();
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);

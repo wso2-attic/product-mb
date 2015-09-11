@@ -62,9 +62,9 @@ public class AndesAdminClient {
      * @throws AndesAdminServiceBrokerManagerAdminException
      * @throws RemoteException
      */
-    public void createQueue(String queue)
+    public void createQueue(String queue, boolean isExclusiveConsumer)
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
-        stub.createQueue(queue);
+        stub.createQueue(queue, isExclusiveConsumer);
     }
 
     /**
@@ -99,11 +99,13 @@ public class AndesAdminClient {
      *
      * @param queue the name of the queue
      * @throws RemoteException
+     * @throws AndesAdminServiceBrokerManagerAdminException
      */
     public void purgeQueue(String queue)
             throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
         stub.purgeMessagesOfQueue(queue);
     }
+
 
     /**
      * Get queue object by queue name

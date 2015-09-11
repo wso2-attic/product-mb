@@ -81,6 +81,8 @@
 
             <!-- Queue -->
 
+            <class name="org.wso2.mb.integration.tests.amqp.functional.ExclusiveConsumerTestCase"/>
+
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.ManySubscribersTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.MultiThreadedMultipleQueueTestCase"/>-->
