@@ -459,6 +459,8 @@ public class AndesJMSConsumer extends AndesJMSBase
                     .getMaximumMessagesToReceived()) {
                 // Stopping the consumer
                 stopClient();
+                // Waiting till consumer is closed so that no messages will be read.
+                AndesClientUtils.sleepForInterval(1000L);
                 return true;
             }
 
