@@ -30,6 +30,9 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+/**
+ * This class includes test cases to test exclusive consumer feature with connection fail-over
+ */
 public class ExclusiveConsumerTestCase extends MBIntegrationBaseTest {
     /**
      * Initializing test case

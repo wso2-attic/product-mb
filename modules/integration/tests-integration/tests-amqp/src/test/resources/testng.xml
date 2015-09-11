@@ -71,11 +71,13 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
 
-            <!-- load test cases-->
-
             <!-- Queue -->
 
             <class name="org.wso2.mb.integration.tests.amqp.functional.ExclusiveConsumerTestCase"/>
+
+            <!-- load test cases-->
+
+            <!-- Queue -->
 
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.CreateRemoveQueueSubscriptionTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.amqp.load.ManySubscribersTestCase"/>-->
