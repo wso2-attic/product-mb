@@ -89,7 +89,7 @@ public class ExclusiveConsumerTestCase extends MBIntegrationBaseTest {
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Error in sending all the messages.");
         Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedCount, "Error in sending all the messages to the exclusive consumer.");
-        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), 0, "Error in sending messages to non-exclusive consumer.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), 0, "Non-exclusive subscriber isn't received messages");
     }
 
     /**
