@@ -70,6 +70,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic1");
         consumerConfig.setDurable(true, "durableSub1");
+        consumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
@@ -112,6 +113,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic2");
         consumerConfig.setDurable(true, "sriLanka");
+        consumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
@@ -153,6 +155,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
 
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig = consumerConfig.clone();
         secondaryConsumerConfig.setSubscriptionID("test2");
+        secondaryConsumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
@@ -194,6 +197,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic4");
         consumerConfig.setDurable(true, "test3");
+        consumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
@@ -205,6 +209,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
 
         AndesJMSConsumerClientConfiguration secondConsumerConfig = consumerConfig.clone();
         secondConsumerConfig.setDestinationName("myTopic5");
+        secondConsumerConfig.setAsync(false);
 
         AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
         secondaryConsumerClient.startClient();
@@ -235,6 +240,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic5");
         consumerConfig.setDurable(true, "test5");
+        consumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient initialConsumerClient = new AndesClient(consumerConfig, true);
@@ -244,6 +250,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
 
         AndesJMSConsumerClientConfiguration secondConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic5");
+        secondConsumerConfig.setAsync(false);
         AndesClient secondaryConsumerClient = new AndesClient(secondConsumerConfig, true);
         secondaryConsumerClient.startClient();
 
@@ -276,6 +283,7 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         // Creating configurations
         AndesJMSConsumerClientConfiguration firstConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multiSubTopic");
+        firstConsumerConfig.setAsync(false);
         firstConsumerConfig.setDurable(true, "new1");
 
         AndesJMSConsumerClientConfiguration secondConsumerConfig = firstConsumerConfig.clone();
@@ -336,10 +344,12 @@ public class DurableTopicSubscriptionTestCase extends MBIntegrationBaseTest {
         // Creating configurations
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic8");
+        consumerConfig.setAsync(false);
         consumerConfig.setDurable(true, "test8");
 
         AndesJMSConsumerClientConfiguration secondaryConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "myTopic9");
+        secondaryConfig.setAsync(false);
         secondaryConfig.setDurable(true, "test8");
 
 

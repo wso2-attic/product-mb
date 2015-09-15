@@ -77,32 +77,38 @@ public class DifferentSubscriptionsWithDurableTopicTestCase extends MBIntegratio
         durableTopicConsumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableTopicConsumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig1.setDurable(true, "diffSub1"); // durable topic
+        durableTopicConsumerConfig1.setAsync(false);
 
         AndesJMSConsumerClientConfiguration durableTopicConsumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         durableTopicConsumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableTopicConsumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableTopicConsumerConfig2.setDurable(true, "diffSub2"); // durable topic
+        durableTopicConsumerConfig2.setAsync(false);
 
         AndesJMSConsumerClientConfiguration normalTopicConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, TOPIC_NAME);
         normalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         normalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        normalTopicConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration normalHierarchicalTopicConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
         normalHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         normalHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        normalHierarchicalTopicConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration durableHierarchicalTopicConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, HIERARCHICAL_TOPIC);
         durableHierarchicalTopicConsumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         durableHierarchicalTopicConsumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         durableHierarchicalTopicConsumerConfig.setDurable(true, "diffSub3"); // durable topic
+        durableHierarchicalTopicConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration queueConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TOPIC_NAME); // queue consumer
         queueConsumerConfig.setMaximumMessagesToReceived(10L);  // To wait if any message does received
+        queueConsumerConfig.setAsync(false);
 
         // Creating a publisher client configurations
         AndesJMSPublisherClientConfiguration publisherConfig =

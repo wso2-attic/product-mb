@@ -76,6 +76,7 @@ public class TopicTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "singleTopic");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -131,18 +132,21 @@ public class TopicTestCase extends MBIntegrationBaseTest {
                                                                                     "commontopic");
         adminConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        adminConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "tenant1user1!testtenant1.com",
                                 "tenant1user1", ExchangeType.TOPIC, "testtenant1.com/commontopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        tenant1ConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "tenant2user1!testtenant2.com",
                                 "tenant2user1", ExchangeType.TOPIC, "testtenant2.com/commontopic");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        tenant2ConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration adminPublisherConfig =

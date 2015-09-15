@@ -80,6 +80,7 @@ public class QueueMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         // writing received messages to a file
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

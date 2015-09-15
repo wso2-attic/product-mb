@@ -99,6 +99,7 @@ public class JMSSubscriberTransactionMessageReceiveOrderTestCase extends MBInteg
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.
                                                                   FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         // Create JMS publisher configurations
         AndesJMSPublisherClientConfiguration publisherConfig =

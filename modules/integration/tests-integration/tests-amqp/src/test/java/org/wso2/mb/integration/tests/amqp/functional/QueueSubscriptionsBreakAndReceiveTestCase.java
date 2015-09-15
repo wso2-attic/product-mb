@@ -93,6 +93,7 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "breakSubscriberQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_BY_EACH_SUBSCRIBER);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT_BY_EACH_SUBSCRIBER / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

@@ -87,6 +87,7 @@ public class DuplicatesOkAcknowledgementsTestCase extends MBIntegrationBaseTest 
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.DUPS_OK_ACKNOWLEDGE);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "dupOkAckTestQueue");

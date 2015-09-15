@@ -92,12 +92,14 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                                                 ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        adminConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
                             "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        tenant1ConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =
@@ -160,12 +162,14 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
                         "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/multitenantTopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        tenant1ConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                         "topictenantuser1", ExchangeType.TOPIC, "topictenant2.com/multitenantTopic");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        tenant2ConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =

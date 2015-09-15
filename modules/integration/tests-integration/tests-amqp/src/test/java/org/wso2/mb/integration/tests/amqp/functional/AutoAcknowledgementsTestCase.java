@@ -85,6 +85,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "autoAckTestQueue");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(consumerConfig);
@@ -132,6 +133,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration initialConsumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
         initialConsumerConfig.setMaximumMessagesToReceived(1000L);
         initialConsumerConfig.setPrintsPerMessageCount(1000L / 10L);
+        initialConsumerConfig.setAsync(false);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
@@ -154,6 +156,7 @@ public class AutoAcknowledgementsTestCase extends MBIntegrationBaseTest {
         // Creating a secondary JMS publisher client configuration
         AndesJMSConsumerClientConfiguration consumerConfigForClientAfterDrop = new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "autoAckTestQueueDropReceiver");
         consumerConfigForClientAfterDrop.setMaximumMessagesToReceived(EXPECTED_COUNT - 1000L);
+        consumerConfigForClientAfterDrop.setAsync(false);
 
         // Creating clients
         AndesClient secondaryReceivingClient = new AndesClient(consumerConfigForClientAfterDrop, true);

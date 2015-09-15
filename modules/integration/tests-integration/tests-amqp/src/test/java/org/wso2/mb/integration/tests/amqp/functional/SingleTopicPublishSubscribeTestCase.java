@@ -85,6 +85,7 @@ public class SingleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest {
         // To check if more than expected messages are received
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT + 10);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

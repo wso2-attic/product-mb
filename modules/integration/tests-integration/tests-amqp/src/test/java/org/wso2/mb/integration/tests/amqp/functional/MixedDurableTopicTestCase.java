@@ -103,6 +103,7 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT_BY_ONE_SUBSCRIBER);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT_BY_ONE_SUBSCRIBER / 10L);
         consumerConfig.setDurable(true, "expirationSub");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =

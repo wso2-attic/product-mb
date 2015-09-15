@@ -192,6 +192,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
         consumerConfig
                 .setAcknowledgeAfterEachMessageCount(200L);
         consumerConfig.setPrintsPerMessageCount(sendMessageCount);
+        consumerConfig.setAsync(false);
 
         // Create consumer client with given consumerConfig
         AndesClient consumerClient = new AndesClient(consumerConfig, true);

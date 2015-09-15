@@ -501,6 +501,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
                         contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                         ExchangeType.QUEUE, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

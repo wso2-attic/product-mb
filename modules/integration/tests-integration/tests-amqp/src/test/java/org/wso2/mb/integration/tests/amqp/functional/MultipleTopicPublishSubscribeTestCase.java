@@ -82,11 +82,13 @@ public class MultipleTopicPublishSubscribeTestCase extends MBIntegrationBaseTest
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic2");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT_4010);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT_4010 / 10);
+        consumerConfig1.setAsync(false);
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "multipleTopic1");
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT_1010);
         consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT_1010 / 10);
+        consumerConfig2.setAsync(false);
 
         // Creating a publisher client configurations
         AndesJMSPublisherClientConfiguration publisherConfig1 =

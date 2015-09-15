@@ -148,6 +148,7 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig1.setMaximumMessagesToReceived(expectedMessageCount);
         consumerConfig1.setPrintsPerMessageCount(expectedMessageCount / 100L);
+        consumerConfig1.setAsync(false);
 
         //Cloning consumer configuration with a different destination queue
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();

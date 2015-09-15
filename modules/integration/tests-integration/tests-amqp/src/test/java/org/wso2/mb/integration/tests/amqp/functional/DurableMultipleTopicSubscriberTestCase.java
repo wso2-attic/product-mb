@@ -82,6 +82,7 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
                 .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig1.setDurable(true, "multipleSub1");
+        consumerConfig1.setAsync(false);
 
         // Creating a second JMS consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 =
@@ -90,6 +91,7 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
                 .setMaximumMessagesToReceived(EXPECTED_COUNT + 10L); // if messages received more than expected
         consumerConfig2.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig2.setDurable(true, "multipleSub2");
+        consumerConfig2.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicMultiple");

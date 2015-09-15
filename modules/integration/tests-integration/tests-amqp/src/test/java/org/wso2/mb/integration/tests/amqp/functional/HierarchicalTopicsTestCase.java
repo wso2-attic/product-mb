@@ -279,6 +279,7 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, topicName);
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         return new AndesClient(consumerConfig, true);
     }

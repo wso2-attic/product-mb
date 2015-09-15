@@ -94,6 +94,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -161,6 +162,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
         consumerConfig
                 .setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // writing received messages.
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -240,10 +242,12 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         AndesJMSConsumerClientConfiguration consumerConfig1 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName1);
         consumerConfig1.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig1.setAsync(false);
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName2);
         consumerConfig2.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig2.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig1 =

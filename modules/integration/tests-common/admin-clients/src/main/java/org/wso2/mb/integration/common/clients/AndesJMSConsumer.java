@@ -291,6 +291,56 @@ public class AndesJMSConsumer extends AndesJMSBase
         }).start();
     }
 
+    public void stopClientSync(){
+        if (null != connection && null != session && null != receiver) {
+            try {
+                log.info("Closing Consumer");
+                if (ExchangeType.TOPIC == consumerConfig.getExchangeType()) {
+                    if (null != receiver) {
+                        TopicSubscriber topicSubscriber = (TopicSubscriber) receiver;
+                        topicSubscriber.close();
+                    }
+
+                    if (null != session) {
+                        TopicSession topicSession = (TopicSession) session;
+                        topicSession.close();
+                    }
+
+                    if (null != connection) {
+                        TopicConnection topicConnection = (TopicConnection) connection;
+                        topicConnection.close();
+                    }
+                } else if (ExchangeType.QUEUE == consumerConfig.getExchangeType()) {
+                    if (null != receiver) {
+                        QueueReceiver queueReceiver = (QueueReceiver) receiver;
+                        queueReceiver.close();
+                    }
+
+                    if (null != session) {
+                        QueueSession queueSession = (QueueSession) session;
+                        queueSession.close();
+                    }
+
+                    if (null != connection) {
+                        QueueConnection queueConnection = (QueueConnection) connection;
+                        queueConnection.stop();
+                        queueConnection.close();
+                    }
+                }
+
+                receiver = null;
+                session = null;
+                connection = null;
+
+                log.info("Consumer Closed");
+
+            } catch (JMSException e) {
+                log.error("Error in stopping client.", e);
+                throw new RuntimeException("Error in stopping client.", e);
+            }
+        }
+    }
+
     /**
      * Un-Subscribes and closes a consumers.
      *
@@ -339,6 +389,7 @@ public class AndesJMSConsumer extends AndesJMSBase
                     break;
                 }
             }
+            stopClientSync();
         } catch (JMSException e) {
             log.error("Error while listening to messages", e);
             throw new RuntimeException("JMSException : Error while listening to messages", e);
@@ -354,7 +405,10 @@ public class AndesJMSConsumer extends AndesJMSBase
     @Override
     public void onMessage(Message message) {
         try {
-            this.processReceivedMessage(message);
+            boolean success = this.processReceivedMessage(message);
+            if(success) {
+                stopClient();
+            }
         } catch (JMSException e) {
             log.error("Error while listening to messages", e);
             throw new RuntimeException("Error while listening to messages", e);
@@ -457,10 +511,6 @@ public class AndesJMSConsumer extends AndesJMSBase
                 return true;
             } else if (this.receivedMessageCount.get() >= consumerConfig
                     .getMaximumMessagesToReceived()) {
-                // Stopping the consumer
-                stopClient();
-                // Waiting till consumer is closed so that no messages will be read.
-                AndesClientUtils.sleepForInterval(1000L);
                 return true;
             }
 

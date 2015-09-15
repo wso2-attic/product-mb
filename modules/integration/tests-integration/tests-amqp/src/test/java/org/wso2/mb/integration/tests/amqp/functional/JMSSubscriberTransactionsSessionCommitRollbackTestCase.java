@@ -92,6 +92,7 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "transactionQueue");
