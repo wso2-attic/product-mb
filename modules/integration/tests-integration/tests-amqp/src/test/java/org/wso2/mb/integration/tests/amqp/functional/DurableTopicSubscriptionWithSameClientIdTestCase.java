@@ -94,6 +94,7 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientID");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setDurable(true, "sameClientIDSub1");
+        consumerConfig.setAsync(false);
 
         // Creating a JMS consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -149,11 +150,13 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic1");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setDurable(true, "sameClientIDSub2");
+        consumerConfig1.setAsync(false);
 
         AndesJMSConsumerClientConfiguration consumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicSameClientIDTopic2");
         consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig2.setDurable(true, "sameClientIDSub3");
+        consumerConfig2.setAsync(false);
 
         // Creating a JMS consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfig1 =

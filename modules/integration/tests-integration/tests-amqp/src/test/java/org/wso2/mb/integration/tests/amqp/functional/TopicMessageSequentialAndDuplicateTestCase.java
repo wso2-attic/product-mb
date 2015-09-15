@@ -83,6 +83,7 @@ public class TopicMessageSequentialAndDuplicateTestCase extends MBIntegrationBas
         consumerConfig.setPrintsPerMessageCount(SEND_COUNT/10L);
         // file path to write received messages
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

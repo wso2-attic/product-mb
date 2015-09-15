@@ -86,6 +86,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("JMSType='AAA'");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -132,6 +133,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("JMSType='AAA'");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -185,8 +187,8 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberJMSTimestamp");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        consumerConfig.setSelectors("JMSTimestamp > " + Long
-                .toString(System.currentTimeMillis() + 1000L));
+        consumerConfig.setSelectors("JMSTimestamp > " + Long.toString(System.currentTimeMillis() + 1000L));
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -235,6 +237,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                                                         ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.trace'");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
@@ -307,6 +310,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                                                         "jmsSelectorSubscriberCustomPropertyAndJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.trace' AND JMSType='myMessage'");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
@@ -382,6 +386,7 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                                                         "jmsSelectorSubscriberCustomPropertyOrJMSType");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setSelectors("location = 'wso2.palmGrove' OR JMSType='myMessage'");
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =

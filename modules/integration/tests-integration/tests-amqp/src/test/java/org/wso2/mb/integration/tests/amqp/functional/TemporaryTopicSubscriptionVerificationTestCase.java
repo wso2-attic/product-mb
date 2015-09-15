@@ -68,6 +68,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
                                                         ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCount);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        initialConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -92,6 +93,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                                                         ExchangeType.TOPIC, "singleSubscribeAndCloseTopic");
         secondaryConsumerConfig.setMaximumMessagesToReceived(1L);
+        secondaryConsumerConfig.setAsync(false);
 
         // Creating a seconds publisher client configuration
         AndesClient secondaryConsumerClient = new AndesClient(secondaryConsumerConfig, true);
@@ -143,14 +145,15 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCountByClient1);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCountByClient1 / 10L);
         initialConsumerConfig.setRunningDelay(100L); // Setting a delay in consuming each message.
+        initialConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                                                         ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
         secondaryConsumerConfig.setMaximumMessagesToReceived(expectedCountByClient2);
         secondaryConsumerConfig.setPrintsPerMessageCount(expectedCountByClient2 / 10L);
-        secondaryConsumerConfig
-                .setRunningDelay(100L); // Setting a delay in publishing each message.
+        secondaryConsumerConfig.setRunningDelay(100L); // Setting a delay in publishing each message.
+        secondaryConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -216,6 +219,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
                     new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                                                             ExchangeType.TOPIC, "multiSubscribeAndCloseTopic");
             newConsumerConfig.setMaximumMessagesToReceived(1L);
+            newConsumerConfig.setAsync(false);
 
             // Creating clients
             AndesClient newConsumerClient = new AndesClient(newConsumerConfig, true);

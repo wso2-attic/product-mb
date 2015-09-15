@@ -92,6 +92,7 @@ public class TransactedAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfig.setCommitAfterEachMessageCount(30);     // Committing sessions after given message count
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.SESSION_TRANSACTED);  // Use session_transacted acknowledgement mode
         consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES); // Write received messages to file
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

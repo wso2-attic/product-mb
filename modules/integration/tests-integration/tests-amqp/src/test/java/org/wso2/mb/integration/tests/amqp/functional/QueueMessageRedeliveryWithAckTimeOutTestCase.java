@@ -92,6 +92,7 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
         consumerConfig.setMaximumMessagesToReceived(5L);
         consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

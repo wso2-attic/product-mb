@@ -89,6 +89,7 @@ public class TenantCreateQueueTestCase extends MBIntegrationBaseTest {
                                         "tenant1user1", ExchangeType.QUEUE, "testtenant1.com/www");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

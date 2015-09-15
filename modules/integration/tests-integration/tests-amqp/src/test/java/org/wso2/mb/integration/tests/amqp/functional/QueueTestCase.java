@@ -77,6 +77,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "singleQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -124,6 +125,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "subTopicPubQueue");
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
         consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
@@ -169,12 +171,14 @@ public class QueueTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueManyConsumers");
         consumerConfig1.setMaximumMessagesToReceived(expectedCount);
         consumerConfig1.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig1.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSConsumerClientConfiguration consumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueManyConsumers");
         consumerConfig2.setMaximumMessagesToReceived(expectedCount);
         consumerConfig2.setPrintsPerMessageCount(100L);
+        consumerConfig2.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueManyConsumers");

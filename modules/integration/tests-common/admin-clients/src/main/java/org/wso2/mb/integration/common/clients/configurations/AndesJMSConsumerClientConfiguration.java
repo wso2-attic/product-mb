@@ -85,7 +85,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * that it uses {@link javax.jms.MessageListener} to listen to receiving messages. Synchronous
      * message reading will use a while loop inside a thread.
      */
-    private boolean async = true;
+    private boolean async = false;
 
     /**
      * JMS selectors string for filtering.

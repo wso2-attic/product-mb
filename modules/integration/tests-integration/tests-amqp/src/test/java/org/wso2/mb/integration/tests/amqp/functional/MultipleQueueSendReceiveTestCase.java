@@ -84,9 +84,11 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleQueue1");
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT/10L);
+        consumerConfig1.setAsync(false);
 
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig1.clone();
         consumerConfig2.setDestinationName("multipleQueue2");
+        consumerConfig2.setAsync(false);
 
         // Creating a publisher client configurations
         AndesJMSPublisherClientConfiguration publisherConfig1 =

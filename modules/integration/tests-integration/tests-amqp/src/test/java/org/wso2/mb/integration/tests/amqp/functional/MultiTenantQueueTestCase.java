@@ -120,6 +120,7 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
                                             ExchangeType.QUEUE, destinationName);
         adminConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        adminConsumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig, true);
@@ -193,12 +194,14 @@ public class MultiTenantQueueTestCase extends MBIntegrationBaseTest {
                         "topictenantuser1", ExchangeType.QUEUE, "topictenant1.com/multitenantQueue");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        tenant1ConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
                         "topictenantuser1", ExchangeType.QUEUE, "topictenant2.com/multitenantQueue");
         tenant2ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
+        tenant2ConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =

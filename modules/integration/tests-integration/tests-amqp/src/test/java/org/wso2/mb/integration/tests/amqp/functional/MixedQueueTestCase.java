@@ -83,6 +83,7 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiration");
         consumerConfig.setMaximumMessagesToReceived(sendCountWithoutExpiration);
         consumerConfig.setPrintsPerMessageCount(sendCountWithoutExpiration / 10L);
+        consumerConfig.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiration");
@@ -145,11 +146,13 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         initialConsumerConfig.setMaximumMessagesToReceived(expectedCountByOneSubscriber);
         initialConsumerConfig.setPrintsPerMessageCount(expectedCountByOneSubscriber / 10L);
+        initialConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration secondaryConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "queueWithExpiryAndManyConsumers");
         secondaryConsumerConfig.setMaximumMessagesToReceived(expectedCountByOneSubscriber);
         secondaryConsumerConfig.setPrintsPerMessageCount(expectedCountByOneSubscriber / 10L);
+        secondaryConsumerConfig.setAsync(false);
 
         // Creating a consumer client configuration
         AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =

@@ -100,6 +100,7 @@ public class MixedTopicTestCase extends MBIntegrationBaseTest {
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "topicWithExpiry");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfigWithoutExpiration =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "topicWithExpiry");

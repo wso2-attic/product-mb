@@ -126,6 +126,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         adminConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         adminConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         adminConsumerConfig.setDurable(true, "multitenant1");
+        adminConsumerConfig.setAsync(false);
 
         // Creating clients
         AndesClient adminConsumerClient = new AndesClient(adminConsumerConfig, true);
@@ -201,6 +202,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         tenant1ConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         tenant1ConsumerConfig.setDurable(true, "multi");
+        tenant1ConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant2ConsumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant2.com",
@@ -208,6 +210,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
         tenant2ConsumerConfig.setUnSubscribeAfterEachMessageCount(expectedMessageCount);
         tenant2ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         tenant2ConsumerConfig.setDurable(true, "multi2");
+        tenant2ConsumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration tenant1PublisherConfig =

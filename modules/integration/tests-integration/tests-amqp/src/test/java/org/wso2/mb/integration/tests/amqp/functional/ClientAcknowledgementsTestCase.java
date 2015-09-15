@@ -92,6 +92,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         consumerConfig
                 .setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
         consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
 
         // Creating a JMS publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =

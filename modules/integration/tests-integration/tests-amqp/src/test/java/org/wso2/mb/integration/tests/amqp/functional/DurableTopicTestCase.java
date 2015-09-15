@@ -89,6 +89,7 @@ public class DurableTopicTestCase extends MBIntegrationBaseTest {
         consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
         consumerConfig1.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
         consumerConfig1.setDurable(true, "durableSubToDurableTopic1");
+        consumerConfig1.setAsync(false);
 
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, "durableTopicTest");

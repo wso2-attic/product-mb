@@ -521,6 +521,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
                                 contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
                                 ExchangeType.TOPIC, destinationName);
         consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
