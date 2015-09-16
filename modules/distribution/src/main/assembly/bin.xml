@@ -65,6 +65,8 @@
             <includes>
                 <include>**/**.sql</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <!--copying tenant-mgt.xml-->
         <fileSet>
@@ -75,6 +77,7 @@
             <includes>
                 <include>**/tenant-mgt.xml</include>
             </includes>
+            <fileMode>644</fileMode>
         </fileSet>
         <!-- MB SQL scripts -->
         <fileSet>
@@ -84,6 +87,8 @@
             <includes>
                 <include>**/*.*</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <!-- End - MB SQL scripts -->
 
@@ -91,51 +96,73 @@
         <fileSet>
             <directory>../../modules/samples/product/JmsQueueClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/JmsQueueClient</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
 
         <fileSet>
             <directory>../../modules/samples/product/JmsTopicClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/JmsTopicClient</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/JmsMessageListenerClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/JmsMessageListenerClient
             </outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/HierarchicalTopicsSubscriber</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/HierarchicalTopicsSubscriber
             </outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/DurableTopicSubscriber</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/DurableTopicSubscriber
             </outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/OldJmsClientSample</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/OldJmsClientSample</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/wsclient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/wsclient</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/services</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/services</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/JmsSelectors</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/JmsSelectors</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <!-- MQTT Samples -->
         <fileSet>
             <directory>../../modules/samples/product/SimpleMqttClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/SimpleMqttClient</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/MqttChatClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/MqttChatClient</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/MqttIoTSample</directory>
@@ -144,10 +171,14 @@
         <fileSet>
             <directory>../../modules/samples/product/MqttRetainSample</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/MqttRetainSample</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../../modules/samples/product/TransactionalPublisher</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/TransactionalPublisher</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>
@@ -158,6 +189,7 @@
             <includes>
                 <include>**/broker.xml</include>
             </includes>
+            <fileMode>644</fileMode>
         </fileSet>
         <!--QPID related configurations-->
         <fileSet>
@@ -170,6 +202,7 @@
                 <include>**/qpid-virtualhosts.xml</include>
                 <include>**/qpid-jmxremote.access</include>
             </includes>
+            <fileMode>644</fileMode>
         </fileSet>
         <!--Multitenancy related file -->
         <fileSet>
@@ -183,24 +216,16 @@
                 <include>**/usage-throttling-agent-config.xml</include>
                 <include>**/cloud-services-desc.xml</include>
             </includes>
+            <fileMode>644</fileMode>
         </fileSet>
-
-        <fileSet>
-            <directory>
-                ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/
-            </directory>
-            <outputDirectory>wso2mb-${pom.version}/repository/conf/etc</outputDirectory>
-            <includes>
-                <include>**/cassandra.yaml</include>
-            </includes>
-        </fileSet>
-
         <!-- copy the landing page webapp -->
         <fileSet>
             <directory>lib/home</directory>
             <outputDirectory>
                 wso2mb-${pom.version}/repository/deployment/server/webapps/STRATOS_ROOT
             </outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>
@@ -210,6 +235,8 @@
             <includes>
                 <include>**/h2.sql</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../styles/service/src/main/resources/web/styles/css</directory>
@@ -218,6 +245,8 @@
             <includes>
                 <include>**/**.css</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
             <directory>../styles/service/src/main/resources/web/styles/images</directory>
@@ -227,9 +256,9 @@
                 <include>**/**.gif</include>
                 <include>**/**.png</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
-
-
         <fileSet>
             <directory>
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/dbscripts/metrics/
@@ -238,6 +267,8 @@
             <includes>
                 <include>**/*.sql</include>
             </includes>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
         </fileSet>
     </fileSets>
 
@@ -371,6 +402,7 @@
                 ../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/etc/logging-config.xml
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/etc/</outputDirectory>
+            <fileMode>644</fileMode>
         </file>
         <!--<file>
             <source>
@@ -385,16 +417,19 @@
             </source>
             <outputDirectory>wso2mb-${pom.version}/repository/deployment/server/axis2services/
             </outputDirectory>
+            <fileMode>644</fileMode>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/metrics.properties</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
             <filtered>false</filtered>
+            <fileMode>644</fileMode>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/metrics.xml</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf/</outputDirectory>
             <filtered>false</filtered>
+            <fileMode>644</fileMode>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/datasources/metrics-datasources.xml</source>
@@ -427,10 +462,12 @@
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/bin/ciphertool.bat</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/bin</outputDirectory>
+            <fileMode>644</fileMode>
         </file>
         <file>
             <source>../p2-profile/target/wso2carbon-core-${carbon.kernel.version}/lib/org.wso2.ciphertool-${cipher.tool.version}.jar</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/lib</outputDirectory>
+            <fileMode>644</fileMode>
         </file>
         <!--End of Cipher Tool Files-->
     </files>
