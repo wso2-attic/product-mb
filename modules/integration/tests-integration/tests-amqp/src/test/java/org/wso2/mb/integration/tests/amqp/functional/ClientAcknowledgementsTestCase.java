@@ -61,7 +61,6 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -120,5 +119,65 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(publisherClient
                                     .getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
+    }
+
+    /**
+     * In this test, client acknowledgement will be tested with no consumer cache. Implying that connection and sessions
+     * are not cached.
+     * 1. Create a consumer with client acknowledgement that take one message and then closes the client.
+     * 2. Publish a message to queue.
+     * 3. Create 20 consumers with client acknowledgement that takes one message and closes itself consecutively.
+     * 4. Here the consumers does not ack at all.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performClientAckWithNoCacheTestCase() throws AndesClientConfigurationException, JMSException,
+            AndesClientException, NamingException, IOException, XPathExpressionException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "clientAckTestQueueNoCache");
+        consumerConfig.setMaximumMessagesToReceived(1);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are received
+        consumerConfig.setAsync(false);
+
+        // Creating a JMS publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                                                                    ExchangeType.QUEUE, "clientAckTestQueueNoCache");
+        publisherConfig.setNumberOfMessagesToSend(1);
+
+        // Start consumer
+        AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
+        consumerClient1.startClient();
+
+        // Start publisher
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        // Waiting for messages to come.
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, 3000);
+
+        // Eval first consumer
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), 1, "Expected message count not received.");
+
+        // Create 20 more consumers that take in one message and closes it self. No ack.
+        for (int i = 0; i <= 20; i++) {
+            AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
+            consumerClient2.startClient();
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, 3000);
+            Assert.assertEquals(consumerClient2.getReceivedMessageCount(), 1, "Expected message count not " +
+                                                                                           "received.");
+
+        }
+
+        // Evaluating the publishers.
+        Assert.assertEquals(publisherClient.getSentMessageCount(), 1, "Expected message count not received.");
     }
 }
