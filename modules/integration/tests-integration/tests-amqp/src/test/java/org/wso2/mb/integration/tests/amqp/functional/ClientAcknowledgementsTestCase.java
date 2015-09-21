@@ -37,6 +37,8 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class includes test cases to test client acknowledgements modes for queues
@@ -108,12 +110,12 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
-        consumerClient2.startClient();
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
 
         AndesClientUtils.sleepForInterval(2000);
 
-        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2
+        long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient
                 .getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient
@@ -122,8 +124,8 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * In this test, client acknowledgement will be tested with no consumer cache. Implying that connection and sessions
-     * are not cached.
+     * In this test, client acknowledgement will be tested with no consumer cache for queues. Implying that connection
+     * and sessions are not cached.
      * 1. Create a consumer with client acknowledgement that take one message and then closes the client.
      * 2. Publish a message to queue.
      * 3. Create 20 consumers with client acknowledgement that takes one message and closes itself consecutively.
@@ -137,7 +139,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws XPathExpressionException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void performClientAckWithNoCacheTestCase() throws AndesClientConfigurationException, JMSException,
+    public void performClientAckWithNoCacheQueueTestCase() throws AndesClientConfigurationException, JMSException,
             AndesClientException, NamingException, IOException, XPathExpressionException {
 
         // Creating a initial JMS consumer client configuration
@@ -169,11 +171,102 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         // Create 20 more consumers that take in one message and closes it self. No ack.
         for (int i = 0; i <= 20; i++) {
-            AndesClient consumerClient2 = new AndesClient(consumerConfig, true);
-            consumerClient2.startClient();
-            AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, 3000);
-            Assert.assertEquals(consumerClient2.getReceivedMessageCount(), 1, "Expected message count not " +
+            AndesClient consumerClient = new AndesClient(consumerConfig, true);
+            consumerClient.startClient();
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient, 3000);
+            Assert.assertEquals(consumerClient.getReceivedMessageCount(), 1, "Expected message count not " +
                                                                                            "received.");
+
+        }
+
+        // Evaluating the publishers.
+        Assert.assertEquals(publisherClient.getSentMessageCount(), 1, "Expected message count not received.");
+    }
+
+    /**
+     * In this test, client acknowledgement will be tested with no consumer cache for durable topics. Implying that
+     * connection and sessions are not cached.
+     * 1. Create 10 consumers with client acknowledgement.
+     * 2. Publish a message to the durable topic.
+     * 3. Close the earlier 10 consumers after taking one message without acking.
+     * 4. Restart the same consumers
+     * 5. Again close the earlier 10 consumers after taking one message without acking.
+     * 6. Restart the same consumers
+     * 7. Create same 10 consumers with client acknowledgement that takes one message and closes itself consecutively
+     * with ack.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void performClientAckWithNoCacheDurableTopicTestCase() throws AndesClientConfigurationException, JMSException,
+            AndesClientException, NamingException, IOException, XPathExpressionException, CloneNotSupportedException {
+
+        // Creating a initial JMS consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                                                        ExchangeType.TOPIC, "clientAckTestDurableNoCache");
+        consumerConfig.setMaximumMessagesToReceived(1);
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE); // using client acknowledgement
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L); // acknowledge a message only after 200 messages are
+                                                                                                            // received
+        consumerConfig.setAsync(false);
+
+        // Creating a JMS publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                ExchangeType.TOPIC, "clientAckTestDurableNoCache");
+        publisherConfig.setNumberOfMessagesToSend(1);
+
+        List<AndesClient> initialClients = new ArrayList<>();
+
+        // Create 10 more consumers that take in one message and closes it self. No ack.
+        for (int i = 0; i <= 10; i++) {
+            AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
+            consumerConfig2.setDurable(true, "ack-client-" + Integer.toString(i));
+            AndesClient consumerClient = new AndesClient(consumerConfig2, true);
+            consumerClient.startClient();
+            initialClients.add(consumerClient);
+        }
+
+        // Start publisher
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        // Wait for each consumer to get one message and close themselves without acking.
+        for (AndesClient initialClient : initialClients) {
+            AndesClientUtils.waitForMessagesAndShutdown(initialClient, 3000);
+            Assert.assertEquals(initialClient.getReceivedMessageCount(), 1, "Expected message count not " +
+                              "received for " + initialClient.getConsumers().get(0).getConfig().getSubscriptionID());
+        }
+
+        // Restart the same clients.
+        for (AndesClient initialClient : initialClients) {
+            AndesJMSConsumerClientConfiguration config = initialClient.getConsumers().get(0).getConfig();
+            AndesClient consumerClient = new AndesClient(config, true);
+            consumerClient.startClient();
+        }
+
+        // Wait for each consumer to get one message and close themselves without acking.
+        for (AndesClient initialClient : initialClients) {
+            AndesClientUtils.waitForMessagesAndShutdown(initialClient, 3000);
+            Assert.assertEquals(initialClient.getReceivedMessageCount(), 1, "Expected message count not " +
+                                "received for " + initialClient.getConsumers().get(0).getConfig().getSubscriptionID());
+        }
+
+        // Create same 10 consumers that take in one message and closes it self. With ack.
+        for (int i = 0; i <= 10; i++) {
+            AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
+            consumerConfig2.setMaximumMessagesToReceived(5L);
+            consumerConfig2.setAcknowledgeAfterEachMessageCount(1L);
+            consumerConfig2.setDurable(true, "ack-client-" + Integer.toString(i));
+            AndesClient consumerClient = new AndesClient(consumerConfig2, true);
+            consumerClient.startClient();
+            AndesClientUtils.waitForMessagesAndShutdown(consumerClient, 3000);
+            Assert.assertEquals(consumerClient.getReceivedMessageCount(), 1, "Expected message count not " +
+                                                              "received for " + consumerConfig2.getSubscriptionID());
 
         }
 
