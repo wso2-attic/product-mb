@@ -85,23 +85,6 @@
             </definition>
         </datasource>
 
-        <!-- WSO2 MB in memory store (Experimental feature)
-        NOTE: In memory mode only works on single node mode -->
-
-        <datasource>
-            <name>WSO2_MB_IN_MEMORY_STORE_DB</name>
-            <jndiConfig>
-                <name>WSO2MBInMemoryStoreDB</name>
-            </jndiConfig>
-            <definition type="RDBMS">
-                <configuration>
-                    <url>jdbc:h2:mem:msg_store;DB_CLOSE_DELAY=-1</url>
-                    <driverClassName>org.h2.Driver</driverClassName>
-                    <defaultAutoCommit>false</defaultAutoCommit>
-                </configuration>
-            </definition>
-        </datasource>
-
         <!-- MySQL data source -->
 <!--
         <datasource>
