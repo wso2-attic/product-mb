@@ -35,7 +35,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
@@ -234,7 +233,7 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
     /**
      * Cleanup after running tests.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)

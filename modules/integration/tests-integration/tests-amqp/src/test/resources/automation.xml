@@ -187,6 +187,10 @@
                         <userName>tenant1user1</userName>
                         <password>tenant1user1</password>
                     </user>
+                    <user key="tenant1user2">
+                        <userName>tenant1user2</userName>
+                        <password>tenant1user2</password>
+                    </user>
                 </users>
             </tenant>
             <tenant domain="testtenant2.com" key="tenant2">

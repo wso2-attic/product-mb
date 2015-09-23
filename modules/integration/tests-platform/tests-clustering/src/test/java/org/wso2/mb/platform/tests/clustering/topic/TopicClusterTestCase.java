@@ -23,11 +23,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.event.stub.core.TopicNode;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
-import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -98,7 +98,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XPathExpressionException
      * @throws AndesClientException
      */
@@ -106,7 +106,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     @Parameters({"messageCount"})
     public void testSingleTopicSingleNodeSendReceive(long messageCount)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException, AndesClientException,
+            AndesEventAdminServiceEventAdminException, XPathExpressionException, AndesClientException,
                    InterruptedException, DataAccessUtilException {
         long sendCount = messageCount;
         long expectedCount = messageCount;
@@ -155,12 +155,12 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Checking for topic deletion and adding cluster wide.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @Test(groups = "wso2.mb", description = "Single topic replication")
     public void testSingleTopicReplication()
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
 
         String topic = "singleTopic2";
 
@@ -185,7 +185,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
      * @throws JMSException
      * @throws NamingException
      * @throws IOException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XPathExpressionException
      * @throws AndesClientException
      */
@@ -193,7 +193,7 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     @Parameters({"messageCount"})
     public void testSingleTopicMultiNodeSendReceive(long messageCount)
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   TopicManagerAdminServiceEventAdminExceptionException, XPathExpressionException, AndesClientException,
+            AndesEventAdminServiceEventAdminException, XPathExpressionException, AndesClientException,
                    InterruptedException, DataAccessUtilException {
         long sendCount = messageCount;
         long expectedCount = messageCount;
@@ -240,12 +240,12 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
     /**
      * Cleanup after running tests.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
     public void destroy()
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
 
         topicAdminClientForMB2.removeTopic("clusterSingleTopic1");
         topicAdminClientForMB2.removeTopic("clusterSingleTopic2");

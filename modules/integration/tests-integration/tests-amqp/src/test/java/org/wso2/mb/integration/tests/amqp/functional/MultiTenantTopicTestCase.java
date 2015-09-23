@@ -78,8 +78,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single Tenant with multiple Users Test",
-            expectedExceptions = JMSException.class,
-            expectedExceptionsMessageRegExp = ".*Permission denied.*")
+            expectedExceptions = JMSException.class)
     public void performSingleTenantMultipleUserTopicTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
                    AndesClientException, XPathExpressionException {
@@ -95,8 +94,8 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         adminConsumerConfig.setAsync(false);
 
         AndesJMSConsumerClientConfiguration tenant1ConsumerConfig =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "topictenantuser1!topictenant1.com",
-                            "topictenantuser1", ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "tenant1user2!topictenant1.com",
+                            "tenant1user2", ExchangeType.TOPIC, "topictenant1.com/tenantTopic");
         tenant1ConsumerConfig.setMaximumMessagesToReceived(expectedMessageCount);
         tenant1ConsumerConfig.setPrintsPerMessageCount(expectedMessageCount / 10L);
         tenant1ConsumerConfig.setAsync(false);
@@ -126,13 +125,13 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
         // Evaluating
         Assert.assertEquals(tenant2PublisherClient
                                     .getSentMessageCount(), sendMessageCount, "Sending failed for" +
-                                                          " topictenantuser1!topictenant1.com.");
+                                                          " tenant1user2!topictenant1.com.");
         Assert.assertEquals(adminConsumerClient
                                     .getReceivedMessageCount(), expectedMessageCount, "Message " +
                                                   "receiving failed for admin!topictenant1.com.");
         Assert.assertEquals(tenant1ConsumerClient
                                     .getReceivedMessageCount(), expectedMessageCount, "Message " +
-                                          "receiving failed for topictenantuser1!topictenant1.com.");
+                                          "receiving failed for tenant1user2!topictenant1.com.");
 
     }
 

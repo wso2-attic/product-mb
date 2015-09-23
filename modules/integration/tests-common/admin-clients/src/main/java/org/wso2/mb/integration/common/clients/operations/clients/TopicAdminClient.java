@@ -21,10 +21,10 @@ package org.wso2.mb.integration.common.clients.operations.clients;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceStub;
-import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
-import org.wso2.carbon.event.stub.internal.xsd.TopicRolePermission;
+import org.wso2.carbon.andes.event.stub.core.TopicNode;
+import org.wso2.carbon.andes.event.stub.core.TopicRolePermission;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceStub;
 
 import java.rmi.RemoteException;
 
@@ -35,7 +35,7 @@ public class TopicAdminClient {
 
     String backendUrl = null;
     String SessionCookie = null;
-    TopicManagerAdminServiceStub stub = null;
+    AndesEventAdminServiceStub stub = null;
 
     /**
      * Initializes Topic Admin Client
@@ -46,9 +46,9 @@ public class TopicAdminClient {
      */
     public TopicAdminClient(String backendUrl, String sessionCookie) throws AxisFault {
 
-        this.backendUrl = backendUrl + "TopicManagerAdminService.TopicManagerAdminServiceHttpsSoap12Endpoint";
+        this.backendUrl = backendUrl + "AndesEventAdminService.AndesEventAdminServiceHttpsSoap12Endpoint";
         this.SessionCookie = sessionCookie;
-        stub = new TopicManagerAdminServiceStub(this.backendUrl);
+        stub = new AndesEventAdminServiceStub(this.backendUrl);
         configureCookie(stub._getServiceClient());
 
     }
@@ -57,11 +57,11 @@ public class TopicAdminClient {
      * Adds a new topic
      *
      * @param newTopicName new topic name
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     public void addTopic(String newTopicName)
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
         stub.addTopic(newTopicName);
     }
 
@@ -69,11 +69,11 @@ public class TopicAdminClient {
      * Removes a topic
      *
      * @param topicName topic name
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     public void removeTopic(String topicName)
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
         stub.removeTopic(topicName);
     }
 
@@ -82,11 +82,11 @@ public class TopicAdminClient {
      *
      * @param topicName the topic name
      * @return a topic node
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     public TopicNode getTopicByName(String topicName)
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
         TopicNode[] topicNodes = stub.getAllTopics().getChildren();
         if (topicNodes != null && topicNodes.length > 0) {
             for (TopicNode topicNode : topicNodes) {
@@ -104,11 +104,11 @@ public class TopicAdminClient {
      *
      * @param topicName   topic name
      * @param permissions new permissions
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     public void updatePermissionForTopic(String topicName, TopicRolePermission permissions)
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
         stub.updatePermission(topicName, new TopicRolePermission[]{permissions});
     }
 
