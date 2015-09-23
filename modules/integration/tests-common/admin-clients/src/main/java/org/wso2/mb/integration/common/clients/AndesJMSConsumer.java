@@ -383,15 +383,23 @@ public class AndesJMSConsumer extends AndesJMSBase
     @Override
     public void run() {
         try {
+            boolean interrupted = false;
             while (true) {
                 Message message = this.receiver.receive();
-                if (processReceivedMessage(message)) {
+
+                // We assume message receiving was interrupted if we receive null
+                if (null == message) {
+                    interrupted = true;
+                    break;
+                } else if ( processReceivedMessage(message)) {
                     break;
                 }
             }
-            stopClientSync();
+            if (!interrupted) {
+                stopClientSync();
+            }
         } catch (JMSException e) {
-            log.error("Error while listening to messages", e);
+            log.error("Error while receiving messages ", e);
             throw new RuntimeException("JMSException : Error while listening to messages", e);
         } catch (IOException e) {
             log.error("Error while writing message to file", e);

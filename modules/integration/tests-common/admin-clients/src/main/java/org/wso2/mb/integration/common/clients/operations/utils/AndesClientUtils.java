@@ -66,6 +66,52 @@ public class AndesClientUtils {
      * @param client                            The consumer client
      * @param waitTimeTillMessageCounterChanges The amount of milliseconds to wait for new messages
      *                                          are received.
+     * @param expectedMessageCount              Number of messages expected from the consumer
+     * @throws JMSException
+     */
+    public static void waitForMessagesAndShutdown(AndesClient client,
+                                                  long waitTimeTillMessageCounterChanges, long expectedMessageCount)
+            throws JMSException {
+        long previousMessageCount = 0;
+        long currentMessageCount = -1;
+
+        /**
+         * At each iteration it will check whether the message count has changed than the previous
+         * iteration
+         */
+        while (currentMessageCount != previousMessageCount) {
+            try {
+                // Waits till the consumer client received more messages.
+                TimeUnit.MILLISECONDS.sleep(waitTimeTillMessageCounterChanges);
+            } catch (InterruptedException e) {
+                log.error("Error waiting for receiving messages.", e);
+            }
+            // Updating message counters
+            previousMessageCount = currentMessageCount;
+            currentMessageCount = client.getReceivedMessageCount();
+        }
+
+        log.info("Message count received by consumer : " + Long
+                .toString(client.getReceivedMessageCount()));
+
+        if (expectedMessageCount != currentMessageCount) {
+            // Stopping the consumer client
+            client.stopClient();
+        }
+
+        // Prints print writer contents to files.
+        flushPrintWriters();
+    }
+
+    /**
+     * Waits until no messages are received. The waiting is done by using a loop checking whether
+     * any new messages are received than the previous iteration. In each iteration it will wait for
+     * a certain time to make sure that message counter changes until no change is detected in the
+     * message counters.
+     *
+     * @param client                            The consumer client
+     * @param waitTimeTillMessageCounterChanges The amount of milliseconds to wait for new messages
+     *                                          are received.
      * @throws JMSException
      */
     public static void waitForMessagesAndShutdown(AndesClient client,
