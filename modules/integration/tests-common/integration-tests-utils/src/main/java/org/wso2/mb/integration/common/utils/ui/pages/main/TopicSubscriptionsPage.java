@@ -44,7 +44,7 @@ public class TopicSubscriptionsPage extends MBPage {
 
         // Check that we're on the right page.
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("mb.subscriptions.topics.page.header.xpath"))).getText().contains("Topic Subscriptions")) {
+                .getElement("mb.subscriptions.topics.page.header.xpath"))).getText().contains("Topic Subscription List")) {
             throw new IllegalStateException("This is not the Topic Subscriptions page");
         }
     }

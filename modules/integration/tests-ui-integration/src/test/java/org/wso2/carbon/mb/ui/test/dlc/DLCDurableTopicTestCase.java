@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.mb.ui.test.dlc;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +29,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -38,6 +41,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
+import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
@@ -48,6 +52,7 @@ import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -90,9 +95,17 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
      * @throws IOException
      */
     @BeforeClass()
-    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException, ConfigurationException {
         super.init();
-        super.restartServerWithAlteredMaximumRedeliveryAttempts();
+
+        super.serverManager = new ServerConfigurationManager(mbServer);
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() + File.separator + "repository" +
+                                            File.separator + "conf" + File.separator + "broker.xml";
+        ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
+        // Changing "maximumRedeliveryAttempts" value to "2" in broker.xml
+        configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_AMQP_MAXIMUM_REDELIVERY_ATTEMPTS, "2");
+        // Restarting server
+        configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
 
     /**
@@ -296,7 +309,7 @@ public class DLCDurableTopicTestCase extends MBIntegrationUiBaseTest {
                                defaultAndesAckWaitTimeOut);
         }
 
-        driver.quit();
         restartInPreviousConfiguration();
+        driver.quit();
     }
 }
