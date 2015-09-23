@@ -41,7 +41,7 @@ public class TopicsBrowsePage extends MBPage {
         // Check that we're on the right page.
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
                                                  .getElement("mb.topic.browse.page.header.xpath")))
-                                                            .getText().contains("Topic Browser")) {
+                                                            .getText().contains("Topic List")) {
             throw new IllegalStateException("This is not the Topic List page");
         }
     }
@@ -74,38 +74,5 @@ public class TopicsBrowsePage extends MBPage {
 
         }
         return isTopicPresent;
-    }
-
-    /**
-     * Clicks on the "Add Subscription" button on a specific topic in topic browse page.
-     *
-     * @param topicName The name of the topic to which the subscription should be added.
-     * @return A {@link TopicSubscribePage}.
-     */
-    public TopicSubscribePage addSubscription(String topicName){
-        TopicSubscribePage browsePage = null;
-        // Gets the topic tree element
-        WebElement topicTree = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                                            .getElement("mb.topic.browse.topictree")));
-        // Gets all li elements
-        List<WebElement> liList = topicTree.findElements(By.tagName("li"));
-        for (WebElement liNode : liList) {
-            WebElement topicNameNode = liNode.findElement(By.className("treeNode"));
-            if (topicName.equals(topicNameNode.getText())) {
-                // Clicks on the name of the topic.
-                topicNameNode.click();
-
-                // Clicks on the "Add Subscription" link
-                WebElement topicSubscribeLink = liNode.findElement(By.className("topicSubscribeStyle"));
-                topicSubscribeLink.click();
-                browsePage = new TopicSubscribePage(driver);
-                //We don't need to search through topics any more
-                //Continuing in the loop will cause an error when trying to find the next topic in the
-                //topic list since we have already browed the add subscription page
-                break;
-            }
-        }
-
-        return browsePage;
     }
 }

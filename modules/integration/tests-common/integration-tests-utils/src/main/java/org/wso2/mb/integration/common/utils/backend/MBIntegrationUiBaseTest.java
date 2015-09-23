@@ -160,29 +160,6 @@ public class MBIntegrationUiBaseTest {
     }
 
     /**
-     * Restart server with altered maximumRedeliveryAttempts configuration in broker.xml
-     *
-     * @throws IOException
-     * @throws AutomationUtilException
-     * @throws XPathExpressionException
-     */
-    protected void restartServerWithAlteredMaximumRedeliveryAttempts() throws IOException, AutomationUtilException,
-            XPathExpressionException {
-        serverManager = new ServerConfigurationManager(mbServer);
-
-        // Replace the broker.xml with the alter maximumRedeliveryAttempts configuration under amqp
-        // and restarts the server.
-        serverManager.applyConfiguration(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator +
-                                                  "artifacts" + File.separator + "mb" + File.separator +
-                                                  "config" + File.separator + "dlcConfig" + File.separator +
-                                                  "broker.xml"),
-                                               new File(ServerConfigurationManager.getCarbonHome() +
-                                                        File.separator + "repository" + File.separator + "conf" +
-                                                        File.separator + "broker.xml"),
-                                               true, true);
-    }
-
-    /**
      * Restart the server with previous configuration.
      *
      * @throws IOException
