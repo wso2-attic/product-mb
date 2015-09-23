@@ -21,8 +21,6 @@ package org.wso2.mb.integration.common.clients.operations.clients;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.commons.lang3.StringUtils;
-import org.wso2.andes.kernel.AndesConstants;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceStub;
 import org.wso2.carbon.andes.stub.admin.types.Message;
@@ -121,18 +119,7 @@ public class AndesAdminClient {
      */
     public Queue getQueueByName(String name)
             throws RemoteException, AndesAdminServiceBrokerManagerAdminException {
-        Queue[] queues = stub.getAllQueues();
-
-        if (queues != null && queues.length > 0) {
-            for (Queue queue : queues) {
-                if (queue.getQueueName().equalsIgnoreCase(name)) {
-                    return queue;
-
-                }
-            }
-        }
-
-        return null;
+        return stub.getQueueByName(name);
     }
 
     /**
@@ -172,21 +159,7 @@ public class AndesAdminClient {
      */
     public Queue getDlcQueue() throws AndesAdminServiceBrokerManagerAdminException,
             java.rmi.RemoteException {
-
-        Queue[] queueList = stub.getAllQueues();
-        Queue dlcQueue = null;
-
-        if (null != queueList) {
-            for (Queue queue : queueList) {
-                String nameOfQueue = queue.getQueueName();
-                if (StringUtils.isNotBlank(nameOfQueue) && nameOfQueue.contains(
-                        AndesConstants.DEAD_LETTER_QUEUE_SUFFIX)) {
-                    dlcQueue = queue;
-                    break;
-                }
-            }
-        }
-        return dlcQueue;
+        return stub.getDLCQueue();
     }
 
 }
