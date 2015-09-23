@@ -110,9 +110,6 @@
                                     org.wso2.carbon.commons:org.wso2.carbon.wsdl.tools.feature:${carbon.commons.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.commons:org.wso2.carbon.event.feature:${carbon.commons.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
                                     org.wso2.carbon.identity:org.wso2.carbon.um.ws.service.feature:${carbon.identity.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
@@ -242,11 +239,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.registry.core.ui.feature.group</id>
                                     <version>${carbon.registry.version}</version>
-                                </feature>
-
-                                <feature>
-                                    <id>org.wso2.carbon.event.feature.group</id>
-                                    <version>${carbon.commons.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.um.ws.service.feature.group</id>

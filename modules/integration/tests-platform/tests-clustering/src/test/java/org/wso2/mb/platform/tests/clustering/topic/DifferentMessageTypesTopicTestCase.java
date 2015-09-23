@@ -24,10 +24,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -170,12 +170,12 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish stream messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
     public void destroy()
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
 
         topicAdminClient.removeTopic("byteTopic1");
         topicAdminClient.removeTopic("mapTopic1");

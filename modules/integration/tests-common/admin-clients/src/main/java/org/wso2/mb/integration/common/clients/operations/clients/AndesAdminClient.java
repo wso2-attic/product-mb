@@ -39,6 +39,7 @@ public class AndesAdminClient {
     String backendUrl = null;
     String sessionCookie = null;
     AndesAdminServiceStub stub = null;
+    public static final String PUBLISHER_ROLE = "publisher";
 
     /**
      * Initializes Andes Admin Client
@@ -64,7 +65,12 @@ public class AndesAdminClient {
      */
     public void createQueue(String queue)
             throws AndesAdminServiceBrokerManagerAdminException, RemoteException {
-        stub.createQueue(queue);
+        // Add permission to be able to publish
+        QueueRolePermission queueRolePermission = new QueueRolePermission();
+        queueRolePermission.setRoleName(PUBLISHER_ROLE);
+        queueRolePermission.setAllowedToConsume(true);
+        queueRolePermission.setAllowedToPublish(true);
+        stub.addQueueAndAssignPermission(queue, new QueueRolePermission[]{queueRolePermission});
     }
 
     /**

@@ -25,6 +25,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.event.stub.core.TopicRolePermission;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
@@ -32,8 +34,6 @@ import org.wso2.carbon.automation.engine.FrameworkConstants;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.context.beans.User;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
-import org.wso2.carbon.event.stub.internal.xsd.TopicRolePermission;
 import org.wso2.carbon.integration.common.admin.client.UserManagementClient;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
@@ -71,7 +71,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     /**
      * Permission path for creating a topic
      */
-    private static final String ADD_TOPIC_PERMISSION = "/permission/admin/manage/topic/addTopic";
+    private static final String ADD_TOPIC_PERMISSION = "/permission/admin/manage/topic/add";
 
     /**
      * Roles for the test case scenarios
@@ -193,7 +193,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      * @throws LoginAuthenticationExceptionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XMLStreamException
      * @throws LogoutAuthenticationExceptionException
      * @throws URISyntaxException
@@ -205,7 +205,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, NamingException, IOException,
             XPathExpressionException, AndesClientException, JMSException,
             UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            AndesEventAdminServiceEventAdminException, XMLStreamException,
             LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
             AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic3");
@@ -235,7 +235,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      * @throws LoginAuthenticationExceptionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XMLStreamException
      * @throws LogoutAuthenticationExceptionException
      * @throws URISyntaxException
@@ -247,7 +247,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, NamingException, IOException,
             XPathExpressionException, AndesClientException, JMSException,
             UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            AndesEventAdminServiceEventAdminException, XMLStreamException,
             LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
             AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         // "superAdmin" refers to the admin
@@ -335,7 +335,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      * @throws LoginAuthenticationExceptionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XMLStreamException
      * @throws LogoutAuthenticationExceptionException
      * @throws URISyntaxException
@@ -347,7 +347,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, NamingException, IOException,
             XPathExpressionException, AndesClientException, JMSException,
             UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            AndesEventAdminServiceEventAdminException, XMLStreamException,
             LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
             AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic6");
@@ -383,7 +383,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      * @throws LoginAuthenticationExceptionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XMLStreamException
      * @throws LogoutAuthenticationExceptionException
      * @throws URISyntaxException
@@ -395,7 +395,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, NamingException, IOException,
             XPathExpressionException, AndesClientException, JMSException,
             UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            AndesEventAdminServiceEventAdminException, XMLStreamException,
             LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
             AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("superAdmin", "authTopic7");
@@ -426,7 +426,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws JMSException
      * @throws UserAdminUserAdminException
      * @throws LoginAuthenticationExceptionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws XMLStreamException
      * @throws LogoutAuthenticationExceptionException
      * @throws URISyntaxException
@@ -439,7 +439,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             throws AndesClientConfigurationException, NamingException, IOException,
             XPathExpressionException, AndesClientException, JMSException,
             UserAdminUserAdminException, LoginAuthenticationExceptionException,
-            TopicManagerAdminServiceEventAdminExceptionException, XMLStreamException,
+            AndesEventAdminServiceEventAdminException, XMLStreamException,
             LogoutAuthenticationExceptionException, URISyntaxException, SAXException,
             AndesAdminServiceBrokerManagerAdminException, AutomationUtilException {
         this.createPublishAndSubscribeFromUser("superAdmin", "authTopic9");
@@ -464,14 +464,14 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws XMLStreamException
      * @throws URISyntaxException
      * @throws SAXException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws LogoutAuthenticationExceptionException
      */
     @AfterClass()
     public void cleanUpTopics()
             throws XPathExpressionException, LoginAuthenticationExceptionException, IOException,
             XMLStreamException, URISyntaxException, SAXException,
-            TopicManagerAdminServiceEventAdminExceptionException,
+            AndesEventAdminServiceEventAdminException,
             LogoutAuthenticationExceptionException, AutomationUtilException {
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(this.automationContext);
         String sessionCookie = loginLogoutClientForUser.login();
@@ -569,7 +569,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
             AndesAdminServiceBrokerManagerAdminException,
             LogoutAuthenticationExceptionException,
             UserAdminUserAdminException,
-            TopicManagerAdminServiceEventAdminExceptionException, AutomationUtilException {
+            AndesEventAdminServiceEventAdminException, AutomationUtilException {
 
         LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(automationContext);
         String sessionCookie = loginLogoutClientForUser.login();

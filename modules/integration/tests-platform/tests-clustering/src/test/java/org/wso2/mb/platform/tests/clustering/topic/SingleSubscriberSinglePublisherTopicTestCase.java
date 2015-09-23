@@ -23,11 +23,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.event.stub.core.TopicNode;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
-import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -91,7 +91,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     /**
      * Publish messages to a topic in a single node and receive from the same node.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -102,7 +102,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testSameNodePubSub(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -112,7 +112,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     /**
      * Publish messages to a topic in a node and receive from the same node at a slow rate.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -123,7 +123,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testSameNodeSlowSubscriber(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -134,7 +134,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages at a slow rate to a topic in one node and and receive from the
      * same node.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -145,7 +145,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testSameNodeSlowPublisher(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -156,7 +156,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node at a slower rate and receive from a different
      * node at a slow rate.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -167,7 +167,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testSingleNodeSlowPublisherSlowSubscriber(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -177,7 +177,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     /**
      * Publish messages to a topic in a single node and receive from a different node
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -188,7 +188,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testDifferentNodePubSub(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -199,7 +199,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node and receive from a different node at a slow
      * rate.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -210,7 +210,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testDifferentNodeSlowSubscriber(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -221,7 +221,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node and receive from a different node at a slow
      * rate.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -232,7 +232,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             enabled = true)
     @Parameters({"messageCount"})
     public void testDifferentNodeSlowPublisher(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -243,7 +243,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * Publish messages to a topic in a single node at a slower rate and receive from a different
      * node at a slow rate.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -254,7 +254,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                                             "case", enabled = true)
     @Parameters({"messageCount"})
     public void testDifferentNodeSlowPublisherSlowSubscriber(long messageCount)
-            throws TopicManagerAdminServiceEventAdminExceptionException, AndesClientConfigurationException,
+            throws AndesEventAdminServiceEventAdminException, AndesClientConfigurationException,
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
@@ -264,12 +264,12 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     /**
      * Cleanup after running tests.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
     public void destroy()
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
 
         topicAdminClient1.removeTopic("singleTopic1");
         topicAdminClient1.removeTopic("singleTopic2");
@@ -295,7 +295,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * @throws JMSException
      * @throws IOException
      * @throws XPathExpressionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws AndesClientException
      */
     private void runSingleSubscriberSinglePublisherTopicTestCase(
@@ -303,7 +303,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
             AutomationContext contextForPublisher, long consumerDelay,
             long publisherDelay, String destinationName, long messageCount)
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
-                   XPathExpressionException, TopicManagerAdminServiceEventAdminExceptionException, AndesClientException,
+                   XPathExpressionException, AndesEventAdminServiceEventAdminException, AndesClientException,
                    DataAccessUtilException {
         // Number of messages expected
         long expectedCount = messageCount;

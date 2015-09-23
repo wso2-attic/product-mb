@@ -22,11 +22,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.event.stub.core.TopicNode;
+import org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.event.stub.internal.TopicManagerAdminServiceEventAdminExceptionException;
-import org.wso2.carbon.event.stub.internal.xsd.TopicNode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -92,7 +92,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws NamingException
      * @throws JMSException
      * @throws IOException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws AndesClientException
      */
     @Test(groups = "wso2.mb", description = "Single node single publisher two subscribers test " +
@@ -100,7 +100,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     public void testMultipleSubscribers()
             throws AndesClientConfigurationException, XPathExpressionException, NamingException,
                    JMSException,
-                   IOException, TopicManagerAdminServiceEventAdminExceptionException,
+                   IOException, AndesEventAdminServiceEventAdminException,
                    AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 2000L;
@@ -156,7 +156,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws NamingException
      * @throws JMSException
      * @throws XPathExpressionException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws IOException
      * @throws AndesClientException
      */
@@ -165,7 +165,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     public void testBulkSubscribers()
             throws AndesClientConfigurationException, NamingException, JMSException,
                    XPathExpressionException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+            AndesEventAdminServiceEventAdminException, IOException,
                    AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
@@ -211,7 +211,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws IOException
      * @throws AndesClientException
      */
@@ -220,7 +220,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     public void testBulkPublishers()
             throws XPathExpressionException, AndesClientConfigurationException, NamingException,
                    JMSException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+            AndesEventAdminServiceEventAdminException, IOException,
                    AndesClientException {
         long sendCount = 100000L;
         long expectedCount = 100000L;
@@ -263,7 +263,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      *
      * @throws XPathExpressionException
      * @throws JMSException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws IOException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -272,7 +272,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     @Test(groups = "wso2.mb", description = "Single node multiple publishers multiple " +
                                             "subscribers test case", enabled = true)
     public void testBulkPublishersBulkSubscribers() throws XPathExpressionException, JMSException,
-                                                           TopicManagerAdminServiceEventAdminExceptionException,
+            AndesEventAdminServiceEventAdminException,
                                                            IOException,
                                                            AndesClientConfigurationException,
                                                            NamingException, AndesClientException {
@@ -319,7 +319,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
      * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws IOException
      * @throws AndesClientException
      */
@@ -328,7 +328,7 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     public void testBulkPublishersBulkSubscribersDifferentNodes()
             throws XPathExpressionException, AndesClientConfigurationException, NamingException,
                    JMSException,
-                   TopicManagerAdminServiceEventAdminExceptionException, IOException,
+            AndesEventAdminServiceEventAdminException, IOException,
                    AndesClientException {
         long sendCount = 2000L;
         long expectedCount = 100000L;
@@ -368,12 +368,12 @@ public class MultipleSubscriberMultiplePublisherTopicTestCase extends MBPlatform
     /**
      * Cleanup after running tests.
      *
-     * @throws TopicManagerAdminServiceEventAdminExceptionException
+     * @throws AndesEventAdminServiceEventAdminException
      * @throws RemoteException
      */
     @AfterClass(alwaysRun = true)
     public void destroy()
-            throws TopicManagerAdminServiceEventAdminExceptionException, RemoteException {
+            throws AndesEventAdminServiceEventAdminException, RemoteException {
         topicAdminClient.removeTopic("mulSubTopic1");
         topicAdminClient.removeTopic("mulSubTopic2");
         topicAdminClient.removeTopic("mulSubTopic3");

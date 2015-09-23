@@ -70,7 +70,7 @@ public class QueueUserAuthorizationTestCase extends MBIntegrationBaseTest {
     /**
      * Permission path for creating a queue
      */
-    private static final String ADD_QUEUE_PERMISSION = "/permission/admin/manage/queue/addQueue";
+    private static final String ADD_QUEUE_PERMISSION = "/permission/admin/manage/queue/add";
 
     /**
      * Roles for the test case scenarios
