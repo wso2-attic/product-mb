@@ -150,9 +150,6 @@
                                     org.wso2.carbon:org.wso2.carbon.core.runtime.feature:${carbon.kernel.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.messaging:org.wso2.carbon.cassandra.datareader.feature:${carbon.messaging.version}
-                                </featureArtifactDef>
-                                <featureArtifactDef>
                                     org.wso2.carbon.messaging:org.wso2.carbon.messaging.metrics.feature:${carbon.messaging.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>
@@ -285,10 +282,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.identity.core.ui.feature.group</id>
                                     <version>${carbon.identity.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.cassandra.datareader.feature.group</id>
-                                    <version>${carbon.messaging.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.messaging.metrics.feature.group</id>
