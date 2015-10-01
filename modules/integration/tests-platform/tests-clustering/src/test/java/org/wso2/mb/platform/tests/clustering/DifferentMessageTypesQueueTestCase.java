@@ -82,6 +82,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish byte messages to a queue in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -103,6 +104,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish byte messages to a queue in a single node and receive from the same node with
      * multiple publishers and subscribe to that queue using multiple subscribers
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -124,6 +126,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish map messages to a queue in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -144,6 +147,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish map messages to a queue in a single node and receive from the same node with
      * multiple publishers and subscribe to that queue using multiple subscribers
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -164,6 +168,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish Object messages to a queue in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -183,6 +188,8 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
     /**
      * Publish object messages to a queue in a single node and receive from the same node with
      * multiple publishers and subscribe to that queue using multiple subscribers
+     *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -203,6 +210,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish stream messages to a queue in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -223,6 +231,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * Publish stream messages to a queue in a single node and receive from the same node with
      * multiple publishers and subscribe to that queue using multiple subscribers
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -284,6 +293,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
      * @param messageType        The message type to be used when publishing
      * @param numberOfPublishers The number of publishers
      * @param destinationName    The destination name for sender and receiver
+     * @param messageCount       Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -326,8 +336,7 @@ public class DifferentMessageTypesQueueTestCase extends MBPlatformBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, numberOfPublishers, true);
         publisherClient.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount * numberOfPublishers,

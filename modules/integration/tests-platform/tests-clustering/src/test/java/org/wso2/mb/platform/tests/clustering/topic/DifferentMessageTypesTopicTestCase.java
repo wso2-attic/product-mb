@@ -86,6 +86,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish byte messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount  Number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -107,6 +108,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish map messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount  Number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -128,6 +130,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish object messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount  Number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException
@@ -149,6 +152,7 @@ public class DifferentMessageTypesTopicTestCase extends MBPlatformBaseTest {
      * Publish stream messages to a topic in a single node and receive from the same node with one
      * subscriber
      *
+     * @param messageCount  Number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws AndesClientConfigurationException

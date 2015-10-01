@@ -78,6 +78,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     /**
      * Publish message to a single node and receive from the same node at a slow rate.
      *
+     * @param messageCount number of message to send and receive
      * @throws IOException
      * @throws JMSException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
@@ -96,6 +97,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     /**
      * Publish message at a slow rate to a single node and receive from the same node.
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
@@ -115,6 +117,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     /**
      * Publish message to a single node and receive from a different node at a slow rate.
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
@@ -134,6 +137,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
     /**
      * Publish message at a slow rate to a single node and receive from a different node.
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws IOException
      * @throws JMSException
@@ -187,6 +191,7 @@ public class DifferentRateSubscriberTestCase extends MBPlatformBaseTest {
      * @param publisherDelay         The delay in which the publisher received messages
      * @param consumerBrokerAddress  The amqp connection string for consumer
      * @param publisherBrokerAddress The amqp connection string for publisher
+     * @param messageCount           Number of message to send and receive
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException

@@ -78,6 +78,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
     /**
      * Publish messages to a single node and receive from the same node while reconnecting 4 times.
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
@@ -141,7 +142,8 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message receiving failed for consumerClient4");
 
         long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() +
-                                     consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
+                                     consumerClient3.getReceivedMessageCount() + consumerClient4
+                                             .getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");
@@ -155,6 +157,7 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
     /**
      * Publish messages to a single node and receive from random nodes while reconnecting 4 times.
      *
+     * @param messageCount  Number of message to send and receive
      * @throws XPathExpressionException
      * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
      * @throws NamingException
@@ -232,11 +235,12 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount, "Message " +
-                                                          "receiving failed for consumerClient4");
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedCount,
+                            "Message receiving failed for consumerClient4");
 
         long totalMessagesReceived = consumerClient1.getReceivedMessageCount() + consumerClient2.getReceivedMessageCount() +
-                                     consumerClient3.getReceivedMessageCount() + consumerClient4.getReceivedMessageCount();
+                                     consumerClient3.getReceivedMessageCount() + consumerClient4
+                                             .getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(totalMessagesReceived, expectedCount * 4, "Message receiving failed.");

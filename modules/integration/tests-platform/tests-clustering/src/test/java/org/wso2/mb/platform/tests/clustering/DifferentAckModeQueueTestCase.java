@@ -80,6 +80,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from the same node with SESSION_TRANSACTED
      * ack mode
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -142,6 +143,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from the same node with AUTO_ACKNOWLEDGE
      * ack mode
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -201,6 +203,7 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
      * Publish messages to a single node and receive from the same node with CLIENT_ACKNOWLEDGE
      * ack mode
      *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -263,6 +266,8 @@ public class DifferentAckModeQueueTestCase extends MBPlatformBaseTest {
     /**
      * Publish messages to a single node and receive from the same node with DUPS_OK_ACKNOWLEDGE
      * ack mode
+     *
+     * @param messageCount number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws JMSException

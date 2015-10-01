@@ -78,6 +78,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in same node for a single queue
      *
+     * @param messageCount Number of message to send and receive
      * @throws XPathExpressionException
      * @throws AndesClientConfigurationException
      * @throws NamingException
@@ -159,6 +160,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for a single queue
      *
+     * @param messageCount Number of message to send and receive
      * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws NamingException
@@ -279,6 +281,7 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
     /**
      * Multiple subscribers and publishers in Multiple node for Multiple queues
      *
+     * @param messageCount Number of message to send and receive
      * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
