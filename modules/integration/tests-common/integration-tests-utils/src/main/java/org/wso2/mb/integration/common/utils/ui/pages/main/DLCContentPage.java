@@ -59,25 +59,24 @@ public class DLCContentPage {
 
         // Get all elements in dlc table
         WebElement dlcTable = driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                     .getElement("mb.dlc.browse.content.table")));
+                                                          .getElement("mb.dlc.browse.content.table")));
         // Get all the TR elements from the table
         List<WebElement> allDlcRows = dlcTable.findElements(By.tagName("tr"));
 
-            //A row represents a message in DLC
-            //Therefore comparing the row count with zero is used to see if the message list is empty
-            if(allDlcRows.size() > 0) {
-                log.info("delete all dlc messages");
-                driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                    .getElement("mb.dlc.browse.table.choose.all.box.xpath")))
-                                                    .click();
-                driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                    .getElement("mb.dlc.browse.table.delete.button")))
-                                                    .click();
-                driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                    .getElement("mb.dlc.browse.function.confirm"))).click();
-                driver.findElement(By.xpath(UIElementMapper.getInstance()
-                                                    .getElement("mb.dlc.browse.function.success"))).click();
-            }
+        //A row represents a message in DLC
+        //Therefore comparing the row count with zero is used to see if the message list is empty
+        if (allDlcRows.size() > 0) {
+            log.info("delete all dlc messages");
+            driver.findElement(By.xpath(UIElementMapper.getInstance()
+                                        .getElement("mb.dlc.browse.table.choose.all.box.xpath")))
+                    .click();
+            driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.dlc.browse.table.delete.button")))
+                    .click();
+            driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.dlc.browse.function.confirm")))
+                    .click();
+            driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.dlc.browse.function.success")))
+                    .click();
+        }
     }
 
     /**
