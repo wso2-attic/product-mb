@@ -51,7 +51,7 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * Tests the queue creation from UI with colon sign for the name
+     * Tests the queue creation functionality from UI
      * <p/>
      * Test Steps:
      * - login to management console
@@ -64,7 +64,7 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
     @Test()
     public void testCase() throws IOException, XPathExpressionException {
 
-        String qName = "test:test";
+        String qName = "QueueCreationTestQueue";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
