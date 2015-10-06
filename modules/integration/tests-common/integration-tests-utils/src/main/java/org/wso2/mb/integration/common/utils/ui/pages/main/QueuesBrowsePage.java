@@ -18,13 +18,15 @@
 
 package org.wso2.mb.integration.common.utils.ui.pages.main;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * This page represents 'Queue-> Browse' page in MB management console.
@@ -32,7 +34,8 @@ import java.util.List;
 public class QueuesBrowsePage {
 
     private WebDriver driver;
-
+    private static final Log log = LogFactory.getLog(QueuesBrowsePage.class);
+    
     public QueuesBrowsePage(WebDriver driver) throws IOException {
         this.driver = driver;
         // Check that we're on the right page.
@@ -61,6 +64,7 @@ public class QueuesBrowsePage {
         boolean isSuccessful = false;
         WebElement row = getTableRowByQueueName(queueName);
         if (row == null) {
+            log.warn("unable to find the table row for queue name: " + queueName);
             return false;
         }
 
@@ -81,6 +85,7 @@ public class QueuesBrowsePage {
                 break;
             }
         }
+        
         return isSuccessful;
     }
 
@@ -94,6 +99,7 @@ public class QueuesBrowsePage {
 
         WebElement row = getTableRowByQueueName(qName);
         if (row == null) {
+            log.warn("unable to find the table row for queue name: " + qName);
             return null;    // can't find the queue.
         }
 
