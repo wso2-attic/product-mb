@@ -18,8 +18,11 @@
 
 package org.wso2.mb.platform.common.utils;
 
+import org.wso2.carbon.automation.engine.context.AutomationContext;
+import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,29 +32,27 @@ import java.sql.SQLException;
  */
 public class RDBMSConnectionManager {
 
-    // Set database username
-    private static final String username = "";
-    // Set database password
-    private static final String password = "";
-    // Set JDBC URL
-    private static final String url = "jdbc:mysql://localhost/WSO2_MB";
-    // Set JDBC Driver
-    private static final String driverName = "com.mysql.jdbc.Driver";
-
     /**
      * Get database connection.
      * @return database connection
-     * @throws DataAccessUtilException
+     * @throws XPathExpressionException
+     * @throws ClassNotFoundException
+     * @throws SQLException
      */
-    public static Connection getConnection() throws DataAccessUtilException {
-        try {
-            Class.forName(driverName);
-            Connection conn = DriverManager.getConnection(url, username, password);
-            return conn;
-        } catch (SQLException e) {
-            throw new DataAccessUtilException("SQL error occurred while getting message count for queue", e);
-        } catch (ClassNotFoundException e1) {
-            throw new DataAccessUtilException("JDBC driver not found", e1);
-        }
+    public static Connection getConnection() throws XPathExpressionException, ClassNotFoundException, SQLException {
+
+        AutomationContext automationContext = new AutomationContext("MB_Cluster", TestUserMode.SUPER_TENANT_ADMIN);
+
+        String url = automationContext.getConfigurationValue("//datasources/datasource[@name=\'mbCluster\']/url");
+        String username = automationContext.getConfigurationValue
+                ("//datasources/datasource[@name=\'mbCluster\']/username");
+        String password = automationContext.getConfigurationValue
+                ("//datasources/datasource[@name=\'mbCluster\']/password");
+        String driverName = automationContext.getConfigurationValue
+                ("//datasources/datasource[@name=\'mbCluster\']/driverClassName");
+
+        Class.forName(driverName);
+        Connection conn = DriverManager.getConnection(url, username, password);
+        return conn;
     }
 }

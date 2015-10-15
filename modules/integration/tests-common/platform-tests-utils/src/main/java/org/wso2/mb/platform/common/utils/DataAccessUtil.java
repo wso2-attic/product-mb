@@ -20,6 +20,7 @@ package org.wso2.mb.platform.common.utils;
 
 import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
 
+import javax.xml.xpath.XPathExpressionException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,9 +34,12 @@ public class DataAccessUtil {
     /**
      * Get database connection
      * @return database connection
-     * @throws DataAccessUtilException
+     * @throws SQLException
+     * @throws XPathExpressionException
+     * @throws ClassNotFoundException
      */
-    private Connection getConnection() throws DataAccessUtilException {
+    private Connection getConnection() throws SQLException, XPathExpressionException,
+            ClassNotFoundException {
         return RDBMSConnectionManager.getConnection();
     }
 
