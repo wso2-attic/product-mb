@@ -23,7 +23,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.wso2.andes.kernel.AndesException;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.andes.stub.admin.types.Queue;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
@@ -33,13 +32,12 @@ import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilExcepti
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
-import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.platform.common.utils.DataAccessUtil;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 import org.wso2.mb.platform.common.utils.exceptions.DataAccessUtilException;
@@ -47,12 +45,12 @@ import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
-import javax.xml.crypto.Data;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertTrue;
 
@@ -154,7 +152,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
      */
     @Test(groups = "wso2.mb", description = "Single queue replication")
     public void testSingleQueueReplication()
-            throws AndesAdminServiceBrokerManagerAdminException, RemoteException, DataAccessUtilException{
+            throws AndesAdminServiceBrokerManagerAdminException, RemoteException, DataAccessUtilException,
+                   InterruptedException {
 
         String queueName = "clusterSingleQueue2";
         String randomInstanceKey = getRandomMBInstance();
@@ -174,11 +173,15 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
                    "Queue created in MB node instance not replicated in other MB node instance");
 
         tempAndesAdminClient.deleteQueue(queueName);
+
+        // Wait for queue delete notification to reach other node in the cluster
+        TimeUnit.SECONDS.sleep(1);
+
         randomInstanceKey = getRandomMBInstance();
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
         queue = tempAndesAdminClient.getQueueByName(queueName);
 
-        assertTrue(queue == null, "Queue created in MB node instance not replicated in other MB node instance");
+        assertTrue(queue == null, "Queue deleted in MB node instance not replicated in other MB node instance");
 
     }
 
