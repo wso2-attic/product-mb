@@ -16,7 +16,7 @@
  *   under the License.
  */
 
-package org.wso2.mb.platform.tests.clustering.mqtt;
+package org.wso2.mb.platform.tests.clustering.mqtt.DataProvider;
 
 import org.testng.annotations.DataProvider;
 import org.wso2.mb.integration.common.clients.QualityOfService;

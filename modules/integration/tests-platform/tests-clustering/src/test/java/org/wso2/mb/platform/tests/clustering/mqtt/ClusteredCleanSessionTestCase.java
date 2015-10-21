@@ -34,6 +34,7 @@ import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
+import org.wso2.mb.platform.tests.clustering.mqtt.DataProvider.QualityOfServiceDataProvider;
 
 /**
  * Verify MQTT clean session option by sending messages with clean session =
