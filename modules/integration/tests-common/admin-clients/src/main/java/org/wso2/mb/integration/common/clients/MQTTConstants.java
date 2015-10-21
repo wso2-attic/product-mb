@@ -30,6 +30,7 @@ public class MQTTConstants {
     public static final String BROKER_USER_NAME = "admin";
 
     public static final byte[] TEMPLATE_PAYLOAD = "hello".getBytes();
+    public static final byte[] EMPTY_PAYLOAD = "".getBytes();
 
     /**
      * Maximum length of a MQTT client Id defined by MQTT 3.1 specifications

@@ -41,6 +41,7 @@ import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
+import org.wso2.mb.platform.tests.clustering.mqtt.DataProvider.QualityOfServiceDataProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -80,25 +81,28 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
     }
 
     /**
-     * Send and receive messages in a single node for a topic
+     * Send message to a node and receive from a another node.
      * 
      * @throws MqttException
      * @throws XPathExpressionException
      */
     @Test(groups = "wso2.mb",
-            description = "Single topic Single node send-receive test case",
+            description = "Single topic two node send-receive test case",
             dataProvider = "QualityOfServiceDataProvider",
             dataProviderClass = QualityOfServiceDataProvider.class)
-    public void testSingleTopicSingleNodeSendReceive(QualityOfService qualityOfService) throws MqttException, XPathExpressionException{
-        String topic = "testSingleTopicSingleNodeSendReceive";
+    public void testSingleTopicTwoNodeSendReceive(QualityOfService qualityOfService)
+                                                    throws MqttException, XPathExpressionException{
+        String topic = "testSingleTopicTwoNodeSendReceive";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
         boolean saveMessages = true;
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode2 = buildConfiguration(automationContextForMB2);
-        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode3 = buildConfiguration(automationContextForMB3);
+        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode2 =
+                                                                    buildConfiguration(automationContextForMB2);
+        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode3 =
+                                                                    buildConfiguration(automationContextForMB3);
                 
         // create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, saveMessages,
@@ -120,17 +124,18 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
     }
     
     /**
-     * Send message to a node and receive from a another node.
-     * 
+     * Send and receive messages in a single node for a topic
+     *
      * @throws MqttException
      * @throws XPathExpressionException
      */
     @Test(groups = "wso2.mb",
-            description = "Single topic Two node send-receive test case",
+            description = "Single topic single node send-receive test case",
             dataProvider = "QualityOfServiceDataProvider",
             dataProviderClass = QualityOfServiceDataProvider.class)   
-    public void testSingleTopicTwoNodeSendReceive(QualityOfService qualityOfService) throws MqttException, XPathExpressionException{
-        String topic = "testSingleTopicTwoNodeSendReceive";
+    public void testSingleTopicSingleNodeSendReceive(QualityOfService qualityOfService)
+                                                  throws MqttException, XPathExpressionException{
+        String topic = "testSingleTopicSingleNodeSendReceive";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
@@ -174,7 +179,7 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 100;
-        boolean saveMessages = false;
+        boolean saveMessages = true;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         MQTTClientConnectionConfiguration clientConnectionConfiguration = buildConfiguration(automationContextForMB2);
         //create the subscribers
@@ -205,38 +210,34 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
     public void testSingleTopicTwoNodeMultipleMessagesTestCase(QualityOfService qualityOfService)
                                                                                                     throws MqttException,
                                                                                                     XPathExpressionException {
-        String topic = "testSingleTopicSingleNodeMultipleMessagesTestCase";
+        String topic = "testSingleTopicTwoNodeMultipleMessagesTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 100;
-        boolean saveMessages = false;
+        boolean saveMessages = true;
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        MQTTClientConnectionConfiguration clientConnectionConfiguration = buildConfiguration(automationContextForMB2);
-        //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, saveMessages,
-                ClientMode.BLOCKING, clientConnectionConfiguration);
+        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode2 =
+                buildConfiguration(automationContextForMB2);
+        MQTTClientConnectionConfiguration clientConnectionConfigurationForNode3 =
+                buildConfiguration(automationContextForMB3);
 
+        // create the subscribers
+        mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, saveMessages,
+                                                    ClientMode.BLOCKING, clientConnectionConfigurationForNode2);
+
+        // create the publishers and start publish
         mqttClientEngine.createPublisherConnection(topic, qualityOfService,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, ClientMode.BLOCKING, clientConnectionConfiguration);
+                                                   MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
+                                                   noOfMessages, ClientMode.BLOCKING, clientConnectionConfigurationForNode3);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
 
-        Assert.assertEquals(mqttClientEngine.getReceivedMessageCount(), noOfMessages,
-                "The received message count is incorrect.");
+        List<MqttMessage> receivedMessages = mqttClientEngine.getReceivedMessages();
 
-    }
-    
-    
-    
-    
-    /**
-     * Cleanup after running tests.
-     *
-     * @throws org.wso2.carbon.andes.event.stub.service.AndesEventAdminServiceEventAdminException
-     * @throws RemoteException
-     */
-    @AfterClass(alwaysRun = true)
-    public void destroy() throws RemoteException {
+        Assert.assertEquals(receivedMessages.size(), noOfMessages, "The received message count is incorrect.");
+
+        Assert.assertEquals(receivedMessages.get(0).getPayload(), MQTTConstants.TEMPLATE_PAYLOAD,
+                            "The received message is incorrect");
+
     }
 }
