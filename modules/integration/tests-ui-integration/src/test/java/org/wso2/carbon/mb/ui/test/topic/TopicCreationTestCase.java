@@ -64,7 +64,7 @@ public class TopicCreationTestCase extends MBIntegrationUiBaseTest {
     @Test()
     public void testCase() throws XPathExpressionException, IOException {
 
-        String topicName = "test-topic";
+        String topicName = "TopicCreationTestTopic";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
