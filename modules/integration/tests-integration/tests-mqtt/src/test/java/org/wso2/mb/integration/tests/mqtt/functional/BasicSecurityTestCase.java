@@ -88,7 +88,7 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
     @Test(groups = { "wso2.mb", "mqtt" }, description = "Try to connect to MB using a invalid user name and a password", 
             expectedExceptions = MqttException.class, expectedExceptionsMessageRegExp = ".*Bad user name or password.*")
     public void performInvalidUserCredentialsTestCase() throws MqttException, XPathExpressionException {
-        String topic = "topic";
+        String topic = "InvalidUserCredentialsTestCase:" + userMode.name();
         int inValidNumberOfMessages = 1; // we don't really expect to send
                                          // messages.
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
@@ -123,7 +123,7 @@ public class BasicSecurityTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case with non admin user, super tenant")
     public void performBasicSendReceiveTestCaseWithNonAdminCredentials() throws MqttException, XPathExpressionException {
-        String topic = "topic";
+        String topic = "BasicSendReceiveTestCaseWithNonAdminCredentials:" + userMode.name();
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
