@@ -150,26 +150,16 @@ public class MultipleTopicTestCase extends MBPlatformBaseTest {
         sendingClient9.startClient();
         sendingClient10.startClient();
 
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient3, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient4, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient5, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient6, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient7, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient8, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient9, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(receivingClient10, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(receivingClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(receivingClient2);
+        AndesClientUtils.shutdownClient(receivingClient3);
+        AndesClientUtils.shutdownClient(receivingClient4);
+        AndesClientUtils.shutdownClient(receivingClient5);
+        AndesClientUtils.shutdownClient(receivingClient6);
+        AndesClientUtils.shutdownClient(receivingClient7);
+        AndesClientUtils.shutdownClient(receivingClient8);
+        AndesClientUtils.shutdownClient(receivingClient9);
+        AndesClientUtils.shutdownClient(receivingClient10);
 
         // Evaluating
         Assert.assertEquals(sendingClient1

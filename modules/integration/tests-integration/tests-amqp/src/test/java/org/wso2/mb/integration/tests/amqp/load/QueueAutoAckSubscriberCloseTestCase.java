@@ -59,7 +59,6 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -103,7 +102,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBIntegrationBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClosingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClosingClient);
 
         // Evaluating
         long totalReceivedMessageCount = consumerClient.getReceivedMessageCount() + consumerClosingClient.getReceivedMessageCount();

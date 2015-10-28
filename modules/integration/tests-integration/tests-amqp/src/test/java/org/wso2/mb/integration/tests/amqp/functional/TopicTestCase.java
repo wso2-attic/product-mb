@@ -50,7 +50,6 @@ public class TopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -186,10 +185,8 @@ public class TopicTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(adminConsumerClient,
                                                             AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(tenant1ConsumerClient,
-                                                            AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(tenant2ConsumerClient,
-                                                            AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(tenant1ConsumerClient);
+        AndesClientUtils.shutdownClient(tenant2ConsumerClient);
 
         // Evaluating
         Assert.assertEquals(adminPublisherClient.getSentMessageCount(), sendCount, "Sending " +

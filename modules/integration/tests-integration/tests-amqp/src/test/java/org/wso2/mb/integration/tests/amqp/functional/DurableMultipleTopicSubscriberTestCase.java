@@ -56,7 +56,6 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         init(TestUserMode.SUPER_TENANT_ADMIN);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -112,8 +111,7 @@ public class DurableMultipleTopicSubscriberTestCase extends MBIntegrationBaseTes
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
 
         // Evaluating
         Assert.assertEquals(publisherClient

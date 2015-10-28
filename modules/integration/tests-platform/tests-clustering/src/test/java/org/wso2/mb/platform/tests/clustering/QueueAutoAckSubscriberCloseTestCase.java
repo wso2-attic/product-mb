@@ -151,8 +151,7 @@ public class QueueAutoAckSubscriberCloseTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClosingClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClosingClient);
 
         log.info("Total Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
 

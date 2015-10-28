@@ -144,7 +144,7 @@ public class QueueAckMixTestCase extends MBPlatformBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerReturnClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerReturnClient);
 
         log.info("Total Received Messages [" + consumerClient.getReceivedMessageCount() + "]");
 

@@ -38,7 +38,6 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -179,8 +178,7 @@ public class TemporaryTopicSubscriptionVerificationTestCase extends MBIntegratio
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(secondaryConsumerClient);
 
         // Evaluating
         Assert.assertEquals(publisherClient

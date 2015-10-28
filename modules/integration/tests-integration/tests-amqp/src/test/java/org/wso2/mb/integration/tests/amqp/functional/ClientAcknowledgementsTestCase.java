@@ -61,7 +61,6 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -118,7 +117,7 @@ public class ClientAcknowledgementsTestCase extends MBIntegrationBaseTest {
                 .getReceivedMessageCount();
 
         Assert.assertEquals(publisherClient
-                                    .getSentMessageCount(), SEND_COUNT, "Expected message count not received.");
+                                    .getSentMessageCount(), SEND_COUNT, "Expected message count not sent.");
         Assert.assertEquals(totalMessagesReceived, EXPECTED_COUNT, "Expected message count not received.");
     }
 }

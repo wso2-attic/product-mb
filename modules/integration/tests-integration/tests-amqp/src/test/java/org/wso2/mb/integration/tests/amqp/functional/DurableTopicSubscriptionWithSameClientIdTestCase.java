@@ -20,9 +20,11 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -116,10 +118,8 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
+        AndesClientUtils.shutdownClient(consumerClient3);
 
         // Evaluating
         Assert.assertEquals(publisherClient
@@ -196,17 +196,11 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
-
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient6, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
+        AndesClientUtils.shutdownClient(consumerClient3);
+        AndesClientUtils.shutdownClient(consumerClient4);
+        AndesClientUtils.shutdownClient(consumerClient5);
+        AndesClientUtils.shutdownClient(consumerClient6);
 
         // Evaluating
         Assert.assertEquals(publisherClient1
@@ -225,5 +219,16 @@ public class DurableTopicSubscriptionWithSameClientIdTestCase extends MBIntegrat
                         .getReceivedMessageCount() + consumerClient6.getReceivedMessageCount();
         Assert.assertEquals(totalReceivingMessageCount, SEND_COUNT_8, "Message receive count not equal to sent message " +
                                                                     "count for 'durableTopicSameClientIDTopic2'.");
+    }
+
+    /**
+     * Restore to the previous configurations when the shared subscription test is complete.
+     *
+     * @throws IOException
+     * @throws AutomationUtilException
+     */
+    @AfterClass
+    public void tearDown() throws IOException, AutomationUtilException {
+        super.serverManager.restoreToLastConfiguration(true);
     }
 }

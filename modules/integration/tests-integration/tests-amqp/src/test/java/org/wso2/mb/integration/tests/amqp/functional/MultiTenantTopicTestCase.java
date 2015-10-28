@@ -60,7 +60,6 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -119,8 +118,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(adminConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(tenant1ConsumerClient);
 
         // Evaluating
         Assert.assertEquals(tenant2PublisherClient
@@ -198,8 +196,7 @@ public class MultiTenantTopicTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(tenant2ConsumerClient);
 
         // Evaluating
         Assert.assertEquals(tenant1PublisherClient

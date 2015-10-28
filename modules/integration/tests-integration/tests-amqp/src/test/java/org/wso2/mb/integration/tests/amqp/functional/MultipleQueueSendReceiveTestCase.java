@@ -59,7 +59,6 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -113,7 +112,7 @@ public class MultipleQueueSendReceiveTestCase extends MBIntegrationBaseTest {
         publisherClient2.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
 
         // Evaluating
         long sentMessageCount = publisherClient1.getSentMessageCount() + publisherClient2.getSentMessageCount();

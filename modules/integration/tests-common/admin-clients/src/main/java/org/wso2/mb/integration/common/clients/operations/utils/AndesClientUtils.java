@@ -145,6 +145,17 @@ public class AndesClientUtils {
     }
 
     /**
+     * Shutdown the client gracefully without waiting.
+     *
+     * @param client The client to shutdown
+     * @throws JMSException
+     */
+    public static void shutdownClient(AndesClient client) throws JMSException {
+        client.stopClient();
+        flushPrintWriters();
+    }
+
+    /**
      * Sleeps for a certain time.
      *
      * @param milliseconds Sleep time in milliseconds.
