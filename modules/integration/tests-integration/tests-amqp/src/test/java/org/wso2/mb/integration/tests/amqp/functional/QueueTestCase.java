@@ -50,7 +50,6 @@ public class QueueTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -197,7 +196,7 @@ public class QueueTestCase extends MBIntegrationBaseTest {
 
         // Waiting for all messages
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
 
         // Evaluating
         long msgCountFromClient1 = consumerClient1.getReceivedMessageCount();

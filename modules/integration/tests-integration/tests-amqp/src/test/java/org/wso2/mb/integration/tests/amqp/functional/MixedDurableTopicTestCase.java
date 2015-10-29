@@ -74,7 +74,6 @@ public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         init(TestUserMode.SUPER_TENANT_ADMIN);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**

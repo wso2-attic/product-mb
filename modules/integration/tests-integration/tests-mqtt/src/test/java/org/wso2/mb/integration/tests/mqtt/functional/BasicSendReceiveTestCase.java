@@ -58,7 +58,7 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
     public void performBasicSendReceiveTestCase() throws MqttException, XPathExpressionException {
-        String topic = "topic";
+        String topic = "BasicSendReceiveTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
@@ -91,7 +91,7 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
     public void performBasicSendReceiveMultipleMessagesTestCase()
             throws MqttException, XPathExpressionException {
-        String topic = "topic";
+        String topic = "BasicSendReceiveMultipleMessagesTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 100;

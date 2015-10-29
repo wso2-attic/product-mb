@@ -69,7 +69,7 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         }
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        String topic = "CleanSessionTestTopic";
+        String topic = "CleanSessionTestCase" + qualityOfService.getValue();
 
         MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setCleanSession(false);
@@ -132,7 +132,7 @@ public class CleanSessionTestCase extends MBIntegrationBaseTest {
         int expectedCount = 0;
 
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        String topic = "CleanSessionTestTopic";
+        String topic = "CleanSessionWithUnSubscriptionTestCase" + qualityOfService.getValue();
 
         MQTTClientConnectionConfiguration configuration = mqttClientEngine.getConfigurations(automationContext);
         configuration.setCleanSession(false);

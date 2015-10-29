@@ -39,8 +39,6 @@ import java.util.List;
  */
 public class QOSTestCase extends MBIntegrationBaseTest {
 
-    private static final String topicName = "topic";
-
     /**
      * Initialize super class.
      *
@@ -62,6 +60,7 @@ public class QOSTestCase extends MBIntegrationBaseTest {
             dataProvider = "QualityOfServiceDataProvider", dataProviderClass = QualityOfServiceDataProvider.class)
     public void performQOS0TestCase(QualityOfService qualityOfService)
             throws MqttException, XPathExpressionException {
+        String topicName = "QOSTestCase" + qualityOfService.getValue();
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;

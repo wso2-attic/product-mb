@@ -58,7 +58,6 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -106,7 +105,7 @@ public class QueueAckMixTestCase extends MBIntegrationBaseTest {
         publisherClient.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerReturnedClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerReturnedClient);
 
         // Evaluation
         long totalReceivedMessageCount = consumerClient.getReceivedMessageCount() + consumerReturnedClient.getReceivedMessageCount();

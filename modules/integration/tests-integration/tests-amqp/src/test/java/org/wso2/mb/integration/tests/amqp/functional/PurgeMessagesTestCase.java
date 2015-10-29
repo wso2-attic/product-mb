@@ -74,7 +74,6 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
     @BeforeClass()
     public void init() throws XPathExpressionException, MalformedURLException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
@@ -180,8 +179,8 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
 
         //Receiving messages until message count gets stagnant and
         //Once done, stop client
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, 10000l);
-        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, 10000l);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
 
         //Creating admin client
         AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);

@@ -67,7 +67,6 @@ public class QueueSubscriptionsBreakAndReceiveTestCase extends MBIntegrationBase
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         init(TestUserMode.SUPER_TENANT_ADMIN);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**

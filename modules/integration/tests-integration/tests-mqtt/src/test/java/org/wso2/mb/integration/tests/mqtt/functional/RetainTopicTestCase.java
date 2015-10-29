@@ -64,7 +64,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt retain message send receive test case")
     public void performSendReceiveRetainTopicTestCase()
             throws MqttException, XPathExpressionException {
-        String topic = "topic";
+        String topic = "SendReceiveRetainTopicTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
@@ -111,7 +111,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt retain message send receive test case")
     public void performSendReceiveRetainTopicForLateSubscriberTestCase()
             throws MqttException, XPathExpressionException {
-        String topic = "topic1";
+        String topic = "SendReceiveRetainTopicForLateSubscriberTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
@@ -169,7 +169,7 @@ public class RetainTopicTestCase extends MBIntegrationBaseTest {
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Remove MQTT retain test case")
     public void performRemoveRetainTopicTestCase() throws MqttException, XPathExpressionException {
-        String topic = "topic2";
+        String topic = "RemoveRetainTopicTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;

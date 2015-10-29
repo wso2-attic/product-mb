@@ -86,7 +86,6 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
     public void init() throws XPathExpressionException, RemoteException,
                               UserAdminUserAdminException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
 
         // Get current "AndesAckWaitTimeOut" system property.
         defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.

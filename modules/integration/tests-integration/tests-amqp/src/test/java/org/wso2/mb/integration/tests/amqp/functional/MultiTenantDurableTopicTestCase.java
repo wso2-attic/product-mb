@@ -84,7 +84,6 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException, RemoteException, UserAdminUserAdminException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
 
         // Logging into user management as admin and adding a new role to give permission for publishing/subscribe
         userManagementClient = new UserManagementClient(backendURL, "admin@topictenant1.com",
@@ -240,8 +239,7 @@ public class MultiTenantDurableTopicTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils
-                .waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(tenant2ConsumerClient);
 
         // Evaluating
         Assert.assertEquals(tenant1PublisherClient

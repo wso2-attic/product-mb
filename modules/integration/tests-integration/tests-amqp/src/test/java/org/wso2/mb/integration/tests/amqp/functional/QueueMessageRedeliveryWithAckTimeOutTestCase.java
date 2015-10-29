@@ -61,7 +61,6 @@ public class QueueMessageRedeliveryWithAckTimeOutTestCase extends MBIntegrationB
     @BeforeClass
     public void prepare() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**

@@ -62,7 +62,6 @@ public class JMSSubscriberTransactionsSessionCommitRollbackTestCase extends MBIn
     @BeforeClass
     public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
-        AndesClientUtils.sleepForInterval(15000);
     }
 
     /**
