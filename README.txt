@@ -1,8 +1,8 @@
 ================================================================================
-                        WSO2 Message Broker Server 3.0.0 - Alpha2
+                        WSO2 Message Broker Server 3.0.0 - RC1
 ================================================================================
 
-Welcome to the WSO2 MB 3.0.0-Alpha2 release
+Welcome to the WSO2 MB 3.0.0-RC1 release
 
 WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
 Server (MB) which is available under the Apache Software License v2.0.
