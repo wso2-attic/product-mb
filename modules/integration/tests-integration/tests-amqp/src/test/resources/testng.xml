@@ -24,12 +24,13 @@
     <!-- These test run sequentially -->
     <test name="tests-amqp-sequential" preserve-order="true" parallel="false">
         <classes>
-             Test with server restarts and test with @BeforeMethod or @AfterMethod code are added here
+            <!-- Test with server restarts and test with @BeforeMethod or @AfterMethod code are added here -->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.PurgeMessagesTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
 
             <!-- This classes are added here since verification is done by writing to file and multiple subscribers
                  are not supported -->
@@ -74,7 +75,6 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedDurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleTopicPublishSubscribeTestCase"/>

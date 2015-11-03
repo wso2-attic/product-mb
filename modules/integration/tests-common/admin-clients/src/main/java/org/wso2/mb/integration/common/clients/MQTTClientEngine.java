@@ -155,6 +155,42 @@ public class MQTTClientEngine {
     }
 
     /**
+     * Method which can be used to override the auto generated client ID for a specific subscriber.
+     *
+     * @param configuration MQTT configurations for the subscriber
+     * @param topicName     Topic to subscribe to
+     * @param qos           Quality of Service
+     * @param saveMessages  Save receiving messages
+     * @param clientMode    Client connection mode
+     * @param clientID      Unique identifier for the client hosting the subscription
+     */
+    public void createSubscriberConnection(MQTTClientConnectionConfiguration configuration,
+                                           String topicName, QualityOfService qos,
+                                           boolean saveMessages, ClientMode clientMode, String clientID) throws
+            MqttException {
+
+        AndesMQTTClient mqttClient;
+
+        if (ClientMode.ASYNC == clientMode) {
+            mqttClient = new MQTTAsyncSubscriberClient(configuration, clientID, topicName, qos, saveMessages);
+            subscriberList.add(mqttClient);
+            clientControlSubscriptionThreads.execute(mqttClient);
+        } else if (ClientMode.BLOCKING == clientMode) {
+            mqttClient = new MQTTBlockingSubscriberClient(configuration, clientID, topicName, qos,
+                    saveMessages);
+            subscriberList.add(mqttClient);
+            mqttClient.run();
+        } else {
+            // Using else since only the above two scenarios are handled. If a new client mode is included,
+            // handle it before this
+            throw new MqttException(new Throwable("Unidentified clientMode : " + clientMode));
+        }
+
+
+        waitForSubscribersToSubscribe();
+    }
+
+    /**
      * Create a given number of subscribers.
      *
      * @param topicName       Topic to subscribe to

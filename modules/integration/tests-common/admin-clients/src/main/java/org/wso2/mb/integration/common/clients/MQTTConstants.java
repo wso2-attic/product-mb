@@ -40,4 +40,9 @@ public class MQTTConstants {
     // Print message send/receive details on each 1000 messages
     public static final int MESSAGE_PRINT_LIMIT = 1000;
 
+    /***
+     * Timeout for an MQTT client to connect to the broker.
+     */
+    public static final long CLIENT_CONNECT_TIMEOUT = 1000;
+
 }
