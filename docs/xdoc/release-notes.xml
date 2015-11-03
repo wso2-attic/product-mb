@@ -23,7 +23,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"/>
-        <title>WSO2 Message Broker 3.0.0 RC1 Released!</title>
+        <title>WSO2 Message Broker 3.0.0 RC2 Released!</title>
         <link href="css/mb-docs.css" rel="stylesheet"/>
         <link href="styles/dist-docs.css" rel="stylesheet" type="text/css"
               media="all"/>
@@ -33,10 +33,10 @@
         </div>
 
         <div id="main-content">
-            <h1>WSO2 Message Broker (MB) 3.0.0 RC1 Released!</h1>
+            <h1>WSO2 Message Broker (MB) 3.0.0 RC2 Released!</h1>
 
             <p>
-                The WSO2 Message Broker team is pleased to announce the 3.0.0 RC1 release of WSO2 Message Broker (MB).
+                The WSO2 Message Broker team is pleased to announce the 3.0.0 RC2 release of WSO2 Message Broker (MB).
             </p>
             <p>WSO2 Message Broker (WSO2 MB) v 3.0.0  is fast, lightweight and user friendly open source
                 distributed message brokering system under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">
