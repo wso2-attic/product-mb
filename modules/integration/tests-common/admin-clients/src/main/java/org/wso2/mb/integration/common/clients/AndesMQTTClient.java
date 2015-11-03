@@ -18,7 +18,6 @@
 
 package org.wso2.mb.integration.common.clients;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
