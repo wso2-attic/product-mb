@@ -56,7 +56,7 @@ public class DuplicateClientIDTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Send message and receive for a long topic hierarchy.
+     * Validate the MQTT broker behaviour when connecting 2 clients with same client IDs.
      */
     @Test(groups = {"wso2.mb", "mqtt"}, description = "Send message and receive for a long topic hierarchy")
     public void performDuplicateClientIDTestCase() throws MqttException, XPathExpressionException, InterruptedException {
