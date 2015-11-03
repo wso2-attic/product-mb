@@ -51,8 +51,13 @@ public class MBIntegrationBaseTest {
      * @throws XPathExpressionException
      */
     protected void init(TestUserMode userMode) throws XPathExpressionException {
-        automationContext = new AutomationContext("MB", userMode);
-        backendURL = automationContext.getContextUrls().getBackEndUrl();
+        // org.apache.xerces.dom.ParentNode.nodeListItem which is used in AutomationContext
+        // does not guarantee thread safety.
+        // Hence to allow tests to run in parallel, this initialization should be synchronized
+        synchronized (this.getClass()) {
+            automationContext = new AutomationContext("MB", userMode);
+            backendURL = automationContext.getContextUrls().getBackEndUrl();
+        }
     }
 
     /**
