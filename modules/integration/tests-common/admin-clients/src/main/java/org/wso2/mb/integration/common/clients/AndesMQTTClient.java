@@ -18,12 +18,14 @@
 
 package org.wso2.mb.integration.common.clients;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.wso2.mb.integration.common.clients.operations.mqtt.callback.CallbackHandler;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -73,10 +75,11 @@ public abstract class AndesMQTTClient implements Runnable {
     protected final boolean retain;
 
     /**
-     * Store messages until server fetches them
+     * Store messages until server fetches them.
+     * Need a random value on this path to ensure that the same persistence store is not used by two clients.
      */
     protected final MqttDefaultFilePersistence dataStore =
-            new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir"));
+            new MqttDefaultFilePersistence(System.getProperty("java.io.tmpdir") + File.separator + Math.random());
 
     /**
      * Create a mqtt client initializing mqtt options.
