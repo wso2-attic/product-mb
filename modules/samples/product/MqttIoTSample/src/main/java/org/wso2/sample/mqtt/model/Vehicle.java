@@ -67,25 +67,28 @@ public class Vehicle {
         setVehicleId(vehicleId);
         setVehicleModel(vehicleModel);
 
-        mqttClient = new AndesMQTTClient(vehicleId, true, 
+        mqttClient = new AndesMQTTClient(vehicleId, true,
         						MQTTSampleConstants.DEFAULT_USER_NAME, 
         						MQTTSampleConstants.DEFAULT_PASSWORD);
 
         // send sensor statuses to the server periodically.
         statusUpdateSchedule = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
             public void run() {
                 try {
                     // Send temperature reading
                     mqttClient.sendMessage(generateTopicHierarchy(ENGINE_TEMPERATURE),
-                            String.valueOf(getEngineTemperature()), qos);
+                            org.wso2.sample.mqtt.AndesMQTTClient.TEMPERATURE_PREFIX
+                                    + String.valueOf(getEngineTemperature()), qos);
 
                     // Send speed reading
-                    mqttClient.sendMessage(generateTopicHierarchy(SPEED), String.valueOf(getSpeed()), qos);
+                    mqttClient.sendMessage(generateTopicHierarchy(SPEED),
+                            org.wso2.sample.mqtt.AndesMQTTClient.SPEED_PREFIX
+                                    + String.valueOf(getSpeed()), qos);
 
                     // Send acceleration reading
-                    mqttClient.sendMessage(generateTopicHierarchy(ACCELERATION), String.valueOf(getAcceleration()),
-                            qos);
+                    mqttClient.sendMessage(generateTopicHierarchy(ACCELERATION),
+                            org.wso2.sample.mqtt.AndesMQTTClient.ACCELERATION_PREFIX
+                                    + String.valueOf(getAcceleration()), qos);
 
                     log.info("Sensor readings of " + vehicleId + " sent to server.");
                 } catch (MqttException e) {

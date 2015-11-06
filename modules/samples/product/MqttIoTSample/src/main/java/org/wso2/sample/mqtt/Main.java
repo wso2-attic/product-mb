@@ -75,9 +75,9 @@ public class Main {
      */
     public static void main(String[] args) throws InterruptedException, MqttException {
         populateVehicles();
-        scheduleMockVehicleStatusUpdate();
         try {
             listenToVehicleSensorStatuses();
+            scheduleMockVehicleStatusUpdate();
 
             // Let stats publish and stats processing commence for RUNTIME amount of time before exiting the sample
             Thread.sleep(RUNTIME);
@@ -93,7 +93,6 @@ public class Main {
     private static void scheduleMockVehicleStatusUpdate() {
         // Update sensors with random values.
         vehicleStatusUpdater = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
             public void run() {
                 for (Vehicle vehicle : vehicleList) {
                     vehicle.setAcceleration(random.nextInt(360));
@@ -205,7 +204,6 @@ public class Main {
 
         // Print real time sensor data each second
         vehicleStatusProcessor = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
             public void run() {
 
                 {
@@ -235,20 +233,17 @@ public class Main {
                     ConcurrentHashMap<String, String> latestCarAccelerationReadings = carClient
                             .getLatestSpeedReadings();
                     double maxAcceleration = 0;
-                    String maxAccelerationVehicle = "Undefined";
                     for (Map.Entry<String, String> entry : latestCarAccelerationReadings.entrySet()) {
                         String latestReading = entry.getValue();
                         if (latestReading != null && !"".equals(latestReading)) {
                             double latestAcceleration = Double.parseDouble(latestReading);
                             if (maxAcceleration < latestAcceleration) {
                                 maxAcceleration = latestAcceleration;
-                                maxAccelerationVehicle = entry.getKey();
                             }
                         }
                     }
 
-                    outputString.append("\tCurrent Max car acceleration : ").append(maxAcceleration).append(" in ")
-                            .append(maxAccelerationVehicle.replace("/speed", ""));
+                    outputString.append("\tCurrent Max car acceleration : ").append(maxAcceleration);
 
                     log.info(outputString);
 
