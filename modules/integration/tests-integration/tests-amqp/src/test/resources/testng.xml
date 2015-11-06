@@ -44,7 +44,7 @@
     </test>
 
     <!-- These tests run in parallel -->
-    <test name="tests-amqp-parallel" preserve-order="false" parallel="true" thread-count="10">
+    <test name="tests-amqp-parallel" preserve-order="false" parallel="classes" thread-count="2">
 
         <classes>
 
