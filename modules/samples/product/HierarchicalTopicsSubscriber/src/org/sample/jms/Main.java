@@ -23,9 +23,12 @@ import javax.naming.NamingException;
 
 public class Main {
 
-    public static void main(String[] args) throws NamingException, JMSException {
+    public static void main(String[] args) throws NamingException, JMSException, InterruptedException {
         SampleHierarchicalTopicsClient hierarchicalTopicsClient = new SampleHierarchicalTopicsClient();
         hierarchicalTopicsClient.start();
+        while (!hierarchicalTopicsClient.isSubscriptionComplete()){
+            Thread.sleep(500);
+        }
         TopicPublisher topicPublisher = new TopicPublisher();
         topicPublisher.publishMessage();
     }
