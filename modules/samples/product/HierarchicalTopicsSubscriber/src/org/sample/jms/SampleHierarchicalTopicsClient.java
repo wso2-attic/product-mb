@@ -49,6 +49,7 @@ public class SampleHierarchicalTopicsClient extends Thread{
     String topicName_5 = "Games.Cricket.India.Delhi";
     String topicName_6 = "Games.Cricket.*";
     String topicName_7 = "Games.Cricket.#";
+    private boolean isSubscriptionComplete = false;
 
     @Override
     public void run() {
@@ -67,18 +68,24 @@ public class SampleHierarchicalTopicsClient extends Thread{
         TopicConnectionFactory connFactory = (TopicConnectionFactory) ctx.lookup(CF_NAME);
         TopicConnection topicConnection = connFactory.createTopicConnection();
         topicConnection.start();
-        TopicSession topicSession =
+
+        //Create two topic sessions since a number of clients cannot be connected from the same session
+        TopicSession topicSession1 =
+                topicConnection.createTopicSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+        TopicSession topicSession2 =
                 topicConnection.createTopicSession(false, QueueSession.AUTO_ACKNOWLEDGE);
 
-        Topic topic1 = topicSession.createTopic(topicName_1);
-        Topic topic2 = topicSession.createTopic(topicName_2);
-        Topic topic3 = topicSession.createTopic(topicName_3);
-        Topic topic4 = topicSession.createTopic(topicName_4);
-        Topic topic5 = topicSession.createTopic(topicName_5);
+        Topic topic1 = topicSession1.createTopic(topicName_1);
+        Topic topic2 = topicSession1.createTopic(topicName_2);
+        Topic topic3 = topicSession1.createTopic(topicName_3);
+        Topic topic4 = topicSession1.createTopic(topicName_4);
+        Topic topic5 = topicSession1.createTopic(topicName_5);
         Topic topic6 = (Topic) ctx.lookup(topicName_6);
         Topic topic7 = (Topic) ctx.lookup(topicName_7);
-        TopicSubscriber topicSubscriber1 = topicSession.createSubscriber(topic6);
-        TopicSubscriber topicSubscriber2 = topicSession.createSubscriber(topic7);
+        TopicSubscriber topicSubscriber1 = topicSession1.createSubscriber(topic6);
+        TopicSubscriber topicSubscriber2 = topicSession2.createSubscriber(topic7);
+
+        isSubscriptionComplete = true;
         // Receive messages
         Message message1;
 	System.out.println(" Receiving messages for " + topicName_6 + " :");
@@ -98,7 +105,8 @@ public class SampleHierarchicalTopicsClient extends Thread{
         }
         topicSubscriber1.close();
         topicSubscriber2.close();
-        topicSession.close();
+        topicSession1.close();
+        topicSession2.close();
         topicConnection.stop();
         topicConnection.close();
     }
@@ -120,6 +128,10 @@ public class SampleHierarchicalTopicsClient extends Thread{
                 .append("/").append(CARBON_VIRTUAL_HOST_NAME)
                 .append("?brokerlist='tcp://").append(CARBON_DEFAULT_HOSTNAME).append(":").append(CARBON_DEFAULT_PORT).append("'")
                 .toString();
+    }
+
+    public boolean isSubscriptionComplete(){
+        return this.isSubscriptionComplete;
     }
 }
 

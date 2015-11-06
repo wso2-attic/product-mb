@@ -68,15 +68,17 @@ public class TopicPublisher {
         javax.jms.TopicPublisher topicPublisher5 = topicSession.createPublisher(topic5);
 
         // Create the messages to send
-        TextMessage textMessage1 = topicSession.createTextMessage("Message for Cricket");
-        TextMessage textMessage2 = topicSession.createTextMessage("Message for SL");
-        TextMessage textMessage3 = topicSession.createTextMessage("Message for India");
-        TextMessage textMessage4 = topicSession.createTextMessage("Message for Delhi");
+        TextMessage textMessage1 = topicSession.createTextMessage("Message for Games");
+        TextMessage textMessage2 = topicSession.createTextMessage("Message for Cricket");
+        TextMessage textMessage3 = topicSession.createTextMessage("Message for SL");
+        TextMessage textMessage4 = topicSession.createTextMessage("Message for India");
+        TextMessage textMessage5 = topicSession.createTextMessage("Message for Delhi");
 
-        topicPublisher2.publish(textMessage1);
-        topicPublisher3.publish(textMessage2);
-        topicPublisher4.publish(textMessage3);
-        topicPublisher5.publish(textMessage4);
+        topicPublisher1.publish(textMessage1);
+        topicPublisher2.publish(textMessage2);
+        topicPublisher3.publish(textMessage3);
+        topicPublisher4.publish(textMessage4);
+        topicPublisher5.publish(textMessage5);
 
         topicSession.close();
         topicConnection.close();
