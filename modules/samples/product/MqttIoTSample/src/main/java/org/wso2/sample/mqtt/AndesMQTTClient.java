@@ -40,6 +40,10 @@ public class AndesMQTTClient implements MqttCallback {
 
     private static final Log log = LogFactory.getLog(AndesMQTTClient.class);
 
+    public static final String TEMPERATURE_PREFIX = "E:";
+    public static final String SPEED_PREFIX = "S:";
+    public static final String ACCELERATION_PREFIX = "A:";
+
     private MqttClient mqttClient;
 
     /**
@@ -127,7 +131,6 @@ public class AndesMQTTClient implements MqttCallback {
      *
      * @param throwable Connection lost cause
      */
-    @Override
     public void connectionLost(Throwable throwable) {
         // We're only logging the connection lost here since this class is only responsible for handling callbacks
         // from server. If client tries to invoke any further operation on server it will create a server error which
@@ -144,19 +147,18 @@ public class AndesMQTTClient implements MqttCallback {
      * @param mqttMessage The mqtt message received
      * @throws Exception
      */
-    @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        String sensorReading = mqttMessage.toString();
-        if (topic.endsWith(Vehicle.ENGINE_TEMPERATURE)) {
+        String message = mqttMessage.toString();
+        String sensorReading = message.substring(2);
+        if (message.startsWith(TEMPERATURE_PREFIX)) {
             latestTemperatureReadings.put(topic, sensorReading);
-        } else if (topic.endsWith(Vehicle.SPEED)) {
+        } else if (message.startsWith(SPEED_PREFIX)) {
             latestSpeedReadings.put(topic, sensorReading);
-        } else if (topic.endsWith(Vehicle.ACCELERATION)) {
+        } else if (message.startsWith(ACCELERATION_PREFIX)) {
             latestAccelerationReadings.put(topic, sensorReading);
         }
     }
 
-    @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
     }
 
