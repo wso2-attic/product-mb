@@ -63,7 +63,7 @@
     </repositories>
 
     <properties>
-        <product.mb.version>3.0.0-SNAPSHOT</product.mb.version>
+        <product.mb.version>3.0.0</product.mb.version>
         <eclipse.paho.version>0.4.0</eclipse.paho.version>
         <maven.exec.version>1.2.1</maven.exec.version>
     </properties>
