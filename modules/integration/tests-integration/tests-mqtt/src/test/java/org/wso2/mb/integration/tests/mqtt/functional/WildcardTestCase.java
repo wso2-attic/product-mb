@@ -231,7 +231,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
                 automationContext);
 
         // Receive all the messages published to sub trees of 'mixed/level' but not 'mixed/level'
-        mqttClientEngine.createSubscriberConnection("mixed/level" + singleLevelWildCard + "/" + multiLevelWildCard,
+        mqttClientEngine.createSubscriberConnection("mixed/level/" + singleLevelWildCard + "/" + multiLevelWildCard,
                 QualityOfService.LEAST_ONCE, noOfAdjacentWildcardSubscribers, false, ClientMode.BLOCKING,
                 automationContext );
 
@@ -244,8 +244,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         mqttClientEngine.waitUntilAllMessageReceived();
         int receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
-        int expectedCount = noOfMessagesPerPublisher * noOfPublisherThreads * (noOfAllLevelSubscribers +
-                noOfMidAnySubscribers);
+        int expectedCount = noOfMessagesPerPublisher * noOfPublisherThreads * (noOfAllLevelSubscribers);
 
         Assert.assertEquals(receivedMessageCount, expectedCount, "Did not received expected message count after " +
                 "publishing to top level.");
@@ -257,9 +256,8 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         mqttClientEngine.waitUntilAllMessageReceived();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
-                expectedCount = expectedCount + noOfMessagesPerPublisher * noOfPublisherThreads * (noOfAllLevelSubscribers +
-                noOfMidAnySubscribers +
-                noOfStartWithAnySubscribers);
+                expectedCount = expectedCount + noOfMessagesPerPublisher * noOfPublisherThreads
+                        * (noOfAllLevelSubscribers + noOfStartWithAnySubscribers);
 
         Assert.assertEquals(receivedMessageCount, expectedCount, "Did not received expected message count after " +
                 "publishing to two-level topic.");
@@ -272,8 +270,7 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
         receivedMessageCount = mqttClientEngine.getReceivedMessageCount();
         expectedCount = expectedCount + noOfMessagesPerPublisher * noOfPublisherThreads * (noOfAllLevelSubscribers +
-                noOfMidAnySubscribers +
-                noOfStartWithAnySubscribers + noOfAdjacentWildcardSubscribers);
+                noOfMidAnySubscribers + noOfStartWithAnySubscribers + noOfAdjacentWildcardSubscribers);
 
         Assert.assertEquals(receivedMessageCount, expectedCount, "Did not received expected message count after " +
                 "publishing to two-level topic.");

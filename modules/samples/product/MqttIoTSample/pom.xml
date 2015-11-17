@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
-            <artifactId>mqtt-client</artifactId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>${eclipse.paho.version}</version>
         </dependency>
         <dependency>
@@ -86,7 +86,7 @@
         <commons.logging.version>1.1</commons.logging.version>
         <commons.lang.version>2.6.0.wso2v1</commons.lang.version>
         <version.log4j>1.2.13</version.log4j>
-        <eclipse.paho.version>0.4.0</eclipse.paho.version>
+        <eclipse.paho.version>1.0.2</eclipse.paho.version>
         <maven.exec.version>1.2.1</maven.exec.version>
     </properties>
 
