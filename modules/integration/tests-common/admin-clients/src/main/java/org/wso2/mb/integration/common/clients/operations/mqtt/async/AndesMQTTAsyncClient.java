@@ -103,6 +103,21 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     }
 
     /**
+     * Asynchronously subscribe to a given topic.
+     *
+     * @param topicName The topic to subscribe to
+     * @throws MqttException
+     */
+    @Override
+    public void subscribe(String topicName) throws MqttException {
+        log.info("Subscribing to topic \"" + topicName + "\" qos " + qos);
+        IMqttToken subscriptionToken = mqttClient.subscribe(topicName, qos.getValue());
+
+        // Wait until subscription is made. Otherwise test results will be unpredictable
+        subscriptionToken.waitForCompletion();
+    }
+
+    /**
      * Un-subscribe from the topic.
      *
      * @throws MqttException
