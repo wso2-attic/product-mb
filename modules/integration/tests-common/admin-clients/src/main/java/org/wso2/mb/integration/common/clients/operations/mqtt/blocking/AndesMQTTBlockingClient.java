@@ -100,6 +100,18 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     }
 
     /**
+     * Synchronously subscribe to a given topic.
+     *
+     * @param topicName The topic to subscribe to
+     * @throws MqttException
+     */
+    @Override
+    public void subscribe(String topicName) throws MqttException {
+        log.info("Subscribing to topic \"" + topicName + "\" on qos" + qos);
+        mqttClient.subscribe(topicName, qos.getValue());
+    }
+
+    /**
      * Un-subscribe from the topic.
      *
      * @throws MqttException

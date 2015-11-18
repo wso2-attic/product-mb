@@ -139,6 +139,14 @@ public abstract class AndesMQTTClient implements Runnable {
     public abstract void subscribe() throws MqttException;
 
     /**
+     * Subscribe to a given topic.
+     *
+     * @param topicName The topic to subscribe to
+     * @throws MqttException
+     */
+    public abstract void subscribe(String topicName) throws MqttException;
+
+    /**
      * Un-subscribe from the topic.
      *
      * @throws MqttException
