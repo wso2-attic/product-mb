@@ -29,7 +29,7 @@
     </test>
 
     <!-- Tests which can run in parallel -->
-    <test name="tests-transports-mqtt-parallel" preserve-order="false" parallel="classes" thread-count="5">
+    <test name="tests-transports-mqtt-parallel" preserve-order="false" parallel="classes" thread-count="2">
 
         <classes>
             <!-- functional test cases -->

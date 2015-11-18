@@ -49,7 +49,7 @@ public class SingleClientMultipleSubscriptionsTestCase extends MBIntegrationBase
      * @throws MqttException
      * @throws XPathExpressionException
      */
-    @Test
+    @Test(groups = {"wso2.mb", "mqtt"}, description = "Subscribe to two topics with the same client id")
     public void performSingleClientMultipleSubscriptionsTest() throws MqttException, XPathExpressionException {
         String topic1 = "singleClientMultipleSubscriptions1";
         String topic2 = "singleClientMultipleSubscriptions2";
@@ -77,6 +77,59 @@ public class SingleClientMultipleSubscriptionsTestCase extends MBIntegrationBase
         Assert.assertEquals(mqttClientEngine.getReceivedMessageCount(), noOfMessages * 2,
                 "Did not receive expected message count ");
 
+
+    }
+
+    /**
+     * Check if a subscriber who subscribed to two topics with clean session false, receive messages to an inactive
+     * subscription when one subscription is inactive.
+     *
+     * 1. Create a topic with a subscriber with clean session false
+     * 2. Disconnect the subscriber (The subscription will be added to inactive sessions)
+     * 3. Add some messages to the created topic. (The messages will be persisted)
+     * 4. Using the same client ID create another topic. (With different topic name)
+     * 5. Publish some messages to the inactive topic.
+     * 6. Client should not receive any messages
+     */
+    @Test(groups = {"wso2.mb", "mqtt"}, description = "Subscribe to two topics with clean session false and make"
+            + "one subscription inactive")
+    public void performSameClientDifferentTopicsTest() throws XPathExpressionException, MqttException {
+        String topic1 = "SameClientDifferentTopics1";
+        String topic2 = "SameClientDifferentTopic2";
+        int noOfMessages = 1;
+
+        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+
+        MQTTClientConnectionConfiguration mqttConfigs = mqttClientEngine.getConfigurations(automationContext);
+
+        mqttConfigs.setCleanSession(false);
+        //create the subscriber
+        mqttClientEngine.createSubscriberConnection(topic1, QualityOfService.EXACTLY_ONCE, 1, false,
+                ClientMode.BLOCKING, mqttConfigs);
+
+        AndesMQTTClient subscriber = mqttClientEngine.getSubscriberList().get(0);
+
+        subscriber.disconnect();
+
+        // Publish messages to the topic with inactive subscriber
+        mqttClientEngine.createPublisherConnection(topic1, QualityOfService.EXACTLY_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, 1,
+                noOfMessages, ClientMode.BLOCKING, automationContext);
+
+        // Re-connect and subscribe to a different topic
+        subscriber.connect();
+
+        subscriber.subscribe(topic2);
+
+        // Publish messages to the topic with inactive subscriber
+        mqttClientEngine.createPublisherConnection(topic1, QualityOfService.EXACTLY_ONCE,
+                MQTTConstants.TEMPLATE_PAYLOAD, 1,
+                noOfMessages, ClientMode.BLOCKING, automationContext);
+
+        mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
+
+        Assert.assertEquals(mqttClientEngine.getReceivedMessageCount(), 0, "Received messages in a different topic"
+                + "when no messages are expected");
 
     }
 }
