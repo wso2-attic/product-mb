@@ -49,6 +49,7 @@
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.ClusteredSecurityTestCase"/>
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.MQTTClusterTestCase"/>
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.RetainClusterTestCase"/>
+             <class name="org.wso2.mb.platform.tests.clustering.MixedQueueTopicTestCase"/>
              <!--Running the commented cases resulted in OOM-->
         </classes>
     </test>
