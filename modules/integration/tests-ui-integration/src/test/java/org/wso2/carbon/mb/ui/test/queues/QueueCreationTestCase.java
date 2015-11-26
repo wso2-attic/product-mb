@@ -54,17 +54,19 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
      * Tests the queue creation functionality from UI
      * <p/>
      * Test Steps:
-     * - login to management console
-     * - create a queue
+     * - Login to management console
+     * - Create a queue
      * - Go to queue browse page
      *
+     * -Create a queue with colon symbol
+     * -Go to queue browse page
      * @throws IOException
      * @throws XPathExpressionException
      */
     @Test()
-    public void testCase() throws IOException, XPathExpressionException {
+    public void queueCreationTestCase() throws IOException, XPathExpressionException {
 
-        String qName = "QueueCreationTestQueue";
+        String qName = "QueueCreationTestCase";
         driver.get(getLoginURL());
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
@@ -72,6 +74,13 @@ public class QueueCreationTestCase extends MBIntegrationUiBaseTest {
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+        Assert.assertEquals(queuesBrowsePage.isQueuePresent(qName), true);
+
+        qName = "QueueCreationTestCase:QueueCreationTestCase";
+
+        queueAddPage = homePage.getQueueAddPage();
+        Assert.assertEquals(queueAddPage.addQueue(qName), true);
+        queuesBrowsePage = homePage.getQueuesBrowsePage();
         Assert.assertEquals(queuesBrowsePage.isQueuePresent(qName), true);
 
     }
