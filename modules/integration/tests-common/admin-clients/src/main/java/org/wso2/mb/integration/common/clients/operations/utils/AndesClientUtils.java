@@ -104,6 +104,38 @@ public class AndesClientUtils {
     }
 
     /**
+     * Waits until no messages are sent by the publisher. The waiting is done by using a loop checking whether
+     * any new messages are sent than the previous iteration. In each iteration it will wait for
+     * a certain time to make sure that message counter changes until no change is detected in the
+     * message counters.
+     *
+     * @param client                            The publisher client
+     * @param waitTimeTillMessageCounterChanges The amount of milliseconds to wait until new messages are sent.
+     * @throws JMSException
+     */
+    public static void waitForMessages(AndesClient client, long waitTimeTillMessageCounterChanges) throws JMSException {
+
+        long previousMessageCount = 0;
+        long currentMessageCount = -1;
+
+        // At each iteration it will check whether the message count has changed than the previous iteration
+        while (currentMessageCount != previousMessageCount) {
+            try {
+                // Waits till the publisher sends more messages.
+                TimeUnit.MILLISECONDS.sleep(waitTimeTillMessageCounterChanges);
+            } catch (InterruptedException e) {
+                log.error("Error waiting for sent message count update.", e);
+            }
+            // Updating message counters
+            previousMessageCount = currentMessageCount;
+            currentMessageCount = client.getSentMessageCount();
+        }
+        log.info("Message count published : " + Long.toString(currentMessageCount));
+        // Prints print writer contents to files.
+        flushPrintWriters();
+    }
+
+    /**
      * Waits until no messages are received. The waiting is done by using a loop checking whether
      * any new messages are received than the previous iteration. In each iteration it will wait for
      * a certain time to make sure that message counter changes until no change is detected in the

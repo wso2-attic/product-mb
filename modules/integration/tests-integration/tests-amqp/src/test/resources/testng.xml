@@ -84,6 +84,9 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
 
+            <!-- Mixed -->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.PublisherQueueCreationTestCase"/>
+
             <!-- load test cases-->
 
             <!-- Queue -->
