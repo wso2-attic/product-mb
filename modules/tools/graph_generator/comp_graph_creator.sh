@@ -16,9 +16,9 @@
  #   specific language governing permissions and limitations
  #   under the License.
 #
-FILES=~/Learning/FirstTask/graph_generator/Texts/*          #Path for the directory where text files are stored/*
-DATAFILES=~/Learning/FirstTask/graph_generator/DataFiles/   #Path for the directory where data files should be stored/
-new_file1=~/Learning/FirstTask/graph_generator/searchedC1.txts #New file path for the intermediate operations
+FILES=PATH-TO-DATAFILES DIRECTORY/*          #Path for the directory where text files are stored/*
+DATAFILES=PATH-TO-PROJECT-FOLDER/graph_generator/DataFiles/   #Path for the directory where data files should be stored/
+new_file1=PATH-TO-PROJECT-FOLDER/graph_generator/searchedC1.txts #New file path for the intermediate operations
 for f in $FILES
 do 
 

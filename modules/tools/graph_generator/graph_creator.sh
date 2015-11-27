@@ -16,12 +16,12 @@
  #   specific language governing permissions and limitations
  #   under the License.
 #
-FILES=~/Learning/FirstTask/graph_generator/Texts/*          #Path for the directory where text files are stored/*
-DATAFILES=~/Learning/FirstTask/graph_generator/DataFiles/   #Path for the directory where data files should be stored/
-GRAPHS=~/Learning/FirstTask/graph_generator/Graphs/         #Path for the directory where .png files should be stored/
+FILES=PATH-TO-DATAFILES DIRECTORY/*          #Path for the directory where text files are stored/*
+DATAFILES=PATH-TO-PROJECT-FOLDER/graph_generator/DataFiles/   #Path for the directory where data files should be stored/
+GRAPHS=PATH-TO-PROJECT-FOLDER/graph_generator/Graphs/         #Path for the directory where .png files should be stored/
 
-new_file=~/Learning/FirstTask/graph_generator/searched.txt  #New file path for the intermediate operations
-new_file1=~/Learning/FirstTask/graph_generator/searched1.txts
+new_file=PATH-TO-PROJECT-FOLDER/graph_generator/searched.txt  #New file path for the intermediate operations
+new_file1=PATH-TO-PROJECT-FOLDER/graph_generator/searched1.txts
 for f in $FILES
 do 
 
