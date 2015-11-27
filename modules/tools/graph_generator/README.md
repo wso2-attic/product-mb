@@ -6,13 +6,14 @@ Add this project directory to your path....
 
 initialize below 5 variables in comp_graph_creator.sh file...
 
-  FILES=Path-To-Data Files/*
-  DataFiles=Path-to-project-directory/DataFiles/
-  Graphs=Path-to-project-directory/Graphs/
-  newFile=Path-to-project-directory/searched.txt
-  newFile1=Path-to-project-directory/searched1.txts
+FILES=PATH-TO-DATAFILES DIRECTORY/*          #Path for the directory where text files are stored/*
+DATAFILES=PATH-TO-PROJECT-FOLDER/graph_generator/DataFiles/   #Path for the directory where data files should be stored/
+GRAPHS=PATH-TO-PROJECT-FOLDER/graph_generator/Graphs/         #Path for the directory where .png files should be stored/
+
+new_file=~/Learning/FirstTask/graph_generator/searched.txt  #New file path for the intermediate operations
+new_file1=~/Learning/FirstTask/graph_generator/searched1.txts
   
-give write permission to Graphs,DataFiles...
+give write permission to Graphs,DataFiles Directories......
 
 Open command line in project directory....
 
