@@ -23,30 +23,30 @@ GRAPHS=PATH-TO-PROJECT-DIRECTORY-LOCATION/graph_generator/Graphs/         #Path 
 interim_file=PATH-TO-PROJECT-DIRECTORY-LOCATION/graph_generator/searched.txt  #New file path for the intermediate operations
 interim_file1=PATH-TO-PROJECT-DIRECTORY-LOCATION/graph_generator/searched1.txts
 #--------------------------------------------------------
-# take action on each file and $f store current file name
+# Take action on each file and $f store current file name
 #--------------------------------------------------------
 for f in $INPUT_FILES
 do 
     filename="${f##*/}"
     instant_sufix=INST
-    avg_time_length=0                #variable to keep length of the avg_time array
+    avg_time_length=0                #Variable to keep length of the avg_time array
     sample_length=0
     data_file_path="$DATAFILES$filename"
     data_file_path1="$DATAFILES$instant_sufix$filename"
     > $data_file_path
     > $data_file_path1
    
-    index_num=$( echo $(expr index "$filename" .))          #get index of "."
+    index_num=$( echo $(expr index "$filename" .))          #Get index of "."
     index_num=$((index_num-1))
     
-    new_file_nam=$( echo $filename | cut -c1-"$index_num")  #get new name as path without extension
+    new_file_nam=$( echo $filename | cut -c1-"$index_num")  #Get new name as path without extension
     new_sufix=$(echo '.png')  
     
-    png_file_path="$GRAPHS$new_file_nam$new_sufix"          #add extension .png 
+    png_file_path="$GRAPHS$new_file_nam$new_sufix"          #Add extension .png 
     > $png_file_path   
    
     > $interim_file
-    egrep "^summary =" $f > $interim_file                   #get the files begin with summary and creare file searched.txt
+    egrep "^summary =" $f > $interim_file                   #Get the files begin with summary and creare file searched.txt
     > $interim_file1
     egrep "^summary \+" $f > $interim_file1
     #-------------------------------------
@@ -55,7 +55,7 @@ do
     while IFS= read line
     do
        
-        replaced_line="${line/\/s/''}"         #replace /s in each line    
+        replaced_line="${line/\/s/''}"         #Replace /s in each line    
         count=0
         for word in $replaced_line
         do
@@ -65,14 +65,14 @@ do
         avg_time[$avg_time_length]=$word_array[6]};
         sample_num[$avg_time_length]=$avg_time_length;
        
-        echo "$avg_time_length ${word_array[6]}" >> $data_file_path         #write graph data into file
+        echo "$avg_time_length ${word_array[6]}" >> $data_file_path         #Write graph data into file
         avg_time_length=$((avg_time_length+1))
     done <"$interim_file"
     
     while IFS= read line
     do
       
-        replaced_line="${line/\/s/''}"      #replace /s in each line    
+        replaced_line="${line/\/s/''}"      #Replace /s in each line    
        
         count=0     
         for word in $replaced_line
@@ -83,7 +83,7 @@ do
         avg_time[$sample_length]=${word_array[6]};
         sample_num[$sample_length]=$sample_length;
         
-        echo "$sample_length ${word_array[6]}" >> $data_file_path1      #write graph data into file
+        echo "$sample_length ${word_array[6]}" >> $data_file_path1      #Write graph data into file
         sample_length=$((sample_length+1))
     done <"$interim_file1"
     
