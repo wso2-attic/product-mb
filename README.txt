@@ -97,7 +97,6 @@ WSO2 MB 3.0.0 distribution directory structure
 		|       |-- security <folder>
 		|-- tmp <folder>
 		|-- LICENSE.txt <file>
-		|-- INSTALL.txt <file>
 		|-- README.txt <file>
 		`-- release-notes.html <file>
 
@@ -155,9 +154,6 @@ WSO2 MB 3.0.0 distribution directory structure
 
     - README.txt
       This document.
-
-    - INSTALL.txt
-      This document will contain information on installing WSO2 MB
 
 
 
