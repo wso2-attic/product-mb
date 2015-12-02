@@ -31,6 +31,9 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.DiscardAllowedMsgDeliveryStrategyTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.SlowestSubscriptionRateMsgDeliveryStrategyTestCase"/>
+
 
             <!-- This classes are added here since verification is done by writing to file and multiple subscribers
                  are not supported -->

@@ -19,7 +19,7 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -51,12 +51,11 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 /**
- * This class bares test cases with "DISCARD_ALLOWED" topic message delivery strategy
+ * This class bares test cases with "SLOWEST_SUB_RATE" topic message delivery strategy
  */
-public class DiscardAllowedMsgDeliveryStrategyTestCase extends MBIntegrationBaseTest {
+public class SlowestSubscriptionRateMsgDeliveryStrategyTestCase extends MBIntegrationBaseTest {
 
-	private static final String DISCARD_ALLOWED_TOPIC = "discardAllowedTopic";
-
+	private static final String SLOWEST_SUB_RATE_TOPIC = "slowestSubRateTopic";
 
 	/**
 	 * Initializes test case
@@ -69,17 +68,16 @@ public class DiscardAllowedMsgDeliveryStrategyTestCase extends MBIntegrationBase
 	}
 
 	/**
-	 * Set topicMessageDeliveryStrategy to DISCARD_ALLOWED so that broker will simulate an acknowledgement
-	 * if some subscribers are slow to acknowledge the message
+	 * Set topicMessageDeliveryStrategy to SLOWEST_SUB_RATE_TOPIC so that broker will deliver the messages
 	 *
 	 * @throws XPathExpressionException
-	 * @throws IOException
-	 * @throws ConfigurationException
-	 * @throws SAXException
-	 * @throws XMLStreamException
-	 * @throws LoginAuthenticationExceptionException
-	 * @throws URISyntaxException
-	 * @throws AutomationUtilException
+	 * @throws java.io.IOException
+	 * @throws org.apache.commons.configuration.ConfigurationException
+	 * @throws org.xml.sax.SAXException
+	 * @throws javax.xml.stream.XMLStreamException
+	 * @throws org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException
+	 * @throws java.net.URISyntaxException
+	 * @throws org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException
 	 */
 	@BeforeClass
 	public void setupConfiguration() throws XPathExpressionException, IOException,
@@ -93,43 +91,44 @@ public class DiscardAllowedMsgDeliveryStrategyTestCase extends MBIntegrationBase
 		ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 
 		configurationEditor.updateProperty(AndesConfiguration
-				.PERFORMANCE_TUNING_TOPIC_MESSAGE_DELIVERY_STRATEGY, "DISCARD_ALLOWED");
+				.PERFORMANCE_TUNING_TOPIC_MESSAGE_DELIVERY_STRATEGY, "SLOWEST_SUB_RATE");
 
+		//reduce this to 200 from default value (1000) so that delivery strategy is effective fast
 		configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_ACK_HANDLING_MAX_UNACKED_MESSAGES,
-				"200");
+				"2");
 
 		configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
 
 	}
 
 	/**
-	 * 1. place subscriber A for DISCARD_ALLOWED_TOPIC with delay 0
-	 * 2. place subscriber B for DISCARD_ALLOWED_TOPIC with delay 0
-	 * 3. place subscriber C for DISCARD_ALLOWED_TOPIC with delay 200 milliseconds
-	 * 4. place subscriber D for DISCARD_ALLOWED_TOPIC with delay 300 milliseconds
+	 * 1. place subscriber A for SLOWEST_SUB_RATE_TOPIC with delay 0
+	 * 2. place subscriber B for SLOWEST_SUB_RATE_TOPIC with delay 0
+	 * 3. place subscriber C for SLOWEST_SUB_RATE_TOPIC with delay 200 milliseconds
+	 * 4. place subscriber D for SLOWEST_SUB_RATE_TOPIC with delay 300 milliseconds
 	 *
-	 * verify all messages are received at the end. In long running this strategy prevents
-	 * Out of Memory issues. Some acks are simulated flow slow subscribers.
+	 * Verify all messages are received at the end. When fast subscriber has got all messages, slowest subscriber
+	 * also should have got all the messages
 	 *
-	 * @throws AndesClientConfigurationException
-	 * @throws JMSException
-	 * @throws NamingException
+	 * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
+	 * @throws javax.jms.JMSException
+	 * @throws javax.naming.NamingException
 	 * @throws IOException
-	 * @throws AndesClientException
+	 * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientException
 	 * @throws XPathExpressionException
 	 * @throws CloneNotSupportedException
 	 */
-	@Test(groups = "wso2.mb", description = "Test server with DISCARD_ALLOWED topic message delivery strategy")
+	@Test(groups = "wso2.mb", description = "Test server with  SLOWEST_SUB_RATE topic message delivery strategy")
 	public void performDiscardAllowedTopicMessageDelivery() throws AndesClientConfigurationException, JMSException, NamingException, IOException,
 			AndesClientException, XPathExpressionException, CloneNotSupportedException {
 
 		//Setting values for the sent and received message counts
-		long sendToDiscardAllowedTopicCount = 2000;
-		long expectedMessageCountPerSubscriber = sendToDiscardAllowedTopicCount;
+		long sendToSlowestSubRateTopicCount = 1000;
+		long expectedMessageCountPerSubscriber = sendToSlowestSubRateTopicCount;
 
 		//setting up subscriber A
 		AndesJMSConsumerClientConfiguration consumerConfig1 =
-				new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, DISCARD_ALLOWED_TOPIC);
+				new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, SLOWEST_SUB_RATE_TOPIC);
 		consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
 		consumerConfig1.setMaximumMessagesToReceived(expectedMessageCountPerSubscriber);
 		consumerConfig1.setPrintsPerMessageCount(expectedMessageCountPerSubscriber / 10L);
@@ -160,35 +159,36 @@ public class DiscardAllowedMsgDeliveryStrategyTestCase extends MBIntegrationBase
 
 		// Creating publisher configuration
 		AndesJMSPublisherClientConfiguration publisherConfig1 =
-				new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, DISCARD_ALLOWED_TOPIC);
-		publisherConfig1.setNumberOfMessagesToSend(sendToDiscardAllowedTopicCount);
-		publisherConfig1.setRunningDelay(50);
-		publisherConfig1.setPrintsPerMessageCount(sendToDiscardAllowedTopicCount / 5L);
+				new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, SLOWEST_SUB_RATE_TOPIC);
+		publisherConfig1.setNumberOfMessagesToSend(sendToSlowestSubRateTopicCount);
+		publisherConfig1.setPrintsPerMessageCount(sendToSlowestSubRateTopicCount / 5L);
 
 		//start publisher
 		AndesClient publisherClient1 = new AndesClient(publisherConfig1, true);
 		publisherClient1.startClient();
 
-		//Receiving messages until message count gets stagnant and
-		//Once done, stop client
-		AndesClientUtils.waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
-		AndesClientUtils.waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+
+		AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
+		AndesClientUtils.shutdownClient(consumerClient3);
+		AndesClientUtils.shutdownClient(consumerClient2);
+		AndesClientUtils.shutdownClient(consumerClient1);
+		//AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, 200*expectedMessageCountPerSubscriber);
 
 		//these are very slow subscribers
-		AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, AndesClientConstants.DEFAULT_RUN_TIME);
-		AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME );
+		//AndesClientUtils.waitForMessagesAndShutdown(consumerClient3, 200*expectedMessageCountPerSubscriber);
+		//AndesClientUtils.waitForMessagesAndShutdown(consumerClient4, 200*expectedMessageCountPerSubscriber);
 
 		//verify all messages are published
-		Assert.assertEquals(sendToDiscardAllowedTopicCount, publisherClient1.getSentMessageCount());
+		Assert.assertEquals(sendToSlowestSubRateTopicCount, publisherClient1.getSentMessageCount());
 
 		//verify all messages are received
-		org.testng.Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
+		Assert.assertEquals(consumerClient1.getReceivedMessageCount(), expectedMessageCountPerSubscriber , "Did not "
 				+ "receive expected message count for consumerClient1");
-		org.testng.Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
+		Assert.assertEquals(consumerClient2.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
 				+ "receive expected message count for consumerClient2");
-		org.testng.Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
+		Assert.assertEquals(consumerClient3.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
 				+ "receive expected message count for consumerClient3");
-		org.testng.Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
+		Assert.assertEquals(consumerClient4.getReceivedMessageCount(), expectedMessageCountPerSubscriber, "Did not "
 				+ "receive expected message count for consumerClient4");
 
 	}
@@ -203,4 +203,5 @@ public class DiscardAllowedMsgDeliveryStrategyTestCase extends MBIntegrationBase
 	public void tearDown() throws IOException, AutomationUtilException {
 		super.serverManager.restoreToLastConfiguration(true);
 	}
+
 }
