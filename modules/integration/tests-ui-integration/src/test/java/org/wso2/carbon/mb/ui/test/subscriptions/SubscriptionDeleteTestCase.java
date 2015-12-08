@@ -289,10 +289,11 @@ public class SubscriptionDeleteTestCase extends MBIntegrationUiBaseTest {
     }
 
     /**
-     * 1. Create 3 topic subscribers for topic "subDeleteTopic"
+     * 1. Create 3 topic subscribers for topic "subDeleteDurableTopic"
      * 2. Log into UI and close one subscriptions
      * 3. Verify subscription close is successful and only 2 other subscription entries are shown
-     * 4. Verify one of subscribers does not get new messages
+     * 4. Verify closed subscriber is shown as inactive
+     * 5. Verify one of subscribers does not get new messages
      * @throws IOException
      * @throws XPathExpressionException
      * @throws JMSException
