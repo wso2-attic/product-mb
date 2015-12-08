@@ -70,6 +70,17 @@ public class HomePage extends MBPage {
     }
 
     /**
+     * Clicks on the queue browsing page.
+     *
+     * @return A {@link org.wso2.mb.integration.common.utils.ui.pages.main.QueueSubscriptionsPage}
+     * @throws IOException
+     */
+    public QueueSubscriptionsPage getQueueSubscriptionsPage() throws IOException {
+        this.clickOnMenuItem("home.mb.queues.subscriptions.xpath");
+        return new QueueSubscriptionsPage(driver);
+    }
+
+    /**
      * Clicks on the queue adding page.
      *
      * @return A {@link org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage}

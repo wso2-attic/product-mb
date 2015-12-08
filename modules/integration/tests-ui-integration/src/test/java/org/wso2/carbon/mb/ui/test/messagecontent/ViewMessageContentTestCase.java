@@ -67,7 +67,7 @@ public class ViewMessageContentTestCase extends MBIntegrationUiBaseTest {
     //private static final String DEFAULT_MB_CONFIG_PATH =
 
     @BeforeClass()
-    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void init() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
     }
 

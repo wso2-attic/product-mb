@@ -60,7 +60,7 @@ public class QueuePermissionTestCase extends MBIntegrationUiBaseTest {
      * Initializes the test case
      */
     @BeforeClass()
-    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void init() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
     }
 

@@ -82,4 +82,77 @@ public class TopicSubscriptionsPage extends MBPage {
             return 0;
         }
     }
+
+    /**
+     * Forcibly close non durable topic subscription. This will delete the first subscription listed
+     * on non durable subscriptions list
+     * @return true if subscription removal is successful, otherwise false
+     */
+    public boolean closeNonDurableTopicSubscription() {
+        String deletingMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscriptions.table.delete.subid"))).getText();
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscriptions.table.delete.button"))).click();
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscriptions.close.confirm"))).click();
+        boolean successMessageReceived = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscription.close.result"))).getText()
+                .contains("Successfully closed subscription");
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscription.close.result.confirm"))).click();
+
+        boolean queueSubscriptionSuccessfullyRemoved = false;
+
+        String firstSubscriptionIDAfterDelete = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.tempTopic.subscriptions.table.delete.subid"))).getText();
+
+        if(!(firstSubscriptionIDAfterDelete.equals(deletingMessageID)) && successMessageReceived) {
+            queueSubscriptionSuccessfullyRemoved = true;
+        }
+
+        return queueSubscriptionSuccessfullyRemoved;
+    }
+
+    /**
+     * Forcibly close non durable topic subscription. This will delete the first subscription listed
+     * on non durable subscriptions list. This will also check if subscription has moved to inactive
+     * state when closed
+     * @return true if subscription removal is successful, otherwise false
+     */
+    public boolean closeDurableTopicSubscription() {
+        String deletingMessageID = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscriptions.table.delete.subid"))).getText();
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscriptions.table.delete.button"))).click();
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscriptions.close.confirm"))).click();
+        boolean successMessageReceived = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscription.close.result"))).getText()
+                .contains("Successfully closed subscription");
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscription.close.result.confirm"))).click();
+
+        boolean queueSubscriptionSuccessfullyRemoved = false;
+
+        String firstSubscriptionIDAfterDelete = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscriptions.table.delete.subid"))).getText();
+
+        String firstInactiveSubID = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.durableTopic.subscription.close.inactive.subid"))).getText();
+
+        if(!(firstSubscriptionIDAfterDelete.equals(deletingMessageID))
+                && deletingMessageID.equals(firstInactiveSubID)
+                && successMessageReceived) {
+
+            queueSubscriptionSuccessfullyRemoved = true;
+        }
+
+        return queueSubscriptionSuccessfullyRemoved;
+    }
 }

@@ -59,7 +59,7 @@ public class MBIntegrationUiBaseTest {
      * @throws MalformedURLException
      * @throws XPathExpressionException
      */
-    protected void init() throws AutomationUtilException, MalformedURLException, XPathExpressionException {
+    protected void init() throws AutomationUtilException, IOException, XPathExpressionException {
         mbServer = new AutomationContext("MB", TestUserMode.SUPER_TENANT_ADMIN);
         loginLogoutClient = new LoginLogoutClient(mbServer);
         sessionCookie = loginLogoutClient.login();
