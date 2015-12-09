@@ -47,7 +47,7 @@ public class AddNewTenantTestCase extends MBIntegrationUiBaseTest {
      * @throws MalformedURLException
      */
     @BeforeClass()
-    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void init() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
     }
 

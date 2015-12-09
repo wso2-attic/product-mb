@@ -44,7 +44,7 @@ public class DLCPaginationTestCase extends MBIntegrationUiBaseTest {
      * @throws MalformedURLException
      */
     @BeforeClass()
-    public void initialize() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void initialize() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
     }
 

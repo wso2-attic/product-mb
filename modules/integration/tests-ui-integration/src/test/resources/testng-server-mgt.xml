@@ -30,6 +30,7 @@
     <test name="InitializedAndSetupServer" preserve-order="true" parallel="false">
         <classes>
             <class name="org.wso2.carbon.mb.ui.test.login.LoginTestCase"/>
+            <class name="org.wso2.carbon.mb.ui.test.subscriptions.SubscriptionDeleteTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.BrowseQueueContentTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCQueueTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCDurableTopicTestCase"/>

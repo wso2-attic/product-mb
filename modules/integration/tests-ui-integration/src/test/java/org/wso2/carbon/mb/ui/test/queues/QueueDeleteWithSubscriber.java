@@ -55,7 +55,7 @@ public class QueueDeleteWithSubscriber extends MBIntegrationUiBaseTest {
      */
     @Override
     @BeforeClass()
-    public void init() throws AutomationUtilException, XPathExpressionException, MalformedURLException {
+    public void init() throws AutomationUtilException, XPathExpressionException, IOException {
         super.init();
     }
 
