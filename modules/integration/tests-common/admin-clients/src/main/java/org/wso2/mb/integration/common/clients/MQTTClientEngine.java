@@ -18,16 +18,11 @@
 
 package org.wso2.mb.integration.common.clients;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
-
-import org.apache.commons.lang.RandomStringUtils;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncPublisherClient;
 import org.wso2.mb.integration.common.clients.operations.mqtt.async.MQTTAsyncSubscriberClient;
@@ -35,6 +30,13 @@ import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlock
 import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingSubscriberClient;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handle all MQTT operations for MQTT tests.
@@ -371,6 +373,12 @@ public class MQTTClientEngine {
             throws XPathExpressionException {
 
         MQTTClientConnectionConfiguration configuration = getDefaultConfigurations();
+
+        String brokerHost = automationContext.getInstance().getHosts().get("default");
+
+        if (!brokerHost.isEmpty()) {
+            configuration.setBrokerHost(brokerHost);
+        }
 
         if(!automationContext.getInstance().getPorts().get("mqtt").isEmpty()) {
             configuration.setBrokerPort(automationContext.getInstance().getPorts().get("mqtt"));

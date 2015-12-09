@@ -138,7 +138,7 @@ public class RetainClusterTestCase extends MQTTPlatformBaseTest {
           dataProviderClass = QualityOfServiceDataProvider.class)
     public void testSingleTopicMultipleNodeSendReceiveRetainMessages(QualityOfService qualityOfService)
             throws MqttException, XPathExpressionException{
-        String topic = "testSingleTopicMultipleNodeSendReceiveRetain";
+        String topic = "testSingleTopicMultipleNodeSendReceiveRetain_" + qualityOfService;
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
