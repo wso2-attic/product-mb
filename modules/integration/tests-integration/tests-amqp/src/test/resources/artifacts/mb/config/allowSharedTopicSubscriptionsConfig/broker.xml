@@ -60,39 +60,27 @@ expression of the property. -->
             <port>1883</port>
             <!-- put proper default SSL port -->
             <sslPort>8883</sslPort>
-            <!-- These two properties are temporary. Ideally, MQTT should use carbon users. -->
-            <users>
-                <user userName="testuser1" password="password1" />
-                <user userName="testuser2" password="password2" />
-            </users>
         </mqtt>
 
     </transports>
 
     <!-- Depending on the database type selected in master-datasources.xml, you must enable the
-    relevant Data access classes here. Currently supported stores are RDBMS(any RDBMS store) and
-    Cassandra(CQL, Hector). These stores are accessed for two purposes.
+    relevant Data access classes here. Currently WSO2 MB Supports RDBMS(any RDBMS store). 
+	These stores are accessed for two purposes.
+	
     1. For message persistence ("messageStore")
     2. To persist and access other information relevant to messaging protocols.("contextStore").-->
 
     <!-- By default WSO2 MB runs with H2 persistent store. If you plan to use a different
-    store, point to the relevant dataSource or uncomment the database apprpriately.
+    store, point to the relevant dataSource or uncomment the database appropriately.
 
     RDBMS
     =====
     If you are running an RDBMS you can use the existing RDBMS implementation of stores
-    by pointing to the correct data source by updateing the property "dataSource".
+    by pointing to the correct data source by updating the property "dataSource".
 
     Data source entry should be present in
     <MB_HOME>/repository/conf/datasources/master-datasources.xml.
-
-    Cassandra
-    =========
-    For Cassandra depending on the driver (CQL or Hector) you use to connect to data store
-    uncomment the relevant entry and COMMENT out the RDBMS entry.
-
-    Update the <MB_HOME>/repository/conf/datasources/master-datasources.xml with Cassandra
-    data source and update "dataSource" property for stores here.
     -->
     <persistence>
 
@@ -117,82 +105,6 @@ expression of the property. -->
 
         -->
 
-        <!-- External Cassandra Store Configuration -->
-
-        <!-- NOTE: Update the master-datasources.xml file to connect to Cassandra data source
-             READ the documentation to set advanced Cassandra tuning parameters.
-
-            Advanced Tuning Parameters.
-
-            gcGraceSeconds:
-            Specifies the time to wait before garbage collecting tombstones (deletion markers).
-            Defaults to 864000, or 10 days, which allows a great deal of time for consistency
-            to be achieved prior to deletion. In many deployments this interval can be reduced,
-            and in a single-node cluster it can be safely set to zero
-
-            Replication strategy class:
-            Strategy to determine the physical location of nodes to replication and their proximity
-            to each other
-
-            Replication factor:
-            replication is the process of storing copies of data on multiple nodes to ensure
-            reliability and fault tolerance. This value specify how many copies of same data should
-            persisted.
-
-            Read consistency level:
-            Specifies how many replicas must respond to a read request before returning data
-            Valid values are 'ONE','ALL','EACH_QUORUM','QUORUM','ONE','TWO','THREE','ANY'
-
-            Write consistency level:
-            Determines the number of replicas on which the write must succeed before returning an
-            acknowledgement Valid values are
-            'ONE','ALL','EACH_QUORUM','QUORUM','ONE','TWO','THREE','ANY' -->
-
-        <!--CQL Based MB stores-->
-        <!--
-                <messageStore class="org.wso2.andes.store.cassandra.CQLBasedMessageStoreImpl">
-                    <property name="dataSource">WSO2MBStoreDB</property>
-                    <property name="keyspace">MB_KEYSPACE</property>
-                    <property name="gcGraceSeconds">864000</property>
-                    <property name="strategyClass">org.apache.cassandra.locator.SimpleStrategy</property>
-                    <property name="replicationFactor">1</property>
-                    <property name="readConsistencyLevel">ONE</property>
-                    <property name="writeConsistencyLevel">ONE</property>
-                </messageStore>
-
-                <contextStore class="org.wso2.andes.store.cassandra.CQLBasedAndesContextStoreImpl">
-                    <property name="dataSource">WSO2MBStoreDB</property>
-                    <property name="keyspace">MB_KEYSPACE</property>
-                    <property name="strategyClass">org.apache.cassandra.locator.SimpleStrategy</property>
-                    <property name="replicationFactor">1</property>
-                    <property name="readConsistencyLevel">ONE</property>
-                    <property name="writeConsistencyLevel">ONE</property>
-                </contextStore>
-        -->
-
-        <!--Hector based MB stores-->
-        <!--
-                <messageStore class="org.wso2.andes.store.cassandra.HectorBasedMessageStoreImpl">
-                    <property name="dataSource">WSO2MBStoreDB</property>
-                    <property name="keyspace">MB_KEYSPACE</property>
-                    <property name="gcGraceSeconds">864000</property>
-                    <property name="strategyClass">org.apache.cassandra.locator.SimpleStrategy</property>
-                    <property name="replicationFactor">1</property>
-                    <property name="readConsistencyLevel">ONE</property>
-                    <property name="writeConsistencyLevel">ONE</property>
-                </messageStore>
-
-                <contextStore class="org.wso2.andes.store.cassandra.HectorBasedAndesContextStoreImpl">
-                    <property name="dataSource">WSO2MBStoreDB</property>
-                    <property name="keyspace">MB_KEYSPACE</property>
-                    <property name="gcGraceSeconds">864000</property>
-                    <property name="strategyClass">org.apache.cassandra.locator.SimpleStrategy</property>
-                    <property name="replicationFactor">1</property>
-                    <property name="readConsistencyLevel">ONE</property>
-                    <property name="writeConsistencyLevel">ONE</property>
-                </contextStore>
-        -->
-
         <!-- This class decides how unique IDs are generated for the MB node. This id generator is
         expected to be thread safe and a implementation of interface
         org.wso2.andes.server.cluster.coordination.MessageIdGenerator
@@ -212,12 +124,21 @@ expression of the property. -->
     <performanceTuning>
 
         <slots>
-            <!--maximum time interval where slot can be retain in memory before updating to the
-            cluster, in milliseconds -->
-            <slotRetainTimeInMemory>1000</slotRetainTimeInMemory>
+            <!--
+                If message publishers are slow, time taken to fill the slot (up to <windowSize>) will be longer.
+                This will add an latency to messages. Therefore broker will mark the slot as 
+                ready to deliver before even the slot is entirely filled after specified time.
+                NOTE: specified in milliseconds.
+            -->
+            <messageAccumulationTimeout>2000</messageAccumulationTimeout>
 
             <!--rough estimate for size of a slot-->
             <windowSize>1000</windowSize>
+
+            <!-- Time interval which broker check for slots that can be marked as 'ready to deliver' 
+                 (- slots which have a aged more than 'messageAccumulationTimeout')
+            -->
+            <timerPeriod>1000</timerPeriod>
 
             <!--Number of SlotDeliveryWorker threads that should be started-->
             <workerThreadCount>5</workerThreadCount>
@@ -248,7 +169,7 @@ expression of the property. -->
         <ackHandling>
             <!--Number of message acknowledgement handlers to process acknowledgements concurrently.
             These acknowledgement handlers will batch and process acknowledgements.  -->
-            <ackHandlerCount>5</ackHandlerCount>
+            <ackHandlerCount>1</ackHandlerCount>
 
             <!--Maximum batch size of the acknowledgement handler. Andes process acknowledgements in
             batches using Disruptor Increasing the batch size reduces the number of calls made to
@@ -322,11 +243,6 @@ expression of the property. -->
             <highLimit>1000</highLimit>
         </bufferBased>
 
-        <memoryBased>
-            <memoryCheckInterval>20000</memoryCheckInterval>
-            <globalMemoryThresholdRatio>1.0</globalMemoryThresholdRatio>
-            <globalMemoryRecoveryThresholdRatio>1.0</globalMemoryRecoveryThresholdRatio>
-        </memoryBased>
         <connectionBased>
             <perConnectionMessageThreshold>1000</perConnectionMessageThreshold>
         </connectionBased>
