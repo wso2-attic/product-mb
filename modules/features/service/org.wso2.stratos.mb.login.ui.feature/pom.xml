@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>wso2stratos-mb-features</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0-ALPHA</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
