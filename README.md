@@ -1,8 +1,6 @@
-================================================================================
-                        WSO2 Message Broker Server 3.0.0
-================================================================================
+#WSO2 Message Broker
 
-Welcome to the WSO2 MB 3.0.0 release
+Welcome to the WSO2 Message broker.
 
 WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
 Server (MB) which is available under the Apache Software License v2.0.
@@ -11,64 +9,63 @@ This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
 framework. All the major features have been developed as pluggable Carbon
 components.
 
-Key Features of WSO2 MB
-==================================
+<h2>Key Features of WSO2 MB</h2>
 WSO2 Message Broker brings messaging and eventing capabilities into your SOA framework.
 The latest version of this product possesses following key features. All these features
 can be used as standalone message broker or as a distributed message brokering system.
 
 WSO2 Message Broker compatible with Advanced Message Queuing Protocol (AMQP)(0-91)) 
 and  Message Queuing Telemetry Transport Protocol (MQTT) v 3.1.1. 
+<ul>
+<li> JMS Queuing support </li>
+<li> JMS Pub/Sub mechanism for topics </li>
+<li> Hierarchical Topics Subscriptions </li>
+<li> Queue Message browsing with added UI support </li>
+<li> Message Re-Delivery Tries Configuration </li>
+<li> Message Re delivery Header Field support </li>
+<li> Sample text message sender tool in UI </li>
+<li> Queue purging support </li>
+<li> Simple clustering machanism based on carbon clustering </li>
+<li> Ability to view details of the cluster using Management Console </li>
+<li> Message delivery fine tuning capabilities </li>
+<li> Relational databases as a storage machanism </li>
+</ul>
 
-• JMS Queuing support
-• JMS Pub/Sub mechanism for topics
-• Hierarchical Topics Subscriptions
-• Queue Message browsing with added UI support 
-• Message Re-Delivery Tries Configuration
-• Message Re delivery Header Field support
-• Sample text message sender tool in UI
-• Queue purging support
-• Simple clustering machanism based on carbon clustering
-• Ability to view details of the cluster using Management Console
-• Message delivery fine tuning capabilities
-• Relational databases as a storage machanism
-
-System Requirements
-=======================
-1. Minimum memory - 2GB
-2. Processor      - Pentium 800MHz or equivalent at minimum
-3. Java SE Development Kit 1.7 or higher
-4. The Management Console requires you to enable Javascript of the Web browser,
+<h2>System Requirements</h2>
+<ol>
+<li> Minimum memory - 2GB </li>
+<li> Processor      - Pentium 800MHz or equivalent at minimum </li>
+<li> Java SE Development Kit 1.7 or higher </li>
+<li> The Management Console requires you to enable Javascript of the Web browser,
    with MS IE 7. In addition to JavaScript, ActiveX should also be enabled
    with IE. This can be achieved by setting your security level to
-   medium or lower.
-5. To compile and run the sample clients, an Ant version is required. Ant 1.7.0
-   version is recommended
-6. To build WSO2 MB from the Source distribution, it is necessary that you have
-   JDK 7  and Maven 3.0.4 or later
-
+   medium or lower. </li>
+<li> To compile and run the sample clients, an Ant version is required. Ant 1.7.0
+   version is recommended. </li>
+<li> To build WSO2 MB from the Source distribution, it is necessary that you have
+   JDK 7  and Maven 3.0.4 or later </li>
+</ol>
 
 For more details see
     https://docs.wso2.com/display/MB300/Installation+Prerequisites
 
-Installation & Running
-==================================
+<h2>Installation & Running</h2>
 
-1. Extract the wso2mb-3.0.0.zip and go to the extracted directory
-2. Run the wso2server.sh or wso2server.bat as appropriate
-3. Point your favourite browser to
+<ol>
+<li> Extract the wso2mb-3.0.0.zip and go to the extracted directory </li>
+<li> Run the wso2server.sh or wso2server.bat as appropriate </li>
+<li> Point your favourite browser to
 
     https://localhost:9443/carbon
-
-4. Use the following username and password to login
+</li>
+<li> Use the following username and password to login
 
     username : admin
     password : admin
+</li>
+</ol>
 
-   
-
-WSO2 MB 3.0.0 distribution directory structure
-=============================================
+<h2>WSO2 MB 3.0.0 distribution directory structure</h2>
 
 	CARBON_HOME
 		|-- bin <folder>
@@ -148,8 +145,7 @@ WSO2 MB 3.0.0 distribution directory structure
 
 
 
-Support
-==================================
+<h2>Support</h2>
 WSO2 Inc. offers a variety of development and production support
 programs, ranging from Web-based support up through normal business
 hours, to premium 24x7 phone support.
@@ -163,41 +159,17 @@ http://wso2.com/support/
 
 Thank you for your interest in WSO2 Message Broker.
 
-Known Issues
-==================================
+<h2>Known Issues</h2>
 
  WSO2 Message Broker is compatible with AMQP 0-91 version only.
 
-Crypto Notice
-==================================
+<h2> Build Status </h2>
 
-   This distribution includes cryptographic software.  The country in
-   which you currently reside may have restrictions on the import,
-   possession, use, and/or re-export to another country, of
-   encryption software.  BEFORE using any encryption software, please
-   check your country's laws, regulations and policies concerning the
-   import, possession, or use, and re-export of encryption software, to
-   see if this is permitted.  See <http://www.wassenaar.org/> for more
-   information.
+|  Branch | Build Status |
+| :------------ |:-------------
+| Java 7      | [![Build Status](https://wso2.org/jenkins/job/product-mb/badge/icon)](https://wso2.org/jenkins/job/product-mb) |
+| Java 8 | [![Build Status](https://wso2.org/jenkins/job/product-mb__java8/badge/icon)](https://wso2.org/jenkins/job/product-mb__java8/) |
 
-   The U.S. Government Department of Commerce, Bureau of Industry and
-   Security (BIS), has classified this software as Export Commodity
-   Control Number (ECCN) 5D002.C.1, which includes information security
-   software using or performing cryptographic functions with asymmetric
-   algorithms.  The form and manner of this Apache Software Foundation
-   distribution makes it eligible for export under the License Exception
-   ENC Technology Software Unrestricted (TSU) exception (see the BIS
-   Export Administration Regulations, Section 740.13) for both object
-   code and source code.
 
-   The following provides more details on the included cryptographic
-   software:
-
-   Apache Rampart   : http://ws.apache.org/rampart/
-   Apache WSS4J     : http://ws.apache.org/wss4j/
-   Apache Santuario : http://santuario.apache.org/
-   Bouncycastle     : http://www.bouncycastle.org/
-
---------------------------------------------------------------------------------
-(c) Copyright 2015 WSO2 Inc.
+(c) 2015, WSO2 Inc.
 
