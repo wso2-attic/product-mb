@@ -56,7 +56,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.stratos.mb.styles</id>
-                            <propertiesFile>../feature.properties</propertiesFile>
+                            <propertiesFile>../etc/feature.properties</propertiesFile>
                             <bundles>
                                 <bundleDef>org.wso2.mb:org.wso2.stratos.mb.styles</bundleDef>
                             </bundles>
