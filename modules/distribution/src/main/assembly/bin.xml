@@ -319,7 +319,7 @@
             <filtered>true</filtered>
         </file>
         <file>
-            <source>src/main/conf/event-broker.xml</source>
+            <source>src/main/conf/messaging-event-broker.xml</source>
             <outputDirectory>wso2mb-${pom.version}/repository/conf</outputDirectory>
         </file>
         <file>
