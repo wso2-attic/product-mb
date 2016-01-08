@@ -43,6 +43,11 @@ public class CallbackHandler implements MqttCallback {
     private int sentMessageCount;
 
     /**
+     * Saves the topic name for which the last message received if saveMessages is set to true.
+     */
+    String lastTopicReceived;
+
+    /**
      * Default constructor. Use this if you do not care about receiving message are saved or not.
      */
     public CallbackHandler() {
@@ -94,6 +99,7 @@ public class CallbackHandler implements MqttCallback {
         if (null != mqttMessage) {
             if (saveMessages) {
                 receivedMessages.add(mqttMessage);
+                lastTopicReceived = topic;
                 log.info("Message arrived on " + topic + " : " + mqttMessage.toString());
             }
 
@@ -160,5 +166,10 @@ public class CallbackHandler implements MqttCallback {
      */
     public int getSentMessageCount() {
         return sentMessageCount;
+    }
+
+
+    public String getLastTopicReceived() {
+        return lastTopicReceived;
     }
 }

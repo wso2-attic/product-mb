@@ -28,6 +28,7 @@ import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+import org.wso2.mb.integration.tests.mqtt.DataProvider.QualityOfServiceDataProvider;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -274,6 +275,43 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(receivedMessageCount, expectedCount, "Did not received expected message count after " +
                 "publishing to two-level topic.");
+
+    }
+
+    /**
+     * When a subscriber is subscribed to a wildcard destination, when a message is received check whether the
+     * topic name received with the message is the message published non-wildcard destination, not the subscribed
+     * wildcard destination.
+     *
+     * @param qualityOfService The quality of service level
+     */
+    @Test(groups = {"wso2.mb", "mqtt"}, description = "Test a non wildcard topic name is received from subscriber",
+            dataProvider = "QualityOfServiceDataProvider", dataProviderClass = QualityOfServiceDataProvider.class)
+    public void performReceivedTopicWildCardTest(QualityOfService qualityOfService) throws MqttException,
+            XPathExpressionException {
+
+        String topTopicTree = "wild/card/";
+        String leafTopic = "topic";
+
+
+        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+
+        mqttClientEngine.createSubscriberConnection(topTopicTree + singleLevelWildCard, qualityOfService, 1, true,
+                ClientMode.BLOCKING, automationContext);
+
+
+
+        mqttClientEngine.createPublisherConnection(topTopicTree + leafTopic, qualityOfService,
+                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublisherThreads,
+                noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
+
+        mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
+
+        String lastTopicReceived = mqttClientEngine.getSubscriberList().get(0).getCallbackHandler().getLastTopicReceived();
+
+        Assert.assertEquals(lastTopicReceived, (topTopicTree + leafTopic), "Did not received the expected topic name");
+
+
 
     }
 
