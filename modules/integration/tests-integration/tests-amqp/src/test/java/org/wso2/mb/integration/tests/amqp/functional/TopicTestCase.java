@@ -183,10 +183,9 @@ public class TopicTestCase extends MBIntegrationBaseTest {
         tenant1PublisherClient.startClient();
         tenant2PublisherClient.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(adminConsumerClient,
-                                                            AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.shutdownClient(tenant1ConsumerClient);
-        AndesClientUtils.shutdownClient(tenant2ConsumerClient);
+        AndesClientUtils.waitForMessagesAndShutdown(adminConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tenant1ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(tenant2ConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(adminPublisherClient.getSentMessageCount(), sendCount, "Sending " +
