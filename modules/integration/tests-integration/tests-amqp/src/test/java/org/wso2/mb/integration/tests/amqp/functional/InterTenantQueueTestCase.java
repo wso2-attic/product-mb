@@ -97,7 +97,7 @@ public class InterTenantQueueTestCase extends MBIntegrationBaseTest {
         assertNull(message, "Publisher was able to publish from a different domain");
 
         // Close all connections
-        publisherConnection.close();
         subscriberConnection.close();
+        // publisher session will be closed by the server since it didn't had permissions
     }
 }
