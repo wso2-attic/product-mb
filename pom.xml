@@ -436,11 +436,11 @@
         <carbon.commons.version>4.4.8</carbon.commons.version>
         <carbon.identity.version>4.5.6</carbon.identity.version>
         <carbon.registry.version>4.5.0</carbon.registry.version>
-        <carbon.messaging.version>3.1.0-SNAPSHOT</carbon.messaging.version>
+        <carbon.messaging.version>3.0.5</carbon.messaging.version>
         <carbon.multitenancy.version>4.4.4</carbon.multitenancy.version>
         <carbon.metrics.version>1.2.0</carbon.metrics.version>
         <carbon.kernel.version>4.4.3</carbon.kernel.version>
-        <andes.version>3.1.0-SNAPSHOT</andes.version>
+        <andes.version>3.0.5</andes.version>
         <!--product version-->
         <product.mb.version>3.1.0-SNAPSHOT</product.mb.version>
         <!--automation and tests-->
