@@ -133,12 +133,6 @@
             <directoryMode>775</directoryMode>
         </fileSet>
         <fileSet>
-            <directory>../../modules/samples/product/wsclient</directory>
-            <outputDirectory>wso2mb-${pom.version}/samples/wsclient</outputDirectory>
-            <fileMode>644</fileMode>
-            <directoryMode>775</directoryMode>
-        </fileSet>
-        <fileSet>
             <directory>../../modules/samples/product/services</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/services</outputDirectory>
             <fileMode>644</fileMode>
