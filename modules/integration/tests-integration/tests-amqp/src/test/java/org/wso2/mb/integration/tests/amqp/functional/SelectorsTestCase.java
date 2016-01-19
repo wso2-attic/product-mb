@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
+import org.wso2.mb.integration.common.clients.AndesJMSPublisher;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
@@ -33,6 +34,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
+import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
@@ -436,5 +438,103 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(secondaryPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for second client");
         Assert.assertEquals(consumerClient
                                     .getReceivedMessageCount(), SEND_COUNT, "Message receiving failed.");
+    }
+
+    /**
+     * 1. Create 3 selector subscribers which are subscribed to the same queue with different selectors.
+     * 2. Publish messages matching the selectors of the subscribers.
+     * 3. Verify whether the three subscribers have received only matching number of messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = "wso2.mb")
+    public void performMultipleSelectorSubscribersTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
+        String queueName = "multipleSelectorSubscribers";
+        // Creating a consumer client configuration with JMSType selector
+        AndesJMSConsumerClientConfiguration jmsTypeSelectorConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.QUEUE, queueName);
+        jmsTypeSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        jmsTypeSelectorConfig.setSelectors("JMSType='AAA'");
+        jmsTypeSelectorConfig.setAsync(false);
+
+        // Creating a consumer client configuration with 'location' selector
+        AndesJMSConsumerClientConfiguration locationSelectorConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.QUEUE, queueName);
+        locationSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        locationSelectorConfig.setSelectors("location='wso2.trace'");
+        locationSelectorConfig.setAsync(false);
+
+        // Creating a consumer client configuration with 'location' and JMSType selector
+        AndesJMSConsumerClientConfiguration jmsTypeAndLocationSelectorConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.QUEUE, queueName);
+        jmsTypeAndLocationSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        jmsTypeAndLocationSelectorConfig.setSelectors("location='wso2.pg' AND JMSType='BBB'");
+        jmsTypeAndLocationSelectorConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                        ExchangeType.QUEUE, queueName);
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+
+        // Creating clients
+        AndesClient jmsTypeClient = new AndesClient(jmsTypeSelectorConfig, true);
+        jmsTypeClient.startClient();
+
+        AndesClient locationClient = new AndesClient(locationSelectorConfig, true);
+        locationClient.startClient();
+
+        AndesClient jmsTypeAndLocationClient = new AndesClient(jmsTypeAndLocationSelectorConfig, true);
+        jmsTypeAndLocationClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher publisher = publisherClient.getPublishers().get(0);
+        MessageProducer messageProducer = publisher.getSender();
+
+        // Send JMSType = AAA messages
+        for (int i = 0; i < SEND_COUNT; i++) {
+            TextMessage jmsTypeAAAMessage = publisher.getSession().createTextMessage();
+            jmsTypeAAAMessage.setJMSType("AAA");
+            messageProducer.send(jmsTypeAAAMessage);
+        }
+
+        // Send 'location' = 'wso2.trace' messages
+        TextMessage locationTraceMessage = publisher.getSession().createTextMessage();
+        locationTraceMessage.setStringProperty("location", "wso2.trace");
+        for (int i = 0; i < SEND_COUNT; i++) {
+            messageProducer.send(locationTraceMessage);
+        }
+
+        // Send JMSType = BBB and 'location' = 'wso2.pg' messages
+        TextMessage jmsTypeBBBLocationPGMessage = publisher.getSession().createTextMessage();
+        jmsTypeBBBLocationPGMessage.setJMSType("BBB");
+        jmsTypeBBBLocationPGMessage.setStringProperty("location", "wso2.pg");
+        for (int i = 0; i < SEND_COUNT; i++) {
+            messageProducer.send(jmsTypeBBBLocationPGMessage);
+        }
+
+        publisherClient.stopClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(jmsTypeClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(locationClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.waitForMessagesAndShutdown(jmsTypeAndLocationClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Verify message counts
+        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
+                + " number of message for JMSType = AAA selector client");
+        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
+                + " number of message for 'location' = 'wso2.trace' selector client");
+        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
+                + " number of message for JMSType = BBB and 'location' = 'wso2.pg' selector client");
+
     }
 }
