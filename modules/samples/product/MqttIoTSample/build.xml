@@ -96,9 +96,9 @@
         <pathelement location="${path.variable.maven_repository}/logkit/logkit/1.0.1/logkit-1.0.1.jar"/>
     </path>
 
-    <path id="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath">
+    <path id="library.maven:_org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2.classpath">
         <pathelement
-                location="${path.variable.maven_repository}/org/eclipse/paho/mqtt-client/0.4.0/mqtt-client-0.4.0.jar"/>
+                location="${path.variable.maven_repository}/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.0.2/org.eclipse.paho.client.mqttv3-1.0.2.jar"/>
     </path>
     
     <path id="library.maven:_commons-lang.wso2:commons-lang:2.6.0.wso2v1.classpath">
@@ -124,7 +124,7 @@
     </path>
 
     <path id="iotsample.module.production.classpath">
-        <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
+        <path refid="library.maven:_org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2.classpath"/>
         <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
         <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -135,7 +135,7 @@
 
     <path id="iotsample.runtime.production.module.classpath">
         <pathelement location="${iotsample.output.dir}"/>
-        <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
+        <path refid="library.maven:_org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2.classpath"/>
         <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
         <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -146,7 +146,7 @@
 
     <path id="iotsample.module.classpath">
         <pathelement location="${iotsample.output.dir}"/>
-        <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
+        <path refid="library.maven:_org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2.classpath"/>
         <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
         <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
@@ -158,7 +158,7 @@
     <path id="iotsample.runtime.module.classpath">
         <pathelement location="${iotsample.testoutput.dir}"/>
         <pathelement location="${iotsample.output.dir}"/>
-        <path refid="library.maven:_org.eclipse.paho:mqtt-client:0.4.0.classpath"/>
+        <path refid="library.maven:_org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2.classpath"/>
         <path refid="library.maven:_commons-logging:commons-logging:1.1.classpath"/>
         <path refid="library.maven:_log4j:log4j:1.2.13.classpath"/>
         <path refid="library.maven:_logkit:logkit:1.0.1.classpath"/>
