@@ -134,7 +134,11 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
      * 8. Close second subscription.
      * 9. Create a third subscription under "games.*".
      * 10. Publish messages to "games.cricket.sl".
-     * 11. No messages should be received for the first subscription.
+     * 11. No messages should be received for the third subscription.
+     * 12. Create a forth subscription under "*.cricket.sl".
+     * 13. Publish messages to "games.cricket.sl".
+     * 14. Messages should be received by forth subscriber.
+     * 15. No messages should be received for the first subscription.
      *
      * @throws AndesClientConfigurationException
      * @throws JMSException
@@ -148,10 +152,34 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
                    AndesClientException, XPathExpressionException {
 
         // Creating clients
+        AndesClient consumerClient1 = getConsumerClientForTopic("games.*");
+        consumerClient1.startClient();
+
+        AndesClient publisherClient1 = getPublishingClientForTopic("games");
+        publisherClient1.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        AndesClientUtils.sleepForInterval(1000);
+
+        // Creating clients
+        AndesClient consumerClient2 = getConsumerClientForTopic("games.*");
+        consumerClient2.startClient();
+
+        AndesClient publisherClient2 = getPublishingClientForTopic("games.football");
+        publisherClient2.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient2, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        AndesClientUtils.sleepForInterval(1000);
+
+        // Creating clients
         AndesClient consumerClient3 = getConsumerClientForTopic("games.*");
         consumerClient3.startClient();
 
-        AndesClient publisherClient3 = getPublishingClientForTopic("games");
+        AndesClient publisherClient3 = getPublishingClientForTopic("games.cricket.sl");
         publisherClient3.startClient();
 
         AndesClientUtils
@@ -159,45 +187,41 @@ public class HierarchicalTopicsTestCase extends MBIntegrationBaseTest {
 
         AndesClientUtils.sleepForInterval(1000);
 
-        // Creating clients
-        AndesClient consumerClient4 = getConsumerClientForTopic("games.*");
+        AndesClient consumerClient4 = getConsumerClientForTopic("*.cricket.sl");
         consumerClient4.startClient();
 
-        AndesClient publisherClient4 = getPublishingClientForTopic("games.football");
+        AndesClient publisherClient4 = getPublishingClientForTopic("games.cricket.sl");
         publisherClient4.startClient();
+
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient4, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        AndesClientUtils.sleepForInterval(1000);
-
-        // Creating clients
-        AndesClient consumerClient5 = getConsumerClientForTopic("games.*");
-        consumerClient5.startClient();
-
-        AndesClient publisherClient5 = getPublishingClientForTopic("games.cricket.sl");
-        publisherClient5.startClient();
-
-        AndesClientUtils
-                .waitForMessagesAndShutdown(consumerClient5, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating publishers
-        Assert.assertEquals(publisherClient3
-                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient3 failed to publish messages.");
-        Assert.assertEquals(publisherClient4
-                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient4 failed to publish messages.");
-        Assert.assertEquals(publisherClient5
-                                    .getSentMessageCount(), SEND_COUNT, "Publisher publisherClient5 failed to publish messages.");
+        Assert.assertEquals(publisherClient1.getSentMessageCount(), SEND_COUNT,
+                "Publisher publisherClient1 failed to publish messages.");
+        Assert.assertEquals(publisherClient2.getSentMessageCount(), SEND_COUNT,
+                "Publisher publisherClient2 failed to publish messages.");
+        Assert.assertEquals(publisherClient3.getSentMessageCount(), SEND_COUNT,
+                "Publisher publisherClient3 failed to publish messages.");
+        Assert.assertEquals(publisherClient4.getSentMessageCount(), SEND_COUNT,
+                "Publisher publisherClient4 failed to publish messages.");
+
 
         // Evaluating consumers
-        Assert.assertEquals(consumerClient3
-                                    .getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient3 should not receive messages.");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), 0,
+                "Messages received when subscriber consumerClient1 should not receive messages.");
 
-        Assert.assertEquals(consumerClient4
-                                    .getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive messages for consumerClient4.");
+        Assert.assertEquals(consumerClient2.getReceivedMessageCount(), EXPECTED_COUNT,
+                "Did not receive messages for consumerClient2.");
 
-        Assert.assertEquals(consumerClient5
-                                    .getReceivedMessageCount(), 0, "Messages received when subscriber consumerClient5 should not receive messages.");
+        Assert.assertEquals(consumerClient3.getReceivedMessageCount(), 0,
+                "Messages received when subscriber consumerClient3 should not receive messages.");
+
+        Assert.assertEquals(consumerClient4.getReceivedMessageCount(), EXPECTED_COUNT,
+                "Did not receive message count for consumerClient4.");
+
 
 
     }
