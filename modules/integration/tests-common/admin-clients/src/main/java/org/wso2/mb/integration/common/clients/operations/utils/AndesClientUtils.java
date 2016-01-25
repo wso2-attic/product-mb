@@ -17,6 +17,7 @@
 */
 package org.wso2.mb.integration.common.clients.operations.utils;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.AndesClient;
@@ -178,6 +179,7 @@ public class AndesClientUtils {
      */
     public static void writeReceivedMessagesToFile(String content, String filePath)
             throws IOException {
+
         if (receivedMessagePrintWriter == null) {
             initializeReceivedMessagesPrintWriter(filePath);
         }
@@ -342,6 +344,40 @@ public class AndesClientUtils {
         } catch (IOException e) {
             log.error("Error. File to print received messages is not provided", e);
         }
+    }
+
+    /**
+     * Creates a random string.
+     *
+     * @param sizeInBytes    The size of the file to be written in bytes.
+     * @param maxLineSize    The maximum size of one line of the file to be written in bytes.
+     */
+    public static String createRandomString(int sizeInBytes, int maxLineSize) {
+        String messageContent = "";
+        int noOfLines = (int) Math.ceil(sizeInBytes / ((long) maxLineSize));
+        int written = 0;
+        int remaining = sizeInBytes;
+
+        for (int i = 0; i < noOfLines; i++) {
+            if (remaining <= maxLineSize) {
+                messageContent = messageContent + RandomStringUtils.randomAlphabetic(remaining);
+                break;
+            }
+            messageContent = messageContent + RandomStringUtils.randomAlphanumeric(maxLineSize - 1);
+            messageContent = messageContent + "\n";
+            written = written + maxLineSize;
+            remaining = remaining - maxLineSize;
+        }
+        return messageContent;
+    }
+
+    /**
+     * Creates a one line random string
+     *
+     * @param sizeInBytes    The size of the file to be written in bytes.
+     */
+    public static String createRandomString(int sizeInBytes) {
+        return createRandomString(sizeInBytes, sizeInBytes);
     }
 
     /**

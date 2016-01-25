@@ -25,7 +25,7 @@
     <test name="tests-transports-mqtt-sequential" preserve-order="true" parallel="false">
         <classes>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendReceiveTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendCompressReceiveTestCase"/>
+            <class name="org.wso2.mb.integration.tests.mqtt.functional.MQTTLZ4CompressionTestCase"/>
             <class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>
         </classes>
     </test>

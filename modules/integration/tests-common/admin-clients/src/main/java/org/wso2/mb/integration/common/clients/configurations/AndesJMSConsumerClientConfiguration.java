@@ -25,6 +25,9 @@ import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfiguratio
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents the Andes client consumer configuration. The class contains properties
  * related to JMS message consuming.
@@ -91,6 +94,11 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
      * JMS selectors string for filtering.
      */
     private String selectors = null;
+
+    /**
+     * Message contents of received messages, as strings.
+     */
+    private List<String> receivedMessages = new ArrayList<>();
 
     /**
      * Creates a consumer configuration with default values.
@@ -523,6 +531,24 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     }
 
     /**
+     * This method returns received messages for this consumer. This is not valid when write to files before
+     * compare message contents.
+     *
+     * @return Received message contents.
+     */
+    public List<String> getReceivedMessages() {
+        return receivedMessages;
+    }
+
+    /**
+     * Adding the message content to the received messages list, after receiving the message, for this consumer. This
+     * is not valid when write to files before compare message contents.
+     */
+    public void addReceivedMessage(String receivedMessages) {
+        this.receivedMessages.add(receivedMessages);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -533,6 +559,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
                "CommitAfterEachMessageCount=" + this.commitAfterEachMessageCount + "\n" +
                "AcknowledgeAfterEachMessageCount=" + this.acknowledgeAfterEachMessageCount + "\n" +
                "FilePathToWriteReceivedMessages=" + this.filePathToWriteReceivedMessages + "\n" +
+               "ReceivedMessages=" + this.receivedMessages + "\n" +
                "MaximumMessagesToReceived=" + this.maximumMessagesToReceived + "\n" +
                "SubscriptionID=" + this.subscriptionID + "\n" +
                "Durable=" + this.durable + "\n" +
