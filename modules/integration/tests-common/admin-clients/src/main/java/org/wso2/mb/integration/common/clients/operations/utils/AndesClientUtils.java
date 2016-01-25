@@ -316,24 +316,18 @@ public class AndesClientUtils {
             }
 
         }
+
+        //If already exists, deleting the file
+        if (deleteRandomFile(filePathToCreate)) {
+            log.info("File requested to create already exists. Deleted file: " + filePathToCreate);
+        }
+
         try {
             File fileToCreate = new File(filePathToCreate);
 
-            //no need to recreate if exists
-            if (fileToCreate.exists()) {
-                log.info("File requested to create already exists... " + filePathToCreate);
-                if (fileToCreate.delete()) {
-                    log.info("Deleting file... " + filePathToCreate);
-                    boolean createFileSuccess = fileToCreate.createNewFile();
-                    if (createFileSuccess) {
-                        log.info("Successfully created a file to append content for sending at " + filePathToCreate);
-                    }
-                }
-            } else {
-                boolean createFileSuccess = fileToCreate.createNewFile();
-                if (createFileSuccess) {
-                    log.info("Successfully created a file to append content for sending at " + filePathToCreate);
-                }
+            boolean createFileSuccess = fileToCreate.createNewFile();
+            if (createFileSuccess) {
+                log.info("Successfully created a file to append content for sending at " + filePathToCreate);
             }
 
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePathToCreate));
@@ -348,6 +342,22 @@ public class AndesClientUtils {
         } catch (IOException e) {
             log.error("Error. File to print received messages is not provided", e);
         }
+    }
 
+    /**
+     * Deletes a random file.
+     *
+     * @param filePathToDelete The path in which the contents should be written with a given size.
+     */
+    public static boolean deleteRandomFile(String filePathToDelete) {
+        File fileToDelete = new File(filePathToDelete);
+        boolean deleted = false;
+
+        if (fileToDelete.exists()) {
+            if (fileToDelete.delete()) {
+                deleted = true;
+            }
+        }
+        return deleted;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *   WSO2 Inc. licenses this file to you under the Apache License,
  *   Version 2.0 (the "License"); you may not use this file except
@@ -29,10 +29,9 @@ import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
-import org.wso2.mb.integration.common.clients.MQTTClientEngine;
-import org.wso2.mb.integration.common.clients.MQTTConstants;
-import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.ClientMode;
+import org.wso2.mb.integration.common.clients.MQTTClientEngine;
+import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -40,14 +39,12 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 /**
- * Verifies basic mqtt message transactions are functional.
- * <p/>
- * Send a single mqtt messages on qos 1 and receive.
- * Send 100 messages on qos 1 and receive them.
+ * This class contains tests for MQTT message content validity, with compression.
  */
-public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
+public class BasicSendCompressReceiveTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initialize super class.
@@ -60,7 +57,9 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Set allowCompression to false, so that broker won't compress messages
+     * Set allowCompression to true so that broker will compress messages before storing into the database, and
+     * reduce maximum content chunk size to 100 from default value (65500); to create more content chunks
+     * from compressed content, to check chunk data retrieval.
      *
      * @throws XPathExpressionException
      * @throws java.io.IOException
@@ -77,7 +76,8 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
 
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 
-        configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_ALLOW_COMPRESSION, "false");
+        configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_ALLOW_COMPRESSION, "true");
+        configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_MAX_CONTENT_CHUNK_SIZE, "100");
 
         configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
@@ -87,20 +87,27 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
      *
      * @throws MqttException
      */
-    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performBasicSendReceiveTestCase() throws MqttException, XPathExpressionException {
-        String topic = "BasicSendReceiveTestCase";
+    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send compress receive test case")
+    public void performBasicSendCompressReceiveTestCase() throws MqttException, XPathExpressionException,
+            IOException {
+
+        String topic = "BasicSendCompressReceiveTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
         boolean saveMessages = true;
+        //Input file size is 256KB
+        int messageSize = 250 * 1024;
+
         MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
                 ClientMode.BLOCKING, automationContext);
 
-        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
+        byte[] payload = new byte[messageSize];
+        new Random().nextBytes(payload);
+
+        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE, payload, noOfPublishers,
                 noOfMessages, ClientMode.BLOCKING, automationContext);
 
         mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
@@ -108,43 +115,11 @@ public class BasicSendReceiveTestCase extends MBIntegrationBaseTest {
         List<MqttMessage> receivedMessages = mqttClientEngine.getReceivedMessages();
 
         Assert.assertEquals(receivedMessages.size(), noOfMessages, "The received message count is incorrect.");
-
-        Assert.assertEquals(receivedMessages.get(0).getPayload(), MQTTConstants.TEMPLATE_PAYLOAD,
-                "The received message is incorrect");
-
+        Assert.assertEquals(receivedMessages.get(0).getPayload(), payload, "The received message is incorrect");
     }
 
     /**
-     * Send 100 mqtt message on qos {@link QualityOfService#LEAST_ONCE} and receive them.
-     *
-     * @throws MqttException
-     */
-    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performBasicSendReceiveMultipleMessagesTestCase()
-            throws MqttException, XPathExpressionException {
-        String topic = "BasicSendReceiveMultipleMessagesTestCase";
-        int noOfSubscribers = 1;
-        int noOfPublishers = 1;
-        int noOfMessages = 100;
-        boolean saveMessages = false;
-        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        //create the subscribers
-        mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
-                ClientMode.BLOCKING, automationContext);
-
-        mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
-                MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
-                noOfMessages, ClientMode.BLOCKING, automationContext);
-
-        mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
-
-        Assert.assertEquals(mqttClientEngine.getReceivedMessageCount(), noOfMessages,
-                "The received message count is incorrect.");
-
-    }
-
-    /**
-     * Restore to the previous configurations when the message content test is complete.
+     * Restore to the previous configurations when the message content compression test is complete.
      *
      * @throws IOException
      * @throws AutomationUtilException

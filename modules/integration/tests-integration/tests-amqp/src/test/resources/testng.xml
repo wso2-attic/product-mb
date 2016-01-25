@@ -33,6 +33,8 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DiscardAllowedMsgDeliveryStrategyTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.SlowestSubscriptionRateMsgDeliveryStrategyTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.LZ4CompressionTestCase"/>
 
 
             <!-- This classes are added here since verification is done by writing to file and multiple subscribers
@@ -56,7 +58,6 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MixedQueueTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
             <!-- performMultipleQueueSendReceiveTestCase has been disabled in above test class until the issue is resolved.

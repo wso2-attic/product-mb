@@ -18,10 +18,15 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
+import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
@@ -30,15 +35,17 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.FileReader;
 
 /**
  * This class contains tests for message content validity.
@@ -46,7 +53,7 @@ import java.io.IOException;
 public class MessageContentTestCase extends MBIntegrationBaseTest {
 
     /**
-     * 200KB size. This is to create more than 3 message content chunks to check chunk data
+     * 256KB size. This is to create more than 3 message content chunks to check chunk data
      * retrieval.
      */
     private static final int SIZE_TO_READ = 250 * 1024;
@@ -68,6 +75,29 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
     @BeforeClass(alwaysRun = true)
     public void init() throws XPathExpressionException {
         super.init(TestUserMode.SUPER_TENANT_USER);
+    }
+
+    /**
+     * Set allowCompression to false, so that broker won't compress messages
+     *
+     * @throws XPathExpressionException
+     * @throws java.io.IOException
+     * @throws org.apache.commons.configuration.ConfigurationException
+     * @throws org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException
+     */
+    @BeforeClass
+    public void setupConfiguration() throws XPathExpressionException, IOException, ConfigurationException,
+            AutomationUtilException {
+
+        super.serverManager = new ServerConfigurationManager(automationContext);
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
+                File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
+
+        ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
+
+        configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_ALLOW_COMPRESSION, "false");
+
+        configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
 
     /**
@@ -144,5 +174,16 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient
                                     .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+    }
+
+    /**
+     * Restore to the previous configurations when the message content test is complete.
+     *
+     * @throws IOException
+     * @throws AutomationUtilException
+     */
+    @AfterClass
+    public void tearDown() throws IOException, AutomationUtilException {
+        super.serverManager.restoreToLastConfiguration(true);
     }
 }
