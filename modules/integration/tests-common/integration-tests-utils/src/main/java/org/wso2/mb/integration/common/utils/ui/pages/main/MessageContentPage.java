@@ -26,7 +26,6 @@ import java.io.IOException;
 
 /**
  * This page represents 'Queues-> Browse' page in MB management console.
- *
  */
 public class MessageContentPage {
 
@@ -35,17 +34,29 @@ public class MessageContentPage {
     public MessageContentPage(WebDriver driver) throws IOException {
         this.driver = driver;
         // Check that we're on the right page.
-        if (!driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.queue.content.page.header.xpath"))).getText().contains("Message Content")) {
+        if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.queue.content.page.header.xpath"))).getText().contains("Message Content")) {
             throw new IllegalStateException("This is not the Message Content page");
         }
     }
 
     /**
      * Get the message length displayed in the text area.
-     * @return displayed message length
+     *
+     * @return Displayed message length
      */
     public int getDisplayedMessageLength() {
-        return driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("mb.message.content.textarea.xpath"))).getText().length();
+        return driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.message.content.textarea.xpath"))).getText().length();
     }
 
+    /**
+     * Get the message content displayed in the text area.
+     *
+     * @return Displayed message content
+     */
+    public String getDisplayedMessageContent() {
+        return driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.message.content.textarea.xpath"))).getText();
+    }
 }

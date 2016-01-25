@@ -197,7 +197,8 @@
 -->
     <platform>
         <!--
-        cluster instance details to be used to platform test execution
+            cluster instance details to be used to platform test execution. One node is to be a compression enabled node,
+            and the other node is to be without compression.
         -->
         <productGroup name="MB_Cluster" clusteringEnabled="false" default="true">
             <instance name="mb002" type="standalone" nonBlockingTransportEnabled="false">

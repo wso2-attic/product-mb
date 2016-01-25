@@ -28,6 +28,7 @@
             <class name="org.wso2.mb.platform.tests.clustering.MessageExpirationTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>
+            <class name="org.wso2.mb.platform.tests.clustering.LZ4CompressCompatibilityTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>
@@ -49,6 +50,7 @@
             <!-- MQTT Test Cases -->
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.ClusteredSecurityTestCase"/>
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.MQTTClusterTestCase"/>
+             <class name="org.wso2.mb.platform.tests.clustering.mqtt.LZ4CompressCompatibilityMQTTClusterTestCase"/>
              <class name="org.wso2.mb.platform.tests.clustering.mqtt.RetainClusterTestCase"/>
              <class name="org.wso2.mb.platform.tests.clustering.MixedQueueTopicTestCase"/>
              <!--Running the commented cases resulted in OOM-->
