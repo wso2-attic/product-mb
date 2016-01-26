@@ -53,8 +53,7 @@ public class AndesClientConstants {
      * Default file path to write received messages by subscriber/consumer
      */
     public static final String FILE_PATH_TO_WRITE_RECEIVED_MESSAGES =
-            System.getProperty("framework.resource.location") + File.separator +
-            "receivedMessages.txt";
+            System.getProperty("project.build.directory") + File.separator + "receivedMessages.txt";
 
     /**
      * Default file path to write statistics by subscriber/consumer and publisher Suppressing
@@ -106,8 +105,7 @@ public class AndesClientConstants {
      * File path creating a file.
      */
     public static final String FILE_PATH_FOR_CREATING_A_NEW_FILE =
-            System.getProperty("framework.resource.location") + "sample" + File.separator +
-            "newFile.txt";
+            System.getProperty("project.build.directory") + File.separator + "newFile.txt";
 
     /**
      * File path for a file of size 1 kb.
