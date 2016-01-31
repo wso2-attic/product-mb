@@ -122,6 +122,15 @@ public abstract class AndesMQTTBlockingClient extends AndesMQTTClient {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unsubscribe(String topic) throws MqttException {
+        mqttClient.unsubscribe(topic);
+        log.info("Subscriber for topic : " + topic + " un-subscribed");
+    }
+
+    /**
      * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or disconnect hook is
      * called.
      *

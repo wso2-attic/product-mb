@@ -154,6 +154,14 @@ public abstract class AndesMQTTClient implements Runnable {
     public abstract void unsubscribe() throws MqttException;
 
     /**
+     * Un-subscribe from a given topic.
+     *
+     * @param topic The topic to un-subscribe from.
+     * @throws MqttException
+     */
+    public abstract void unsubscribe(String topic) throws MqttException;
+
+    /**
      * Get the received message count from the callback handler to validate message receiving is successful.
      *
      * @return Received message count
