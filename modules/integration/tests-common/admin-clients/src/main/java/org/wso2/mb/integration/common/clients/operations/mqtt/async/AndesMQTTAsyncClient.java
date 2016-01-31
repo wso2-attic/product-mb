@@ -131,6 +131,18 @@ public abstract class AndesMQTTAsyncClient extends AndesMQTTClient {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unsubscribe(String topic) throws MqttException {
+        IMqttToken unsubscriptionToken = mqttClient.unsubscribe(topic);
+
+        // Wait until un-subscription is successful. Otherwise test results will be unpredictable.
+        unsubscriptionToken.waitForCompletion();
+        log.info("Subscriber for topic : " + topic + " un-subscribed");
+    }
+
+    /**
      * Shutdown the mqtt client. Call this whenever the system exits, test cases are finished or disconnect hook is
      * called.
      *

@@ -23,6 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.mb.integration.common.clients.AndesMQTTClient;
 import org.wso2.mb.integration.common.clients.ClientMode;
 import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
@@ -312,6 +313,86 @@ public class WildcardTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(lastTopicReceived, (topTopicTree + leafTopic), "Did not received the expected topic name");
 
 
+
+    }
+
+    /**
+     * Test multiple connections with the same client.
+     *
+     * 1. Subscribe to 4 topics (1/2/3, a/+/#, x/y/#, #) from same client.
+     * 2. Publish to topic 1/2/3.
+     * 3. Verify two messages are received.
+     * 4. Unsubscribe a/+/# and #.
+     * 5. Publish to a/b/c.
+     * 6. Verify no messages are received.
+     * 7. Publish to 1/2/3.
+     * 8. Verify 1 messages is received.
+     *
+     */
+    @Test(groups = {"wso2.mb", "mqtt"}, description = "Test multiple connections with the same client")
+    public void performMultipleWildCardSubscriptionsTest() throws MqttException, XPathExpressionException {
+
+        String topic1 = "1/2/3";
+        String topic2 = "a/+/#";
+        String topic3 = "x/y/#";
+        String topic4 = "#";
+
+
+        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+
+        // Create first subscription
+        mqttClientEngine.createSubscriberConnection(topic1, QualityOfService.MOST_ONCE, 1, true,
+                ClientMode.BLOCKING, automationContext);
+
+        // Retrieve the subscription object to subscribe to other topics
+        AndesMQTTClient mqttClient = mqttClientEngine.getSubscriberList().get(0);
+
+        mqttClient.subscribe(topic2);
+        mqttClient.subscribe(topic3);
+        mqttClient.subscribe(topic4);
+
+        // Publish to 1/2/3
+        mqttClientEngine.createPublisherConnection(topic1, QualityOfService.MOST_ONCE, MQTTConstants.TEMPLATE_PAYLOAD,
+                noOfPublisherThreads, noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
+
+        int expectedCount = noOfPublisherThreads * noOfMessagesPerPublisher * 2;
+
+        mqttClientEngine.waitUntilAllMessageReceived();
+
+        // Verify message count
+        Assert.assertEquals(mqttClient.getReceivedMessageCount(), expectedCount, "Did not receive expected message"
+                + " count after first publishing to 1/2/3");
+
+        // Unsubscribe a/+/# and #
+        mqttClient.unsubscribe(topic2);
+        mqttClient.unsubscribe(topic4);
+
+        // Publish to a/b/c
+        mqttClientEngine.createPublisherConnection("a/b/c", QualityOfService.MOST_ONCE, MQTTConstants.TEMPLATE_PAYLOAD,
+                noOfPublisherThreads, noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
+
+        mqttClientEngine.waitUntilAllMessageReceived();
+
+        // Expected count should not increase since no messages should be received
+
+        Assert.assertEquals(mqttClient.getReceivedMessageCount(), expectedCount, "Messges received after publishing"
+                + " to a/b/c when no messages should be received.");
+
+        // Publish to 1/2/3 again
+        mqttClientEngine.createPublisherConnection(topic1, QualityOfService.MOST_ONCE, MQTTConstants.TEMPLATE_PAYLOAD,
+                noOfPublisherThreads, noOfMessagesPerPublisher, ClientMode.BLOCKING, automationContext);
+
+        mqttClientEngine.waitUntilAllMessageReceived();
+
+        expectedCount = expectedCount + noOfPublisherThreads * noOfMessagesPerPublisher;
+
+        // Verify client received the messages published to 1/2/3
+
+        Assert.assertEquals(mqttClient.getReceivedMessageCount(), expectedCount, "Did not receive expected message"
+                + " count after publishing to 1/2/3 for the second time.");
+
+        // Close the connection
+        mqttClientEngine.shutdown();
 
     }
 
