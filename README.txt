@@ -166,6 +166,8 @@ Thank you for your interest in WSO2 Message Broker.
 Known Issues
 ==================================
 
+https://wso2.org/jira/issues/?filter=12509
+
  WSO2 Message Broker is compatible with AMQP 0-91 version only.
 
 Crypto Notice
