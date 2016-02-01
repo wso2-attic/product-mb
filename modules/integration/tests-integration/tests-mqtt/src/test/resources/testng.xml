@@ -24,9 +24,9 @@
     <!-- Test that needs to run individually -->
     <test name="tests-transports-mqtt-sequential" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendReceiveTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendCompressReceiveTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendReceiveTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSendCompressReceiveTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.WildcardTestCase"/>-->
         </classes>
     </test>
 
@@ -35,19 +35,19 @@
 
         <classes>
             <!-- functional test cases -->
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.LongTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.ClientReconnectTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.SingleClientMultipleSubscriptionsTestCase"/>
-            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.PermissionTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.LongTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.ClientReconnectTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.SingleClientMultipleSubscriptionsTestCase"/>-->
+            <!--&lt;!&ndash;<class name="org.wso2.mb.integration.tests.mqtt.functional.PermissionTestCase"/>&ndash;&gt;-->
 
-            <!-- load test cases -->
-            <!--<class name="org.wso2.mb.integration.tests.mqtt.load.MultiThreadedMQTTTestCase"/>-->
-            <!--<class name="org.wso2.mb.integration.tests.mqtt.load.QOSLoadTestCase"/>-->
-            <class name="org.wso2.mb.integration.tests.mqtt.load.OneMBMessageTestCase"/>
+            <!--&lt;!&ndash; load test cases &ndash;&gt;-->
+            <!--&lt;!&ndash;<class name="org.wso2.mb.integration.tests.mqtt.load.MultiThreadedMQTTTestCase"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;<class name="org.wso2.mb.integration.tests.mqtt.load.QOSLoadTestCase"/>&ndash;&gt;-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.load.OneMBMessageTestCase"/>-->
         </classes>
     </test>
 </suite>
