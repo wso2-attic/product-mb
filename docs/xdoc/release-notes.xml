@@ -23,7 +23,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"/>
-        <title>WSO2 Message Broker 3.0.0 Released!</title>
+        <title>WSO2 Message Broker 3.1.0 RC1 Released!</title>
         <link href="css/mb-docs.css" rel="stylesheet"/>
         <link href="styles/dist-docs.css" rel="stylesheet" type="text/css"
               media="all"/>
@@ -33,20 +33,20 @@
         </div>
 
         <div id="main-content">
-            <h1>WSO2 Message Broker (MB) 3.0.0 Released!</h1>
+            <h1>WSO2 Message Broker (MB) 3.1.0 RC1 Released!</h1>
 
             <p>
-                The WSO2 Message Broker team is pleased to announce the 3.0.0 release of WSO2 Message Broker (MB).
+                The WSO2 Message Broker team is pleased to announce the 3.1.0 RC1 release of WSO2 Message Broker (MB).
             </p>
-            <p>WSO2 Message Broker (WSO2 MB) v 3.0.0  is fast, lightweight and user friendly open source
-                distributed message brokering system under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">
-                Apache Software License v2.0</a>. WSO2 MB allows system administrators and developers to
-                easily configure jms queues and topics which could be used in message routing, message stores,
-                message processors. It also supports transport ws eventing. WSO2 MB is compliant with Advanced
-                Message Queueing Protocol Version 0-91 and Java Message Service Specification version 1.1.
+            <p>WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
+                Server (MB) which is available under the Apache Software License v2.0.
+
+                This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
+                framework. All the major features have been developed as pluggable Carbon
+                components.
             </p>
             <p>
-                WSO2 MB v 3.0.0 is developed on top of the revolutionary
+                WSO2 MB v 3.1.0 RC1 is developed on top of the revolutionary
                 <a href="http://wso2.org/projects/carbon">WSO2 Carbon platform</a> (Middleware a' la carte),
                 an OSGi based framework that provides seamless modularity to your SOA via
                 componentization. This release also contains many new features and a range of optional
@@ -77,20 +77,14 @@
             </ol>
 
 
-            <h2>New Features of WSO2 MB 3.0.0</h2>
+            <h2>New Features of WSO2 MB 3.1.0 RC1</h2>
 
             <p>This release of Message Broker comes with a horde of new features and bug fixes. </p>
 
 	          <h2>New Features</h2>
 
-            <p><a href="https://wso2.org/jira/browse/MB-614">MB-614</a> Dead Letter Channel Support </p>
-            <p><a href="https://wso2.org/jira/browse/MB-615">MB-615</a> Message Flow Controlling Support </p>
-            <p><a href="https://wso2.org/jira/browse/MB-120">MB-120</a> Message Selector support </p>
-            <p><a href="https://wso2.org/jira/browse/MB-616">MB-616</a> Queue permission controlling support </p>
-            <p><a href="https://wso2.org/jira/browse/MB-479">MB-479</a> Carbon profiles for Cassandra </p>
-            <p><a href="https://wso2.org/jira/browse/MB-479">MB-479</a> Carbon profiles for Zookeeper </p>
-            <p><a href="https://wso2.org/jira/browse/MB-617">MB-617</a> Queue Subscription Details </p>
-            <p><a href="https://wso2.org/jira/browse/MB-618">MB-618</a> Topic Subscription Details </p>
+            <p><a href="https://wso2.org/jira/browse/MB-1592">MB-1592</a> Support for PostgreSQL as the Message Store </p>
+            <p><a href="https://wso2.org/jira/browse/MB-1588">MB-615</a> Forcefully Delete and Subscriptions </p>
 
     	    <h2>Key Features of WSO2 Message Broker</h2>
 
@@ -99,24 +93,19 @@
                 SQS support. Those are :
             </p>
             <ul>
-                <li>JMS Queuing</li>
-                <li>JMS Pub/Sub </li>
-                <li>WS-Eventing</li>
-								<li>Message Browsing</li>
-								<li>Clustering Support</li>
-								<li>User based authorization for queues</li>
-								<li>Role based authorization for topics</li>
-								<li>Hierarchical Topics Subscriptions </li>
-								<li>Queue Message browsing with added UI support </li>
-								<li>Message Re-Delivery Tries Configuration </li>
-								<li>Message Re delivery Header Field support </li>
-								<li>Clustering according to 5 deployment patterns </li>
-								<li>Sample text message sender tool in UI </li>
-								<li>Queue purging support </li>
-								<li>Message delivery fine tuning capabilities  </li>
-								<li>Viewing details of the cluster using Management Console  </li>
-								<li>Cassandra replication factor and read/write consistency levels configurations </li>
-						</ul>
+                <li>JMS Queuing support</li>
+                <li>JMS Pub/Sub mechanism for topics</li>
+                <li>Hierarchical Topics Subscriptions</li>
+                <li>Queue Message browsing with added UI support</li>
+                <li>Message Re-Delivery Tries Configuration</li>
+                <li>Message Re delivery Header Field support</li>
+                <li>Sample text message sender tool in UI</li>
+                <li>Queue purging support</li>
+                <li>Simple clustering machanism based on carbon clustering</li>
+                <li>Ability to view details of the cluster using Management Console</li>
+                <li>Message delivery fine tuning capabilities</li>
+                <li>Relational databases as a storage machanism</li>
+            </ul>
 
 
             <p>The underlying JMS engine handles WS-Eventing/JMS synchronisation that enables
@@ -135,8 +124,8 @@
                 </li>
                 <li>
                     <strong>Wiki:</strong>
-                    <a href="https://docs.wso2.com/display/MB300/WSO2+Message+Broker+Documentation">
-                        https://docs.wso2.com/display/MB300/WSO2+Message+Broker+Documentation
+                    <a href="https://docs.wso2.com/display/MB310/WSO2+Message+Broker+Documentation">
+                        https://docs.wso2.com/display/MB310/WSO2+Message+Broker+Documentation
                     </a>
 
                 </li>
@@ -151,7 +140,7 @@
             <p>
                 This release of WSO2 MB comes with a number of bug fixes, both in the base
                 framework and the MB specific components. All the issues which have been
-                fixed in MB v 3.0.0 are recorded at following locations:
+                fixed in MB v 3.1.0 RC1 are recorded at following locations:
             </p>
             <ul>
                                                             
@@ -161,12 +150,12 @@
             </ul>
             <h2>Known Issues</h2>
             <p>
-                All the open issues pertaining to WSO2 MB v 3.0.0 are reported at following
+                All the open issues pertaining to WSO2 MB v 3.1.0 RC1 are reported at following
                 locations:
             </p>
             <ul>
                 <li><a href="https://wso2.org/jira/issues/?filter=11883">
-                    WSO2 MB 3.0.0 component issues</a></li>
+                    WSO2 MB 3.1.0 RC1 component issues</a></li>
             </ul>
 
 
