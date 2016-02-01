@@ -25,6 +25,8 @@ import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents the Andes client publisher configuration. The class contains properties
@@ -63,6 +65,16 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     private boolean transactionalSession;
 
     /**
+     * List of JMS Header properties to set when publishing message
+     */
+    private List<JMSHeaderProperty> JMSHeaderProperties;
+
+    /**
+     * Holds JMSType property to set for JMS messages published
+     */
+    private String JMSType;
+
+    /**
      * Creates a connection string with default properties.
      */
     public AndesJMSPublisherClientConfiguration() {
@@ -79,6 +91,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     public AndesJMSPublisherClientConfiguration(
             ExchangeType exchangeType, String destinationName) {
         super(exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -94,6 +107,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(hostName, port, exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -108,6 +122,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(port, exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -123,6 +138,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                ExchangeType exchangeType,
                                                String destinationName) {
         super(userName, password, exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -138,6 +154,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(port, userName, password, exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -156,6 +173,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 ExchangeType exchangeType,
                                                 String destinationName) {
         super(userName, password, hostName, port, exchangeType, destinationName);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -175,6 +193,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
             readMessagesFromFilePath = config.getString("base.publisher.readMessagesFromFilePath", null);
             jmsMessageType = JMSMessageType.valueOf(config.getString("base.publisher.jmsMessageType", "TEXT"));
             filePathToWritePublishedMessages = config.getString("base.publisher.filePathToWritePublishedMessages", null);
+            JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
         } catch (ConfigurationException e) {
             throw new AndesClientConfigurationException("Error in reading xml configuration file. Make sure the file exists.", e);
         } catch (IllegalArgumentException e) {
@@ -191,6 +210,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     public AndesJMSPublisherClientConfiguration(
             AndesJMSClientConfiguration config) {
         super(config);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -217,6 +237,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
                                                 String keyStorePassword) {
         super(userName, password, hostName, port, exchangeType, destinationName, sslAlias,
               trustStorePath, trustStorePassword, keyStorePath, keyStorePassword);
+        JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
     }
 
     /**
@@ -254,6 +275,36 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      */
     public JMSMessageType getJMSMessageType() {
         return jmsMessageType;
+    }
+
+    /**
+     * Set a header property to the messages published
+     *
+     * @param key   key of the header
+     * @param value value of the header
+     * @param type  type of the header (Boolean, Integer, Long etc)
+     */
+    public void setJMSHeaderProperty(String key, Object value, JMSHeaderPropertyType type) {
+        JMSHeaderProperties.add(new JMSHeaderProperty(key, value, type));
+    }
+
+    /**
+     * Set JMS Type to be set for publishing messages
+     * @link https://docs.oracle.com/javaee/6/api/javax/jms/Message.html#setJMSType(java.lang.String)
+     *
+     * @param jmsType jmsType to set
+     */
+    public void setJMSType(String jmsType) {
+        this.JMSType = jmsType;
+    }
+
+    /**
+     * Get JMS type
+     *
+     * @return JMS type as a string
+     */
+    public String getJMSType() {
+        return JMSType;
     }
 
     /**
@@ -367,5 +418,9 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
      */
     public void setTransactionalSession(boolean transactionalSession) {
         this.transactionalSession = transactionalSession;
+    }
+
+    public List<JMSHeaderProperty> getJMSHeaderProperties() {
+        return JMSHeaderProperties;
     }
 }

@@ -26,6 +26,7 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.AndesJMSPublisher;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.JMSHeaderPropertyType;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
@@ -34,8 +35,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
@@ -142,28 +141,20 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                                                          ExchangeType.QUEUE, "jmsSelectorSubscriberAndPublisherJMSType");
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setJMSType("AAA");
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
-        long publisherSentMessageCount = 0L;
-        while (publisherSentMessageCount < SEND_COUNT) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setJMSType("AAA");
-            publisherClient.getPublishers().get(0).getSender().send(textMessage);
-            publisherSentMessageCount++;
-        }
-
-        publisherClient.stopClient();
+        publisherClient.startClient();
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(publisherSentMessageCount, SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed");
         Assert.assertEquals(consumerClient
                                     .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
     }
@@ -245,45 +236,37 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                                                          ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        initialPublisherConfig.setJMSHeaderProperty("location", "wso2.trace", JMSHeaderPropertyType.STRING);
+
+
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                                                          ExchangeType.QUEUE, "jmsSelectorSubscriberCustomProperty");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        secondaryPublisherConfig.setJMSHeaderProperty("location", "wso2.palmgrove", JMSHeaderPropertyType.STRING);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
-        long initialPublisherSentMessageCount = 0L;
-        while (initialPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setStringProperty("location", "wso2.trace");
-            initialPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            initialPublisherSentMessageCount++;
-        }
+        initialPublisherClient.startClient();
 
         AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
-        long secondaryPublisherSentMessageCount = 0L;
-        while (secondaryPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setStringProperty("location", "wso2.palmgrove");
-            secondaryPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            secondaryPublisherSentMessageCount++;
-        }
-
-        initialPublisherClient.stopClient();
-        secondaryPublisherClient.stopClient();
+        secondaryPublisherClient.startClient();
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(initialPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for first client");
-        Assert.assertEquals(secondaryPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for second client");
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for first client");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for second client");
         Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), SEND_COUNT / 2L, "Message receiving failed.");
+                                    .getReceivedMessageCount(), SEND_COUNT / 2L,
+                "Message receiving failed.");
 
     }
 
@@ -316,51 +299,40 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration initialPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                                                         ExchangeType.QUEUE,
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
                                                          "jmsSelectorSubscriberCustomPropertyAndJMSType");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        initialPublisherConfig.setJMSType("myMessage");
+        initialPublisherConfig.setJMSHeaderProperty("location", "wso2.trace", JMSHeaderPropertyType.STRING);
+
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
-                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                                                         ExchangeType.QUEUE,
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
                                                          "jmsSelectorSubscriberCustomPropertyAndJMSType");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        secondaryPublisherConfig.setJMSType("otherMessage");
+        secondaryPublisherConfig.setJMSHeaderProperty("location", "wso2.palmGrove", JMSHeaderPropertyType.STRING);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
-        long initialPublisherSentMessageCount = 0L;
-        while (initialPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setJMSType("myMessage");
-            textMessage.setStringProperty("location", "wso2.trace");
-            initialPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            initialPublisherSentMessageCount++;
-        }
+        initialPublisherClient.startClient();
 
         AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
-        long secondaryPublisherSentMessageCount = 0L;
-        while (secondaryPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setJMSType("otherMessage");
-            textMessage.setStringProperty("location", "wso2.palmGrove");
-            secondaryPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            secondaryPublisherSentMessageCount++;
-        }
-
-        initialPublisherClient.stopClient();
-        secondaryPublisherClient.stopClient();
+        secondaryPublisherClient.startClient();
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(initialPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for first client");
-        Assert.assertEquals(secondaryPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for second client");
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for first client");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for second client");
         Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), SEND_COUNT / 2L, "Message receiving failed.");
+                                    .getReceivedMessageCount(), SEND_COUNT / 2L,
+                "Message receiving failed.");
     }
 
     /**
@@ -395,146 +367,248 @@ public class SelectorsTestCase extends MBIntegrationBaseTest {
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                                                          ExchangeType.QUEUE,
                                                          "jmsSelectorSubscriberCustomPropertyOrJMSType");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        initialPublisherConfig.setJMSType("myMessage");
+        initialPublisherConfig.setJMSHeaderProperty("location", "wso2.trace", JMSHeaderPropertyType.STRING);
 
         AndesJMSPublisherClientConfiguration secondaryPublisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
                                                          ExchangeType.QUEUE,
                                                          "jmsSelectorSubscriberCustomPropertyOrJMSType");
+        secondaryPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT / 2L);
+        secondaryPublisherConfig.setJMSType("otherMessage");
+        secondaryPublisherConfig.setJMSHeaderProperty("location", "wso2.palmGrove", JMSHeaderPropertyType.STRING);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
         AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
-        long initialPublisherSentMessageCount = 0L;
-        while (initialPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setJMSType("myMessage");
-            textMessage.setStringProperty("location", "wso2.trace");
-            initialPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            initialPublisherSentMessageCount++;
-        }
+        initialPublisherClient.startClient();
 
         AndesClient secondaryPublisherClient = new AndesClient(secondaryPublisherConfig, true);
-        long secondaryPublisherSentMessageCount = 0L;
-        while (secondaryPublisherSentMessageCount < SEND_COUNT / 2L) {
-            TextMessage textMessage =
-                    initialPublisherClient.getPublishers().get(0).getSession().createTextMessage();
-            textMessage.setJMSType("otherMessage");
-            textMessage.setStringProperty("location", "wso2.palmGrove");
-            secondaryPublisherClient.getPublishers().get(0).getSender().send(textMessage);
-            secondaryPublisherSentMessageCount++;
-        }
-
-        initialPublisherClient.stopClient();
-        secondaryPublisherClient.stopClient();
+        secondaryPublisherClient.startClient();
 
         AndesClientUtils
                 .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
-        Assert.assertEquals(initialPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for first client");
-        Assert.assertEquals(secondaryPublisherSentMessageCount, SEND_COUNT / 2L, "Message sending failed for second client");
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for first client");
+        Assert.assertEquals(secondaryPublisherClient.getSentMessageCount(), SEND_COUNT / 2L,
+                "Message sending failed for second client");
         Assert.assertEquals(consumerClient
-                                    .getReceivedMessageCount(), SEND_COUNT, "Message receiving failed.");
+                                    .getReceivedMessageCount(), SEND_COUNT,
+                "Message receiving failed.");
     }
 
     /**
-     * 1. Create 3 selector subscribers which are subscribed to the same queue with different selectors.
-     * 2. Publish messages matching the selectors of the subscribers.
-     * 3. Verify whether the three subscribers have received only matching number of messages.
+     * 1. Create a queue consumer with selector releaseYear < '1980'.
+     * 2. Create a queue consumer with selector releaseYear < '1960'
+     * 3. Create a queue publisher with jms header property releaseYear = '1960'
+     * Only the first consumer should get the messages
      *
      * @throws AndesClientConfigurationException
-     * @throws XPathExpressionException
-     * @throws IOException
-     * @throws JMSException
-     * @throws AndesClientException
      * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws XPathExpressionException
      */
     @Test(groups = "wso2.mb")
-    public void performMultipleSelectorSubscribersTestCase() throws AndesClientConfigurationException,
-            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
-        String queueName = "multipleSelectorSubscribers";
-        // Creating a consumer client configuration with JMSType selector
-        AndesJMSConsumerClientConfiguration jmsTypeSelectorConfig =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                        ExchangeType.QUEUE, queueName);
-        jmsTypeSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        jmsTypeSelectorConfig.setSelectors("JMSType='AAA'");
-        jmsTypeSelectorConfig.setAsync(false);
+    public void performMultipleQueueReceiversWithSelectors()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+            AndesClientException, XPathExpressionException {
 
-        // Creating a consumer client configuration with 'location' selector
-        AndesJMSConsumerClientConfiguration locationSelectorConfig =
+        // Creating a initial JMS consumer client configurations
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                        ExchangeType.QUEUE, queueName);
-        locationSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        locationSelectorConfig.setSelectors("location='wso2.trace'");
-        locationSelectorConfig.setAsync(false);
+                        ExchangeType.QUEUE,
+                        "MultipleQueueReceiversWithSelectors");
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig1.setSelectors("releaseYear < 1980");
+        consumerConfig1.setAsync(false);
 
-        // Creating a consumer client configuration with 'location' and JMSType selector
-        AndesJMSConsumerClientConfiguration jmsTypeAndLocationSelectorConfig =
+
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                        ExchangeType.QUEUE, queueName);
-        jmsTypeAndLocationSelectorConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        jmsTypeAndLocationSelectorConfig.setSelectors("location='wso2.pg' AND JMSType='BBB'");
-        jmsTypeAndLocationSelectorConfig.setAsync(false);
+                        ExchangeType.QUEUE,
+                        "MultipleQueueReceiversWithSelectors");
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig2.setSelectors("releaseYear < 1960");
+        consumerConfig2.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
+        AndesJMSPublisherClientConfiguration initialPublisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                        ExchangeType.QUEUE, queueName);
-        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+                        ExchangeType.QUEUE,
+                        "MultipleQueueReceiversWithSelectors");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        initialPublisherConfig.setJMSHeaderProperty("releaseYear", 1970L, JMSHeaderPropertyType
+                .LONG);
 
         // Creating clients
-        AndesClient jmsTypeClient = new AndesClient(jmsTypeSelectorConfig, true);
-        jmsTypeClient.startClient();
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
 
-        AndesClient locationClient = new AndesClient(locationSelectorConfig, true);
-        locationClient.startClient();
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
 
-        AndesClient jmsTypeAndLocationClient = new AndesClient(jmsTypeAndLocationSelectorConfig, true);
-        jmsTypeAndLocationClient.startClient();
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
+        initialPublisherClient.startClient();
 
-        AndesClient publisherClient = new AndesClient(publisherConfig, true);
-        AndesJMSPublisher publisher = publisherClient.getPublishers().get(0);
-        MessageProducer messageProducer = publisher.getSender();
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
 
-        // Send JMSType = AAA messages
-        for (int i = 0; i < SEND_COUNT; i++) {
-            TextMessage jmsTypeAAAMessage = publisher.getSession().createTextMessage();
-            jmsTypeAAAMessage.setJMSType("AAA");
-            messageProducer.send(jmsTypeAAAMessage);
-        }
+        // Evaluating
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT,
+                "Message sending failed for client");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), EXPECTED_COUNT,
+                "Message receiving failed for consumer 1.");
+        Assert.assertEquals(consumerClient2
+                        .getReceivedMessageCount(), 0,
+                "Unexpected message count received.");
+    }
 
-        // Send 'location' = 'wso2.trace' messages
-        TextMessage locationTraceMessage = publisher.getSession().createTextMessage();
-        locationTraceMessage.setStringProperty("location", "wso2.trace");
-        for (int i = 0; i < SEND_COUNT; i++) {
-            messageProducer.send(locationTraceMessage);
-        }
 
-        // Send JMSType = BBB and 'location' = 'wso2.pg' messages
-        TextMessage jmsTypeBBBLocationPGMessage = publisher.getSession().createTextMessage();
-        jmsTypeBBBLocationPGMessage.setJMSType("BBB");
-        jmsTypeBBBLocationPGMessage.setStringProperty("location", "wso2.pg");
-        for (int i = 0; i < SEND_COUNT; i++) {
-            messageProducer.send(jmsTypeBBBLocationPGMessage);
-        }
+    /**
+     * 1. Create a topic consumer with selector releaseYear < '1980'.
+     * 2. Create a topic consumer with selector releaseYear < '1960'
+     * 3. Create a topic publisher with jms header property releaseYear = '1960'
+     * Only the first consumer should get the messages
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = "wso2.mb")
+    public void performMultipleTopicReceiversWithSelectors()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+            AndesClientException, XPathExpressionException {
 
-        publisherClient.stopClient();
+        // Creating a initial JMS consumer client configurations
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleTopicReceiversWithSelectors");
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig1.setSelectors("releaseYear < 1980");
+        consumerConfig1.setAsync(false);
 
-        AndesClientUtils.waitForMessagesAndShutdown(jmsTypeClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(locationClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(jmsTypeAndLocationClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
-        // Verify message counts
-        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
-                + " number of message for JMSType = AAA selector client");
-        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
-                + " number of message for 'location' = 'wso2.trace' selector client");
-        Assert.assertEquals(jmsTypeClient.getReceivedMessageCount(), EXPECTED_COUNT, "Did not receive expected"
-                + " number of message for JMSType = BBB and 'location' = 'wso2.pg' selector client");
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleTopicReceiversWithSelectors");
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig2.setSelectors("releaseYear < 1960");
+        consumerConfig2.setAsync(false);
 
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration initialPublisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleTopicReceiversWithSelectors");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        initialPublisherConfig.setJMSHeaderProperty("releaseYear", 1970L, JMSHeaderPropertyType
+                .LONG);
+
+        // Creating clients
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
+
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
+
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
+        initialPublisherClient.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
+
+        // Evaluating
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT,
+                "Message sending failed for client");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), EXPECTED_COUNT,
+                "Message sending failed for consumer client 1");
+        Assert.assertEquals(consumerClient2
+                        .getReceivedMessageCount(), 0,
+                "Unexpected message count received");
+    }
+
+    /**
+     * 1. Create a durable topic consumer with selector releaseYear < '1980'.
+     * 2. Create a durable topic consumer with selector releaseYear < '1960'
+     * 3. Create a topic publisher with jms header property releaseYear = '1960'
+     * Only the first consumer should get the messages
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws XPathExpressionException
+     */
+    @Test(groups = "wso2.mb")
+    public void performMultipleDurableTopicReceiversWithSelectors()
+            throws AndesClientConfigurationException, NamingException, JMSException, IOException,
+            AndesClientException, XPathExpressionException {
+
+        // Creating a initial JMS consumer client configurations
+        AndesJMSConsumerClientConfiguration consumerConfig1 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleDurableTopicReceiversWithSelectors");
+        consumerConfig1.setDurable(true, "selectorSub1");
+        consumerConfig1.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig1.setSelectors("releaseYear < 1980");
+        consumerConfig1.setAsync(false);
+
+
+        AndesJMSConsumerClientConfiguration consumerConfig2 =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleDurableTopicReceiversWithSelectors");
+        consumerConfig2.setDurable(true, "selectorSub2");
+        consumerConfig2.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig2.setSelectors("releaseYear < 1960");
+        consumerConfig2.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration initialPublisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                        ExchangeType.TOPIC,
+                        "MultipleDurableTopicReceiversWithSelectors");
+        initialPublisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        initialPublisherConfig.setJMSHeaderProperty("releaseYear", 1970L , JMSHeaderPropertyType
+                .LONG);
+
+        // Creating clients
+        AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
+        consumerClient1.startClient();
+
+        AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
+        consumerClient2.startClient();
+
+        AndesClient initialPublisherClient = new AndesClient(initialPublisherConfig, true);
+        initialPublisherClient.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient1, AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.shutdownClient(consumerClient2);
+
+        // Evaluating
+        Assert.assertEquals(initialPublisherClient.getSentMessageCount(), SEND_COUNT,
+                "Message sending failed for client");
+        Assert.assertEquals(consumerClient1.getReceivedMessageCount(), EXPECTED_COUNT,
+                "Message sending failed for consumer client 1");
+        Assert.assertEquals(consumerClient2
+                        .getReceivedMessageCount(), 0,
+                "Unexpected message count received");
     }
 }

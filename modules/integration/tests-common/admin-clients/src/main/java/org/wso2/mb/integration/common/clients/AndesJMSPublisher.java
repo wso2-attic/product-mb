@@ -19,6 +19,8 @@ package org.wso2.mb.integration.common.clients;
 
 import org.apache.log4j.Logger;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.configurations.JMSHeaderProperty;
+import org.wso2.mb.integration.common.clients.configurations.JMSHeaderPropertyType;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
@@ -38,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * The JMS message publisher used for creating a publisher and for publishing JMS messages.
@@ -213,6 +216,15 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     message = this.session.createStreamMessage();
                 }
 
+                //set JMS message type
+                String jmsType = publisherConfig.getJMSType();
+                if(message!= null && null != jmsType && !jmsType.isEmpty()) {
+                    message.setJMSType(jmsType);
+                }
+
+                //set JMS header properties
+                setMessageProperties(message);
+
                 if (null != message) {
                     this.sender.send(message, DeliveryMode.PERSISTENT, 0, this.publisherConfig
                             .getJMSMessageExpiryTime());
@@ -281,6 +293,51 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             throw new RuntimeException("Error while publishing messages", e);
         } catch (IOException e) {
             throw new RuntimeException("Error while writing statistics", e);
+        }
+    }
+
+    /**
+     * Set JMS Headers to the message according to publisher configuration
+     *
+     * @param message message to set properties
+     */
+    private void setMessageProperties(Message message) throws JMSException {
+
+        List<JMSHeaderProperty> headerPropertyList = publisherConfig.getJMSHeaderProperties();
+
+        for (JMSHeaderProperty jmsHeaderProperty : headerPropertyList) {
+            JMSHeaderPropertyType type = jmsHeaderProperty.getType();
+            String propertyKey = jmsHeaderProperty.getKey();
+            Object propertyValue = jmsHeaderProperty.getValue();
+            switch (type) {
+                case OBJECT:
+                    message.setObjectProperty(propertyKey, propertyValue);
+                    break;
+                case BYTE:
+                    message.setByteProperty(propertyKey, (Byte) propertyValue);
+                    break;
+                case BOOLEAN:
+                    message.setBooleanProperty(propertyKey, (Boolean) propertyValue);
+                    break;
+                case DOUBLE:
+                    message.setDoubleProperty(propertyKey, (Double) propertyValue);
+                    break;
+                case FLOAT:
+                    message.setFloatProperty(propertyKey, (Float) propertyValue);
+                    break;
+                case SHORT:
+                    message.setShortProperty(propertyKey, (Short) propertyValue);
+                    break;
+                case STRING:
+                    message.setStringProperty(propertyKey, (String) propertyValue);
+                    break;
+                case INTEGER:
+                    message.setIntProperty(propertyKey, (Integer) propertyValue);
+                    break;
+                case LONG:
+                    message.setLongProperty(propertyKey, (Long) propertyValue);
+                    break;
+            }
         }
     }
 
