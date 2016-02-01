@@ -102,6 +102,13 @@ public class AndesClientConstants {
             "MessageContentInput.txt";
 
     /**
+     * File path to read message content for publishing
+     */
+    public static final String MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB =
+            System.getProperty("framework.resource.location") + File.separator +
+                    "MessageContentInputWithoutRepetitions.txt";
+
+    /**
      * File path creating a file.
      */
     public static final String FILE_PATH_FOR_CREATING_A_NEW_FILE =

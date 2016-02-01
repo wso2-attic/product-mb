@@ -44,5 +44,4 @@ public class MQTTConstants {
      * Timeout for an MQTT client to connect to the broker.
      */
     public static final long CLIENT_CONNECT_TIMEOUT = 1000;
-
 }
