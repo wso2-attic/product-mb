@@ -25,7 +25,6 @@ import javax.jms.JMSException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -287,7 +286,7 @@ public class AndesClientUtils {
      * @param sizeInKB         The size of the file to be written in kilobytes.
      */
     public static void createMockFile(String filePathToRead, String filePathToCreate,
-                                      int sizeInKB) {
+                                      int sizeInKB) throws IOException {
         String fileContentToBeWritten = "";
         BufferedReader br = null;
         try {
@@ -301,10 +300,6 @@ public class AndesClientUtils {
                 line = br.readLine();
             }
             fileContentToBeWritten = sb.toString();
-        } catch (FileNotFoundException e) {
-            log.error("File to read sample string to create text file to send is not found", e);
-        } catch (IOException e) {
-            log.error("Error in reading sample file to create text file to send", e);
         } finally {
 
             try {
@@ -318,9 +313,7 @@ public class AndesClientUtils {
         }
 
         //If already exists, deleting the file
-        if (deleteRandomFile(filePathToCreate)) {
-            log.info("File requested to create already exists. Deleted file: " + filePathToCreate);
-        }
+        deleteRandomFile(filePathToCreate);
 
         try {
             File fileToCreate = new File(filePathToCreate);
@@ -349,15 +342,14 @@ public class AndesClientUtils {
      *
      * @param filePathToDelete The path in which the contents should be written with a given size.
      */
-    public static boolean deleteRandomFile(String filePathToDelete) {
+    public static void deleteRandomFile(String filePathToDelete) throws IOException {
         File fileToDelete = new File(filePathToDelete);
-        boolean deleted = false;
 
         if (fileToDelete.exists()) {
-            if (fileToDelete.delete()) {
-                deleted = true;
+            if (!fileToDelete.delete()) {
+                throw new IOException("Unable to delete random file, " + filePathToDelete);
             }
         }
-        return deleted;
+
     }
 }
