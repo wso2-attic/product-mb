@@ -23,7 +23,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta content="text/html; charset=iso-8859-1" http-equiv="content-type"/>
-        <title>WSO2 Message Broker 3.1.0 RC1 Released!</title>
+        <title>WSO2 Message Broker 3.1.0 Released!</title>
         <link href="css/mb-docs.css" rel="stylesheet"/>
         <link href="styles/dist-docs.css" rel="stylesheet" type="text/css"
               media="all"/>
@@ -33,10 +33,10 @@
         </div>
 
         <div id="main-content">
-            <h1>WSO2 Message Broker (MB) 3.1.0 RC1 Released!</h1>
+            <h1>WSO2 Message Broker (MB) 3.1.0 Released!</h1>
 
             <p>
-                The WSO2 Message Broker team is pleased to announce the 3.1.0 RC1 release of WSO2 Message Broker (MB).
+                The WSO2 Message Broker team is pleased to announce the 3.1.0 release of WSO2 Message Broker (MB).
             </p>
             <p>WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
                 Server (MB) which is available under the Apache Software License v2.0.
@@ -46,7 +46,7 @@
                 components.
             </p>
             <p>
-                WSO2 MB v 3.1.0 RC1 is developed on top of the revolutionary
+                WSO2 MB v 3.1.0 is developed on top of the revolutionary
                 <a href="http://wso2.org/projects/carbon">WSO2 Carbon platform</a> (Middleware a' la carte),
                 an OSGi based framework that provides seamless modularity to your SOA via
                 componentization. This release also contains many new features and a range of optional
@@ -77,7 +77,7 @@
             </ol>
 
 
-            <h2>New Features of WSO2 MB 3.1.0 RC1</h2>
+            <h2>New Features of WSO2 MB 3.1.0</h2>
 
             <p>This release of Message Broker comes with a horde of new features and bug fixes. </p>
 
@@ -140,22 +140,22 @@
             <p>
                 This release of WSO2 MB comes with a number of bug fixes, both in the base
                 framework and the MB specific components. All the issues which have been
-                fixed in MB v 3.1.0 RC1 are recorded at following locations:
+                fixed in MB v 3.1.0 are recorded at following locations:
             </p>
             <ul>
                                                             
-                <li><a href="https://wso2.org/jira/issues/?filter=11882">
+                <li><a href="https://wso2.org/jira/issues/?filter=12639">
                     Fixed MB specific issues</a></li>
 
             </ul>
             <h2>Known Issues</h2>
             <p>
-                All the open issues pertaining to WSO2 MB v 3.1.0 RC1 are reported at following
+                All the open issues pertaining to WSO2 MB v 3.1.0 are reported at following
                 locations:
             </p>
             <ul>
                 <li><a href="https://wso2.org/jira/issues/?filter=12509">
-                    WSO2 MB 3.1.0 RC1 component issues</a></li>
+                    WSO2 MB 3.1.0 component issues</a></li>
             </ul>
 
 
