@@ -321,10 +321,10 @@ org.wso2.ciphertool-1.0.0-wso2v3.jar                                            
 org.wso2.mb.samples.mqtt.iot-3.0.0.jar                                          bundle         apache2   7139      
 org.wso2.mb.samples.mqtt.retain.sample-3.0.0.jar                                bundle         apache2   7140      
 org.wso2.mb.samples.mqtt.simple-3.0.0-SNAPSHOT.jar                              bundle         apache2   7141      
-org.wso2.mb.styles_3.1.0.RC2.jar                                                bundle         apache2   7143      
+org.wso2.mb.styles_3.1.0.jar                                                    bundle         apache2   7161      
 org.wso2.securevault-1.0.0-wso2v2.jar                                           bundle         apache2   3537      
 org.wso2.securevault_1.0.0.wso2v2.jar                                           bundle         apache2   768       
-org.wso2.stratos.mb.dashboard.ui_3.1.0.RC2.jar                                  bundle         apache2   7142      
+org.wso2.stratos.mb.dashboard.ui_3.1.0.jar                                      bundle         apache2   7160      
 pdepublishing-ant.jar                                                           jar            epl1      524       
 pdepublishing.jar                                                               jar            epl1      525       
 perf4j_0.9.12.wso2v1.jar                                                        bundle         apache2   832       

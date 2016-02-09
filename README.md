@@ -52,7 +52,7 @@ For more details see
 <h2>Installation & Running</h2>
 
 <ol>
-<li> Extract the wso2mb-3.1.0-RC1.zip and go to the extracted directory </li>
+<li> Extract the wso2mb-3.1.0.zip and go to the extracted directory </li>
 <li> Run the wso2server.sh or wso2server.bat as appropriate </li>
 <li> Point your favourite browser to
 
@@ -65,7 +65,7 @@ For more details see
 </li>
 </ol>
 
-<h2>WSO2 MB 3.1.0 RC1 distribution directory structure</h2>
+<h2>WSO2 MB 3.1.0 distribution directory structure</h2>
 
 	CARBON_HOME
 		|-- bin <folder>
