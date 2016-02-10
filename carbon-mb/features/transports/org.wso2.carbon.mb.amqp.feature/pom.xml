@@ -28,9 +28,9 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>amqp.feature</artifactId>
+    <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon - AMQP Feature</name>
+    <name>WSO2 Message Broker - AMQP Transport Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the AMQP feature</description>
 

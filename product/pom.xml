@@ -29,8 +29,8 @@
 
     <artifactId>wso2mb</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Message Broker Server - Distribution</name>
-    <description>WSO2 Message Broker Server - Distribution</description>
+    <name>WSO2 Message Broker - Distribution</name>
+    <description>WSO2 Message Broker - Distribution</description>
     <url>http://wso2.org</url>
 
     <dependencies>
@@ -56,25 +56,25 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>andes.feature</artifactId>
+            <artifactId>org.wso2.carbon.andes.feature</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>amqp.feature</artifactId>
+            <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>mqtt.feature</artifactId>
+            <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>mb-ui.feature</artifactId>
+            <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
         </dependency>
@@ -132,19 +132,19 @@
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>andes.feature</id>
+                                    <id>org.wso2.carbon.andes.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>amqp.feature</id>
+                                    <id>org.wso2.carbon.mb.ui.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>mqtt.feature</id>
+                                    <id>org.wso2.carbon.mb.amqp.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>mb-ui.feature</id>
+                                    <id>org.wso2.carbon.mb.mqtt.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                             </features>
@@ -204,19 +204,19 @@
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>andes.feature.group</id>
+                                    <id>org.wso2.carbon.andes.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>amqp.feature.group</id>
+                                    <id>org.wso2.carbon.mb.ui.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>mqtt.feature.group</id>
+                                    <id>org.wso2.carbon.mb.amqp.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>mb-ui.feature.group</id>
+                                    <id>org.wso2.carbon.mb.mqtt.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                             </features>

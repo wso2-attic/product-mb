@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>andes</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Sample Carbon Component</name>
+    <name>WSO2 Message Broker - Andes Component</name>
     <description>
         This is a sample implementation of a Carbon Component
         which consumes an OSGi service registered by Carbon Kernel

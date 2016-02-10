@@ -56,10 +56,10 @@
         <module>carbon-mb/components/transports/mqtt</module>
 
         <!--Features-->
-        <module>carbon-mb/features/andes.feature</module>
-        <module>carbon-mb/features/mb-ui.feature</module>
-        <module>carbon-mb/features/transports/amqp.feature</module>
-        <module>carbon-mb/features/transports/mqtt.feature</module>
+        <module>carbon-mb/features/org.wso2.carbon.andes.feature</module>
+        <module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>
+        <module>carbon-mb/features/transports/org.wso2.carbon.mb.amqp.feature</module>
+        <module>carbon-mb/features/transports/org.wso2.carbon.mb.mqtt.feature</module>
 
         <!--Tests-->
         <module>tests/osgi-tests</module>
@@ -120,32 +120,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>andes.feature</artifactId>
+                <artifactId>org.wso2.carbon.andes.feature</artifactId>
                 <version>${carbon.mb.version}</version>
                 <type>zip</type>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>amqp</artifactId>
-                <version>${carbon.mb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>amqp.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>mqtt</artifactId>
-                <version>${carbon.mb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>mqtt.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
+
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>mb-ui</artifactId>
@@ -153,7 +132,31 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>mb-ui.feature</artifactId>
+                <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>amqp</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>mqtt</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
                 <version>${carbon.mb.version}</version>
                 <type>zip</type>
             </dependency>

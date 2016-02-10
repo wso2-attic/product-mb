@@ -25,14 +25,14 @@
         <groupId>org.wso2.carbon.mb</groupId>
         <artifactId>product-mb</artifactId>
         <version>3.5.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mb-ui.feature</artifactId>
+    <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon - Message Broker UI Feature</name>
+    <name>WSO2 Message Broker - MQTT Transport Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the core bundles required by the Message Broker UI feature</description>
+    <description>This feature contains the core bundles required by the MQTT feature</description>
 
 
     <dependencies>
@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>mb-ui</artifactId>
+            <artifactId>mqtt</artifactId>
         </dependency>
     </dependencies>
 
@@ -73,7 +73,7 @@
                         </goals>
                         <configuration>
 
-                            <propertyFile>../etc/feature.properties</propertyFile>
+                            <propertyFile>../../etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
                                     <name>org.wso2.carbon.p2.category.type</name>
@@ -102,7 +102,7 @@
                                     <version>${slf4j.version}</version>
                                 </bundle>
                                 <bundle>
-                                    <symbolicName>mb-ui</symbolicName>
+                                    <symbolicName>mqtt</symbolicName>
                                     <version>${carbon.mb.version}</version>
                                 </bundle>
                             </bundles>
