@@ -14,6 +14,7 @@ import java.util.Properties;
 
 /**
  * Launch a  configured version of the server.
+ *
  * @author andrea
  */
 public class Server {
@@ -22,10 +23,10 @@ public class Server {
     private static final Logger log = LoggerFactory.getLogger(org.dna.mqtt.moquette.server.Server.class);
     //Adding the MB directory file path on which the temp db will be stored
     private static final String DB_STORE_PATH = "/repository/database";
-    public static final String STORAGE_FILE_PATH = System.getProperty("carbon.home") +DB_STORE_PATH+
-            File.separator + "mqtt_store.hawtdb";
+    public static final String STORAGE_FILE_PATH = System.getProperty("carbon.home") + DB_STORE_PATH +
+                                                   File.separator + "mqtt_store.hawtdb";
 
-    private ServerAcceptor m_acceptor;
+    private ServerAcceptor acceptor;
     SimpleMessaging messaging;
 
     public void startServer(int port) throws IOException {
@@ -54,20 +55,20 @@ public class Server {
         Properties mqttProperties = new Properties();
 
         mqttProperties.put(Constants.SSL_PORT_PROPERTY_NAME, AndesConfigurationManager.
-                                          readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_PORT));
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_PORT));
 
         mqttProperties.put(Constants.SSL_PORT_PROPERTY_NAME, AndesConfigurationManager.
-                                          readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_PORT));
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_PORT));
 
         mqttProperties.put(Constants.SSL_CONNECTION_ENABLED, AndesConfigurationManager.
-                                          readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_ENABLED));
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_ENABLED));
 
         mqttProperties.put(Constants.DEFAULT_CONNECTION_ENABLED, AndesConfigurationManager.
-                                          readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_ENABLED));
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_ENABLED));
 
         mqttProperties.put(Constants.HOST_PROPERTY_NAME, AndesConfigurationManager.
-                                          readValue(AndesConfiguration.TRANSPORTS_MQTT_BIND_ADDRESS));
-        
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_BIND_ADDRESS));
+
         return mqttProperties;
     }
 
@@ -75,14 +76,14 @@ public class Server {
         messaging = SimpleMessaging.getInstance();
         messaging.init(configProps);
 
-        m_acceptor = new NettyAcceptor();
-        m_acceptor.initialize(messaging, configProps);
+        acceptor = new NettyAcceptor();
+        acceptor.initialize(messaging, configProps);
     }
 
     public void stopServer() {
         log.info("MQTT Server is stopping...");
         messaging.stop();
-        m_acceptor.close();
+        acceptor.close();
         log.info("MQTT Server has stopped.");
     }
 }

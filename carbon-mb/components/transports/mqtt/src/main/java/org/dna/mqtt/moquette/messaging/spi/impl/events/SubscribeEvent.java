@@ -4,20 +4,20 @@ import org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription;
 
 public class SubscribeEvent extends MessagingEvent {
 
-    Subscription m_subscription;
+    Subscription subscription;
 
-    int m_messageID;
-    
+    int messageID;
+
     public SubscribeEvent(Subscription subscription, int messageID) {
-        m_subscription = subscription;
-        m_messageID = messageID;
+        this.subscription = subscription;
+        this.messageID = messageID;
     }
 
     public Subscription getSubscription() {
-        return m_subscription;
+        return subscription;
     }
 
     public int getMessageID() {
-        return m_messageID;
+        return messageID;
     }
 }

@@ -4,20 +4,20 @@ import org.dna.mqtt.moquette.proto.messages.AbstractMessage;
 import org.dna.mqtt.moquette.server.ServerChannel;
 
 public class OutputMessagingEvent extends MessagingEvent {
-    private ServerChannel m_channel;
-    private AbstractMessage m_message;
+    private ServerChannel channel;
+    private AbstractMessage message;
 
     public OutputMessagingEvent(ServerChannel channel, AbstractMessage message) {
-        m_channel = channel;
-        m_message = message;
+        this.channel = channel;
+        this.message = message;
     }
 
     public ServerChannel getChannel() {
-        return m_channel;
+        return channel;
     }
 
     public AbstractMessage getMessage() {
-        return m_message;
+        return message;
     }
     
     

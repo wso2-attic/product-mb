@@ -22,6 +22,6 @@ package org.dna.mqtt.moquette.proto.messages;
 public class PingRespMessage extends ZeroLengthMessage {
     
     public PingRespMessage() {
-        m_messageType = AbstractMessage.PINGRESP;
+        messageType = AbstractMessage.PINGRESP;
     }
 }

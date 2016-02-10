@@ -5,17 +5,18 @@ import org.dna.mqtt.moquette.messaging.spi.impl.events.MessagingEvent;
 
 public final class ValueEvent {
 
-    private MessagingEvent m_event;
+    private MessagingEvent event;
 
     public MessagingEvent getEvent() {
-        return m_event;
+        return event;
     }
 
     public void setEvent(MessagingEvent event) {
-        m_event = event;
+        this.event = event;
     }
-    
-    public final static EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent> EVENT_FACTORY = new EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent>() {
+
+    public final static EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent> EVENT_FACTORY = new
+            EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent>() {
 
         public org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent newInstance() {
             return new org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent();

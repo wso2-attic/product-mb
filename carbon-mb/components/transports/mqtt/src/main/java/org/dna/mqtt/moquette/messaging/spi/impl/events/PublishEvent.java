@@ -7,81 +7,80 @@ import org.dna.mqtt.moquette.server.ServerChannel;
 import java.nio.ByteBuffer;
 
 public class PublishEvent extends MessagingEvent {
-    String m_topic;
-    QOSType m_qos;
-    //byte[] m_message;
-    ByteBuffer m_message;
-    boolean m_retain;
-    String m_clientID;
+    String topic;
+    QOSType qos;
+    ByteBuffer message;
+    boolean retain;
+    String clientID;
     //Optional attribute, available only fo QoS 1 and 2
-    int m_msgID;
+    int msgID;
 
-    transient ServerChannel m_session;
+    transient ServerChannel session;
 
     public PublishEvent(PublishMessage pubMsg, String clientID, ServerChannel session) {
-        m_topic = pubMsg.getTopicName();
-        m_qos = pubMsg.getQos();
-        m_message = pubMsg.getPayload();
-        m_retain = pubMsg.isRetainFlag();
-        m_clientID = clientID;
-        m_session = session;
+        topic = pubMsg.getTopicName();
+        qos = pubMsg.getQos();
+        message = pubMsg.getPayload();
+        retain = pubMsg.isRetainFlag();
+        this.clientID = clientID;
+        this.session = session;
         if (pubMsg.getQos() != QOSType.MOST_ONE) {
-            m_msgID = pubMsg.getMessageID();
+            msgID = pubMsg.getMessageID();
         }
     }
-    
+
     public PublishEvent(String topic, QOSType qos, ByteBuffer message, boolean retain,
-            String clientID, ServerChannel session) {
-        m_topic = topic;
-        m_qos = qos;
-        m_message = message;
-        m_retain = retain;
-        m_clientID = clientID;
-        m_session = session;
+                        String clientID, ServerChannel session) {
+        this.topic = topic;
+        this.qos = qos;
+        this.message = message;
+        this.retain = retain;
+        this.clientID = clientID;
+        this.session = session;
     }
 
     public PublishEvent(String topic, QOSType qos, ByteBuffer message, boolean retain,
                         String clientID, int msgID, ServerChannel session) {
         this(topic, qos, message, retain, clientID, session);
-        m_msgID = msgID;
+        this.msgID = msgID;
     }
-    
+
     public String getTopic() {
-        return m_topic;
+        return topic;
     }
 
     public QOSType getQos() {
-        return m_qos;
+        return qos;
     }
 
     public ByteBuffer getMessage() {
-        return m_message;
+        return message;
     }
 
     public boolean isRetain() {
-        return m_retain;
+        return retain;
     }
-    
+
     public String getClientID() {
-        return m_clientID;
+        return clientID;
     }
 
     public int getMessageID() {
-        return m_msgID;
+        return msgID;
     }
 
     public ServerChannel getSession() {
-        return m_session;
+        return session;
     }
 
     @Override
     public String toString() {
         return "PublishEvent{" +
-                "m_msgID=" + m_msgID +
-                ", m_clientID='" + m_clientID + '\'' +
-                ", m_retain=" + m_retain +
-                ", m_qos=" + m_qos +
-                ", m_topic='" + m_topic + '\'' +
-                '}';
+               "m_msgID=" + msgID +
+               ", m_clientID='" + clientID + '\'' +
+               ", m_retain=" + retain +
+               ", m_qos=" + qos +
+               ", m_topic='" + topic + '\'' +
+               '}';
     }
 }

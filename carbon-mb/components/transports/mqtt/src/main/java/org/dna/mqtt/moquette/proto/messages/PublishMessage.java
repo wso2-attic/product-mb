@@ -23,9 +23,9 @@ import java.nio.ByteBuffer;
  */
 public class PublishMessage extends MessageIDMessage {
 
-    private String m_topicName;
+    private String topicName;
 //    private Integer m_messageID; //could be null if Qos is == 0
-    private ByteBuffer m_payload;
+    private ByteBuffer payload;
 
     /*public Integer getMessageID() {
         return m_messageID;
@@ -36,22 +36,22 @@ public class PublishMessage extends MessageIDMessage {
     }*/
     
     public PublishMessage() {
-        m_messageType = AbstractMessage.PUBLISH;
+        messageType = AbstractMessage.PUBLISH;
     }
 
     public String getTopicName() {
-        return m_topicName;
+        return topicName;
     }
 
     public void setTopicName(String topicName) {
-        this.m_topicName = topicName;
+        this.topicName = topicName;
     }
 
     public ByteBuffer getPayload() {
-        return m_payload;
+        return payload;
     }
 
     public void setPayload(ByteBuffer payload) {
-        this.m_payload = payload;
+        this.payload = payload;
     }
 }

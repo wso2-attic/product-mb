@@ -75,7 +75,7 @@ public class PersistenceStoreConnector implements MQTTConnector {
         AndesAckData andesAckData = AndesUtils.generateAndesAckMessage(channelID, messageID);
 
         // Remove retain message ack upon receive from retain message metadata map
-        if(retainMessageIdSet.contains(messageID + channelID.toString())) {
+        if (retainMessageIdSet.contains(messageID + channelID.toString())) {
             retainMessageIdSet.remove(messageID + channelID.toString());
         } else {
             Andes.getInstance().ackReceived(andesAckData);
@@ -85,7 +85,7 @@ public class PersistenceStoreConnector implements MQTTConnector {
     /**
      * {@inheritDoc}
      */
-    public void messageNack(DeliverableAndesMetadata metadata, UUID channelID) throws AndesException{
+    public void messageNack(DeliverableAndesMetadata metadata, UUID channelID) throws AndesException {
         Andes.getInstance().messageRejected(metadata, channelID);
     }
 
@@ -132,7 +132,8 @@ public class PersistenceStoreConnector implements MQTTConnector {
             // Publish to Andes core
             AndesMessage andesMessage = new MQTTMessage(messageHeader);
             andesMessage.addMessagePart(messagePart);
-            Andes.getInstance().messageReceived(andesMessage, publisher.getChannel(), messageContext.getPubAckHandler());
+            Andes.getInstance().messageReceived(andesMessage, publisher.getChannel(), messageContext.getPubAckHandler
+                    ());
             if (log.isDebugEnabled()) {
                 log.debug(" Message added with message id " + messageContext.getMqttLocalMessageID());
             }
@@ -195,7 +196,7 @@ public class PersistenceStoreConnector implements MQTTConnector {
     /**
      * {@inheritDoc}
      */
-    public void sendRetainedMessagesToSubscriber(String topic,String subscriptionID, QOSLevel qos,
+    public void sendRetainedMessagesToSubscriber(String topic, String subscriptionID, QOSLevel qos,
                                                  UUID subscriptionChannelID)
             throws MQTTException {
 
@@ -218,9 +219,9 @@ public class PersistenceStoreConnector implements MQTTConnector {
                 message.position(bytesPosition);
                 metadata.setRetain(true);
 
-                MQTTopicManager.getInstance().distributeMessageToSubscriber(topic,message,metadata.getMessageID(),
-                                                                            metadata.getQosLevel(), metadata.isRetain(),
-                                                                            subscriptionID, qos.getValue(), metadata);
+                MQTTopicManager.getInstance().distributeMessageToSubscriber(topic, message, metadata.getMessageID(),
+                        metadata.getQosLevel(), metadata.isRetain(),
+                        subscriptionID, qos.getValue(), metadata);
 
                 // keep retain message identification in a set to handle acks.
                 // After sending a retain message, this will stored until ack received from subscriber.
@@ -242,7 +243,7 @@ public class PersistenceStoreConnector implements MQTTConnector {
      */
     public void removeSubscriber(MQTTopicManager channel, String subscribedTopic, String username, String
             subscriptionChannelID, UUID subscriberChannel, boolean isCleanSession, String mqttClientID, QOSLevel
-            qosLevel) throws MQTTException {
+                                         qosLevel) throws MQTTException {
         try {
 
 
@@ -337,7 +338,6 @@ public class PersistenceStoreConnector implements MQTTConnector {
      * @param subscriptionChannelID the id of the channel that would be unique across the cluster
      * @param isActive              is the subscription active it will be inactive during removal
      * @param cleanSession          has the subscriber subscribed with clean session
-     *
      * @return the andes specific object that will be registered in the cluster
      * @throws MQTTException
      */
@@ -361,9 +361,10 @@ public class PersistenceStoreConnector implements MQTTConnector {
 
     /**
      * Generate a local subscription object using MQTT subscription information
+     *
      * @param mqttLocalSubscription instance of underlying mqtt local subscriber
-     * @param topic subscribed topic name
-     * @param clientID valid only when isCleanSession = false. A unique id should be given
+     * @param topic                 subscribed topic name
+     * @param clientID              valid only when isCleanSession = false. A unique id should be given
      * @return Local subscription object representing a subscription in Andes kernel
      */
     private LocalSubscription createLocalSubscription(MQTTLocalSubscription mqttLocalSubscription, String topic,

@@ -9,12 +9,13 @@ import io.netty.util.AttributeKey;
 
 public class BytesMetricsHandler extends ChannelDuplexHandler {
 
-    private static final AttributeKey<org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics> ATTR_KEY_METRICS = new AttributeKey<org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics>("BytesMetrics");
+    private static final AttributeKey<org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics> ATTR_KEY_METRICS = new
+            AttributeKey<org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics>("BytesMetrics");
 
-    private BytesMetricsCollector m_collector;
+    private BytesMetricsCollector collector;
 
     public BytesMetricsHandler(BytesMetricsCollector collector) {
-          m_collector = collector;
+        this.collector = collector;
     }
 
     @Override
@@ -28,14 +29,14 @@ public class BytesMetricsHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        metrics.incrementRead(((ByteBuf)msg).readableBytes());
+        metrics.incrementRead(((ByteBuf) msg).readableBytes());
         ctx.fireChannelRead(msg);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        metrics.incrementWrote(((ByteBuf)msg).writableBytes());
+        metrics.incrementWrote(((ByteBuf) msg).writableBytes());
         ctx.write(msg, promise);
     }
 
@@ -44,7 +45,7 @@ public class BytesMetricsHandler extends ChannelDuplexHandler {
     public void close(ChannelHandlerContext ctx,
                       ChannelPromise promise) throws Exception {
         BytesMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        m_collector.addMetrics(metrics);
+        collector.addMetrics(metrics);
         super.close(ctx, promise);
     }
 }

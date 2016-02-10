@@ -23,6 +23,6 @@ package org.dna.mqtt.moquette.proto.messages;
 public class PubRecMessage extends MessageIDMessage {
     
     public PubRecMessage() {
-        m_messageType = AbstractMessage.PUBREC;
+        messageType = AbstractMessage.PUBREC;
     }
 }

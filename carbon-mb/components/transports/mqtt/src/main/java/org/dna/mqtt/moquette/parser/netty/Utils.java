@@ -157,10 +157,18 @@ public class Utils {
      * Return the number of bytes to encode the given remaining length value
      */
     static int numBytesToEncode(int len) {
-        if (0 <= len && len <= 127) return 1;
-        if (128 <= len && len <= 16383) return 2;
-        if (16384 <= len && len <= 2097151) return 3;
-        if (2097152 <= len && len <= 268435455) return 4;
+        if (0 <= len && len <= 127) {
+            return 1;
+        }
+        if (128 <= len && len <= 16383) {
+            return 2;
+        }
+        if (16384 <= len && len <= 2097151) {
+            return 3;
+        }
+        if (2097152 <= len && len <= 268435455) {
+            return 4;
+        }
         throw new IllegalArgumentException("value shoul be in the range [0..268435455]");
     }
 

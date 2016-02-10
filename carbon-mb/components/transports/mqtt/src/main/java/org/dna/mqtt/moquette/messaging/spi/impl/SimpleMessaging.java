@@ -50,29 +50,29 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
 
     private SubscriptionsStore subscriptions;
 
-    private RingBuffer<ValueEvent> m_ringBuffer;
+    private RingBuffer<ValueEvent> ringBuffer;
 
-    private IStorageService m_storageService;
+    private IStorageService storageService;
 
     /**
      * Disruptor for inbound ValueEvent handling
      */
     private Disruptor<ValueEvent> disruptor;
 
-    private static org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging INSTANCE;
+    private static org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging instance;
 
     private org.dna.mqtt.moquette.messaging.spi.impl.ProtocolProcessor mqttProcessor = new ProtocolProcessor();
 
-    CountDownLatch m_stopLatch;
+    CountDownLatch stopLatch;
 
     private SimpleMessaging() {
     }
 
     public static org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging();
+        if (instance == null) {
+            instance = new org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public void init(Properties configProps) {
@@ -86,7 +86,7 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
         Integer ringBufferSize = AndesConfigurationManager.readValue(
                 AndesConfiguration.TRANSPORTS_MQTT_INBOUND_BUFFER_SIZE);
 
-        disruptor = new Disruptor<ValueEvent>( ValueEvent.EVENT_FACTORY, ringBufferSize, executor);
+        disruptor = new Disruptor<ValueEvent>(ValueEvent.EVENT_FACTORY, ringBufferSize, executor);
         //Added by WSO2, we do not want to ignore the exception here
         disruptor.handleExceptionsWith(new MQTTLogExceptionHandler());
         SequenceBarrier barrier = disruptor.getRingBuffer().newBarrier();
@@ -95,7 +95,7 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
         //Added by WSO2, we need to make sure the exceptions aren't ignored
         eventProcessor.setExceptionHandler(new MQTTLogExceptionHandler());
         disruptor.handleEventsWith(eventProcessor);
-        m_ringBuffer = disruptor.start();
+        ringBuffer = disruptor.start();
 
         disruptorPublish(new InitEvent(configProps));
     }
@@ -105,12 +105,12 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
         if (log.isDebugEnabled()) {
             log.debug("disruptorPublish publishing event " + msgEvent);
         }
-        long sequence = m_ringBuffer.next();
-        ValueEvent event = m_ringBuffer.get(sequence);
+        long sequence = ringBuffer.next();
+        ValueEvent event = ringBuffer.get(sequence);
 
         event.setEvent(msgEvent);
 
-        m_ringBuffer.publish(sequence);
+        ringBuffer.publish(sequence);
     }
 
 
@@ -127,11 +127,11 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
     }
 
     public void stop() {
-        m_stopLatch = new CountDownLatch(1);
+        stopLatch = new CountDownLatch(1);
         disruptorPublish(new StopEvent());
         try {
             //wait the callback notification from the protocol processor thread
-            boolean elapsed = !m_stopLatch.await(10, TimeUnit.SECONDS);
+            boolean elapsed = !stopLatch.await(10, TimeUnit.SECONDS);
             if (elapsed) {
                 log.warn("Can't stop the server in 10 seconds");
             }
@@ -163,10 +163,12 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
                 String clientID = (String) session.getAttribute(Constants.ATTR_CLIENTID);
                 pubEvt = new PublishEvent((PublishMessage) message, clientID, session);
 //                if (message.getQos() == QOSType.MOST_ONE) {
-//                    pubEvt = new PublishEvent(pubMsg.getTopicName(), pubMsg.getQos(), pubMsg.getPayload(), pubMsg.isRetainFlag(), clientID, session);
+//                    pubEvt = new PublishEvent(pubMsg.getTopicName(), pubMsg.getQos(), pubMsg.getPayload(), pubMsg
+// .isRetainFlag(), clientID, session);
 //
 //                } else {
-//                    pubEvt = new PublishEvent(pubMsg.getTopicName(), pubMsg.getQos(), pubMsg.getPayload(), pubMsg.isRetainFlag(), clientID, pubMsg.getMessageID(), session);
+//                    pubEvt = new PublishEvent(pubMsg.getTopicName(), pubMsg.getQos(), pubMsg.getPayload(), pubMsg
+// .isRetainFlag(), clientID, pubMsg.getMessageID(), session);
 //                }
                 mqttProcessor.processPublish(pubEvt);
             } else if (message instanceof DisconnectMessage) {
@@ -200,11 +202,10 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
                 String clientID = (String) session.getAttribute(Constants.ATTR_CLIENTID);
                 int messageID = ((PubAckMessage) message).getMessageID();
                 mqttProcessor.processPubAck(clientID, messageID);
-            }else if(message instanceof MQTTPingRequest){
+            } else if (message instanceof MQTTPingRequest) {
                 String clientID = ((MQTTPingRequest) message).getChannelId();
                 mqttProcessor.pingRequestReceived(clientID);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Illegal message received " + message);
             }
 
@@ -217,29 +218,30 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
     }
 
     private void processInit(Properties props) {
-        m_storageService = new HawtDBStorageService();
-        m_storageService.initStore();
-      /*  m_storageService = new MemoryStorageService();
-        m_storageService.initStore();*/
+        storageService = new HawtDBStorageService();
+        storageService.initStore();
+      /*  storageService = new MemoryStorageService();
+        storageService.initStore();*/
 
-        subscriptions.init(m_storageService);
+        subscriptions.init(storageService);
 
         String authenticatorClassName = AndesConfigurationManager.readValue(AndesConfiguration
                 .TRANSPORTS_MQTT_USER_AUTHENTICATOR_CLASS);
-        
+
         try {
-            Class<? extends IAuthenticator> authenticatorClass = Class.forName(authenticatorClassName).asSubclass(IAuthenticator.class);
+            Class<? extends IAuthenticator> authenticatorClass = Class.forName(authenticatorClassName).asSubclass
+                    (IAuthenticator.class);
             IAuthenticator authenticator = authenticatorClass.newInstance();
-            mqttProcessor.init(subscriptions, m_storageService, authenticator);
-                   
+            mqttProcessor.init(subscriptions, storageService, authenticator);
+
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("unable to find the class authenticator: " +  authenticatorClassName, e);
+            throw new RuntimeException("unable to find the class authenticator: " + authenticatorClassName, e);
         } catch (InstantiationException e) {
-            throw new RuntimeException("unable to create an instance of :" + authenticatorClassName,e);
+            throw new RuntimeException("unable to create an instance of :" + authenticatorClassName, e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("unable to create an instance of :", e);
         }
-        
+
 
     }
 
@@ -248,12 +250,12 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
         if (log.isDebugEnabled()) {
             log.debug("processStop invoked");
         }
-        m_storageService.close();
+        storageService.close();
 
 //        m_eventProcessor.halt();
         disruptor.shutdown();
 
         subscriptions = null;
-        m_stopLatch.countDown();
+        stopLatch.countDown();
     }
 }

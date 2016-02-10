@@ -35,26 +35,26 @@ import java.util.Set;
 public class HawtDBStorageService implements IStorageService {
 
     public static class StoredMessage implements Serializable {
-        AbstractMessage.QOSType m_qos;
-        byte[] m_payload;
-        String m_topic;
+        AbstractMessage.QOSType qos;
+        byte[] payload;
+        String topic;
 
         StoredMessage(byte[] message, AbstractMessage.QOSType qos, String topic) {
-            m_qos = qos;
-            m_payload = message;
-            m_topic = topic;
+            this.qos = qos;
+            payload = message;
+            this.topic = topic;
         }
 
         AbstractMessage.QOSType getQos() {
-            return m_qos;
+            return qos;
         }
 
         ByteBuffer getPayload() {
-            return (ByteBuffer) ByteBuffer.allocate(m_payload.length).put(m_payload).flip();
+            return (ByteBuffer) ByteBuffer.allocate(payload.length).put(payload).flip();
         }
-        
+
         String getTopic() {
-            return m_topic;
+            return topic;
         }
     }
 
@@ -62,20 +62,20 @@ public class HawtDBStorageService implements IStorageService {
     private static final Logger LOG = LoggerFactory.getLogger(org.dna.mqtt.moquette.messaging.spi.impl
             .HawtDBStorageService.class);
 
-    private MultiIndexFactory m_multiIndexFactory;
+    private MultiIndexFactory multiIndexFactory;
     private PageFileFactory pageFactory;
 
     //maps clientID to the list of pending messages stored
     //TODO move in a multimap because only Qos1 and QoS2 are stored here and they have messageID(key of secondary map)
-    private SortedIndex<String, List<StoredPublishEvent>> m_persistentMessageStore;
-    private SortedIndex<String, StoredMessage> m_retainedStore;
+    private SortedIndex<String, List<StoredPublishEvent>> persistentMessageStore;
+    private SortedIndex<String, StoredMessage> retainedStore;
     //bind clientID+MsgID -> evt message published
-    private SortedIndex<String, StoredPublishEvent> m_inflightStore;
+    private SortedIndex<String, StoredPublishEvent> inflightStore;
     //bind clientID+MsgID -> evt message published
-    private SortedIndex<String, StoredPublishEvent> m_qos2Store;
+    private SortedIndex<String, StoredPublishEvent> qos2Store;
 
     //persistent Map of clientID, set of Subscriptions
-    private SortedIndex<String, Set<Subscription>> m_persistentSubscriptions;
+    private SortedIndex<String, Set<Subscription>> persistentSubscriptions;
 
     public HawtDBStorageService() {
         String storeFile = Server.STORAGE_FILE_PATH;
@@ -92,7 +92,7 @@ public class HawtDBStorageService implements IStorageService {
         pageFactory.setFile(tmpFile);
         pageFactory.open();
         PageFile pageFile = pageFactory.getPageFile();
-        m_multiIndexFactory = new MultiIndexFactory(pageFile);
+        multiIndexFactory = new MultiIndexFactory(pageFile);
     }
 
 
@@ -109,22 +109,25 @@ public class HawtDBStorageService implements IStorageService {
         BTreeIndexFactory<String, StoredMessage> indexFactory = new BTreeIndexFactory<String, StoredMessage>();
         indexFactory.setKeyCodec(StringCodec.INSTANCE);
 
-        m_retainedStore = (SortedIndex<String, StoredMessage>) m_multiIndexFactory.openOrCreate("retained", indexFactory);
+        retainedStore = (SortedIndex<String, StoredMessage>) multiIndexFactory.openOrCreate("retained", indexFactory);
     }
 
 
     private void initPersistentMessageStore() {
-        BTreeIndexFactory<String, List<StoredPublishEvent>> indexFactory = new BTreeIndexFactory<String, List<StoredPublishEvent>>();
+        BTreeIndexFactory<String, List<StoredPublishEvent>> indexFactory = new BTreeIndexFactory<String,
+                List<StoredPublishEvent>>();
         indexFactory.setKeyCodec(StringCodec.INSTANCE);
 
-        m_persistentMessageStore = (SortedIndex<String, List<StoredPublishEvent>>) m_multiIndexFactory.openOrCreate("persistedMessages", indexFactory);
+        persistentMessageStore = (SortedIndex<String, List<StoredPublishEvent>>) multiIndexFactory.openOrCreate
+                ("persistedMessages", indexFactory);
     }
 
     private void initPersistentSubscriptions() {
         BTreeIndexFactory<String, Set<Subscription>> indexFactory = new BTreeIndexFactory<String, Set<Subscription>>();
         indexFactory.setKeyCodec(StringCodec.INSTANCE);
 
-        m_persistentSubscriptions = (SortedIndex<String, Set<Subscription>>) m_multiIndexFactory.openOrCreate("subscriptions", indexFactory);
+        persistentSubscriptions = (SortedIndex<String, Set<Subscription>>) multiIndexFactory.openOrCreate
+                ("subscriptions", indexFactory);
     }
 
     /**
@@ -132,38 +135,41 @@ public class HawtDBStorageService implements IStorageService {
      * messages in flight.
      */
     private void initInflightMessageStore() {
-        BTreeIndexFactory<String, StoredPublishEvent> indexFactory = new BTreeIndexFactory<String, StoredPublishEvent>();
+        BTreeIndexFactory<String, StoredPublishEvent> indexFactory = new BTreeIndexFactory<String,
+                StoredPublishEvent>();
         indexFactory.setKeyCodec(StringCodec.INSTANCE);
 
-        m_inflightStore = (SortedIndex<String, StoredPublishEvent>) m_multiIndexFactory.openOrCreate("inflight", indexFactory);
+        inflightStore = (SortedIndex<String, StoredPublishEvent>) multiIndexFactory.openOrCreate("inflight",
+                indexFactory);
     }
 
     private void initPersistentQoS2MessageStore() {
-        BTreeIndexFactory<String, StoredPublishEvent> indexFactory = new BTreeIndexFactory<String, StoredPublishEvent>();
+        BTreeIndexFactory<String, StoredPublishEvent> indexFactory = new BTreeIndexFactory<String,
+                StoredPublishEvent>();
         indexFactory.setKeyCodec(StringCodec.INSTANCE);
 
-        m_qos2Store = (SortedIndex<String, StoredPublishEvent>) m_multiIndexFactory.openOrCreate("qos2Store", indexFactory);
+        qos2Store = (SortedIndex<String, StoredPublishEvent>) multiIndexFactory.openOrCreate("qos2Store", indexFactory);
     }
 
     public void storeRetained(String topic, ByteBuffer message, AbstractMessage.QOSType qos) {
         //TODO removed the retain entry since we will be maintaing a cluster specifc store in andes
  /*       if (!message.hasRemaining()) {
             //clean the message from topic
-            m_retainedStore.remove(topic);
+            retainedStore.remove(topic);
         } else {
             //store the message to the topic
             byte[] raw = new byte[message.remaining()];
             message.get(raw);
-            m_retainedStore.put(topic, new StoredMessage(raw, qos, topic));
+            retainedStore.put(topic, new StoredMessage(raw, qos, topic));
         }*/
     }
 
     public Collection<StoredMessage> searchMatching(IMatchingCondition condition) {
-        LOG.debug("searchMatching scanning all retained messages, presents are {}", m_retainedStore.size());
+        LOG.debug("searchMatching scanning all retained messages, presents are {}", retainedStore.size());
 
         List<StoredMessage> results = new ArrayList<StoredMessage>();
 
-        for (Map.Entry<String, StoredMessage> entry : m_retainedStore) {
+        for (Map.Entry<String, StoredMessage> entry : retainedStore) {
             StoredMessage storedMsg = entry.getValue();
             if (condition.match(entry.getKey())) {
                 results.add(storedMsg);
@@ -176,19 +182,19 @@ public class HawtDBStorageService implements IStorageService {
     public void storePublishForFuture(PublishEvent evt) {
         List<StoredPublishEvent> storedEvents;
         String clientID = evt.getClientID();
-        if (!m_persistentMessageStore.containsKey(clientID)) {
+        if (!persistentMessageStore.containsKey(clientID)) {
             storedEvents = new ArrayList<StoredPublishEvent>();
         } else {
-            storedEvents = m_persistentMessageStore.get(clientID);
+            storedEvents = persistentMessageStore.get(clientID);
         }
         storedEvents.add(convertToStored(evt));
-        m_persistentMessageStore.put(clientID, storedEvents);
+        persistentMessageStore.put(clientID, storedEvents);
         //NB rewind the evt message content
         LOG.debug("Stored published message for client <{}> on topic <{}>", clientID, evt.getTopic());
     }
 
     public List<PublishEvent> retrivePersistedPublishes(String clientID) {
-        List<StoredPublishEvent> storedEvts = m_persistentMessageStore.get(clientID);
+        List<StoredPublishEvent> storedEvts = persistentMessageStore.get(clientID);
         if (storedEvts == null) {
             return null;
         }
@@ -198,9 +204,9 @@ public class HawtDBStorageService implements IStorageService {
         }
         return liveEvts;
     }
-    
+
     public void cleanPersistedPublishMessage(String clientID, int messageID) {
-        List<StoredPublishEvent> events = m_persistentMessageStore.get(clientID);
+        List<StoredPublishEvent> events = persistentMessageStore.get(clientID);
         if (events == null) {
             return;
         }
@@ -211,30 +217,30 @@ public class HawtDBStorageService implements IStorageService {
             }
         }
         events.remove(toRemoveEvt);
-        m_persistentMessageStore.put(clientID, events);
+        persistentMessageStore.put(clientID, events);
     }
 
     public void cleanPersistedPublishes(String clientID) {
-        m_persistentMessageStore.remove(clientID);
+        persistentMessageStore.remove(clientID);
     }
 
     public void cleanInFlight(String msgID) {
-        m_inflightStore.remove(msgID);
+        inflightStore.remove(msgID);
     }
 
     public void addInFlight(PublishEvent evt, String publishKey) {
         StoredPublishEvent storedEvt = convertToStored(evt);
-        m_inflightStore.put(publishKey, storedEvt);
+        inflightStore.put(publishKey, storedEvt);
     }
 
     public void addNewSubscription(Subscription newSubscription, String clientID) {
         LOG.debug("addNewSubscription invoked with subscription {} for client {}", newSubscription, clientID);
-        if (!m_persistentSubscriptions.containsKey(clientID)) {
+        if (!persistentSubscriptions.containsKey(clientID)) {
             LOG.debug("clientID {} is a newcome, creating it's subscriptions set", clientID);
-            m_persistentSubscriptions.put(clientID, new HashSet<Subscription>());
+            persistentSubscriptions.put(clientID, new HashSet<Subscription>());
         }
 
-        Set<Subscription> subs = m_persistentSubscriptions.get(clientID);
+        Set<Subscription> subs = persistentSubscriptions.get(clientID);
         if (!subs.contains(newSubscription)) {
             LOG.debug("updating clientID {} subscriptions set with new subscription", clientID);
             //TODO check the subs doesn't contain another subscription to the same topic with different
@@ -249,18 +255,18 @@ public class HawtDBStorageService implements IStorageService {
                 subs.remove(existingSubscription);
             }
             subs.add(newSubscription);
-            m_persistentSubscriptions.put(clientID, subs);
+            persistentSubscriptions.put(clientID, subs);
             LOG.debug("clientID {} subscriptions set now is {}", clientID, subs);
         }
     }
 
     public void removeAllSubscriptions(String clientID) {
-        m_persistentSubscriptions.remove(clientID);
+        persistentSubscriptions.remove(clientID);
     }
 
     public List<Subscription> retrieveAllSubscriptions() {
         List<Subscription> allSubscriptions = new ArrayList<Subscription>();
-        for (Map.Entry<String, Set<Subscription>> entry : m_persistentSubscriptions) {
+        for (Map.Entry<String, Set<Subscription>> entry : persistentSubscriptions) {
             allSubscriptions.addAll(entry.getValue());
         }
         LOG.debug("retrieveAllSubscriptions returning subs {}", allSubscriptions);
@@ -279,18 +285,18 @@ public class HawtDBStorageService implements IStorageService {
     /*-------- QoS 2  storage management --------------*/
     public void persistQoS2Message(String publishKey, PublishEvent evt) {
         LOG.debug("persistQoS2Message store pubKey {}, evt {}", publishKey, evt);
-        m_qos2Store.put(publishKey, convertToStored(evt));
+        qos2Store.put(publishKey, convertToStored(evt));
     }
 
     public void removeQoS2Message(String publishKey) {
-        m_qos2Store.remove(publishKey);
+        qos2Store.remove(publishKey);
     }
 
     public PublishEvent retrieveQoS2Message(String publishKey) {
-        StoredPublishEvent storedEvt = m_qos2Store.get(publishKey);
+        StoredPublishEvent storedEvt = qos2Store.get(publishKey);
         return convertFromStored(storedEvt);
     }
-    
+
     private StoredPublishEvent convertToStored(PublishEvent evt) {
         StoredPublishEvent storedEvt = new StoredPublishEvent(evt);
         return storedEvt;

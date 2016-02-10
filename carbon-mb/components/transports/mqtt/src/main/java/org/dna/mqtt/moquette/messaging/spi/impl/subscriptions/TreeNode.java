@@ -8,52 +8,56 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 class TreeNode {
-    
-    private class ClientIDComparator implements Comparator<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> {
 
-        public int compare(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription o1, org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription o2) {
+    private class ClientIDComparator implements Comparator<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions
+            .Subscription> {
+
+        public int compare(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription o1, org.dna.mqtt
+                .moquette.messaging.spi.impl.subscriptions.Subscription o2) {
             return o1.getClientId().compareTo(o2.getClientId());
         }
 
     }
 
-    org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode m_parent;
-    Token m_token;
-    List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode> m_children = new ArrayList<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode>();
-    List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> m_subscriptions = new ArrayList<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>();
+    org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode parent;
+    Token token;
+    List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode> children = new ArrayList<org.dna.mqtt
+            .moquette.messaging.spi.impl.subscriptions.TreeNode>();
+    List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> subscriptions = new ArrayList<org.dna
+            .mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>();
 
     TreeNode(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode parent) {
-        this.m_parent = parent;
+        this.parent = parent;
     }
 
     Token getToken() {
-        return m_token;
+        return token;
     }
 
     void setToken(Token topic) {
-        this.m_token = topic;
+        this.token = topic;
     }
 
     void addSubscription(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s) {
         //avoid double registering for same clientID, topic and QoS
-        if (m_subscriptions.contains(s)) {
+        if (subscriptions.contains(s)) {
             return;
         }
         //remove existing subscription for same client and topic but different QoS
-        int existingSubIdx = Collections.binarySearch(m_subscriptions, s, new ClientIDComparator());
+        int existingSubIdx = Collections.binarySearch(subscriptions, s, new ClientIDComparator());
         if (existingSubIdx >= 0) {
-            m_subscriptions.remove(existingSubIdx);
+            subscriptions.remove(existingSubIdx);
         }
 
-        m_subscriptions.add(s);
+        subscriptions.add(s);
     }
 
     void addChild(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child) {
-        m_children.add(child);
+        children.add(child);
     }
 
     boolean isLeaf() {
-        return m_children.isEmpty();
+        return children.isEmpty();
     }
 
     /**
@@ -61,7 +65,7 @@ class TreeNode {
      * null;
      */
     org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode childWithToken(Token token) {
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : m_children) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : children) {
             if (child.getToken().equals(token)) {
                 return child;
             }
@@ -71,17 +75,18 @@ class TreeNode {
     }
 
     List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> subscriptions() {
-        return m_subscriptions;
+        return subscriptions;
     }
 
-    void matches(Queue<Token> tokens, List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> matchingSubs) {
+    void matches(Queue<Token> tokens, List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>
+            matchingSubs) {
         Token t = tokens.poll();
 
         //check if t is null <=> tokens finished
         if (t == null) {
-            matchingSubs.addAll(m_subscriptions);
+            matchingSubs.addAll(subscriptions);
             //check if it has got a MULTI child and add its subscriptions
-            for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode n : m_children) {
+            for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode n : children) {
                 if (n.getToken() == Token.MULTI || n.getToken() == Token.SINGLE) {
                     matchingSubs.addAll(n.subscriptions());
                 }
@@ -91,12 +96,12 @@ class TreeNode {
         }
 
         //we are on MULTI, than add subscriptions and return
-        if (m_token == Token.MULTI) {
-            matchingSubs.addAll(m_subscriptions);
+        if (token == Token.MULTI) {
+            matchingSubs.addAll(subscriptions);
             return;
         }
 
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode n : m_children) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode n : children) {
             if (n.getToken().match(t)) {
                 //Create a copy of token, else if navigate 2 sibling it
                 //consumes 2 elements on the queue instead of one
@@ -110,8 +115,8 @@ class TreeNode {
      * Return the number of registered subscriptions
      */
     int size() {
-        int res = m_subscriptions.size();
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : m_children) {
+        int res = subscriptions.size();
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : children) {
             res += child.size();
         }
         return res;
@@ -119,51 +124,52 @@ class TreeNode {
 
     void removeClientSubscriptions(String clientID) {
         //collect what to delete and then delete to avoid ConcurrentModification
-        List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> subsToRemove = new ArrayList<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>();
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s : m_subscriptions) {
+        List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> subsToRemove = new ArrayList<org
+                .dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>();
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s : subscriptions) {
             if (s.clientId.equals(clientID)) {
                 subsToRemove.add(s);
             }
         }
 
         for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s : subsToRemove) {
-            m_subscriptions.remove(s);
+            subscriptions.remove(s);
         }
 
         //go deep
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : m_children) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : children) {
             child.removeClientSubscriptions(clientID);
         }
     }
 
     /**
      * Deactivate all topic subscriptions for the given clientID.
-     * */
+     */
     void deactivate(String clientID) {
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s : m_subscriptions) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription s : subscriptions) {
             if (s.clientId.equals(clientID)) {
                 s.setActive(false);
             }
         }
 
         //go deep
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : m_children) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : children) {
             child.deactivate(clientID);
         }
     }
 
     /**
      * Activate all topic subscriptions for the given clientID.
-     * */
+     */
     public void activate(String clientID) {
-        for (Subscription s : m_subscriptions) {
+        for (Subscription s : subscriptions) {
             if (s.clientId.equals(clientID)) {
                 s.setActive(true);
             }
         }
 
         //go deep
-        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : m_children) {
+        for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode child : children) {
             child.activate(clientID);
         }
 

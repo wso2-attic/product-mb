@@ -1,22 +1,22 @@
 package org.dna.mqtt.moquette.server.netty.metrics;
 
 public class MessageMetrics {
-    private long m_messagesRead = 0;
-    private long m_messageWrote = 0;
+    private long messagesRead = 0;
+    private long messageWrote = 0;
 
     void incrementRead(long numMessages) {
-        m_messagesRead += numMessages;
+        messagesRead += numMessages;
     }
 
     void incrementWrote(long numMessages) {
-        m_messageWrote += numMessages;
+        messageWrote += numMessages;
     }
 
     public long messagesRead() {
-        return m_messagesRead;
+        return messagesRead;
     }
 
     public long messagesWrote() {
-        return m_messageWrote;
+        return messageWrote;
     }
 }

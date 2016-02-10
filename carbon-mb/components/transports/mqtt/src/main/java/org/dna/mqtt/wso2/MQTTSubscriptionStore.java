@@ -34,7 +34,8 @@ public class MQTTSubscriptionStore extends SubscriptionsStore {
      * Key = the name of the topic
      * Value = the subscription/s represented through the topic
      */
-    private Map<String, org.dna.mqtt.wso2.Subscribers> localSubscriptions = new HashMap<String, org.dna.mqtt.wso2.Subscribers>();
+    private Map<String, org.dna.mqtt.wso2.Subscribers> localSubscriptions = new HashMap<String, org.dna.mqtt.wso2
+            .Subscribers>();
 
     /**
      * Would include the subscription to the list so that this could be used when sending the message out

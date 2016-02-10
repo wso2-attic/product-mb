@@ -23,6 +23,6 @@ package org.dna.mqtt.moquette.proto.messages;
 public class DisconnectMessage extends ZeroLengthMessage {
     
     public DisconnectMessage() {
-        m_messageType = AbstractMessage.DISCONNECT;
+        messageType = AbstractMessage.DISCONNECT;
     }
 }

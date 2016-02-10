@@ -33,8 +33,9 @@ import static org.dna.mqtt.moquette.proto.messages.AbstractMessage.UNSUBSCRIBE;
 public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
 
     private static Log log = LogFactory.getLog(org.dna.mqtt.moquette.server.netty.NettyMQTTHandler.class);
-    private IMessaging m_messaging;
-    private final Map<ChannelHandlerContext, org.dna.mqtt.moquette.server.netty.NettyChannel> mqttChannelMapper = new HashMap<ChannelHandlerContext, org.dna.mqtt.moquette.server.netty.NettyChannel>();
+    private IMessaging messaging;
+    private final Map<ChannelHandlerContext, org.dna.mqtt.moquette.server.netty.NettyChannel> mqttChannelMapper = new
+            HashMap<ChannelHandlerContext, org.dna.mqtt.moquette.server.netty.NettyChannel>();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
@@ -61,7 +62,7 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
                         channel = mqttChannelMapper.get(ctx);
                     }
 
-                    m_messaging.handleProtocolMessage(channel, msg);
+                    messaging.handleProtocolMessage(channel, msg);
                     break;
                 case PINGREQ:
                     PingRespMessage pingResp = new PingRespMessage();
@@ -76,7 +77,7 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
 
                     MQTTPingRequest mqttPingRequest = new MQTTPingRequest();
                     mqttPingRequest.setChannelId(channel.getAttribute(Constants.ATTR_CLIENTID).toString());
-                    m_messaging.handleProtocolMessage(channel, mqttPingRequest);
+                    messaging.handleProtocolMessage(channel, mqttPingRequest);
                     break;
             }
         } catch (Exception ex) {
@@ -87,9 +88,9 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         NettyChannel channel = mqttChannelMapper.get(ctx);
-        if(null != channel) {
+        if (null != channel) {
             String clientID = (String) channel.getAttribute(Constants.ATTR_CLIENTID);
-            m_messaging.lostConnection(clientID);
+            messaging.lostConnection(clientID);
             ctx.close(/*false*/);
         }
         synchronized (mqttChannelMapper) {
@@ -98,13 +99,13 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // We log the error and close the connection at an event where and exception is caught
         log.error(cause.getMessage(), cause);
         ctx.close();
     }
 
     public void setMessaging(IMessaging messaging) {
-        m_messaging = messaging;
+        this.messaging = messaging;
     }
 }

@@ -7,48 +7,48 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 public class StoredPublishEvent implements Serializable {
-    String m_topic;
-    QOSType m_qos;
-    byte[] m_message;
-    boolean m_retain;
-    String m_clientID;
+    String topic;
+    QOSType qos;
+    byte[] message;
+    boolean retain;
+    String clientID;
     //Optional attribute, available only fo QoS 1 and 2
-    int m_msgID;
-    
+    int msgID;
+
     public StoredPublishEvent(PublishEvent wrapped) {
-        m_topic = wrapped.getTopic();
-        m_qos = wrapped.getQos();
-        m_retain = wrapped.isRetain();
-        m_clientID = wrapped.getClientID();
-        m_msgID = wrapped.getMessageID();
-        
+        topic = wrapped.getTopic();
+        qos = wrapped.getQos();
+        retain = wrapped.isRetain();
+        clientID = wrapped.getClientID();
+        msgID = wrapped.getMessageID();
+
         ByteBuffer buffer = wrapped.getMessage();
-        m_message = new byte[buffer.remaining()];
-        buffer.get(m_message);
+        message = new byte[buffer.remaining()];
+        buffer.get(message);
         buffer.rewind();
     }
-    
+
     public String getTopic() {
-        return m_topic;
+        return topic;
     }
 
     public QOSType getQos() {
-        return m_qos;
+        return qos;
     }
 
     public byte[] getMessage() {
-        return m_message;
+        return message;
     }
 
     public boolean isRetain() {
-        return m_retain;
+        return retain;
     }
-    
+
     public String getClientID() {
-        return m_clientID;
+        return clientID;
     }
 
     public int getMessageID() {
-        return m_msgID;
+        return msgID;
     }
 }

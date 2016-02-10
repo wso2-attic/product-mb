@@ -134,7 +134,8 @@ public class ConnectDecoder extends org.dna.mqtt.moquette.parser.netty.DemuxDeco
         //a password is true iff user is true.
         if (!userFlag && passwordFlag) {
             in.resetReaderIndex();
-            throw new CorruptedFrameException("Expected password flag to true if the user flag is true but was: " + passwordFlag);
+            throw new CorruptedFrameException("Expected password flag to true if the user flag is true but was: " +
+                                              passwordFlag);
         }
         message.setCleanSession(cleanSession);
         message.setWillFlag(willFlag);
@@ -149,7 +150,7 @@ public class ConnectDecoder extends org.dna.mqtt.moquette.parser.netty.DemuxDeco
         message.setKeepAlive(keepAlive);
 
         if ((remainingLength == 12 && message.getProcotolVersion() == VERSION_3_1) ||
-                (remainingLength == 10 && message.getProcotolVersion() == VERSION_3_1_1)) {
+            (remainingLength == 10 && message.getProcotolVersion() == VERSION_3_1_1)) {
             out.add(message);
             return;
         }
