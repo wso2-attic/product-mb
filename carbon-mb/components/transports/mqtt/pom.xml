@@ -50,9 +50,46 @@
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.andes.wso2</groupId>
+            <artifactId>andes</artifactId>
+            <version>${andes.dependency.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty.wso2</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty-all.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <properties>
+        <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
+        <netty-all.version>4.0.23.wso2v1</netty-all.version>
+        <disruptor.version>3.3.2.wso2v2</disruptor.version>
+        <guava.version>19.0</guava.version>
+
+
         <private.package>org.wso2.carbon.andes.mqtt.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.mqtt.internal,
@@ -62,6 +99,7 @@
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
             org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)"
         </import.package>
+
     </properties>
 
 </project>
