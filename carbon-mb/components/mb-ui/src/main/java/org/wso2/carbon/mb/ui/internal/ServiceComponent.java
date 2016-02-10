@@ -8,9 +8,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.mb.ui.Greeter;
 import org.wso2.carbon.mb.ui.GreeterImpl;
-import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
