@@ -66,6 +66,11 @@
             <outputDirectory>conf/</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/conf/hazelcast</directory>
+            <outputDirectory>conf/hazelcast</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
 
     <files>

@@ -111,6 +111,12 @@
                 <artifactId>org.wso2.carbon.launcher</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.hazelcast</groupId>
+                <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
+                <version>${carbon.hazelcast.version}</version>
+                <type>zip</type>
+            </dependency>
 
             <!--Message Broker Dependencies-->
             <dependency>
@@ -221,6 +227,7 @@
         <!--Carbon related properties-->
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
+        <carbon.hazelcast.version>1.0.0</carbon.hazelcast.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
     </properties>
 
