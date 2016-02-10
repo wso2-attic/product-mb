@@ -10,14 +10,15 @@ import org.apache.commons.logging.LogFactory;
 
 public class MessageMetricsHandler extends ChannelDuplexHandler {
 
-    private static final AttributeKey<MessageMetrics> ATTR_KEY_METRICS = new AttributeKey<MessageMetrics>("MessageMetrics");
+    private static final AttributeKey<MessageMetrics> ATTR_KEY_METRICS = new AttributeKey<MessageMetrics>
+            ("MessageMetrics");
 
-    private MessageMetricsCollector m_collector;
+    private MessageMetricsCollector collector;
 
     private static Log log = LogFactory.getLog(org.dna.mqtt.moquette.server.netty.metrics.MessageMetricsHandler.class);
 
     public MessageMetricsHandler(MessageMetricsCollector collector) {
-          m_collector = collector;
+        this.collector = collector;
     }
 
     @Override
@@ -47,12 +48,12 @@ public class MessageMetricsHandler extends ChannelDuplexHandler {
     public void close(ChannelHandlerContext ctx,
                       ChannelPromise promise) throws Exception {
         MessageMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        m_collector.addMetrics(metrics);
+        collector.addMetrics(metrics);
         super.close(ctx, promise);
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // We log the error and close the connection at an event where and exception is caught
         log.error(cause.getMessage(), cause);
         ctx.close();

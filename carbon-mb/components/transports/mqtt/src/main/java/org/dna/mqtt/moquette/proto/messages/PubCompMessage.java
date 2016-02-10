@@ -22,7 +22,7 @@ package org.dna.mqtt.moquette.proto.messages;
 public class PubCompMessage extends MessageIDMessage {
     
     public PubCompMessage() {
-        m_messageType = AbstractMessage.PUBCOMP;
+        messageType = AbstractMessage.PUBCOMP;
     }
 }
 

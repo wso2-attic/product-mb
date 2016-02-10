@@ -64,7 +64,8 @@ public class MQTTMetaDataHandler {
         MQTTMessageMetaData metaInformation = (MQTTMessageMetaData) originalMetadata;
         //Will re-encode the bytes
         return MQTTUtils.encodeMetaInfo(MQTTUtils.MQTT_META_INFO, metaInformation.getMessageID(), metaInformation
-                        .getMessageArrivalTime(), false, metaInformation.getQosLevel(), metaInformation.getDestination(),
+                        .getMessageArrivalTime(), false, metaInformation.getQosLevel(), metaInformation
+                        .getDestination(),
                 metaInformation.isPersistent(), metaInformation.getContentSize(), newCompressedMessageValue);
 
     }

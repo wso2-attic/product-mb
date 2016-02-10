@@ -18,17 +18,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class MemoryStorageService implements IStorageService {
-    
-    private Map<String, Set<Subscription>> m_persistentSubscriptions = new HashMap<String, Set<Subscription>>();
-    private Map<String, HawtDBStorageService.StoredMessage> m_retainedStore = new HashMap<String, HawtDBStorageService.StoredMessage>();
+
+    private Map<String, Set<Subscription>> persistentSubscriptions = new HashMap<String, Set<Subscription>>();
+    private Map<String, HawtDBStorageService.StoredMessage> retainedStore = new HashMap<String, HawtDBStorageService
+            .StoredMessage>();
     //TODO move in a multimap because only Qos1 and QoS2 are stored here and they have messageID(key of secondary map)
-    private Map<String, List<PublishEvent>> m_persistentMessageStore = new HashMap<String, List<PublishEvent>>();
-    private Map<String, PublishEvent> m_inflightStore = new HashMap<String, PublishEvent>();
-    private Map<String, PublishEvent> m_qos2Store = new HashMap<String, PublishEvent>();
-    
+    private Map<String, List<PublishEvent>> persistentMessageStore = new HashMap<String, List<PublishEvent>>();
+    private Map<String, PublishEvent> inflightStore = new HashMap<String, PublishEvent>();
+    private Map<String, PublishEvent> qos2Store = new HashMap<String, PublishEvent>();
+
     private static final Logger LOG = LoggerFactory.getLogger(org.dna.mqtt.moquette.messaging.spi.impl
             .MemoryStorageService.class);
-    
+
     public void initStore() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -36,21 +37,21 @@ public class MemoryStorageService implements IStorageService {
     public void storeRetained(String topic, ByteBuffer message, AbstractMessage.QOSType qos) {
         if (!message.hasRemaining()) {
             //clean the message from topic
-            m_retainedStore.remove(topic);
+            retainedStore.remove(topic);
         } else {
             //store the message to the topic
             byte[] raw = new byte[message.remaining()];
             message.get(raw);
-            m_retainedStore.put(topic, new HawtDBStorageService.StoredMessage(raw, qos, topic));
+            retainedStore.put(topic, new HawtDBStorageService.StoredMessage(raw, qos, topic));
         }
     }
 
     public Collection<HawtDBStorageService.StoredMessage> searchMatching(IMatchingCondition condition) {
-        LOG.debug("searchMatching scanning all retained messages, presents are {}", m_retainedStore.size());
+        LOG.debug("searchMatching scanning all retained messages, presents are {}", retainedStore.size());
 
         List<HawtDBStorageService.StoredMessage> results = new ArrayList<HawtDBStorageService.StoredMessage>();
 
-        for (Map.Entry<String, HawtDBStorageService.StoredMessage> entry : m_retainedStore.entrySet()) {
+        for (Map.Entry<String, HawtDBStorageService.StoredMessage> entry : retainedStore.entrySet()) {
             HawtDBStorageService.StoredMessage storedMsg = entry.getValue();
             if (condition.match(entry.getKey())) {
                 results.add(storedMsg);
@@ -64,21 +65,21 @@ public class MemoryStorageService implements IStorageService {
         LOG.debug("storePublishForFuture store evt {}", evt);
         List<PublishEvent> storedEvents;
         String clientID = evt.getClientID();
-        if (!m_persistentMessageStore.containsKey(clientID)) {
+        if (!persistentMessageStore.containsKey(clientID)) {
             storedEvents = new ArrayList<PublishEvent>();
         } else {
-            storedEvents = m_persistentMessageStore.get(clientID);
+            storedEvents = persistentMessageStore.get(clientID);
         }
         storedEvents.add(evt);
-        m_persistentMessageStore.put(clientID, storedEvents);
+        persistentMessageStore.put(clientID, storedEvents);
     }
 
     public List<PublishEvent> retrivePersistedPublishes(String clientID) {
-        return m_persistentMessageStore.get(clientID);
+        return persistentMessageStore.get(clientID);
     }
-    
+
     public void cleanPersistedPublishMessage(String clientID, int messageID) {
-        List<PublishEvent> events = m_persistentMessageStore.get(clientID);
+        List<PublishEvent> events = persistentMessageStore.get(clientID);
         PublishEvent toRemoveEvt = null;
         for (PublishEvent evt : events) {
             if (evt.getMessageID() == messageID) {
@@ -86,40 +87,40 @@ public class MemoryStorageService implements IStorageService {
             }
         }
         events.remove(toRemoveEvt);
-        m_persistentMessageStore.put(clientID, events);
+        persistentMessageStore.put(clientID, events);
     }
 
     public void cleanPersistedPublishes(String clientID) {
-        m_persistentMessageStore.remove(clientID);
+        persistentMessageStore.remove(clientID);
     }
 
     public void cleanInFlight(String msgID) {
-        m_inflightStore.remove(msgID);
+        inflightStore.remove(msgID);
     }
 
     public void addInFlight(PublishEvent evt, String publishKey) {
-        m_inflightStore.put(publishKey, evt);
+        inflightStore.put(publishKey, evt);
     }
 
     public void addNewSubscription(Subscription newSubscription, String clientID) {
-        if (!m_persistentSubscriptions.containsKey(clientID)) {
-            m_persistentSubscriptions.put(clientID, new HashSet<Subscription>());
+        if (!persistentSubscriptions.containsKey(clientID)) {
+            persistentSubscriptions.put(clientID, new HashSet<Subscription>());
         }
 
-        Set<Subscription> subs = m_persistentSubscriptions.get(clientID);
+        Set<Subscription> subs = persistentSubscriptions.get(clientID);
         if (!subs.contains(newSubscription)) {
             subs.add(newSubscription);
-            m_persistentSubscriptions.put(clientID, subs);
+            persistentSubscriptions.put(clientID, subs);
         }
     }
 
     public void removeAllSubscriptions(String clientID) {
-        m_persistentSubscriptions.remove(clientID);
+        persistentSubscriptions.remove(clientID);
     }
 
     public List<Subscription> retrieveAllSubscriptions() {
         List<Subscription> allSubscriptions = new ArrayList<Subscription>();
-        for (Map.Entry<String, Set<Subscription>> entry : m_persistentSubscriptions.entrySet()) {
+        for (Map.Entry<String, Set<Subscription>> entry : persistentSubscriptions.entrySet()) {
             allSubscriptions.addAll(entry.getValue());
         }
         return allSubscriptions;
@@ -131,14 +132,14 @@ public class MemoryStorageService implements IStorageService {
 
     public void persistQoS2Message(String publishKey, PublishEvent evt) {
         LOG.debug("persistQoS2Message store pubKey {}, evt {}", publishKey, evt);
-        m_qos2Store.put(publishKey, evt);
+        qos2Store.put(publishKey, evt);
     }
 
     public void removeQoS2Message(String publishKey) {
-        m_qos2Store.remove(publishKey);
+        qos2Store.remove(publishKey);
     }
 
     public PublishEvent retrieveQoS2Message(String publishKey) {
-        return m_qos2Store.get(publishKey);
+        return qos2Store.get(publishKey);
     }
 }

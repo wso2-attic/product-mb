@@ -50,7 +50,7 @@ public class InMemoryConnector implements MQTTConnector {
      * {@inheritDoc}
      */
     @Override
-    public void messageAck(long messageID,UUID subChannelID)
+    public void messageAck(long messageID, UUID subChannelID)
             throws AndesException {
         //Fully in-memory mode will only be compatible for messages with QoS 0 therefore a message ack will not be,
         //received
@@ -67,12 +67,13 @@ public class InMemoryConnector implements MQTTConnector {
      */
     @Override
     public void addMessage(MQTTMessageContext messageContext) throws MQTTException {
-        broadcastMessages(messageContext.getTopic(), messageContext.getMessage(), messageContext.getMqttLocalMessageID(),
+        broadcastMessages(messageContext.getTopic(), messageContext.getMessage(), messageContext
+                        .getMqttLocalMessageID(),
                 messageContext.getQosLevel().getValue(), messageContext.isRetain(), messageContext.getPublisherID(),
                 messageContext.getPubAckHandler());
         if (log.isDebugEnabled()) {
             log.debug("Message published to topic " + messageContext.getTopic() + " with publisher id " +
-                    messageContext.getMqttLocalMessageID());
+                      messageContext.getMqttLocalMessageID());
         }
     }
 
@@ -100,7 +101,7 @@ public class InMemoryConnector implements MQTTConnector {
      * {@inheritDoc}
      */
     @Override
-    public void removeSubscriber(MQTTopicManager channel, String subscribedTopic,String username,
+    public void removeSubscriber(MQTTopicManager channel, String subscribedTopic, String username,
                                  String subscriptionChannelID, UUID subscriberChannel,
                                  boolean isCleanSession, String mqttClientID, QOSLevel qosLevel)
             throws MQTTException {
@@ -116,7 +117,7 @@ public class InMemoryConnector implements MQTTConnector {
     @Override
     public void disconnectSubscriber(MQTTopicManager channel, String subscribedTopic, String username, String
             subscriptionChannelID, UUID subscriberChannel, boolean isCleanSession, String mqttClientID, QOSLevel
-            qosLevel) throws MQTTException {
+                                             qosLevel) throws MQTTException {
 
         handleSubscriptionRemoval(subscribedTopic, mqttClientID);
         log.info("Subscription with id " + mqttClientID + " removed from " + subscribedTopic);
@@ -153,10 +154,11 @@ public class InMemoryConnector implements MQTTConnector {
                 //We allow only QoS 0 messages to be exchanged in-memory
                 int memoryQoSLevel = 0;
                 MQTTopicManager.getInstance().distributeMessageToSubscriber(topic, messages, messageID,
-                        memoryQoSLevel, retain, subChannel, memoryQoSLevel,new DeliverableAndesMetadata(null,0L,
-                                null,false));
+                        memoryQoSLevel, retain, subChannel, memoryQoSLevel, new DeliverableAndesMetadata(null, 0L,
+                                null, false));
                 if (log.isDebugEnabled()) {
-                    log.debug("Message " + messageID + " Delivered to subscription " + subChannel + " to topic " + topic);
+                    log.debug("Message " + messageID + " Delivered to subscription " + subChannel + " to topic " +
+                              topic);
                 }
             } catch (MQTTException e) {
                 String message = "Error occurred while sending the message to subscriber";
@@ -213,15 +215,16 @@ public class InMemoryConnector implements MQTTConnector {
     }
 
     /**
-     *
      * Handles retain feature in in-memory mode
-     * @param topic topic name
+     *
+     * @param topic          topic name
      * @param subscriptionID subscription id of the subscriber
-     * @param qos qos level of the subscriber
+     * @param qos            qos level of the subscriber
      */
-    public void sendRetainedMessagesToSubscriber(String topic,String subscriptionID, QOSLevel qos,
+    public void sendRetainedMessagesToSubscriber(String topic, String subscriptionID, QOSLevel qos,
                                                  UUID subscriptionChannelID) {
-    // TODO : Need to implement retain feature for non-persistent MQTT model after inMemoryConnector updated with new delivery model.
+        // TODO : Need to implement retain feature for non-persistent MQTT model after inMemoryConnector updated with
+        // new delivery model.
     }
 
 }

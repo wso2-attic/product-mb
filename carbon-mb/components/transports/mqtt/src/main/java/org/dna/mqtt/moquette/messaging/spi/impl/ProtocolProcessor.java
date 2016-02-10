@@ -57,10 +57,10 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
     public static final String CARBON_SUPER_TENANT_DOMAIN = "carbon.super";
 
-    private Map<String, ConnectionDescriptor> m_clientIDs = new HashMap<String, ConnectionDescriptor>();
+    private Map<String, ConnectionDescriptor> clientIDs = new HashMap<String, ConnectionDescriptor>();
     private SubscriptionsStore subscriptions;
-    private IStorageService m_storageService;
-    private IAuthenticator m_authenticator;
+    private IStorageService storageService;
+    private IAuthenticator authenticator;
 
     /**
      * Keeps client data in memory for authorization of publishing and subscribing later. <ClientID, AuthData>
@@ -73,7 +73,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
      */
     private Map<String, ServerChannel> forciblyClosedChannels = new HashMap<>();
 
-    private RingBuffer<ValueEvent> m_ringBuffer;
+    private RingBuffer<ValueEvent> ringBuffer;
 
     /**
      * Indicates (via configuration) that server should always expect credentials from users.
@@ -92,13 +92,14 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
      */
     void init(SubscriptionsStore subscriptions, IStorageService storageService,
               IAuthenticator authenticator) {
-        //m_clientIDs = clientIDs;
+        //clientIDs = clientIDs;
         this.subscriptions = subscriptions;
-        m_authenticator = authenticator;
-        m_storageService = storageService;
+        this.authenticator = authenticator;
+        this.storageService = storageService;
 
         isAuthenticationRequired =
-                    AndesConfigurationManager.readValue(TRANSPORTS_MQTT_USER_ATHENTICATION) == MQTTUserAuthenticationScheme.REQUIRED;
+                AndesConfigurationManager.readValue(TRANSPORTS_MQTT_USER_ATHENTICATION) ==
+                MQTTUserAuthenticationScheme.REQUIRED;
 
         Integer RingBufferSize = AndesConfigurationManager.readValue(TRANSPORTS_MQTT_DELIVERY_BUFFER_SIZE);
 
@@ -121,7 +122,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         m_eventProcessor.setExceptionHandler(new LogExceptionHandler());
         disruptor.handleEventsWith(m_eventProcessor);
 
-        m_ringBuffer = disruptor.start();
+        ringBuffer = disruptor.start();
         //Will initialize the bridge
         //Andes Specific
         initAndesBridge(subscriptions, storageService);
@@ -148,8 +149,9 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
     /**
      * Added as an upgrade for 3.1.1 specification, This is adopted by WSO2 from Moquette
+     *
      * @param session the server session which has channel information
-     * @param msg connect message
+     * @param msg     connect message
      */
     void processConnect(ServerChannel session, ConnectMessage msg) throws InterruptedException {
         if (log.isDebugEnabled()) {
@@ -174,7 +176,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
         //Server enforces user authentication but user doesn't supply credentials
         // NOTE: this is just a interim solution for a potential security threat.
-        if ( isAuthenticationRequired && (! msg.isUserFlag())) {
+        if (isAuthenticationRequired && (!msg.isUserFlag())) {
             ConnAckMessage okResp = new ConnAckMessage();
             okResp.setReturnCode(ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
             session.write(okResp);
@@ -182,15 +184,15 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         }
 
         //if an old client with the same ID already exists close its session.
-        if (m_clientIDs.containsKey(msg.getClientID())) {
-            ServerChannel oldSession = m_clientIDs.get(msg.getClientID()).getSession();
+        if (clientIDs.containsKey(msg.getClientID())) {
+            ServerChannel oldSession = clientIDs.get(msg.getClientID()).getSession();
             boolean cleanSession = (Boolean) oldSession.getAttribute(Constants.CLEAN_SESSION);
             processDisconnect(oldSession, msg.getClientID(), cleanSession);
             forciblyClosedChannels.put(msg.getClientID(), oldSession);
         }
 
         ConnectionDescriptor connDescr = new ConnectionDescriptor(msg.getClientID(), session, msg.isCleanSession());
-        m_clientIDs.put(msg.getClientID(), connDescr);
+        clientIDs.put(msg.getClientID(), connDescr);
 
         int keepAlive = msg.getKeepAlive();
         if (log.isDebugEnabled()) {
@@ -216,14 +218,14 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
         MQTTAuthorizationSubject authSubject = new MQTTAuthorizationSubject(msg.getClientID(), msg.isUserFlag());
 
-       //handle user authentication
+        //handle user authentication
         if (msg.isUserFlag()) {
             String username = msg.getUsername();
             String pwd = null;
             if (msg.isPasswordFlag()) {
                 pwd = msg.getPassword();
             }
-            if (!m_authenticator.checkValid(username, pwd)) {
+            if (!authenticator.checkValid(username, pwd)) {
                 ConnAckMessage okResp = new ConnAckMessage();
                 okResp.setReturnCode(ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
                 session.write(okResp);
@@ -280,12 +282,11 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
     }
 
 
-
     private void republishStored(String clientID) {
         if (log.isTraceEnabled()) {
             log.trace("republishStored invoked for client " + clientID);
         }
-        List<PublishEvent> publishedEvents = m_storageService.retrivePersistedPublishes(clientID);
+        List<PublishEvent> publishedEvents = storageService.retrivePersistedPublishes(clientID);
         if (publishedEvents == null) {
             log.info("No stored messages for client " + clientID);
             return;
@@ -302,23 +303,24 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
     /**
      * Added by WSO2 in order to execute the scheduler to resend a message to un-acked messages
      */
-    public void pingRequestReceived(String clientID){
+    public void pingRequestReceived(String clientID) {
         try {
             AndesMQTTBridge.getBridgeInstance().onProcessPingRequest(clientID);
         } catch (MQTTException e) {
-            log.error("Error occurred while processing the ping request",e);
+            log.error("Error occurred while processing the ping request", e);
         }
     }
 
     void processPubAck(String clientID, int messageID) {
         //Remove the message from message store
         //TODO removed the storage service
-      //  m_storageService.cleanPersistedPublishMessage(clientID, messageID);
+        //  storageService.cleanPersistedPublishMessage(clientID, messageID);
         //Will inform the cluster that the message was removed
         try {
             AndesMQTTBridge.getBridgeInstance().onAckReceived(clientID, messageID);
         } catch (MQTTException e) {
-            final String message = "Error while receiving ack from the client " + clientID + " for message " + messageID;
+            final String message = "Error while receiving ack from the client " + clientID + " for message " +
+                                   messageID;
             log.error(message, e);
         }
     }
@@ -328,7 +330,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         subscriptions.removeForClient(clientID);
         //remove also the messages stored of type QoS1/2
         //TODO removed storage service
-        // m_storageService.cleanPersistedPublishes(clientID);
+        // storageService.cleanPersistedPublishes(clientID);
     }
 
     protected void processPublish(PublishEvent evt) {
@@ -360,7 +362,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) {
                 publishKey = String.format("%s%d", evt.getClientID(), evt.getMessageID());
                 //store the message in temp store
-                m_storageService.persistQoS2Message(publishKey, evt);
+                storageService.persistQoS2Message(publishKey, evt);
                 sendPubRec(evt.getClientID(), evt.getMessageID());
                 //We do not add the message to andes at this point since the message addition would happen upon the
                 // PUBREL
@@ -377,12 +379,13 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
     /**
      * Method written by WSO2. Since we would be sequentially writing the message to the subscribers
-     *  @param subscribedDestination The subscribed destination, this may include wildcards
-     * @param messageDestination The destination the message was published to
-     * @param qos         the level of qos the message was published this could be either 0,1 or 2
-     * @param message     the content of the message
-     * @param retain      should this message retain
-     * @param messageID   the unique identifier of the message
+     *
+     * @param subscribedDestination The subscribed destination, this may include wildcards
+     * @param messageDestination    The destination the message was published to
+     * @param qos                   the level of qos the message was published this could be either 0,1 or 2
+     * @param message               the content of the message
+     * @param retain                should this message retain
+     * @param messageID             the unique identifier of the message
      */
     public void publishToSubscriber(String subscribedDestination, String messageDestination,
                                     AbstractMessage.QOSType qos, ByteBuffer message, boolean retain, Integer messageID,
@@ -395,7 +398,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                 qos = subscription.getRequestedQos();
             }
             //TODO we do not need to duplicate this here
-           // ByteBuffer message = origMessage.duplicate();
+            // ByteBuffer message = origMessage.duplicate();
             //TODO we could add the qos class
             //TODO check whether the QOS 0 messages should be retained
             if (qos == AbstractMessage.QOSType.MOST_ONE && subscription.isActive()) {
@@ -407,15 +410,17 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                 if (!subscription.isCleanSession() && !subscription.isActive()) {
                     //clone the event with matching clientID
                     //TODO if its clean session we don't need to store it, it will be stored at the andes layer itself
-                    PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain, subscription.getClientId(),
+                    PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain,
+                            subscription.getClientId(),
                             messageID, null);
-                    m_storageService.storePublishForFuture(newPublishEvt);
+                    storageService.storePublishForFuture(newPublishEvt);
                 } else {
                     //Then we need to store this
                  /*   if(qos.getValue() > 0){
-                        PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain, subscription.getClientId(),
+                        PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain,
+                        subscription.getClientId(),
                                 messageID, null);
-                        m_storageService.storePublishForFuture(newPublishEvt);
+                        storageService.storePublishForFuture(newPublishEvt);
                     }*/
                     //publish
                     if (subscription.isActive()) {
@@ -462,14 +467,14 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                     //clone the event with matching clientID
                     PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientId(),
                             messageID, null);
-                    m_storageService.storePublishForFuture(newPublishEvt);
+                    storageService.storePublishForFuture(newPublishEvt);
                 } else {
                     //if QoS 2 then store it in temp memory
                     if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) {
                         String publishKey = String.format("%s%d", sub.getClientId(), messageID);
                         PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientId(),
                                 messageID, null);
-                        m_storageService.addInFlight(newPublishEvt, publishKey);
+                        storageService.addInFlight(newPublishEvt, publishKey);
                     }
                     //publish
                     if (sub.isActive()) {
@@ -507,22 +512,22 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             pubMessage.setMessageID(messageID);
         }
 
-        if (m_clientIDs == null) {
-            throw new RuntimeException("Internal bad error, found m_clientIDs to null while it should be initialized, " +
-                    "somewhere it's overwritten!!");
+        if (clientIDs == null) {
+            throw new RuntimeException("Internal bad error, found clientIDs to null while it should be initialized, " +
+                                       "somewhere it's overwritten!!");
         }
         if (log.isDebugEnabled()) {
-            log.debug("clientIDs are " + m_clientIDs);
+            log.debug("clientIDs are " + clientIDs);
         }
-        if (m_clientIDs.get(clientId) == null) {
+        if (clientIDs.get(clientId) == null) {
             throw new RuntimeException(String.format("Can't find a ConnectionDescriptor for client <%s> in cache <%s>",
-                    clientId, m_clientIDs));
+                    clientId, clientIDs));
         }
         if (log.isDebugEnabled()) {
-            log.debug("Session for clientId" + clientId + "is " + m_clientIDs.get(clientId).getSession());
+            log.debug("Session for clientId" + clientId + "is " + clientIDs.get(clientId).getSession());
         }
-//            m_clientIDs.get(clientId).getSession().write(pubMessage);
-        disruptorPublish(new OutputMessagingEvent(m_clientIDs.get(clientId).getSession(), pubMessage));
+//            clientIDs.get(clientId).getSession().write(pubMessage);
+        disruptorPublish(new OutputMessagingEvent(clientIDs.get(clientId).getSession(), pubMessage));
     }
 
     /**
@@ -538,8 +543,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         PubRecMessage pubRecMessage = new PubRecMessage();
         pubRecMessage.setMessageID(messageID);
 
-//        m_clientIDs.get(clientID).getSession().write(pubRecMessage);
-        disruptorPublish(new OutputMessagingEvent(m_clientIDs.get(clientID).getSession(), pubRecMessage));
+//        clientIDs.get(clientID).getSession().write(pubRecMessage);
+        disruptorPublish(new OutputMessagingEvent(clientIDs.get(clientID).getSession(), pubRecMessage));
     }
 
     /**
@@ -557,20 +562,21 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         pubAckMessage.setMessageID(messageID);
 
         try {
-            if (m_clientIDs == null) {
-                throw new RuntimeException("Internal bad error, found m_clientIDs to null while it should be initialized," +
-                        " somewhere it's overwritten!!");
+            if (clientIDs == null) {
+                throw new RuntimeException("Internal bad error, found clientIDs to null while it should be "
+                                           + "initialized," +
+                                           " somewhere it's overwritten!!");
             }
             if (log.isDebugEnabled()) {
-                log.debug("clientIDs are " + m_clientIDs);
+                log.debug("clientIDs are " + clientIDs);
             }
-            if (m_clientIDs.get(clientId) == null) {
+            if (clientIDs.get(clientId) == null) {
                 throw new RuntimeException(String.format("Can't find a ConnectionDEwcriptor for client %s " +
-                                                         "in cache %s", clientId, m_clientIDs));
+                                                         "in cache %s", clientId, clientIDs));
             }
-//            log.debug("Session for clientId " + clientId + " is " + m_clientIDs.get(clientId).getSession());
-//            m_clientIDs.get(clientId).getSession().write(pubAckMessage);
-            disruptorPublish(new OutputMessagingEvent(m_clientIDs.get(clientId).getSession(), pubAckMessage));
+//            log.debug("Session for clientId " + clientId + " is " + clientIDs.get(clientId).getSession());
+//            clientIDs.get(clientId).getSession().write(pubAckMessage);
+            disruptorPublish(new OutputMessagingEvent(clientIDs.get(clientId).getSession(), pubAckMessage));
         } catch (Throwable t) {
             log.error(null, t);
         }
@@ -585,7 +591,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             log.debug("ProcessPubRel invoked for clientID " + clientID + "ad messageID " + messageID);
         }
         String publishKey = String.format("%s%d", clientID, messageID);
-        PublishEvent evt = m_storageService.retrieveQoS2Message(publishKey);
+        PublishEvent evt = storageService.retrieveQoS2Message(publishKey);
 
         if (null != evt) {
             final String topic = evt.getTopic();
@@ -595,10 +601,11 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             AndesMQTTBridge.onMessagePublished(topic, qos.ordinal(), evt.getMessage(), evt.isRetain(),
                     evt.getMessageID(), clientID, this, null);
 
-            m_storageService.removeQoS2Message(publishKey);
+            storageService.removeQoS2Message(publishKey);
         } else {
-            log.warn("A PUBREL was received for message id "+messageID+" from client "+clientID+" the state has not " +
-                    "being identified, no action will be taken");
+            log.warn("A PUBREL was received for message id " + messageID + " from client " + clientID + " the state "
+                     + "has not " +
+                     "being identified, no action will be taken");
         }
     }
 
@@ -615,13 +622,14 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         PubCompMessage pubCompMessage = new PubCompMessage();
         pubCompMessage.setMessageID(messageID);
 
-//        m_clientIDs.get(clientID).getSession().write(pubCompMessage);
-        disruptorPublish(new OutputMessagingEvent(m_clientIDs.get(clientID).getSession(), pubCompMessage));
+//        clientIDs.get(clientID).getSession().write(pubCompMessage);
+        disruptorPublish(new OutputMessagingEvent(clientIDs.get(clientID).getSession(), pubCompMessage));
     }
 
     /**
      * Sent by the subscriber to the broker, on receiving of a QoS 2 message
-     * @param clientID the id of the client
+     *
+     * @param clientID  the id of the client
      * @param messageID the id of the message
      */
     void processPubRec(String clientID, int messageID) {
@@ -635,8 +643,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         pubRelMessage.setMessageID(messageID);
         pubRelMessage.setQos(AbstractMessage.QOSType.LEAST_ONE);
 
-//        m_clientIDs.get(clientID).getSession().write(pubRelMessage);
-        disruptorPublish(new OutputMessagingEvent(m_clientIDs.get(clientID).getSession(), pubRelMessage));
+//        clientIDs.get(clientID).getSession().write(pubRelMessage);
+        disruptorPublish(new OutputMessagingEvent(clientIDs.get(clientID).getSession(), pubRelMessage));
     }
 
     /**
@@ -655,7 +663,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         //String publishKey = String.format("%s%d", clientID, messageID);
         //Commented since its usage is not applicable here
         //TODO need to define actions when the subscriber fails to send the PUBCOMP back to the server
-        //  m_storageService.cleanInFlight(publishKey);
+        //  storageService.cleanInFlight(publishKey);
 
         // Send an acknowledgement to Andes stating that the message has been received from the client
         try {
@@ -675,7 +683,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             processRemoveAllSubscriptions(clientID);
         }
 //        m_notifier.disconnect(evt.getSession());
-        m_clientIDs.remove(clientID);
+        clientIDs.remove(clientID);
         session.close(true);
 
         //de-activate the subscriptions for this ClientID
@@ -696,7 +704,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
         if (forciblyClosedChannels.containsKey(clientID)) {
             ServerChannel oldSession = forciblyClosedChannels.remove(clientID);
-            ServerChannel newSession = m_clientIDs.get(clientID).getSession();
+            ServerChannel newSession = clientIDs.get(clientID).getSession();
 
             // If the new channel and the old channel are not equal, this is a connection lost received from a
             // forcibly closed a connection. Hence remove the record and avoid processing connection lost for the old
@@ -707,7 +715,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         }
 
         //If already removed a disconnect message was already processed for this clientID
-        if (!forciblyClosed && m_clientIDs.remove(clientID) != null) {
+        if (!forciblyClosed && clientIDs.remove(clientID) != null) {
             //de-activate the subscriptions for this ClientID
             subscriptions.deactivate(clientID);
             log.info("Lost connection with client " + clientID);
@@ -715,14 +723,14 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             //Need to handle disconnection
             try {
 
-            // We need to disconnect subscription only if client id exists in authSubjects.
-            // If it's not existing in authSubjects Subscription has already removed or
-            // subscription has never created due to invalid credentials.
-            if(authSubjects.containsKey(clientID)) {
-                String username = authSubjects.get(clientID).getUsername();
-                AndesMQTTBridge.getBridgeInstance().onClientDisconnection(clientID, null, username,
-                        AndesMQTTBridge.SubscriptionEvent.DISCONNECT);
-            }
+                // We need to disconnect subscription only if client id exists in authSubjects.
+                // If it's not existing in authSubjects Subscription has already removed or
+                // subscription has never created due to invalid credentials.
+                if (authSubjects.containsKey(clientID)) {
+                    String username = authSubjects.get(clientID).getUsername();
+                    AndesMQTTBridge.getBridgeInstance().onClientDisconnection(clientID, null, username,
+                            AndesMQTTBridge.SubscriptionEvent.DISCONNECT);
+                }
             } catch (MQTTException e) {
                 final String message = "Error occurred when attempting to disconnect subscriber ";
                 log.error(message + e.getMessage(), e);
@@ -733,7 +741,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
     /**
      * Remove authorization data for a client.
-     *
+     * <p/>
      * Each client when disconnected or connection is log this method should be called to clear the in memory data.
      *
      * @param clientID The client ID to remove data for.
@@ -753,7 +761,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
      */
     void processUnsubscribe(ServerChannel session, String clientID, List<String> topics, int messageID) {
         if (log.isDebugEnabled()) {
-            log.debug("processUnsubscribe invoked, removing subscription on topics " + topics + ", for clientID " + clientID);
+            log.debug("processUnsubscribe invoked, removing subscription on topics " + topics + ", for clientID " +
+                      clientID);
         }
 
         for (String topic : topics) {
@@ -807,7 +816,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
                 // As per mqtt spec 3.1.1 sub ack should send to client if broker don't allow client
                 // to subscribe a topic.
-                if(authSubject.getProtocolVersion() == Utils.VERSION_3_1_1) {
+                if (authSubject.getProtocolVersion() == Utils.VERSION_3_1_1) {
                     // 'forbidden subscription' return code has sent to client since client don't have
                     // permission to subscribe the topic.
                     SubAckMessage response = new SubAckMessage();
@@ -824,8 +833,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             //Andes Specific
             try {
                 AndesMQTTBridge.getBridgeInstance().onTopicSubscription(req.getTopicFilter(), clientID,
-                                                                        authSubject.getUsername(),
-                                                                        qos, cleanSession);
+                        authSubject.getUsername(),
+                        qos, cleanSession);
             } catch (Exception e) {
                 final String message = "Error when registering the subscriber ";
                 log.error(message + e.getMessage(), e);
@@ -847,7 +856,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             }
             session.write(ackMessage);
         } else {
-            log.error("Not sending sub ack message since client " + clientID + " does not have permission to subscribe to all given subscriptions.");
+            log.error("Not sending sub ack message since client " + clientID + " does not have permission to "
+                      + "subscribe to all given subscriptions.");
         }
     }
 
@@ -859,11 +869,11 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         if (log.isDebugEnabled()) {
             log.debug("disruptorPublish publishing event on output " + msgEvent);
         }
-        long sequence = m_ringBuffer.next();
-        ValueEvent event = m_ringBuffer.get(sequence);
+        long sequence = ringBuffer.next();
+        ValueEvent event = ringBuffer.get(sequence);
 
         event.setEvent(msgEvent);
-        m_ringBuffer.publish(sequence);
+        ringBuffer.publish(sequence);
     }
 
     public void onEvent(ValueEvent t, long l, boolean bln) throws Exception {
@@ -875,11 +885,11 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
     @Override
     public void ack(AndesMessageMetadata metadata) {
-        int qos = (Integer)metadata.getProperty(MQTTUtils.QOSLEVEL);
-        String clientID = (String)metadata.getProperty(MQTTUtils.CLIENT_ID);
+        int qos = (Integer) metadata.getProperty(MQTTUtils.QOSLEVEL);
+        String clientID = (String) metadata.getProperty(MQTTUtils.CLIENT_ID);
         int messageID = (Integer) metadata.getProperty(MQTTUtils.MESSAGE_ID);
 
-        if(qos == AbstractMessage.QOSType.EXACTLY_ONCE.ordinal()) {
+        if (qos == AbstractMessage.QOSType.EXACTLY_ONCE.ordinal()) {
             sendPubComp(clientID, messageID);
         } else if (qos == AbstractMessage.QOSType.LEAST_ONE.ordinal()) {
             sendPubAck(clientID, messageID);

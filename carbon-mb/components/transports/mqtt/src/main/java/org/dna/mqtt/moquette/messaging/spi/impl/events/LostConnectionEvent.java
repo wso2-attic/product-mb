@@ -5,14 +5,14 @@ package org.dna.mqtt.moquette.messaging.spi.impl.events;
  *
  */
 public class LostConnectionEvent extends MessagingEvent {
-    private String m_clientID;
+    private String clientID;
 
     public LostConnectionEvent(String clienID) {
-        m_clientID = clienID;
+        clientID = clienID;
     }
 
     public String getClientID() {
-        return m_clientID;
+        return clientID;
     }
     
 }

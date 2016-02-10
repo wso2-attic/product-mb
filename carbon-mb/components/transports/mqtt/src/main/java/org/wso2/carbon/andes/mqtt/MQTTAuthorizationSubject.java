@@ -87,7 +87,11 @@ public class MQTTAuthorizationSubject {
         this.username = username;
     }
 
-    public byte getProtocolVersion() { return protocolVersion; }
+    public byte getProtocolVersion() {
+        return protocolVersion;
+    }
 
-    public void setProtocolVersion(byte protocolVersion) { this.protocolVersion = protocolVersion; }
+    public void setProtocolVersion(byte protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
 }

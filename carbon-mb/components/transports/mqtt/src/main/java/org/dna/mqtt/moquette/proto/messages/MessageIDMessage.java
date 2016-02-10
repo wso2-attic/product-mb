@@ -24,14 +24,14 @@ package org.dna.mqtt.moquette.proto.messages;
  * @author andrea
  */
 public abstract class MessageIDMessage extends AbstractMessage {
-    private Integer m_messageID; //could be null if Qos is == 0
+    private Integer messageID; //could be null if Qos is == 0
 
     public Integer getMessageID() {
-        return m_messageID;
+        return messageID;
     }
 
     public void setMessageID(Integer messageID) {
-        this.m_messageID = messageID;
+        this.messageID = messageID;
     }
 
 }

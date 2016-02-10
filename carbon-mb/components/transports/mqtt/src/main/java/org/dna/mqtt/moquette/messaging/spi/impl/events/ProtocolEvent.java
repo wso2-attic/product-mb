@@ -8,16 +8,16 @@ import org.dna.mqtt.moquette.server.ServerChannel;
  * Event used to carry ProtocolMessages from front handler to event processor
  */
 public class ProtocolEvent extends MessagingEvent {
-    ServerChannel m_session;
+    ServerChannel session;
     AbstractMessage message;
 
     public ProtocolEvent(ServerChannel session, AbstractMessage message) {
-        this.m_session = session;
+        this.session = session;
         this.message = message;
     }
 
     public ServerChannel getSession() {
-        return m_session;
+        return session;
     }
 
     public AbstractMessage getMessage() {

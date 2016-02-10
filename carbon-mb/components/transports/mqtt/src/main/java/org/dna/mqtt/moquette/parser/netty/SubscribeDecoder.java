@@ -41,7 +41,8 @@ class SubscribeDecoder extends DemuxDecoder {
 
         //check qos level
         if (message.getQos() != QOSType.LEAST_ONE) {
-            throw new CorruptedFrameException("Received Subscribe message with QoS other than LEAST_ONE, was: " + message.getQos());
+            throw new CorruptedFrameException("Received Subscribe message with QoS other than LEAST_ONE, was: " +
+                                              message.getQos());
         }
 
         int start = in.readerIndex();
@@ -67,7 +68,8 @@ class SubscribeDecoder extends DemuxDecoder {
         String topic = Utils.decodeString(in);
         byte qosByte = in.readByte();
         if ((qosByte & 0xFC) > 0) { //the first 6 bits is reserved => has to be 0
-            throw new CorruptedFrameException("subscribe MUST have QoS byte with reserved buts to 0, found " + Integer.toHexString(qosByte));
+            throw new CorruptedFrameException("subscribe MUST have QoS byte with reserved buts to 0, found " +
+                                              Integer.toHexString(qosByte));
         }
         byte qos = (byte) (qosByte & 0x03);
         //TODO check qos id 000000xx

@@ -23,6 +23,6 @@ package org.dna.mqtt.moquette.proto.messages;
 public class PingReqMessage extends ZeroLengthMessage {
     
     public PingReqMessage() {
-        m_messageType = AbstractMessage.PINGREQ;
+        messageType = AbstractMessage.PINGREQ;
     }
 }

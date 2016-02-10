@@ -19,7 +19,6 @@ package org.wso2.carbon.andes.mqtt;
 
 
 import org.dna.mqtt.wso2.QOSLevel;
-import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.andes.kernel.DeliverableAndesMetadata;
 
 import java.util.Map;
@@ -35,7 +34,7 @@ public class MQTTSubscription {
     /**
      * The level of QOS the subscriber is bound to
      */
-    private QOSLevel QOSLevel;
+    private QOSLevel qosLevel;
     /**
      * Specifies whether the subscription is durable or not
      */
@@ -126,17 +125,18 @@ public class MQTTSubscription {
      * Gets message meta information form a provided local id, meta information is required to send rejection for
      * un-acked messages.
      * {@link org.wso2.andes.kernel.Andes#messageRejected(org.wso2.andes.kernel.AndesMessageMetadata)}
+     *
      * @param localID the local message id generated before dispatching the message to its subscriptions
      * @return the meta information relevant for the message
      */
-    public DeliverableAndesMetadata getMessageMetaInformation(Integer localID){
+    public DeliverableAndesMetadata getMessageMetaInformation(Integer localID) {
         long clusterID = localMessageToClusterMessage.get(localID);
 
         MQTTSubscriptionInformation mqttSubscriptionInformation = clusterMessageToMessageInformation.get(clusterID);
 
-        if(null != mqttSubscriptionInformation){
+        if (null != mqttSubscriptionInformation) {
             return mqttSubscriptionInformation.getMetadata();
-        }else {
+        } else {
             return null;
         }
     }
@@ -194,18 +194,19 @@ public class MQTTSubscription {
     /**
      * Will set the level of QOS the subscriber is bound to
      *
-     * @param QOSLevel the QOS level, this can either be 1,2 or 3
+     * @param qosLevel the QOS level, this can either be 1,2 or 3
      */
-    public void setQOSLevel(QOSLevel QOSLevel) {
-        this.QOSLevel = QOSLevel;
+    public void setQosLevel(QOSLevel qosLevel) {
+        this.qosLevel = qosLevel;
     }
 
     /**
      * Will return the level of QOS the subscriber is bound to
+     *
      * @return QOS level
      */
-    public QOSLevel getQOSLevel() {
-        return this.QOSLevel;
+    public QOSLevel getQosLevel() {
+        return this.qosLevel;
     }
 
     public String getTopicName() {

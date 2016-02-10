@@ -22,7 +22,7 @@ package org.dna.mqtt.moquette.proto.messages;
 public class UnsubAckMessage extends MessageIDMessage {
     
     public UnsubAckMessage() {
-        m_messageType = AbstractMessage.UNSUBACK;
+        messageType = AbstractMessage.UNSUBACK;
     }
 }
 

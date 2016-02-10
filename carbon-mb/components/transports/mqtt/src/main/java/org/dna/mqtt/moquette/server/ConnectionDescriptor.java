@@ -3,36 +3,36 @@ package org.dna.mqtt.moquette.server;
 /**
  * Maintains the information of single connection, like ClientID, IoSession,
  * and other connection related flags.
- * 
- * 
+ *
  * @author andrea
  */
 public class ConnectionDescriptor {
-    
-    private String m_clientID;
-    private org.dna.mqtt.moquette.server.ServerChannel m_session;
-    private boolean m_cleanSession;
 
-    public ConnectionDescriptor(String clientID, org.dna.mqtt.moquette.server.ServerChannel session, boolean cleanSession) {
-        this.m_clientID = clientID;
-        this.m_session = session;
-        this.m_cleanSession = cleanSession;
+    private String clientID;
+    private org.dna.mqtt.moquette.server.ServerChannel session;
+    private boolean cleanSession;
+
+    public ConnectionDescriptor(String clientID, org.dna.mqtt.moquette.server.ServerChannel session, boolean
+            cleanSession) {
+        this.clientID = clientID;
+        this.session = session;
+        this.cleanSession = cleanSession;
     }
 
     public boolean isCleanSession() {
-        return m_cleanSession;
+        return cleanSession;
     }
 
     public String getClientID() {
-        return m_clientID;
+        return clientID;
     }
 
     public ServerChannel getSession() {
-        return m_session;
+        return session;
     }
 
     @Override
     public String toString() {
-        return "ConnectionDescriptor{" + "m_clientID=" + m_clientID + ", m_cleanSession=" + m_cleanSession + '}';
+        return "ConnectionDescriptor{" + "m_clientID=" + clientID + ", m_cleanSession=" + cleanSession + '}';
     }
 }

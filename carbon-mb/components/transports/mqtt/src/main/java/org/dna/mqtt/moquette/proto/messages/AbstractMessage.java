@@ -68,55 +68,55 @@ public abstract class AbstractMessage {
     }
 
     //type
-    protected boolean m_dupFlag;
-    protected QOSType m_qos;
-    protected boolean m_retainFlag;
-    protected int m_remainingLength;
-    protected byte m_messageType;
+    protected boolean dupFlag;
+    protected QOSType qos;
+    protected boolean retainFlag;
+    protected int remainingLength;
+    protected byte messageType;
 
     public byte getMessageType() {
-        return m_messageType;
+        return messageType;
     }
 
     public void setMessageType(byte messageType) {
-        this.m_messageType = messageType;
+        this.messageType = messageType;
     }
 
     public boolean isDupFlag() {
-        return m_dupFlag;
+        return dupFlag;
     }
 
     public void setDupFlag(boolean dupFlag) {
-        this.m_dupFlag = dupFlag;
+        this.dupFlag = dupFlag;
     }
 
     public QOSType getQos() {
-        return m_qos;
+        return qos;
     }
 
     public void setQos(QOSType qos) {
-        this.m_qos = qos;
+        this.qos = qos;
     }
 
     public boolean isRetainFlag() {
-        return m_retainFlag;
+        return retainFlag;
     }
 
     public void setRetainFlag(boolean retainFlag) {
-        this.m_retainFlag = retainFlag;
+        this.retainFlag = retainFlag;
     }
 
     /**
      * TOBE used only internally
      */
     public int getRemainingLength() {
-        return m_remainingLength;
+        return remainingLength;
     }
 
     /**
      * TOBE used only internally
      */
     public void setRemainingLength(int remainingLength) {
-        this.m_remainingLength = remainingLength;
+        this.remainingLength = remainingLength;
     }
 }

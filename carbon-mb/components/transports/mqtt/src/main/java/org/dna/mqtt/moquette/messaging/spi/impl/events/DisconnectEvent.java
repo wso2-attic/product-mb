@@ -4,14 +4,14 @@ import org.dna.mqtt.moquette.server.ServerChannel;
 
 public class DisconnectEvent extends MessagingEvent {
     
-    ServerChannel m_session;
+    ServerChannel session;
     
     public DisconnectEvent(ServerChannel session) {
-        m_session = session;
+        this.session = session;
     }
 
     public ServerChannel getSession() {
-        return m_session;
+        return session;
     }
     
     
