@@ -66,6 +66,9 @@
 
         <!--Tools-->
         <module>tools</module>
+
+        <!--Product-->
+        <module>product</module>
     </modules>
 
     <dependencyManagement>
@@ -100,6 +103,60 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.launcher</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>andes</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>andes.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>amqp</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>amqp.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>mqtt</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>mqtt.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>mb-ui</artifactId>
+                <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>mb-ui.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -153,6 +210,7 @@
         <osgi.api.version>6.0.0</osgi.api.version>
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
+        <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
     </properties>
 
     <build>
