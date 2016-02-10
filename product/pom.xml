@@ -54,6 +54,7 @@
             <version>${carbon.kernel.version}</version>
             <type>zip</type>
         </dependency>
+        <!--MB related features-->
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.andes.feature</artifactId>
@@ -76,6 +77,13 @@
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
             <version>${carbon.mb.version}</version>
+            <type>zip</type>
+        </dependency>
+        <!--Hazelcast feature-->
+        <dependency>
+            <groupId>org.wso2.carbon.hazelcast</groupId>
+            <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
+            <version>${carbon.hazelcast.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -146,6 +154,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.mb.mqtt.feature</id>
                                     <version>${carbon.mb.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.hazelcast.feature</id>
+                                    <version>${carbon.hazelcast.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -218,6 +230,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.mb.mqtt.feature.group</id>
                                     <version>${carbon.mb.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.hazelcast.feature.group</id>
+                                    <version>${carbon.hazelcast.version}</version>
                                 </feature>
                             </features>
                         </configuration>
