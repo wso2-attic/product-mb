@@ -28,11 +28,11 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>andes.feature</artifactId>
+    <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon - Andes Feature</name>
+    <name>WSO2 Message Broker - UI Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the core bundles required by the Andes feature</description>
+    <description>This feature contains the core bundles required by the Message Broker UI feature</description>
 
 
     <dependencies>
@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>andes</artifactId>
+            <artifactId>mb-ui</artifactId>
         </dependency>
     </dependencies>
 
@@ -72,6 +72,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+
                             <propertyFile>../etc/feature.properties</propertyFile>
                             <adviceFileContents>
                                 <advice>
@@ -101,7 +102,7 @@
                                     <version>${slf4j.version}</version>
                                 </bundle>
                                 <bundle>
-                                    <symbolicName>andes</symbolicName>
+                                    <symbolicName>mb-ui</symbolicName>
                                     <version>${carbon.mb.version}</version>
                                 </bundle>
                             </bundles>
