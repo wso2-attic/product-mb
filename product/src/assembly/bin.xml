@@ -61,6 +61,11 @@
             <outputDirectory>samples</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/conf/broker</directory>
+            <outputDirectory>conf/</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
 
     <files>
