@@ -50,6 +50,30 @@
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.andes.wso2</groupId>
+            <artifactId>qpid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli.wso2</groupId>
+            <artifactId>commons-cli</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>libthrift.wso2</groupId>
+            <artifactId>libthrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -60,7 +84,8 @@
         </export.package>
         <import.package>
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
-            org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)"
+            org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)",
+            org.wso2.andes.*;version="[3.5.0, 4.0.0)
         </import.package>
     </properties>
 

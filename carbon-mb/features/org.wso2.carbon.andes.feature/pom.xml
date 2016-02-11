@@ -34,7 +34,6 @@
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the Andes feature</description>
 
-
     <dependencies>
         <dependency>
             <groupId>org.wso2.eclipse.osgi</groupId>
@@ -55,6 +54,30 @@
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>andes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.andes.wso2</groupId>
+            <artifactId>qpid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli.wso2</groupId>
+            <artifactId>commons-cli</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>libthrift.wso2</groupId>
+            <artifactId>libthrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
         </dependency>
     </dependencies>
 
@@ -103,6 +126,30 @@
                                 <bundle>
                                     <symbolicName>andes</symbolicName>
                                     <version>${carbon.mb.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>qpid</symbolicName>
+                                    <version>${andes.dependency.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>com.google.guava</symbolicName>
+                                    <version>${guava.bundle.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-cli</symbolicName>
+                                    <version>${commons-cli.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>libthrift</symbolicName>
+                                    <version>${libthrift.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-lang</symbolicName>
+                                    <version>${commons.lang.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>disruptor</symbolicName>
+                                    <version>${disruptor.wso2.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>
