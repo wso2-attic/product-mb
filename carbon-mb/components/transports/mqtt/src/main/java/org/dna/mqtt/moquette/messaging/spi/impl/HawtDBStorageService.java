@@ -34,6 +34,9 @@ import java.util.Set;
  */
 public class HawtDBStorageService implements IStorageService {
 
+    /**
+     * TODO: Comment to be added
+     */
     public static class StoredMessage implements Serializable {
         AbstractMessage.QOSType qos;
         byte[] payload;

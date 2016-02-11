@@ -51,6 +51,9 @@ import java.util.concurrent.ThreadFactory;
 import static org.wso2.andes.configuration.enums.AndesConfiguration.TRANSPORTS_MQTT_DELIVERY_BUFFER_SIZE;
 import static org.wso2.andes.configuration.enums.AndesConfiguration.TRANSPORTS_MQTT_USER_ATHENTICATION;
 
+/**
+ * Protocol processor class
+ */
 public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandler {
 
     private static Log log = LogFactory.getLog(org.dna.mqtt.moquette.messaging.spi.impl.ProtocolProcessor.class);
@@ -101,7 +104,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                 AndesConfigurationManager.readValue(TRANSPORTS_MQTT_USER_ATHENTICATION) ==
                 MQTTUserAuthenticationScheme.REQUIRED;
 
-        Integer RingBufferSize = AndesConfigurationManager.readValue(TRANSPORTS_MQTT_DELIVERY_BUFFER_SIZE);
+        Integer ringBufferSize = AndesConfigurationManager.readValue(TRANSPORTS_MQTT_DELIVERY_BUFFER_SIZE);
 
         // Init the output Disruptor
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
@@ -110,17 +113,17 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
         Disruptor<ValueEvent> disruptor = new Disruptor<ValueEvent>(
                 ValueEvent.EVENT_FACTORY,
-                RingBufferSize,
+                ringBufferSize,
                 executor);
 
         //Added by WSO2, we do not want to ignore the exception here
         disruptor.handleExceptionsWith(new LogExceptionHandler());
         SequenceBarrier barrier = disruptor.getRingBuffer().newBarrier();
-        BatchEventProcessor<ValueEvent> m_eventProcessor = new BatchEventProcessor<ValueEvent>(
+        BatchEventProcessor<ValueEvent> eventProcessor = new BatchEventProcessor<ValueEvent>(
                 disruptor.getRingBuffer(), barrier, this);
         //Added by WSO2, we do not want to ignore the exception here
-        m_eventProcessor.setExceptionHandler(new LogExceptionHandler());
-        disruptor.handleEventsWith(m_eventProcessor);
+        eventProcessor.setExceptionHandler(new LogExceptionHandler());
+        disruptor.handleEventsWith(eventProcessor);
 
         ringBuffer = disruptor.start();
         //Will initialize the bridge

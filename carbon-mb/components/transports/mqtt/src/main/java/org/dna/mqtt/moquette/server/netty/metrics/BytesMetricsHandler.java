@@ -7,6 +7,9 @@ import io.netty.channel.ChannelPromise;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 
+/**
+ * Handler class for Byte Metrics
+ */
 public class BytesMetricsHandler extends ChannelDuplexHandler {
 
     private static final AttributeKey<org.dna.mqtt.moquette.server.netty.metrics.BytesMetrics> ATTR_KEY_METRICS = new

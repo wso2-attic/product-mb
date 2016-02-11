@@ -58,7 +58,8 @@ class PublishDecoder extends org.dna.mqtt.moquette.parser.netty.DemuxDecoder {
             }
 
             if (message.getQos() == AbstractMessage.QOSType.RESERVED) {
-                throw new CorruptedFrameException("Received a PUBLISH with QoS flags setted 10 b11, MQTT 3.1.1 violation");
+                throw new CorruptedFrameException("Received a PUBLISH with QoS flags setted 10 b11, MQTT 3.1.1 "
+                                                  + "violation");
             }
         }
 
@@ -71,13 +72,14 @@ class PublishDecoder extends org.dna.mqtt.moquette.parser.netty.DemuxDecoder {
             return;
         }
         if (topic.contains("+") || topic.contains("#")) {
-            throw new CorruptedFrameException("Received a PUBLISH with topic containting wild card chars, topic: " + topic);
+            throw new CorruptedFrameException("Received a PUBLISH with topic containting wild card chars, topic: " +
+                                              topic);
         }
 
         message.setTopicName(topic);
 
         if (message.getQos() == AbstractMessage.QOSType.LEAST_ONE ||
-                message.getQos() == AbstractMessage.QOSType.EXACTLY_ONCE) {
+            message.getQos() == AbstractMessage.QOSType.EXACTLY_ONCE) {
             message.setMessageID(in.readUnsignedShort());
         }
         int stopPos = in.readerIndex();

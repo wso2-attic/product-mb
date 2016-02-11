@@ -6,6 +6,9 @@ import org.dna.mqtt.moquette.server.ServerChannel;
 
 import java.nio.ByteBuffer;
 
+/**
+ * This class is responsible of publishing events
+ */
 public class PublishEvent extends MessagingEvent {
     String topic;
     QOSType qos;

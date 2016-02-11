@@ -28,9 +28,9 @@ import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.andes.kernel.AndesMessagePart;
 import org.wso2.andes.kernel.disruptor.inbound.PubAckHandler;
+import org.wso2.andes.server.store.MessageMetaDataType;
 import org.wso2.carbon.andes.mqtt.MQTTMessageContext;
 import org.wso2.carbon.andes.mqtt.MQTTPublisherChannel;
-import org.wso2.andes.server.store.MessageMetaDataType;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -66,7 +66,8 @@ public class MQTTUtils {
     public static final String CLIENT_ID = "clientID";
 
     /**
-     * The published messages will be taken in as a byte stream, the message will be transformed into AndesMessagePart as
+     * The published messages will be taken in as a byte stream, the message will be transformed into
+     * AndesMessagePart as
      * its required by the Andes kernal for processing
      *
      * @param message  the message contents
@@ -99,12 +100,14 @@ public class MQTTUtils {
      * @return the collective information as a bytes object
      */
     public static byte[] encodeMetaInfo(String metaData, long messageID, long arrivalTime, boolean topic, int qos,
-                                        String destination, boolean persistence, int contentLength, boolean isCompressed) {
+                                        String destination, boolean persistence, int contentLength, boolean
+            isCompressed) {
         byte[] metaInformation;
         String information = metaData + "?" + MESSAGE_ID + "=" + messageID + "," + ARRIVAL_TIME + "=" + arrivalTime
-                + "," + TOPIC + "=" + topic + "," + DESTINATION + "=" + destination + "," + PERSISTENCE
-                + "=" + persistence + "," + MESSAGE_CONTENT_LENGTH + "=" + contentLength + "," + QOSLEVEL + "=" + qos
-                + "," + IS_COMPRESSED + "=" + isCompressed;
+                             + "," + TOPIC + "=" + topic + "," + DESTINATION + "=" + destination + "," + PERSISTENCE
+                             + "=" + persistence + "," + MESSAGE_CONTENT_LENGTH + "=" + contentLength + "," +
+                             QOSLEVEL + "=" + qos
+                             + "," + IS_COMPRESSED + "=" + isCompressed;
         metaInformation = information.getBytes();
         return metaInformation;
     }
@@ -141,7 +144,7 @@ public class MQTTUtils {
         messageHeader.setArrivalTime(receivedTime);
         if (log.isDebugEnabled()) {
             log.debug("Message with id " + messageID + " having the topic " + topic + " with QOS" + qosLevel
-                    + " and retain flag set to " + retain + " was created");
+                      + " and retain flag set to " + retain + " was created");
         }
 
         byte[] andesMetaData = encodeMetaInfo(MQTT_META_INFO, messageHeader.getMessageID(), receivedTime,
@@ -209,7 +212,8 @@ public class MQTTUtils {
     public static boolean isWildCardSubscription(String subscribedDestination) {
         boolean isWildCard = false;
 
-        if (subscribedDestination.contains(SINGLE_LEVEL_WILDCARD) || subscribedDestination.contains(MULTI_LEVEL_WILDCARD)) {
+        if (subscribedDestination.contains(SINGLE_LEVEL_WILDCARD) || subscribedDestination.contains
+                (MULTI_LEVEL_WILDCARD)) {
             isWildCard = true;
         }
 
@@ -235,7 +239,6 @@ public class MQTTUtils {
      *
      * @param topic              the name of the topic the message was sent
      * @param qosLevel           the level of QoS
-     * @see org.dna.mqtt.wso2.QOSLevel
      * @param message            the message in bytes
      * @param retain             should this message be persisted
      * @param mqttLocalMessageID the local id of the mqtt message
@@ -243,6 +246,7 @@ public class MQTTUtils {
      * @param pubAckHandler      the acknowledgment handler
      * @param socket             the channel in which the communication occurred
      * @return the message context
+     * @see org.dna.mqtt.wso2.QOSLevel
      */
     public static MQTTMessageContext createMessageContext(String topic, QOSLevel qosLevel,
                                                           ByteBuffer message, boolean retain,
@@ -276,7 +280,6 @@ public class MQTTUtils {
 //
 //        return tenant;
 //    }
-
     public static String getTopicSpecificQueueName(String clientId, String topic) {
         return "carbon:" + clientId + ":" + topic;
     }
@@ -285,8 +288,7 @@ public class MQTTUtils {
      * Given the clean session value and qos level, decide whether it if falling into durable path.
      *
      * @param cleanSession The clean session value
-     * @param qos The quality of service level
-     *
+     * @param qos          The quality of service level
      * @return true if this falls into durable path
      */
     public static boolean isDurable(boolean cleanSession, int qos) {

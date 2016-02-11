@@ -6,6 +6,9 @@ import org.dna.mqtt.moquette.proto.messages.AbstractMessage.QOSType;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
+/**
+ * TODO: Comment to be added
+ */
 public class StoredPublishEvent implements Serializable {
     String topic;
     QOSType qos;

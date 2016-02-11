@@ -20,9 +20,16 @@ package org.wso2.carbon.andes.mqtt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dna.mqtt.wso2.QOSLevel;
-import org.wso2.andes.kernel.*;
-import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
+import org.wso2.andes.kernel.AndesContent;
+import org.wso2.andes.kernel.AndesException;
+import org.wso2.andes.kernel.AndesMessageMetadata;
+import org.wso2.andes.kernel.AndesUtils;
+import org.wso2.andes.kernel.ConcurrentTrackingList;
+import org.wso2.andes.kernel.DeliverableAndesMetadata;
+import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolMessage;
 import org.wso2.andes.subscription.OutboundSubscription;
+import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.nio.ByteBuffer;
@@ -121,12 +128,12 @@ public class MQTTLocalSubscription implements OutboundSubscription {
     }
 
     /**
-     *  The relevant subscription will be registered
+     * The relevant subscription will be registered
      *
      * @param wildCardDestination The original destination subscriber subscribed to
-     * @param channelID ID of the underlying subscription channel
-     * @param isActive true if subscription is active (TCP connection is live)
-     * @param isDurable Should this subscriber fall into durable path
+     * @param channelID           ID of the underlying subscription channel
+     * @param isActive            true if subscription is active (TCP connection is live)
+     * @param isDurable           Should this subscriber fall into durable path
      */
     public MQTTLocalSubscription(String wildCardDestination, UUID channelID, boolean isActive, boolean isDurable) {
 
@@ -173,7 +180,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
 
         DeliverableAndesMetadata messageMetadata = protocolMessage.getMessage();
 
-        if(messageMetadata.isRetain()) {
+        if (messageMetadata.isRetain()) {
             recordRetainedMessage(messageMetadata.getMessageID());
         }
 
@@ -192,13 +199,13 @@ public class MQTTLocalSubscription implements OutboundSubscription {
                 //We will indicate the ack to the kernel at this stage
                 //For MQTT QOS 0 we do not get ack from subscriber, hence will be implicitly creating an ack
                 if (QOSLevel.AT_MOST_ONCE.getValue() == getSubscriberQOS() ||
-                        QOSLevel.AT_MOST_ONCE.getValue() == messageMetadata.getQosLevel()) {
+                    QOSLevel.AT_MOST_ONCE.getValue() == messageMetadata.getQosLevel()) {
                     mqqtServerChannel.implicitAck(messageMetadata.getMessageID(), getChannelID());
                 }
                 sendSuccess = true;
             } catch (MQTTException e) {
                 final String error = "Error occurred while delivering message to the subscriber for message :" +
-                        messageMetadata.getMessageID();
+                                     messageMetadata.getMessageID();
                 log.error(error, e);
                 throw new AndesException(error, e);
             }
@@ -212,8 +219,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
     /**
      * Record the given message ID as a retained message in the trcker.
      *
-     * @param messageID
-     *    Message ID of the retained message
+     * @param messageID Message ID of the retained message
      */
     public void recordRetainedMessage(long messageID) {
         retainedMessageList.add(messageID);

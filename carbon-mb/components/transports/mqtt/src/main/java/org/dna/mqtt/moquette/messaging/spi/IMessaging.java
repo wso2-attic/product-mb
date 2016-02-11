@@ -3,6 +3,9 @@ package org.dna.mqtt.moquette.messaging.spi;
 import org.dna.mqtt.moquette.proto.messages.AbstractMessage;
 import org.dna.mqtt.moquette.server.ServerChannel;
 
+/**
+ * TODO: Comment to be added
+ */
 public interface IMessaging {
 
     void stop();
