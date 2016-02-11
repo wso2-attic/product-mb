@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 /**
  * DataHolder to hold org.wso2.carbon.kernel.CarbonRuntime instance referenced through
- * org.wso2.carbon.helloworld.internal.ServiceComponent.
+ * org.wso2.carbon.helloworld.internal.MqttTransportServiceComponent.
  *
  * @since 3.5.0-SNAPSHOT
  */
@@ -40,9 +40,9 @@ public class DataHolder {
 
     /**
      * This method is for setting the CarbonRuntime service. This method is used by
-     * ServiceComponent.
+     * MqttTransportServiceComponent.
      *
-     * @param carbonRuntime The reference being passed through ServiceComponent
+     * @param carbonRuntime The reference being passed through MqttTransportServiceComponent
      */
     public void setCarbonRuntime(CarbonRuntime carbonRuntime) {
         this.carbonRuntime = carbonRuntime;
