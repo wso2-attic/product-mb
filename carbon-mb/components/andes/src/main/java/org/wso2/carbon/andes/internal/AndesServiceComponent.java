@@ -14,8 +14,8 @@ import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
 import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
-import org.wso2.carbon.kernel.utils.Utils;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
+import org.wso2.carbon.kernel.utils.Utils;
 
 import java.util.logging.Logger;
 

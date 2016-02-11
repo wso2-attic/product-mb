@@ -27,7 +27,7 @@ public class MqttTransportServiceComponent {
     private ServiceRegistration mqttTransportService;
     //TODO we need to change this to get from the configuration
     //This will be a temporary measure
-    private final int MQTT_PORT = 1883;
+    private static final int MQTT_PORT = 1883;
     //The running MQTT server instance
     private Server mqttServer = null;
 
@@ -58,7 +58,7 @@ public class MqttTransportServiceComponent {
         logger.info("MqttTransportServiceComponent deactivated");
 
         //We stop the server when the bundle is deactivated
-        if(null != mqttServer){
+        if (null != mqttServer) {
             mqttServer.stopServer();
         }
 

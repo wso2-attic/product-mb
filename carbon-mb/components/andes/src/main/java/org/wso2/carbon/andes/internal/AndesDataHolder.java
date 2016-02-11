@@ -1,7 +1,6 @@
 package org.wso2.carbon.andes.internal;
 
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
-import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 

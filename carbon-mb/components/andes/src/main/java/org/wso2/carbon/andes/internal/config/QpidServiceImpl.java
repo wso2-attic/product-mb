@@ -34,17 +34,17 @@ public class QpidServiceImpl {
     /**
      * The client ID for AMQP URL.
      */
-    private static String CARBON_CLIENT_ID = "carbon";
+    private static final String CARBON_CLIENT_ID = "carbon";
 
     /**
      * The Virtual host name for AMQL URL.
      */
-    private static String CARBON_VIRTUAL_HOST_NAME = "carbon";
+    private static final String CARBON_VIRTUAL_HOST_NAME = "carbon";
 
     /**
      * The default host name for connections.
      */
-    private static String CARBON_DEFAULT_HOSTNAME = "localhost";
+    private static final String CARBON_DEFAULT_HOSTNAME = "localhost";
 
     /**
      * Default domain separator.
