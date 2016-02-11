@@ -28,8 +28,6 @@ import org.wso2.andes.configuration.modules.JKSStore;
 import org.wso2.andes.transport.ConnectionSettings;
 import org.wso2.andes.transport.network.security.ssl.SSLUtil;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -37,6 +35,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Properties;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 /**
  * This class is responsible of creating ssl context for mqtt
