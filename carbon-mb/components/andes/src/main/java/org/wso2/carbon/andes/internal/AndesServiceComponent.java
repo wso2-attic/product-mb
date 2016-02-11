@@ -1,4 +1,4 @@
-package org.wso2.carbon.mb.ui.internal;
+package org.wso2.carbon.andes.internal;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -8,9 +8,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.carbon.kernel.CarbonRuntime;
-import org.wso2.carbon.mb.ui.Greeter;
-import org.wso2.carbon.mb.ui.GreeterImpl;
+import org.wso2.andes.server.BrokerOptions;
+import org.wso2.andes.server.Main;
+import org.wso2.carbon.andes.Greeter;
+import org.wso2.carbon.andes.GreeterImpl;
+import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 
 import java.util.logging.Logger;
 
@@ -21,12 +23,12 @@ import java.util.logging.Logger;
  * @since 3.5.0-SNAPSHOT
  */
 @Component(
-        name = "org.wso2.carbon.mb.ui.internal.ServiceComponent",
+        name = "org.wso2.carbon.andes.internal.AndesServiceComponent",
         immediate = true
 )
-public class ServiceComponent {
+public class AndesServiceComponent {
 
-    Logger logger = Logger.getLogger(ServiceComponent.class.getName());
+    Logger logger = Logger.getLogger(AndesServiceComponent.class.getName());
     private ServiceRegistration serviceRegistration;
 
     /**
@@ -39,7 +41,9 @@ public class ServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
         logger.info("Service Component is activated");
-
+        System.setProperty(BrokerOptions.ANDES_HOME, "advanced");
+        String[] args = {"-p" + 5672, "-s" + 8672, "-q" + 1883};
+        Main.main(args);
         // Register GreeterImpl instance as an OSGi service.
         serviceRegistration = bundleContext.registerService(Greeter.class.getName(), new GreeterImpl("WSO2"), null);
     }
@@ -52,7 +56,7 @@ public class ServiceComponent {
      */
     @Deactivate
     protected void stop() throws Exception {
-        logger.info("Service Component is deactivated");
+        logger.info("Andes Service Component is deactivated");
 
         // Unregister Greeter OSGi service
         serviceRegistration.unregister();
@@ -61,25 +65,25 @@ public class ServiceComponent {
     /**
      * This bind method will be called when CarbonRuntime OSGi service is registered.
      *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
     @Reference(
-            name = "carbon.runtime.service",
-            service = CarbonRuntime.class,
+            name = "carbon.hazelcast",
+            service = CarbonHazelcastAgent.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetCarbonRuntime"
+            unbind = "unsetCarbonHazelcastAgent"
     )
-    protected void setCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(carbonRuntime);
+    protected void setCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
+        AndesDataHolder.getInstance().setHazelcastAgent(carbonHazelcastAgent);
     }
 
     /**
      * This is the unbind method which gets called at the un-registration of CarbonRuntime OSGi service.
      *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
-    protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(null);
+    protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
+        AndesDataHolder.getInstance().setHazelcastAgent(null);
     }
 }

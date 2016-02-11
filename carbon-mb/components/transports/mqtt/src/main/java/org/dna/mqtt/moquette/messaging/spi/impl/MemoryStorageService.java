@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * TODO: Add a proper comment here
+ */
 public class MemoryStorageService implements IStorageService {
 
     private Map<String, Set<Subscription>> persistentSubscriptions = new HashMap<String, Set<Subscription>>();

@@ -2,6 +2,9 @@ package org.dna.mqtt.moquette.messaging.spi.impl.events;
 
 import org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription;
 
+/**
+ * Event for subscriptions
+ */
 public class SubscribeEvent extends MessagingEvent {
 
     Subscription subscription;

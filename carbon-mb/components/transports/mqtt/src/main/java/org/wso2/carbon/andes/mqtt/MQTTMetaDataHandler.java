@@ -17,8 +17,8 @@
  */
 package org.wso2.carbon.andes.mqtt;
 
-import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
 import org.wso2.andes.server.store.StorableMessageMetaData;
+import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
 
 import java.nio.ByteBuffer;
 

@@ -15,23 +15,23 @@ import java.util.Properties;
 
 /**
  * Mosquitto configuration parser.
- * 
+ * <p/>
  * A line that at the very first has # is a comment
  * Each line has key value format, where the separator used it the space.
- * 
+ *
  * @author andrea
  */
 class ConfigurationParser {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(org.dna.mqtt.moquette.server.ConfigurationParser.class);
-    
-    private Properties m_properties = new Properties();
-    
+
+    private Properties properties = new Properties();
+
     ConfigurationParser() {
-        m_properties.put("port", Integer.toString(Constants.PORT));
-        m_properties.put("host", Constants.HOST);
+        properties.put("port", Integer.toString(Constants.PORT));
+        properties.put("host", Constants.HOST);
     }
-    
+
     /**
      * Parse the configuration from file.
      */
@@ -49,14 +49,15 @@ class ConfigurationParser {
             FileReader reader = new FileReader(file);
             parse(reader);
         } catch (FileNotFoundException fex) {
-            LOG.warn(String.format("parsing not existing file %s, so fallback on default configuration!", file.getAbsolutePath()), fex);
+            LOG.warn(String.format("parsing not existing file %s, so fallback on default configuration!", file
+                    .getAbsolutePath()), fex);
             return;
         }
     }
-    
+
     /**
-     * Parse the configuration 
-     * 
+     * Parse the configuration
+     *
      * @throws java.text.ParseException if the format is not compliant.
      */
     void parse(Reader reader) throws ParseException {
@@ -65,7 +66,7 @@ class ConfigurationParser {
             LOG.warn("parsing NULL reader, so fallback on default configuration!");
             return;
         }
-        
+
         BufferedReader br = new BufferedReader(reader);
         String line;
         try {
@@ -84,21 +85,21 @@ class ConfigurationParser {
                         //skip it's a black line
                         continue;
                     }
-                    
+
                     //split till the first space
                     int deilimiterIdx = line.indexOf(' ');
                     String key = line.substring(0, deilimiterIdx).trim();
                     String value = line.substring(deilimiterIdx).trim();
-                    
-                    m_properties.put(key, value);
+
+                    properties.put(key, value);
                 }
             }
         } catch (IOException ex) {
             throw new ParseException("Failed to read", 1);
         }
     }
-    
+
     Properties getProperties() {
-        return m_properties;
+        return properties;
     }
 }

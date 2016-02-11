@@ -5,18 +5,17 @@ import org.dna.mqtt.moquette.proto.messages.AbstractMessage.QOSType;
 import java.io.Serializable;
 
 /**
- * Maintain the information about which Topic a certain ClientID is subscribed 
+ * Maintain the information about which Topic a certain ClientID is subscribed
  * and at which QoS
- *
  */
 public class Subscription implements Serializable {
-    
+
     QOSType requestedQos;
     String clientId;
     String topic;
     boolean cleanSession;
     boolean active = true;
-    
+
     public Subscription(String clientId, String topic, QOSType requestedQos, boolean cleanSession) {
         this.requestedQos = requestedQos;
         this.clientId = clientId;
@@ -56,7 +55,8 @@ public class Subscription implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription other = (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription) obj;
+        final org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription other = (org.dna.mqtt.moquette
+                .messaging.spi.impl.subscriptions.Subscription) obj;
         if (this.requestedQos != other.requestedQos) {
             return false;
         }
@@ -84,7 +84,7 @@ public class Subscription implements Serializable {
     boolean match(String topic) {
         return this.topic.equals(topic);
     }
-    
+
     @Override
     public String toString() {
         return String.format("[t:%s, cliID: %s, qos: %s, active: %s]", this.topic, this.clientId, this.requestedQos,

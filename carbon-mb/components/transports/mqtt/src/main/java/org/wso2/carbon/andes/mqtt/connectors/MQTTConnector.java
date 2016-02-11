@@ -35,8 +35,8 @@ public interface MQTTConnector {
     /**
      * The acked messages will be informed to the kernel
      *
-     * @param messageID   the identifier of the message
-     * @param subChannelID   the channel topic the message was published
+     * @param messageID    the identifier of the message
+     * @param subChannelID the channel topic the message was published
      * @throws org.wso2.andes.kernel.AndesException if the ack was not processed properly
      */
     public void messageAck(long messageID, UUID subChannelID)
@@ -44,7 +44,8 @@ public interface MQTTConnector {
 
     /**
      * Triggers when a rejection ack is be initiated, this will be done as a result of ping request
-     * @param metadata the meta information of the message being rejected
+     *
+     * @param metadata  the meta information of the message being rejected
      * @param channelID the ID of the channel reject message is received
      * @throws org.wso2.andes.kernel.AndesException
      */
@@ -89,12 +90,11 @@ public interface MQTTConnector {
      * @param isCleanSession        durability of the subscription
      * @param mqttClientID          the id of the client who subscribed to the topic
      * @param qosLevel              the quality of service level subscribed to
-     *
      * @throws MQTTException
      */
     public void removeSubscriber(MQTTopicManager channel, String subscribedTopic, String username, String
             subscriptionChannelID, UUID subscriberChannel, boolean isCleanSession, String mqttClientID, QOSLevel
-            qosLevel) throws MQTTException;
+                                         qosLevel) throws MQTTException;
 
     /**
      * Will trigger the subscription disconnect event
@@ -107,7 +107,6 @@ public interface MQTTConnector {
      * @param isCleanSession        durability of the subscription
      * @param mqttClientID          the id of the client who subscribed to the topic
      * @param qosLevel              the quality of service level subscribed to
-     *
      * @throws MQTTException
      */
     public void disconnectSubscriber(MQTTopicManager channel, String subscribedTopic, String username,
@@ -126,10 +125,11 @@ public interface MQTTConnector {
     /**
      * Send Retain message for local subscriber if exist.
      *
-     * @param topic subscription topic name
+     * @param topic          subscription topic name
      * @param subscriptionID subscription id
-     * @param qos subscriber qos level
+     * @param qos            subscriber qos level
      */
-    public void sendRetainedMessagesToSubscriber(String topic,String subscriptionID, QOSLevel qos, UUID subscriptionChannelID)
+    public void sendRetainedMessagesToSubscriber(String topic, String subscriptionID, QOSLevel qos, UUID
+            subscriptionChannelID)
             throws MQTTException;
 }

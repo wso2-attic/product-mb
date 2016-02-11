@@ -20,6 +20,7 @@ package org.wso2.carbon.andes.mqtt;
 import io.netty.channel.Channel;
 import org.dna.mqtt.wso2.QOSLevel;
 import org.wso2.andes.kernel.disruptor.inbound.PubAckHandler;
+
 import java.nio.ByteBuffer;
 
 
@@ -33,6 +34,7 @@ public class MQTTMessageContext {
     private String topic;
     /**
      * The level of QoS this will be either 0,1 or 2
+     *
      * @see org.dna.mqtt.wso2.QOSLevel
      */
     private QOSLevel qosLevel;

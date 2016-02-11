@@ -17,7 +17,6 @@
 
 package org.wso2.carbon.andes.mqtt;
 
-import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.andes.kernel.DeliverableAndesMetadata;
 
 /**

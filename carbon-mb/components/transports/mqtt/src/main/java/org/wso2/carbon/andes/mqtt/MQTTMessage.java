@@ -40,8 +40,8 @@ public class MQTTMessage extends AndesMessage {
 
         // Avoid adding QOS 0 MQTT messages to clean session = false subscribers if disconnected
         if (subscription.isDurable()
-                && !(subscription.hasExternalSubscriptions())
-                && QOSLevel.AT_MOST_ONCE.getValue() == this.getMetadata().getQosLevel()) {
+            && !(subscription.hasExternalSubscriptions())
+            && QOSLevel.AT_MOST_ONCE.getValue() == this.getMetadata().getQosLevel()) {
             return false;
         }
 

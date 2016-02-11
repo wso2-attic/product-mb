@@ -44,6 +44,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * TODO: Comment to be added
+ */
 public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
 
     private static Log log = LogFactory.getLog(org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging.class);

@@ -54,7 +54,6 @@
             <version>${carbon.kernel.version}</version>
             <type>zip</type>
         </dependency>
-        <!--MB related features-->
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.andes.feature</artifactId>
@@ -78,6 +77,26 @@
             <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli.wso2</groupId>
+            <artifactId>commons-cli</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>libthrift.wso2</groupId>
+            <artifactId>libthrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
         </dependency>
         <!--Hazelcast feature-->
         <dependency>
@@ -240,7 +259,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

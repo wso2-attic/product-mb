@@ -2,6 +2,9 @@ package org.dna.mqtt.moquette.proto;
 
 import org.dna.mqtt.moquette.proto.messages.AbstractMessage;
 
+/**
+ * Class to handle bytes and String operations
+ */
 public class Utils {
 
     public static final int MAX_LENGTH_LIMIT = 268435455;

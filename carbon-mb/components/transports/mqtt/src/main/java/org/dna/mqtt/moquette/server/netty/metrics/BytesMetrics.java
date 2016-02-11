@@ -1,5 +1,8 @@
 package org.dna.mqtt.moquette.server.netty.metrics;
 
+/**
+ * Metrics in the form of Bytes
+ */
 public class BytesMetrics {
     private long readBytes = 0;
     private long wroteBytes = 0;

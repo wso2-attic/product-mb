@@ -24,6 +24,9 @@ import java.util.List;
  */
 public class SubscribeMessage extends MessageIDMessage {
 
+    /**
+     * TODO: ADD A PROPER COMMENT HERE
+     */
     public static class Couple {
 
         private byte qos;
