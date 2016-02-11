@@ -138,6 +138,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.hazelcast</groupId>
+                <artifactId>org.wso2.carbon.hazelcast</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.hazelcast</groupId>
                 <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
                 <version>${carbon.hazelcast.version}</version>
                 <type>zip</type>
@@ -196,7 +201,6 @@
                 <version>${carbon.mb.version}</version>
                 <type>zip</type>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -265,6 +269,7 @@
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
         <carbon.hazelcast.version>1.0.0</carbon.hazelcast.version>
+        <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
     </properties>

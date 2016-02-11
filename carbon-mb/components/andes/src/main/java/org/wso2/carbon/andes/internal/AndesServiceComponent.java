@@ -12,8 +12,7 @@ import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
 import org.wso2.carbon.andes.Greeter;
 import org.wso2.carbon.andes.GreeterImpl;
-import org.wso2.carbon.kernel.CarbonRuntime;
-import org.wso2.carbon.kernel.utils.Utils;
+import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 
 import java.util.logging.Logger;
 
@@ -33,7 +32,7 @@ public class AndesServiceComponent {
     private ServiceRegistration serviceRegistration;
 
     /**
-     * This is the activation method of AndesServiceComponent. This will be called when its references are
+     * This is the activation method of ServiceComponent. This will be called when its references are
      * satisfied.
      *
      * @param bundleContext the bundle context instance of this bundle.
@@ -50,14 +49,14 @@ public class AndesServiceComponent {
     }
 
     /**
-     * This is the deactivation method of AndesServiceComponent. This will be called when this component
+     * This is the deactivation method of ServiceComponent. This will be called when this component
      * is being stopped or references are satisfied during runtime.
      *
      * @throws Exception this will be thrown if an issue occurs while executing the de-activate method
      */
     @Deactivate
     protected void stop() throws Exception {
-        logger.info("Service Component is deactivated");
+        logger.info("Andes Service Component is deactivated");
 
         // Unregister Greeter OSGi service
         serviceRegistration.unregister();
@@ -66,23 +65,25 @@ public class AndesServiceComponent {
     /**
      * This bind method will be called when CarbonRuntime OSGi service is registered.
      *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
     @Reference(
-            name = "carbon.runtime.service",
-            service = CarbonRuntime.class,
+            name = "carbon.hazelcast",
+            service = CarbonHazelcastAgent.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetCarbonRuntime"
+            unbind = "unsetCarbonHazelcastAgent"
     )
-    protected void setHazelcastInstance(CarbonRuntime carbonRuntime) {
+    protected void setCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
+        AndesDataHolder.getInstance().setHazelcastAgent(carbonHazelcastAgent);
     }
 
     /**
      * This is the unbind method which gets called at the un-registration of CarbonRuntime OSGi service.
      *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
-    protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
+    protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
+        AndesDataHolder.getInstance().setHazelcastAgent(null);
     }
 }
