@@ -79,19 +79,32 @@
             <groupId>org.wso2.orbit.com.lmax</groupId>
             <artifactId>disruptor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-digester.wso2</groupId>
+            <artifactId>commons-digester</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils.wso2</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
         <private.package>org.wso2.carbon.andes.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.internal,
-            org.wso2.carbon.andes.*;version="5.0.0"
+            org.wso2.carbon.andes.*;version="3.5.0"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
-            org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)",
+            org.wso2.carbon.kernel.*;version="[5.0.0, 6.0.0)",
             org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
-            org.wso2.andes.*;version="[3.5.0, 4.0.0)
+            org.wso2.andes.*;version="[3.5.0, 4.0.0)",
+            org.apache.commons.lang;version="[2.6.0, 3.0.0)"
         </import.package>
     </properties>
 

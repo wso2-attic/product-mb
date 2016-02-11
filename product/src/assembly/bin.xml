@@ -71,8 +71,12 @@
             <outputDirectory>conf/hazelcast</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/conf/qpid</directory>
+            <outputDirectory>conf/qpid</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
-
     <files>
 
     </files>
