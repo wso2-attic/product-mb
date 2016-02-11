@@ -79,6 +79,20 @@
             <groupId>org.wso2.orbit.com.lmax</groupId>
             <artifactId>disruptor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-digester.wso2</groupId>
+            <artifactId>commons-digester</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils.wso2</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -150,6 +164,18 @@
                                 <bundle>
                                     <symbolicName>disruptor</symbolicName>
                                     <version>${disruptor.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-digester</symbolicName>
+                                    <version>${commons-digester.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>commons-beanutils</symbolicName>
+                                    <version>${commons-beanutils.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.apache.commons.collections</symbolicName>
+                                    <version>3.2.2</version>
                                 </bundle>
                             </bundles>
                         </configuration>

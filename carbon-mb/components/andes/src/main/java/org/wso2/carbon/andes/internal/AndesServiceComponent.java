@@ -8,10 +8,13 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.andes.configuration.AndesConfigurationManager;
+import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
-import org.wso2.carbon.andes.Greeter;
-import org.wso2.carbon.andes.GreeterImpl;
+import org.wso2.andes.server.registry.ApplicationRegistry;
+import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
+import org.wso2.carbon.kernel.utils.Utils;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 
 import java.util.logging.Logger;
@@ -30,6 +33,10 @@ public class AndesServiceComponent {
 
     Logger logger = Logger.getLogger(AndesServiceComponent.class.getName());
     private ServiceRegistration serviceRegistration;
+    /**
+     * This holds the configuration values
+     */
+    private QpidServiceImpl qpidServiceImpl;
 
     /**
      * This is the activation method of ServiceComponent. This will be called when its references are
@@ -40,12 +47,23 @@ public class AndesServiceComponent {
      */
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
-        logger.info("Service Component is activated");
-        System.setProperty(BrokerOptions.ANDES_HOME, "advanced");
-        String[] args = {"-p" + 5672, "-s" + 8672, "-q" + 1883};
+
+        //Initialize AndesConfigurationManager
+        AndesConfigurationManager.initialize(0);
+
+        //Load qpid specific configurations
+        qpidServiceImpl = new QpidServiceImpl("carbon");
+        qpidServiceImpl.loadConfigurations();
+
+        // set message store and andes context store related configurations
+        AndesContext.getInstance().constructStoreConfiguration();
+
+        System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
+        String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort(),
+                "-q" + qpidServiceImpl.getMqttPort()};
         Main.main(args);
-        // Register GreeterImpl instance as an OSGi service.
-        serviceRegistration = bundleContext.registerService(Greeter.class.getName(), new GreeterImpl("WSO2"), null);
+        Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
+        logger.info("Andes service component activated");
     }
 
     /**
