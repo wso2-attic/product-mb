@@ -8,6 +8,9 @@ import io.netty.util.AttributeKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Handle message metrics
+ */
 public class MessageMetricsHandler extends ChannelDuplexHandler {
 
     private static final AttributeKey<MessageMetrics> ATTR_KEY_METRICS = new AttributeKey<MessageMetrics>

@@ -34,23 +34,23 @@ public class MQTTDecoder extends ByteToMessageDecoder {
     //3 = 3.1, 4 = 3.1.1
     static final AttributeKey<Integer> PROTOCOL_VERSION = AttributeKey.valueOf("version");
 
-    private final Map<Byte, org.dna.mqtt.moquette.parser.netty.DemuxDecoder> m_decoderMap = new HashMap<>();
+    private final Map<Byte, org.dna.mqtt.moquette.parser.netty.DemuxDecoder> decoderMap = new HashMap<>();
 
     public MQTTDecoder() {
-        m_decoderMap.put(AbstractMessage.CONNECT, new ConnectDecoder());
-        m_decoderMap.put(AbstractMessage.CONNACK, new org.dna.mqtt.moquette.parser.netty.ConnAckDecoder());
-        m_decoderMap.put(AbstractMessage.PUBLISH, new PublishDecoder());
-        m_decoderMap.put(AbstractMessage.PUBACK, new org.dna.mqtt.moquette.parser.netty.PubAckDecoder());
-        m_decoderMap.put(AbstractMessage.SUBSCRIBE, new org.dna.mqtt.moquette.parser.netty.SubscribeDecoder());
-        m_decoderMap.put(AbstractMessage.SUBACK, new org.dna.mqtt.moquette.parser.netty.SubAckDecoder());
-        m_decoderMap.put(AbstractMessage.UNSUBSCRIBE, new org.dna.mqtt.moquette.parser.netty.UnsubscribeDecoder());
-        m_decoderMap.put(AbstractMessage.DISCONNECT, new org.dna.mqtt.moquette.parser.netty.DisconnectDecoder());
-        m_decoderMap.put(AbstractMessage.PINGREQ, new org.dna.mqtt.moquette.parser.netty.PingReqDecoder());
-        m_decoderMap.put(AbstractMessage.PINGRESP, new org.dna.mqtt.moquette.parser.netty.PingRespDecoder());
-        m_decoderMap.put(AbstractMessage.UNSUBACK, new org.dna.mqtt.moquette.parser.netty.UnsubAckDecoder());
-        m_decoderMap.put(AbstractMessage.PUBCOMP, new org.dna.mqtt.moquette.parser.netty.PubCompDecoder());
-        m_decoderMap.put(AbstractMessage.PUBREC, new org.dna.mqtt.moquette.parser.netty.PubRecDecoder());
-        m_decoderMap.put(AbstractMessage.PUBREL, new org.dna.mqtt.moquette.parser.netty.PubRelDecoder());
+        decoderMap.put(AbstractMessage.CONNECT, new ConnectDecoder());
+        decoderMap.put(AbstractMessage.CONNACK, new org.dna.mqtt.moquette.parser.netty.ConnAckDecoder());
+        decoderMap.put(AbstractMessage.PUBLISH, new PublishDecoder());
+        decoderMap.put(AbstractMessage.PUBACK, new org.dna.mqtt.moquette.parser.netty.PubAckDecoder());
+        decoderMap.put(AbstractMessage.SUBSCRIBE, new org.dna.mqtt.moquette.parser.netty.SubscribeDecoder());
+        decoderMap.put(AbstractMessage.SUBACK, new org.dna.mqtt.moquette.parser.netty.SubAckDecoder());
+        decoderMap.put(AbstractMessage.UNSUBSCRIBE, new org.dna.mqtt.moquette.parser.netty.UnsubscribeDecoder());
+        decoderMap.put(AbstractMessage.DISCONNECT, new org.dna.mqtt.moquette.parser.netty.DisconnectDecoder());
+        decoderMap.put(AbstractMessage.PINGREQ, new org.dna.mqtt.moquette.parser.netty.PingReqDecoder());
+        decoderMap.put(AbstractMessage.PINGRESP, new org.dna.mqtt.moquette.parser.netty.PingRespDecoder());
+        decoderMap.put(AbstractMessage.UNSUBACK, new org.dna.mqtt.moquette.parser.netty.UnsubAckDecoder());
+        decoderMap.put(AbstractMessage.PUBCOMP, new org.dna.mqtt.moquette.parser.netty.PubCompDecoder());
+        decoderMap.put(AbstractMessage.PUBREC, new org.dna.mqtt.moquette.parser.netty.PubRecDecoder());
+        decoderMap.put(AbstractMessage.PUBREL, new org.dna.mqtt.moquette.parser.netty.PubRelDecoder());
     }
 
     @Override
@@ -64,7 +64,7 @@ public class MQTTDecoder extends ByteToMessageDecoder {
 
         byte messageType = Utils.readMessageType(in);
 
-        org.dna.mqtt.moquette.parser.netty.DemuxDecoder decoder = m_decoderMap.get(messageType);
+        org.dna.mqtt.moquette.parser.netty.DemuxDecoder decoder = decoderMap.get(messageType);
         if (decoder == null) {
             throw new CorruptedFrameException("Can't find any suitable decoder for message type: " + messageType);
         }

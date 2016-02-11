@@ -11,8 +11,15 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * Class to store subscriptions
+ */
 public class SubscriptionsStore {
 
+    /**
+     *
+     * @param <T>
+     */
     public static interface IVisitor<T> {
         void visit(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode node);
 

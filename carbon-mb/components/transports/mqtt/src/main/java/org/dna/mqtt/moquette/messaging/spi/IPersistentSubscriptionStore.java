@@ -4,6 +4,9 @@ import org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription;
 
 import java.util.List;
 
+/**
+ * Interface to handle subscriptions
+ */
 public interface IPersistentSubscriptionStore {
 
     void addNewSubscription(Subscription newSubscription, String clientID);

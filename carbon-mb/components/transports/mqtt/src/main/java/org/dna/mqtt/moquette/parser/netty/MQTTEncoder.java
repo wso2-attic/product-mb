@@ -29,7 +29,8 @@ import java.util.Map;
  */
 public class MQTTEncoder extends MessageToByteEncoder<AbstractMessage> {
 
-    private Map<Byte, org.dna.mqtt.moquette.parser.netty.DemuxEncoder> encoderMap = new HashMap<Byte, org.dna.mqtt.moquette.parser.netty.DemuxEncoder>();
+    private Map<Byte, org.dna.mqtt.moquette.parser.netty.DemuxEncoder> encoderMap = new HashMap<Byte, org.dna.mqtt
+            .moquette.parser.netty.DemuxEncoder>();
 
     public MQTTEncoder() {
         encoderMap.put(AbstractMessage.CONNECT, new ConnectEncoder());
@@ -52,7 +53,8 @@ public class MQTTEncoder extends MessageToByteEncoder<AbstractMessage> {
     protected void encode(ChannelHandlerContext chc, AbstractMessage msg, ByteBuf bb) throws Exception {
         org.dna.mqtt.moquette.parser.netty.DemuxEncoder encoder = encoderMap.get(msg.getMessageType());
         if (encoder == null) {
-            throw new CorruptedFrameException("Can't find any suitable decoder for message type: " + msg.getMessageType());
+            throw new CorruptedFrameException("Can't find any suitable decoder for message type: " + msg
+                    .getMessageType());
         }
         encoder.encode(chc, msg, bb);
     }

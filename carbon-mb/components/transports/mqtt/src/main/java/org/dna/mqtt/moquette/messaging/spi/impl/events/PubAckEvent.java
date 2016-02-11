@@ -1,5 +1,8 @@
 package org.dna.mqtt.moquette.messaging.spi.impl.events;
 
+/**
+ * Class to keep data of PubAckEvent
+ */
 public class PubAckEvent extends MessagingEvent {
 
     int messageId;

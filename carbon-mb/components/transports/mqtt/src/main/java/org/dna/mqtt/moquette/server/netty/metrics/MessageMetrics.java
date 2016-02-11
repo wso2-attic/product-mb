@@ -1,5 +1,8 @@
 package org.dna.mqtt.moquette.server.netty.metrics;
 
+/**
+ * Metrics in the form of message
+ */
 public class MessageMetrics {
     private long messagesRead = 0;
     private long messageWrote = 0;

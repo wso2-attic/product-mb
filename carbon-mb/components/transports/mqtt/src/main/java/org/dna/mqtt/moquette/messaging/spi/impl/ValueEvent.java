@@ -3,6 +3,9 @@ package org.dna.mqtt.moquette.messaging.spi.impl;
 import com.lmax.disruptor.EventFactory;
 import org.dna.mqtt.moquette.messaging.spi.impl.events.MessagingEvent;
 
+/**
+ *
+ */
 public final class ValueEvent {
 
     private MessagingEvent event;
@@ -15,7 +18,7 @@ public final class ValueEvent {
         this.event = event;
     }
 
-    public final static EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent> EVENT_FACTORY = new
+    public static final EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent> EVENT_FACTORY = new
             EventFactory<org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent>() {
 
         public org.dna.mqtt.moquette.messaging.spi.impl.ValueEvent newInstance() {
