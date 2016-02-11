@@ -246,7 +246,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Maven plugins -->
+        <!--
         <maven.checkstyleplugin.version>2.16</maven.checkstyleplugin.version>
+        -->
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!--3rd party related properties-->
@@ -272,6 +274,8 @@
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
+       <!--Transport Related Configrations -->
+        <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
     </properties>
 
     <build>
@@ -345,5 +349,6 @@
                 <!--<version>${maven.findbugsplugin.version}</version>-->
             <!--</plugin>-->
         </plugins>
+
     </build>
 </project>

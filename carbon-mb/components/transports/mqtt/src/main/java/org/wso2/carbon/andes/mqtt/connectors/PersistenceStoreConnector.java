@@ -20,7 +20,6 @@ package org.wso2.carbon.andes.mqtt.connectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dna.mqtt.wso2.QOSLevel;
-import org.wso2.andes.amqp.AMQPUtils;
 import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesAckData;
 import org.wso2.andes.kernel.AndesChannel;
@@ -398,13 +397,13 @@ public class PersistenceStoreConnector implements MQTTConnector {
         if (isDurable) {
             //For subscription that are durable we need to provide the queue name for the queue identifier
             targetQueue = queueIdentifier;
-            targetQueueBoundExchange = AMQPUtils.DIRECT_EXCHANGE_NAME;
+            targetQueueBoundExchange = MQTTUtils.DIRECT_EXCHANGE_NAME;
             isTargetQueueBoundAutoDeletable = 0;
             destinationType = DestinationType.DURABLE_TOPIC;
         } else {
             //create a andes core LocalSubscription without giving queue names
             targetQueue = topic;
-            targetQueueBoundExchange = AMQPUtils.TOPIC_EXCHANGE_NAME;
+            targetQueueBoundExchange = MQTTUtils.TOPIC_EXCHANGE_NAME;
             isTargetQueueBoundAutoDeletable = 1;
             destinationType = DestinationType.TOPIC;
         }

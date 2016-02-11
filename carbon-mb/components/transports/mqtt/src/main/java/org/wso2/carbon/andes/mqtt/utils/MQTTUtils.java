@@ -60,6 +60,8 @@ public class MQTTUtils {
     public static final String MULTI_LEVEL_WILDCARD = "#";
 
     public static final String DEFAULT_ANDES_CHANNEL_IDENTIFIER = "MQTT-Unknown";
+    public static final String DIRECT_EXCHANGE_NAME = "amq.direct";
+    public static final String TOPIC_EXCHANGE_NAME = "amq.topic";
     /**
      * MQTT Publisher ID
      */

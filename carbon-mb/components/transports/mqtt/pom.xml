@@ -98,9 +98,12 @@
         <private.package>org.wso2.carbon.andes.mqtt.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.mqtt.internal,
-            org.wso2.carbon.andes.mqtt.*;version="5.0.0"
+            org.wso2.carbon.andes.mqtt.*;version="${mqtt.transport.package.export.version}",
+            org.dna.mqtt.*;version="${mqtt.transport.package.export.version}"
         </export.package>
         <import.package>
+            org.wso2.andes.*,
+            org.slf4j.*,
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
             org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)"
         </import.package>

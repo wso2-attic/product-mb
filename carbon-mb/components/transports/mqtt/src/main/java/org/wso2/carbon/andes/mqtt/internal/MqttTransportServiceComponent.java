@@ -1,5 +1,6 @@
 package org.wso2.carbon.andes.mqtt.internal;
 
+import org.dna.mqtt.moquette.server.Server;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -8,29 +9,30 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.carbon.andes.mqtt.Greeter;
-import org.wso2.carbon.andes.mqtt.GreeterImpl;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
 /**
- * Service component to consume CarbonRuntime instance which has been registered as an OSGi service
- * by Carbon Kernel.
- *
- * @since 3.5.0-SNAPSHOT
+ * Declarative service component for MQTT.
+ * This handles initialization of the transport
  */
 @Component(
-        name = "org.wso2.carbon.andes.mqtt.internal.ServiceComponent",
+        name = "org.wso2.carbon.andes.mqtt.internal.MqttTransportServiceComponent",
         immediate = true
 )
-public class ServiceComponent {
+public class MqttTransportServiceComponent {
 
-    Logger logger = Logger.getLogger(ServiceComponent.class.getName());
-    private ServiceRegistration serviceRegistration;
+    Logger logger = Logger.getLogger(MqttTransportServiceComponent.class.getName());
+    private ServiceRegistration mqttTransportService;
+    //TODO we need to change this to get from the configuration
+    //This will be a temporary measure
+    private final int MQTT_PORT = 1883;
+    //The running MQTT server instance
+    private Server mqttServer = null;
 
     /**
-     * This is the activation method of ServiceComponent. This will be called when its references are
+     * This is the activation method of MqttTransportServiceComponent. This will be called when its references are
      * satisfied.
      *
      * @param bundleContext the bundle context instance of this bundle.
@@ -38,24 +40,30 @@ public class ServiceComponent {
      */
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
-        logger.info("Service Component is activated");
-
-        // Register GreeterImpl instance as an OSGi service.
-        serviceRegistration = bundleContext.registerService(Greeter.class.getName(), new GreeterImpl("WSO2"), null);
+        logger.info("MqttTransportServiceComponent Started");
+        //TODO this is a bad way of starting the service, without registering a service
+        //This is temporary
+        mqttServer = new Server();
+        mqttServer.startServer(MQTT_PORT);
     }
 
     /**
-     * This is the deactivation method of ServiceComponent. This will be called when this component
+     * This is the deactivation method of MqttTransportServiceComponent. This will be called when this component
      * is being stopped or references are satisfied during runtime.
      *
      * @throws Exception this will be thrown if an issue occurs while executing the de-activate method
      */
     @Deactivate
     protected void stop() throws Exception {
-        logger.info("Service Component is deactivated");
+        logger.info("MqttTransportServiceComponent deactivated");
+
+        //We stop the server when the bundle is deactivated
+        if(null != mqttServer){
+            mqttServer.stopServer();
+        }
 
         // Unregister Greeter OSGi service
-        serviceRegistration.unregister();
+        mqttTransportService.unregister();
     }
 
     /**
@@ -82,4 +90,5 @@ public class ServiceComponent {
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
         DataHolder.getInstance().setCarbonRuntime(null);
     }
+
 }
