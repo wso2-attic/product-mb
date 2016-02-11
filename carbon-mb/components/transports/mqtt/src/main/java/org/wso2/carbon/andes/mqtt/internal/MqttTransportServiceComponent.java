@@ -25,6 +25,11 @@ public class MqttTransportServiceComponent {
 
     Logger logger = Logger.getLogger(MqttTransportServiceComponent.class.getName());
     private ServiceRegistration mqttTransportService;
+    //TODO we need to change this to get from the configuration
+    //This will be a temporary measure
+    private final int MQTT_PORT = 1883;
+    //The running MQTT server instance
+    private Server mqttServer = null;
 
     /**
      * This is the activation method of MqttTransportServiceComponent. This will be called when its references are
@@ -35,13 +40,11 @@ public class MqttTransportServiceComponent {
      */
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
-        logger.info("Service Component is activated");
-
-        // Register GreeterImpl instance as an OSGi service.
-       // mqttTransportService = bundleContext.registerService(Greeter.class.getName(), new GreeterImpl("WSO2"), null);
-
-        Server server = new Server();
-        server.startServer(1883);
+        logger.info("MqttTransportServiceComponent Started");
+        //TODO this is a bad way of starting the service, without registering a service
+        //This is temporary
+        mqttServer = new Server();
+        mqttServer.startServer(MQTT_PORT);
     }
 
     /**
@@ -52,7 +55,12 @@ public class MqttTransportServiceComponent {
      */
     @Deactivate
     protected void stop() throws Exception {
-        logger.info("Service Component is deactivated");
+        logger.info("MqttTransportServiceComponent deactivated");
+
+        //We stop the server when the bundle is deactivated
+        if(null != mqttServer){
+            mqttServer.stopServer();
+        }
 
         // Unregister Greeter OSGi service
         mqttTransportService.unregister();
