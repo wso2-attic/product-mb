@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.internal;
 
+import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 
 import java.util.logging.Logger;
@@ -29,6 +30,12 @@ public class AndesDataHolder {
 
     private static AndesDataHolder instance = new AndesDataHolder();
     private CarbonHazelcastAgent carbonHazelcastAgent;
+
+
+    /**
+     * The datasource service instance provided by OSGI.
+     */
+    private DataSourceService dataSourceService;
 
     private AndesDataHolder() {
 
@@ -60,5 +67,24 @@ public class AndesDataHolder {
      */
     public void setHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
         this.carbonHazelcastAgent = carbonHazelcastAgent;
+    }
+
+
+    /**
+     * Get the data source service reference.
+     *
+     * @return The data source service instance
+     */
+    public DataSourceService getDataSourceService() {
+        return dataSourceService;
+    }
+
+    /**
+     * Initialize the data source service reference with a new reference.
+     *
+     * @param dataSourceManager The new data source service instance
+     */
+    public void setDataSourceService(DataSourceService dataSourceManager) {
+        this.dataSourceService = dataSourceManager;
     }
 }
