@@ -89,6 +89,14 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.jndi</groupId>
+            <artifactId>org.wso2.carbon.jndi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -102,7 +110,8 @@
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
             org.wso2.andes.*;version="${andes.package.import.version.range}",
-            org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}"
+            org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
+            org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}"
         </import.package>
     </properties>
 

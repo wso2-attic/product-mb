@@ -30,6 +30,7 @@ import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
 import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
+import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 import org.wso2.carbon.kernel.utils.Utils;
 
@@ -117,5 +118,31 @@ public class AndesServiceComponent {
      */
     protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
         AndesDataHolder.getInstance().setHazelcastAgent(null);
+    }
+
+
+    /**
+     * This bind method will be called when Carbon Data Source OSGI service is registered.
+     *
+     * @param dataSourceService The data source service instance created
+     */
+    @Reference(
+            name = "carbon.datasource.service",
+            service = DataSourceService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetDataSourceService"
+    )
+    protected void setDataSourceService(DataSourceService dataSourceService) {
+        AndesDataHolder.getInstance().setDataSourceService(dataSourceService);
+    }
+
+    /**
+     * This will be at the un-registration of the Carbon Data Source OSGI service.
+     *
+     * @param dataSourceService The instance to un-register
+     */
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
+        AndesDataHolder.getInstance().setDataSourceService(null);
     }
 }

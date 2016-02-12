@@ -85,6 +85,18 @@
             <version>${carbon.hazelcast.feature.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.jndi</groupId>
+            <artifactId>org.wso2.carbon.jndi.feature</artifactId>
+            <version>${carbon.jndi.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core.feature</artifactId>
+            <version>${carbon.datasources.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -158,6 +170,14 @@
                                     <id>org.wso2.carbon.hazelcast.feature</id>
                                     <version>${carbon.hazelcast.feature.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.jndi.feature</id>
+                                    <version>${carbon.jndi.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.datasource.core.feature</id>
+                                    <version>${carbon.datasources.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -229,6 +249,14 @@
                                 <feature>
                                     <id>org.wso2.carbon.mb.mqtt.feature.group</id>
                                     <version>${carbon.mb.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.jndi.feature.group</id>
+                                    <version>${carbon.jndi.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.datasource.core.feature</id>
+                                    <version>${carbon.datasources.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.hazelcast.feature.group</id>

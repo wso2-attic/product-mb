@@ -217,6 +217,16 @@
                 <version>${carbon.mb.version}</version>
                 <type>zip</type>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.jndi</groupId>
+                <artifactId>org.wso2.carbon.jndi</artifactId>
+                <version>${carbon.jndi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core</artifactId>
+                <version>${carbon.datasources.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -295,6 +305,9 @@
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
+        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
+        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
+        <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
