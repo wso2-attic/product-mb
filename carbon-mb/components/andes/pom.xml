@@ -31,9 +31,8 @@
     <packaging>bundle</packaging>
     <name>WSO2 Message Broker - Andes Component</name>
     <description>
-        This is a sample implementation of a Carbon Component
-        which consumes an OSGi service registered by Carbon Kernel
-        and registers another OSGi service
+        This is the implementation for the Andes Carbon Component which initiates the Qpid broker and registers Qpid
+        OSGi service.
     </description>
     <url>http://wso2.com</url>
 
@@ -53,7 +52,6 @@
         <dependency>
             <groupId>org.wso2.carbon.hazelcast</groupId>
             <artifactId>org.wso2.carbon.hazelcast</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
@@ -97,14 +95,14 @@
         <private.package>org.wso2.carbon.andes.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.internal,
-            org.wso2.carbon.andes.*;version="3.5.0"
+            org.wso2.carbon.andes.*;version="${andes.package.export.version.range}"
         </export.package>
         <import.package>
-            org.osgi.framework.*;version="[1.8.0, 2.0.0)",
-            org.wso2.carbon.kernel.*;version="[5.0.0, 6.0.0)",
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
-            org.wso2.andes.*;version="[3.5.0, 4.0.0)",
-            org.apache.commons.lang;version="[2.6.0, 3.0.0)"
+            org.wso2.andes.*;version="${andes.package.import.version.range}",
+            org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}"
         </import.package>
     </properties>
 

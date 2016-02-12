@@ -155,12 +155,12 @@
             <dependency>
                 <groupId>org.wso2.carbon.hazelcast</groupId>
                 <artifactId>org.wso2.carbon.hazelcast</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${carbon.hazelcast.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.hazelcast</groupId>
                 <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
-                <version>${carbon.hazelcast.version}</version>
+                <version>${carbon.hazelcast.feature.version}</version>
                 <type>zip</type>
             </dependency>
 
@@ -272,6 +272,7 @@
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
         <slf4j.version>1.7.5</slf4j.version>
         <osgi.api.version>6.0.0</osgi.api.version>
+        <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
         <guava.version>19.0</guava.version>
         <guava.bundle.version>19.0.0</guava.bundle.version>
         <commons-cli.wso2.version>1.2.0.wso2v1</commons-cli.wso2.version>
@@ -281,6 +282,7 @@
         <commons-digester.wso2.version>1.8.1.wso2v1</commons-digester.wso2.version>
         <commons-beanutils.wso2.version>1.8.0.wso2v1</commons-beanutils.wso2.version>
         <orbit.version.commons.collection>3.2.0.wso2v1</orbit.version.commons.collection>
+        <org.apache.commons.lang.package.import.version.range>[2.6.0, 3.0.0)</org.apache.commons.lang.package.import.version.range>
 
         <!--Test related properties-->
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
@@ -289,10 +291,15 @@
         <!--Carbon related properties-->
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
         <carbon.kernel.version>5.0.0</carbon.kernel.version>
-        <carbon.hazelcast.version>1.0.0</carbon.hazelcast.version>
+        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
+        <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
+        <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
+        <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
+        <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
+
        <!--Transport Related Configrations -->
         <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
     </properties>
