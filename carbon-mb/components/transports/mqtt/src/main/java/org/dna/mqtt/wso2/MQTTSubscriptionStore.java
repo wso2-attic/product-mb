@@ -44,7 +44,7 @@ public class MQTTSubscriptionStore extends SubscriptionsStore {
      */
     private void addLocalSubscription(Subscription newSubscription) {
         String topic = newSubscription.getTopic();
-        String clientID = newSubscription.getClientId();
+        String clientID = newSubscription.getClientID();
 
         org.dna.mqtt.wso2.Subscribers subscribers = localSubscriptions.get(topic);
 

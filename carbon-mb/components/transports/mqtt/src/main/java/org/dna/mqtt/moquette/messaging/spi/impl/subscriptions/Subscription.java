@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class Subscription implements Serializable {
 
+    private static final long serialVersionUID = -5779282674124481103L;
     QOSType requestedQos;
     String clientId;
     String topic;
@@ -23,7 +24,7 @@ public class Subscription implements Serializable {
         this.cleanSession = cleanSession;
     }
 
-    public String getClientId() {
+    public String getClientID() {
         return clientId;
     }
 

@@ -1,5 +1,6 @@
 package org.dna.mqtt.moquette.messaging.spi.impl.subscriptions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,17 +10,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 class TreeNode {
 
-    private class ClientIDComparator implements Comparator<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions
-            .Subscription> {
+    private static class ClientIDComparator implements Serializable, Comparator<Subscription> {
+
+        private static final long serialVersionUID = -6096113045649398353L;
 
         public int compare(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription o1, org.dna.mqtt
                 .moquette.messaging.spi.impl.subscriptions.Subscription o2) {
-            return o1.getClientId().compareTo(o2.getClientId());
+            return o1.getClientID().compareTo(o2.getClientID());
         }
 
     }
 
-    org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode parent;
+//    org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode parent;
     Token token;
     List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode> children = new ArrayList<org.dna.mqtt
             .moquette.messaging.spi.impl.subscriptions.TreeNode>();
@@ -27,7 +29,7 @@ class TreeNode {
             .mqtt.moquette.messaging.spi.impl.subscriptions.Subscription>();
 
     TreeNode(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode parent) {
-        this.parent = parent;
+//        this.parent = parent;
     }
 
     Token getToken() {

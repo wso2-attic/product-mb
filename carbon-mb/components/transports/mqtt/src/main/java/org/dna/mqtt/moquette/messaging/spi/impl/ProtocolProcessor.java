@@ -237,7 +237,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
             // Keep the authorization details in memory to be used while publishing and subscribing
             // to validate the client
-            String carbonUsername = username.replace('!', '@');
+//            String carbonUsername = username.replace('!', '@');
 //            authSubject.setTenantDomain(MultitenantUtils.getTenantDomain(carbonUsername));
 //            authSubject.setUsername(MultitenantUtils.getTenantAwareUsername(carbonUsername));
             authSubject.setProtocolVersion(msg.getProcotolVersion());
@@ -270,20 +270,6 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             republishStored(msg.getClientID());
         }
     }
-
-
-    /**
-     * Added as an upgrade for 3.1.1 specification, This is adopted by WSO2 from Moquette
-     *
-     * @param session the server session which holds channel information
-     */
-    private void failedCredentials(ServerChannel session) {
-        ConnAckMessage okResp = new ConnAckMessage();
-        okResp.setReturnCode(ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
-        session.write(okResp);
-        session.close(false);
-    }
-
 
     private void republishStored(String clientID) {
         if (log.isTraceEnabled()) {
@@ -406,7 +392,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
             //TODO check whether the QOS 0 messages should be retained
             if (qos == AbstractMessage.QOSType.MOST_ONE && subscription.isActive()) {
                 //QoS 0
-                sendPublish(subscription.getClientId(), messageDestination, qos, message, retain);
+                sendPublish(subscription.getClientID(), messageDestination, qos, message, retain);
             } else {
                 //QoS 1 or 2
                 //if the target subscription is not clean session and is not connected => store it
@@ -414,21 +400,21 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                     //clone the event with matching clientID
                     //TODO if its clean session we don't need to store it, it will be stored at the andes layer itself
                     PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain,
-                            subscription.getClientId(),
+                            subscription.getClientID(),
                             messageID, null);
                     storageService.storePublishForFuture(newPublishEvt);
                 } else {
                     //Then we need to store this
                  /*   if(qos.getValue() > 0){
                         PublishEvent newPublishEvt = new PublishEvent(subscribedDestination, qos, message, retain,
-                        subscription.getClientId(),
+                        subscription.getClientID(),
                                 messageID, null);
                         storageService.storePublishForFuture(newPublishEvt);
                     }*/
                     //publish
                     if (subscription.isActive()) {
                         //Change done by WSO2 will be overloading the method
-                        sendPublish(subscription.getClientId(), messageDestination, qos, message, retain, messageID);
+                        sendPublish(subscription.getClientID(), messageDestination, qos, message, retain, messageID);
                     }
                 }
             }
@@ -458,30 +444,30 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 
             ByteBuffer message = origMessage.duplicate();
      /*       log.debug("Broker republishing to client <{}> topic <{}> qos <{}>, active {}",
-                    sub.getClientId(), sub.getChannelId(), qos, sub.isActive());*/
+                    sub.getClientID(), sub.getChannelId(), qos, sub.isActive());*/
 
             if (qos == AbstractMessage.QOSType.MOST_ONE && sub.isActive()) {
                 //QoS 0
-                sendPublish(sub.getClientId(), topic, qos, message, false);
+                sendPublish(sub.getClientID(), topic, qos, message, false);
             } else {
                 //QoS 1 or 2
                 //if the target subscription is not clean session and is not connected => store it
                 if (!sub.isCleanSession() && !sub.isActive()) {
                     //clone the event with matching clientID
-                    PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientId(),
+                    PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientID(),
                             messageID, null);
                     storageService.storePublishForFuture(newPublishEvt);
                 } else {
                     //if QoS 2 then store it in temp memory
                     if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) {
-                        String publishKey = String.format("%s%d", sub.getClientId(), messageID);
-                        PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientId(),
+                        String publishKey = String.format("%s%d", sub.getClientID(), messageID);
+                        PublishEvent newPublishEvt = new PublishEvent(topic, qos, message, retain, sub.getClientID(),
                                 messageID, null);
                         storageService.addInFlight(newPublishEvt, publishKey);
                     }
                     //publish
                     if (sub.isActive()) {
-                        sendPublish(sub.getClientId(), topic, qos, message, false);
+                        sendPublish(sub.getClientID(), topic, qos, message, false);
                     }
                 }
             }
@@ -823,7 +809,7 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
                     // 'forbidden subscription' return code has sent to client since client don't have
                     // permission to subscribe the topic.
                     SubAckMessage response = new SubAckMessage();
-                    response.setreturnCode(SubAckMessage.FORBIDDEN_SUBSCRIPTION);
+                    response.setReturnCode(SubAckMessage.FORBIDDEN_SUBSCRIPTION);
                     session.write(response);
                 }
                 continue;

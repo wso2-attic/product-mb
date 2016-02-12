@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Properties;
 
@@ -46,7 +48,7 @@ class ConfigurationParser {
             return;
         }
         try {
-            FileReader reader = new FileReader(file);
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(file), Charset.defaultCharset());
             parse(reader);
         } catch (FileNotFoundException fex) {
             LOG.warn(String.format("parsing not existing file %s, so fallback on default configuration!", file

@@ -55,7 +55,9 @@ class SubscribeEncoder extends org.dna.mqtt.moquette.parser.netty.DemuxEncoder<S
             out.writeBytes(buff);
         } finally {
             variableHeaderBuff.release();
-            buff.release();
+            if (buff != null) {
+                buff.release();
+            }
         }
     }
 

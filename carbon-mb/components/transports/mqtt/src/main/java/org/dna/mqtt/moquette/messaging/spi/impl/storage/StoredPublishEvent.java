@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
  * TODO: Comment to be added
  */
 public class StoredPublishEvent implements Serializable {
+    private static final long serialVersionUID = -7704103207007063922L;
     String topic;
     QOSType qos;
     byte[] message;
@@ -40,7 +41,7 @@ public class StoredPublishEvent implements Serializable {
     }
 
     public byte[] getMessage() {
-        return message;
+        return message.clone();
     }
 
     public boolean isRetain() {

@@ -75,11 +75,18 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
                         }
                     }
 
-                    MQTTPingRequest mqttPingRequest = new MQTTPingRequest();
-                    mqttPingRequest.setChannelId(channel.getAttribute(Constants.ATTR_CLIENTID).toString());
-                    messaging.handleProtocolMessage(channel, mqttPingRequest);
+                    if (null != channel) {
+                        MQTTPingRequest mqttPingRequest = new MQTTPingRequest();
+                        mqttPingRequest.setChannelId(channel.getAttribute(Constants.ATTR_CLIENTID).toString());
+                        messaging.handleProtocolMessage(channel, mqttPingRequest);
+                    }
                     break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported message type received : " +
+                                                                                                msg.getMessageType());
             }
+        } catch (RuntimeException re) {
+            throw re;
         } catch (Exception ex) {
             log.error("Bad error in processing the message", ex);
         }

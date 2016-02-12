@@ -55,7 +55,9 @@ class UnsubscribeEncoder extends DemuxEncoder<UnsubscribeMessage> {
             out.writeBytes(buff);
         } finally {
             variableHeaderBuff.release();
-            buff.release();
+            if (buff != null) {
+                buff.release();
+            }
         }
     }
 
