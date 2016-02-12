@@ -33,6 +33,7 @@ import org.wso2.carbon.andes.mqtt.MQTTMessageContext;
 import org.wso2.carbon.andes.mqtt.MQTTPublisherChannel;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.UUID;
 
 //import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -110,7 +111,7 @@ public class MQTTUtils {
                              + "=" + persistence + "," + MESSAGE_CONTENT_LENGTH + "=" + contentLength + "," +
                              QOSLEVEL + "=" + qos
                              + "," + IS_COMPRESSED + "=" + isCompressed;
-        metaInformation = information.getBytes();
+        metaInformation = information.getBytes(Charset.defaultCharset());
         return metaInformation;
     }
 
@@ -233,7 +234,7 @@ public class MQTTUtils {
      * @return A unique UUID for the given arguments
      */
     public static UUID generateSubscriptionChannelID(String clientId, String topic, int qos, boolean cleanSession) {
-        return UUID.nameUUIDFromBytes((clientId + topic + qos + cleanSession).getBytes());
+        return UUID.nameUUIDFromBytes((clientId + topic + qos + cleanSession).getBytes(Charset.defaultCharset()));
     }
 
     /**

@@ -272,9 +272,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Maven plugins -->
-        <!--
         <maven.checkstyleplugin.version>2.16</maven.checkstyleplugin.version>
-        -->
         <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
 
         <!--3rd party related properties-->
@@ -377,16 +375,16 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-checkstyle-plugin</artifactId>-->
-                <!--<version>${maven.checkstyleplugin.version}</version>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-                <!--<version>${maven.findbugsplugin.version}</version>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyleplugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${maven.findbugsplugin.version}</version>
+            </plugin>
         </plugins>
 
     </build>

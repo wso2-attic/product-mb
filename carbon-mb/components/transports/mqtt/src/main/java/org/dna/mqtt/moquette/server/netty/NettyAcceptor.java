@@ -13,12 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.dna.mqtt.commons.Constants;
 import org.dna.mqtt.moquette.messaging.spi.IMessaging;
@@ -89,8 +84,8 @@ public class NettyAcceptor implements ServerAcceptor {
          */
         //initializeWebSocketTransport(messaging, props);
         //TODO need to re look into using getProperty here
-        String sslTcpPortProp = props.get(Constants.SSL_PORT_PROPERTY_NAME).toString();
-        String wssPortProp = props.getProperty(Constants.WSS_PORT_PROPERTY_NAME);
+        String sslTcpPortProp = props.getProperty(Constants.SSL_PORT_PROPERTY_NAME);
+//        String wssPortProp = props.getProperty(Constants.WSS_PORT_PROPERTY_NAME);
         Boolean sslPortEnabled = Boolean.parseBoolean(props.get(Constants.SSL_CONNECTION_ENABLED).toString());
         Boolean defaultPortEnabled = Boolean.parseBoolean(props.get(Constants.DEFAULT_CONNECTION_ENABLED).toString());
 
@@ -130,20 +125,11 @@ public class NettyAcceptor implements ServerAcceptor {
 
     private void initFactory(String host, int port, final PipelineInitializer pipeliner) {
         ServerBootstrap b = new ServerBootstrap();
+        InitFactoryChannelInitializer initFactoryChannelInitializer = new InitFactoryChannelInitializer();
+        initFactoryChannelInitializer.setPipeliner(pipeliner);
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        try {
-                            pipeliner.init(pipeline);
-                        } catch (Throwable th) {
-                            log.error("Severe error during pipeline creation", th);
-                            throw th;
-                        }
-                    }
-                })
+                .childHandler(initFactoryChannelInitializer)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -155,6 +141,25 @@ public class NettyAcceptor implements ServerAcceptor {
             f.sync();
         } catch (InterruptedException ex) {
             log.error(null, ex);
+        }
+    }
+
+    private static class InitFactoryChannelInitializer extends ChannelInitializer<SocketChannel> {
+        private PipelineInitializer pipeliner;
+
+        public void setPipeliner(PipelineInitializer pipeliner) {
+            this.pipeliner = pipeliner;
+        }
+
+        @Override
+        protected void initChannel(SocketChannel socketChannel) throws Exception {
+            ChannelPipeline pipeline = socketChannel.pipeline();
+            try {
+                pipeliner.init(pipeline);
+            } catch (Throwable th) {
+                log.error("Severe error during pipeline creation", th);
+                throw th;
+            }
         }
     }
 
@@ -179,43 +184,43 @@ public class NettyAcceptor implements ServerAcceptor {
         });
     }
 
-    private void initializeWebSocketTransport(IMessaging messaging, Properties props) throws IOException {
-        String webSocketPortProp = props.getProperty(Constants.WEB_SOCKET_PORT_PROPERTY_NAME);
-        if (webSocketPortProp == null) {
-            //Do nothing no WebSocket configured
-            log.info("WebSocket is disabled");
-            return;
-        }
-        int port = Integer.parseInt(webSocketPortProp);
-
-        final NettyMQTTHandler handler = new NettyMQTTHandler();
-        handler.setMessaging(messaging);
-
-        String host = props.getProperty(Constants.HOST_PROPERTY_NAME);
-        initFactory(host, port, new PipelineInitializer() {
-            @Override
-            void init(ChannelPipeline pipeline) {
-                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
-                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
-                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-                pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler("/mqtt"/*"/mqtt"*/, "mqttv3"
-                                                                                                            + ".1, "
-                                                                                                            + "mqttv3"
-                                                                                                            + ".1.1"));
-                //pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler(null, "mqtt"));
-                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
-                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
-                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
-                pipeline.addAfter("idleStateHandler", "idleEventHandler", new org.dna.mqtt.moquette.server.netty
-                        .MoquetteIdleTimoutHandler());
-                pipeline.addFirst("bytemetrics", new BytesMetricsHandler(bytesMetricsCollector));
-                pipeline.addLast("decoder", new MQTTDecoder());
-                pipeline.addLast("encoder", new MQTTEncoder());
-                pipeline.addLast("metrics", new MessageMetricsHandler(metricsCollector));
-                pipeline.addLast("handler", handler);
-            }
-        });
-    }
+//    private void initializeWebSocketTransport(IMessaging messaging, Properties props) throws IOException {
+//        String webSocketPortProp = props.getProperty(Constants.WEB_SOCKET_PORT_PROPERTY_NAME);
+//        if (webSocketPortProp == null) {
+//            //Do nothing no WebSocket configured
+//            log.info("WebSocket is disabled");
+//            return;
+//        }
+//        int port = Integer.parseInt(webSocketPortProp);
+//
+//        final NettyMQTTHandler handler = new NettyMQTTHandler();
+//        handler.setMessaging(messaging);
+//
+//        String host = props.getProperty(Constants.HOST_PROPERTY_NAME);
+//        initFactory(host, port, new PipelineInitializer() {
+//            @Override
+//            void init(ChannelPipeline pipeline) {
+//                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
+//                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
+//                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+//                pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler("/mqtt"/*"/mqtt"*/, "mqttv3"
+//                                                                                                            + ".1, "
+//                                                                                                            + "mqttv3"
+//                                                                                                           + ".1.1"));
+//                //pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler(null, "mqtt"));
+//                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
+//                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
+//                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
+//                pipeline.addAfter("idleStateHandler", "idleEventHandler", new org.dna.mqtt.moquette.server.netty
+//                        .MoquetteIdleTimoutHandler());
+//                pipeline.addFirst("bytemetrics", new BytesMetricsHandler(bytesMetricsCollector));
+//                pipeline.addLast("decoder", new MQTTDecoder());
+//                pipeline.addLast("encoder", new MQTTEncoder());
+//                pipeline.addLast("metrics", new MessageMetricsHandler(metricsCollector));
+//                pipeline.addLast("handler", handler);
+//            }
+//        });
+//    }
 
     /**
      * Initialize ssl tcp transport for mqtt
@@ -229,8 +234,6 @@ public class NettyAcceptor implements ServerAcceptor {
             sslHandlerFactory)
             throws IOException {
         String sslPortProp = props.getProperty(Constants.SSL_PORT_PROPERTY_NAME);
-        //TODO need to re visit
-        sslPortProp = props.get(Constants.SSL_PORT_PROPERTY_NAME).toString();
         if (sslPortProp == null) {
             //Do nothing no SSL configured
             log.info("SSL is disabled");
@@ -260,40 +263,40 @@ public class NettyAcceptor implements ServerAcceptor {
         });
     }
 
-    private void initializeWSSTransport(IMessaging messaging, Properties props, final SslHandler sslHandler)
-            throws IOException {
-        String sslPortProp = props.getProperty(Constants.WSS_PORT_PROPERTY_NAME);
-        if (sslPortProp == null) {
-            //Do nothing no SSL configured
-            log.info("SSL is disabled");
-            return;
-        }
-        int sslPort = Integer.parseInt(sslPortProp);
-        final NettyMQTTHandler handler = new NettyMQTTHandler();
-        handler.setMessaging(messaging);
-        String host = props.getProperty(Constants.HOST_PROPERTY_NAME);
-        initFactory(host, sslPort, new PipelineInitializer() {
-            @Override
-            void init(ChannelPipeline pipeline) throws Exception {
-                pipeline.addLast("ssl", sslHandler);
-                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
-                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
-                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-                pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler("/mqtt", "mqttv3.1, mqttv3.1"
-                                                                                                 + ".1"));
-                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
-                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
-                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
-                pipeline.addAfter("idleStateHandler", "idleEventHandler", new org.dna.mqtt.moquette.server.netty
-                        .MoquetteIdleTimoutHandler());
-                pipeline.addFirst("bytemetrics", new BytesMetricsHandler(bytesMetricsCollector));
-                pipeline.addLast("decoder", new MQTTDecoder());
-                pipeline.addLast("encoder", new MQTTEncoder());
-                pipeline.addLast("metrics", new MessageMetricsHandler(metricsCollector));
-                pipeline.addLast("handler", handler);
-            }
-        });
-    }
+//    private void initializeWSSTransport(IMessaging messaging, Properties props, final SslHandler sslHandler)
+//            throws IOException {
+//        String sslPortProp = props.getProperty(Constants.WSS_PORT_PROPERTY_NAME);
+//        if (sslPortProp == null) {
+//            //Do nothing no SSL configured
+//            log.info("SSL is disabled");
+//            return;
+//        }
+//        int sslPort = Integer.parseInt(sslPortProp);
+//        final NettyMQTTHandler handler = new NettyMQTTHandler();
+//        handler.setMessaging(messaging);
+//        String host = props.getProperty(Constants.HOST_PROPERTY_NAME);
+//        initFactory(host, sslPort, new PipelineInitializer() {
+//            @Override
+//            void init(ChannelPipeline pipeline) throws Exception {
+//                pipeline.addLast("ssl", sslHandler);
+//                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
+//                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
+//                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+//                pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler("/mqtt", "mqttv3.1, mqttv3.1"
+//                                                                                                 + ".1"));
+//                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
+//                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
+//                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
+//                pipeline.addAfter("idleStateHandler", "idleEventHandler", new org.dna.mqtt.moquette.server.netty
+//                        .MoquetteIdleTimoutHandler());
+//                pipeline.addFirst("bytemetrics", new BytesMetricsHandler(bytesMetricsCollector));
+//                pipeline.addLast("decoder", new MQTTDecoder());
+//                pipeline.addLast("encoder", new MQTTEncoder());
+//                pipeline.addLast("metrics", new MessageMetricsHandler(metricsCollector));
+//                pipeline.addLast("handler", handler);
+//            }
+//        });
+//    }
 
     public void close() {
         if (workerGroup == null) {

@@ -14,7 +14,7 @@ public class PubAckEvent extends MessagingEvent {
         this.clientID = clientID;
     }
 
-    public int getMessageId() {
+    public int getMessageID() {
         return messageId;
     }
 

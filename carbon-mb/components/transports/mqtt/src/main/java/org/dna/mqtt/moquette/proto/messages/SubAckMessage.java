@@ -43,11 +43,11 @@ public class SubAckMessage extends MessageIDMessage {
         types.add(type);
     }
 
-    public byte getreturnCode() {
+    public byte getReturnCode() {
         return returnCode;
     }
 
-    public void setreturnCode(byte returnCode) {
+    public void setReturnCode(byte returnCode) {
         this.returnCode = returnCode;
     }
 }

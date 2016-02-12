@@ -26,17 +26,17 @@ public class SubscriptionsStore {
         T getResult();
     }
 
-    private class DumpTreeVisitor implements IVisitor<String> {
+    private static class DumpTreeVisitor implements IVisitor<String> {
 
         String s = "";
 
         public void visit(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode node) {
-            String subScriptionsStr = "";
+            StringBuilder subscriptionsStr = new StringBuilder();
             for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription sub : node.subscriptions) {
-                subScriptionsStr += sub.toString();
+                subscriptionsStr.append(sub.toString());
             }
             s += node.getToken() == null ? "" : node.getToken().toString();
-            s += subScriptionsStr + "\n";
+            s += subscriptionsStr.toString() + "\n";
         }
 
         public String getResult() {
@@ -44,7 +44,7 @@ public class SubscriptionsStore {
         }
     }
 
-    private class SubscriptionTreeCollector implements IVisitor<List<org.dna.mqtt.moquette.messaging.spi.impl
+    private static class SubscriptionTreeCollector implements IVisitor<List<org.dna.mqtt.moquette.messaging.spi.impl
             .subscriptions.Subscription>> {
 
         private List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> allSubscriptions = new
@@ -82,7 +82,7 @@ public class SubscriptionsStore {
 
         for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription subscription : this.storageService
                 .retrieveAllSubscriptions()) {
-            LOG.debug("Re-subscribing {} to topic {}", subscription.getClientId(), subscription.getTopic());
+            LOG.debug("Re-subscribing {} to topic {}", subscription.getClientID(), subscription.getTopic());
             addDirect(subscription);
         }
         if (LOG.isDebugEnabled()) {
@@ -129,7 +129,7 @@ public class SubscriptionsStore {
         addDirect(newSubscription);
 
         //log the subscription
-        String clientID = newSubscription.getClientId();
+        String clientID = newSubscription.getClientID();
         storageService.addNewSubscription(newSubscription, clientID);
     }
 
@@ -140,7 +140,7 @@ public class SubscriptionsStore {
         //search for the subscription to remove
         org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription toBeRemoved = null;
         for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription sub : matchNode.subscriptions()) {
-            if (sub.topic.equals(topic) && sub.getClientId().equals(clientID)) {
+            if (sub.topic.equals(topic) && sub.getClientID().equals(clientID)) {
                 toBeRemoved = sub;
                 break;
             }
@@ -161,7 +161,7 @@ public class SubscriptionsStore {
         org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.TreeNode matchNode = findMatchingNode(topic);
 
         for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription sub : matchNode.subscriptions()) {
-            if (sub.topic.equals(topic) && sub.getClientId().equals(clientID)) {
+            if (sub.topic.equals(topic) && sub.getClientID().equals(clientID)) {
                 subscription = sub;
                 break;
             }
@@ -180,7 +180,7 @@ public class SubscriptionsStore {
         List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription> allSubscriptions = subsCollector
                 .getResult();
         for (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription subscription : allSubscriptions) {
-            removeSubscription(subscription.getTopic(), subscription.getClientId());
+            removeSubscription(subscription.getTopic(), subscription.getClientID());
         }
     }
 
@@ -277,9 +277,9 @@ public class SubscriptionsStore {
                     if (subToken == org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.MULTI) {
                         return true;
                     }
-                    if (subToken == org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.SINGLE) {
-                        //skip a step forward
-                    }
+//                    if (subToken == org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.SINGLE) {
+//                        //skip a step forward
+//                    }
                 }
             }
 

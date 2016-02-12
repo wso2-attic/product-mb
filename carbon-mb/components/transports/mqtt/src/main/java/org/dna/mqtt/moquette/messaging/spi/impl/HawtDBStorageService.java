@@ -38,6 +38,8 @@ public class HawtDBStorageService implements IStorageService {
      * TODO: Comment to be added
      */
     public static class StoredMessage implements Serializable {
+
+        private static final long serialVersionUID = 7556000323488731448L;
         AbstractMessage.QOSType qos;
         byte[] payload;
         String topic;
@@ -87,7 +89,10 @@ public class HawtDBStorageService implements IStorageService {
         File tmpFile;
         try {
             tmpFile = new File(storeFile);
-            tmpFile.createNewFile();
+            boolean newFile = tmpFile.createNewFile();
+            if (!newFile) {
+                throw new IOException("Unable to create new file for subscription storage");
+            }
         } catch (IOException ex) {
             LOG.error(null, ex);
             throw new MQTTException("Can't create temp file for subscriptions storage [" + storeFile + "]", ex);

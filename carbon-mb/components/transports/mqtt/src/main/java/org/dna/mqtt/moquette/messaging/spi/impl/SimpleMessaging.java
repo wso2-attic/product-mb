@@ -71,7 +71,7 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
     private SimpleMessaging() {
     }
 
-    public static org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging getInstance() {
+    public static synchronized org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging getInstance() {
         if (instance == null) {
             instance = new org.dna.mqtt.moquette.messaging.spi.impl.SimpleMessaging();
         }
