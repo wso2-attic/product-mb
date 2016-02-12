@@ -40,6 +40,7 @@ public class StoredPublishEvent implements Serializable {
         return qos;
     }
 
+    // TODO : C5-Migration(findbugs related) - Remove clone
     public byte[] getMessage() {
         return message.clone();
     }
