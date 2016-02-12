@@ -92,7 +92,10 @@
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.geronimo.specs.wso2</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -176,6 +179,10 @@
                                 <bundle>
                                     <symbolicName>org.apache.commons.collections</symbolicName>
                                     <version>3.2.2</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>geronimo-jms_1.1_spec</symbolicName>
+                                    <version>${geronimo-jms_1.1_spec.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>
