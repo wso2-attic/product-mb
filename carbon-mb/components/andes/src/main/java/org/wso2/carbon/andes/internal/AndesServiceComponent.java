@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.andes.internal;
 
 import org.osgi.framework.BundleContext;
@@ -33,13 +49,9 @@ public class AndesServiceComponent {
 
     Logger logger = Logger.getLogger(AndesServiceComponent.class.getName());
     private ServiceRegistration serviceRegistration;
-    /**
-     * This holds the configuration values
-     */
-    private QpidServiceImpl qpidServiceImpl;
 
     /**
-     * This is the activation method of ServiceComponent. This will be called when its references are
+     * This is the activation method of {@link AndesServiceComponent}. This will be called when its references are
      * satisfied.
      *
      * @param bundleContext the bundle context instance of this bundle.
@@ -52,7 +64,7 @@ public class AndesServiceComponent {
         AndesConfigurationManager.initialize(0);
 
         //Load qpid specific configurations
-        qpidServiceImpl = new QpidServiceImpl("carbon");
+        QpidServiceImpl qpidServiceImpl = new QpidServiceImpl("carbon");
         qpidServiceImpl.loadConfigurations();
 
         // set message store and andes context store related configurations
@@ -60,7 +72,7 @@ public class AndesServiceComponent {
 
         System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
         String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort(),
-                "-q" + qpidServiceImpl.getMqttPort()};
+                         "-q" + qpidServiceImpl.getMqttPort()};
         Main.main(args);
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
         logger.info("Andes service component activated");
@@ -74,19 +86,20 @@ public class AndesServiceComponent {
      */
     @Deactivate
     protected void stop() throws Exception {
-        logger.info("Andes Service Component is deactivated");
-
         // Unregister Greeter OSGi service
         serviceRegistration.unregister();
+
+        logger.info("Andes Service Component is deactivated");
     }
 
     /**
-     * This bind method will be called when CarbonRuntime OSGi service is registered.
+     * This bind method will be called when {@link CarbonHazelcastAgent} OSGi service is registered.
      *
-     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The {@link CarbonHazelcastAgent} instance registered by Carbon Kernel as an OSGi
+     *                             service
      */
     @Reference(
-            name = "carbon.hazelcast",
+            name = "carbon-hazelcast-agent",
             service = CarbonHazelcastAgent.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
@@ -97,9 +110,10 @@ public class AndesServiceComponent {
     }
 
     /**
-     * This is the unbind method which gets called at the un-registration of CarbonRuntime OSGi service.
+     * This is the unbind method which gets called at the un-registration of {@link CarbonHazelcastAgent} OSGi service.
      *
-     * @param carbonHazelcastAgent The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     * @param carbonHazelcastAgent The {@link CarbonHazelcastAgent} instance registered by Carbon Kernel as an OSGi
+     *                             service
      */
     protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
         AndesDataHolder.getInstance().setHazelcastAgent(null);

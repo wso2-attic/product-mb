@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.wso2.carbon.hazelcast</groupId>
             <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
-            <version>${carbon.hazelcast.version}</version>
+            <version>${carbon.hazelcast.feature.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -156,7 +156,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.hazelcast.feature</id>
-                                    <version>${carbon.hazelcast.version}</version>
+                                    <version>${carbon.hazelcast.feature.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -232,7 +232,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.hazelcast.feature.group</id>
-                                    <version>${carbon.hazelcast.version}</version>
+                                    <version>${carbon.hazelcast.feature.version}</version>
                                 </feature>
                             </features>
                         </configuration>
