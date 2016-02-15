@@ -40,11 +40,11 @@ public class MqttTransportServiceComponent {
      */
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
-        logger.info("MqttTransportServiceComponent Started");
+        logger.info("MqttTransportServiceComponent started in disabled mode");
         //TODO this is a bad way of starting the service, without registering a service
         //This is temporary
-        mqttServer = new Server();
-        mqttServer.startServer(MQTT_PORT);
+//        mqttServer = new Server();
+//        mqttServer.startServer(MQTT_PORT);
     }
 
     /**

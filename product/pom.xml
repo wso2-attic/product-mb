@@ -72,13 +72,12 @@
             <version>${carbon.mb.version}</version>
             <type>zip</type>
         </dependency>
-        <!--TODO:Enable MQTT related dependencies when MQTT transport is ready-->
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon.mb</groupId>-->
-            <!--<artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>-->
-            <!--<version>${carbon.mb.version}</version>-->
-            <!--<type>zip</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2.carbon.mb</groupId>
+            <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
+            <version>${carbon.mb.version}</version>
+            <type>zip</type>
+        </dependency>
         <!--Hazelcast feature-->
         <dependency>
             <groupId>org.wso2.carbon.hazelcast</groupId>
@@ -163,10 +162,10 @@
                                     <id>org.wso2.carbon.mb.amqp.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.mb.mqtt.feature</id>-->
-                                    <!--<version>${carbon.mb.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.mb.mqtt.feature</id>
+                                    <version>${carbon.mb.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.hazelcast.feature</id>
                                     <version>${carbon.hazelcast.feature.version}</version>
@@ -247,10 +246,10 @@
                                     <id>org.wso2.carbon.mb.amqp.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.mb.mqtt.feature.group</id>-->
-                                    <!--<version>${carbon.mb.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.mb.mqtt.feature.group</id>
+                                    <version>${carbon.mb.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.jndi.feature.group</id>
                                     <version>${carbon.jndi.version}</version>
