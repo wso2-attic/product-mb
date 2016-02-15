@@ -19,17 +19,3 @@
 hs_err_pid*
 
 target/
-modules/distribution/src/site/
-
-# Resources generated in tests
-/modules/integration/tests-integration/*/src/test/resources/axis2config/
-/modules/integration/tests-integration/*/src/test/resources/client/
-/modules/integration/tests-integration/*/src/test/resources/keystores/
-
-/modules/integration/tests-ui-integration/src/test/resources/axis2config/
-/modules/integration/tests-ui-integration/src/test/resources/client/
-/modules/integration/tests-ui-integration/src/test/resources/keystores/
-
-modules/integration/tests-platform/tests-clustering/src/test/resources/axis2config/
-modules/integration/tests-platform/tests-clustering/src/test/resources/client/
-modules/integration/tests-platform/tests-clustering/src/test/resources/keystores/
