@@ -76,6 +76,11 @@
             <outputDirectory>conf/qpid</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>carbon-home/dbscripts</directory>
+            <outputDirectory>dbscripts</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
     </fileSets>
     <files>
 
