@@ -1,5 +1,6 @@
 package org.wso2.carbon.andes.amqp.internal;
 
+import org.dna.mqtt.moquette.server.Server;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -40,9 +41,16 @@ public class ServiceComponent {
     protected void start(BundleContext bundleContext) throws Exception {
         logger.info("Service Component is activated");
 
+        startMQTTBroker(Server.DEFAULT_MQTT_PORT);
         // Register GreeterImpl instance as an OSGi service.
         serviceRegistration = bundleContext.registerService(Greeter.class.getName(), new GreeterImpl("WSO2"), null);
     }
+
+    protected void startMQTTBroker(int port) throws Exception {
+        Server server = new Server();
+        server.startServer(port);
+    }
+
 
     /**
      * This is the deactivation method of ServiceComponent. This will be called when this component
