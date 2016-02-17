@@ -330,6 +330,7 @@
     </properties>
 
     <build>
+<!--
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -394,12 +395,12 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyleplugin.version}</version>
             </plugin>
-            <!--<plugin>-->
+
+            <!-<plugin>-->
                 <!--<groupId>org.codehaus.mojo</groupId>-->
                 <!--<artifactId>findbugs-maven-plugin</artifactId>-->
                 <!--<version>${maven.findbugsplugin.version}</version>-->
             <!--</plugin>-->
-        </plugins>
 
     </build>
 </project>

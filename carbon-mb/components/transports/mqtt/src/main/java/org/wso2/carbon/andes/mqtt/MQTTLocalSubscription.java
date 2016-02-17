@@ -66,6 +66,11 @@ public class MQTTLocalSubscription implements OutboundSubscription {
     private UUID channelID;
 
     /**
+     * Will set the protocol type of the subscription
+     */
+    private String protocolType;
+
+    /**
      * The QOS level the subscription is bound to
      */
     private int subscriberQOS;
@@ -141,6 +146,8 @@ public class MQTTLocalSubscription implements OutboundSubscription {
         this.isActive = isActive;
         this.wildcardDestination = wildCardDestination;
         this.isDurable = isDurable;
+        this.protocolType = MQTTUtils.PROTOCOL_TYPE;
+
     }
 
     /**
@@ -266,4 +273,10 @@ public class MQTTLocalSubscription implements OutboundSubscription {
 
         return storageQueueName;
     }
+
+
+    public String getProtocolType() {
+        return protocolType;
+    }
+
 }

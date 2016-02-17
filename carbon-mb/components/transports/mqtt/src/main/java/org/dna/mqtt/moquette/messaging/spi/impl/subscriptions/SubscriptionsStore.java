@@ -256,30 +256,27 @@ public class SubscriptionsStore {
     //TODO reimplement with iterators or with queues
     public static boolean matchTopics(String msgTopic, String subscriptionTopic) {
         try {
-            List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token> msgTokens = org.dna.mqtt.moquette
-                    .messaging.spi.impl.subscriptions.SubscriptionsStore.splitTopic(msgTopic);
-            List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token> subscriptionTokens = org.dna.mqtt
-                    .moquette.messaging.spi.impl.subscriptions.SubscriptionsStore.splitTopic(subscriptionTopic);
+            List<Token> msgTokens = SubscriptionsStore.splitTopic(msgTopic);
+            List<Token> subscriptionTokens = splitTopic(subscriptionTopic);
             int i = 0;
-            org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token subToken = null;
+           Token subToken = null;
             for (; i < subscriptionTokens.size(); i++) {
                 subToken = subscriptionTokens.get(i);
-                if (subToken != org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.MULTI && subToken != org
-                        .dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.SINGLE) {
+                if (subToken != Token.MULTI && subToken != Token.SINGLE) {
                     if (i >= msgTokens.size()) {
                         return false;
                     }
-                    org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token msgToken = msgTokens.get(i);
+                    Token msgToken = msgTokens.get(i);
                     if (!msgToken.equals(subToken)) {
                         return false;
                     }
                 } else {
-                    if (subToken == org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.MULTI) {
+                    if (subToken == Token.MULTI) {
                         return true;
                     }
-//                    if (subToken == org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.SINGLE) {
-//                        //skip a step forward
-//                    }
+                    if (subToken == Token.SINGLE) {
+                        //skip a step forward
+                    }
                 }
             }
 
@@ -290,13 +287,13 @@ public class SubscriptionsStore {
         }
     }
 
-    protected static List<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token> splitTopic(String topic)
+    protected static List<Token> splitTopic(String topic)
             throws ParseException {
-        List res = new ArrayList<org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token>();
+        List res = new ArrayList<Token>();
         String[] splitted = topic.split("/");
 
         if (splitted.length == 0) {
-            res.add(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.EMPTY);
+            res.add(Token.EMPTY);
         }
 
         for (int i = 0; i < splitted.length; i++) {
@@ -305,22 +302,22 @@ public class SubscriptionsStore {
 //                if (i != 0) {
 //                    throw new ParseException("Bad format of topic, expetec topic name between separators", i);
 //                }
-                res.add(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.EMPTY);
+                res.add(Token.EMPTY);
             } else if (s.equals("#")) {
                 //check that multi is the last symbol
                 if (i != splitted.length - 1) {
                     throw new ParseException("Bad format of topic, the multi symbol (#) has to be the last one after "
                                              + "a separator", i);
                 }
-                res.add(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.MULTI);
+                res.add(Token.MULTI);
             } else if (s.contains("#")) {
                 throw new ParseException("Bad format of topic, invalid subtopic name: " + s, i);
             } else if (s.equals("+")) {
-                res.add(org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token.SINGLE);
+                res.add(Token.SINGLE);
             } else if (s.contains("+")) {
                 throw new ParseException("Bad format of topic, invalid subtopic name: " + s, i);
             } else {
-                res.add(new org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Token(s));
+                res.add(new Token(s));
             }
         }
 
