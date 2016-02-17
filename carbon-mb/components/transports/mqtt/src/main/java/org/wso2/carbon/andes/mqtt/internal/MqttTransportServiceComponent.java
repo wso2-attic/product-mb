@@ -43,8 +43,14 @@ public class MqttTransportServiceComponent {
         logger.info("MqttTransportServiceComponent started in disabled mode");
         //TODO this is a bad way of starting the service, without registering a service
         //This is temporary
+        startMQTTBroker(Server.DEFAULT_MQTT_PORT);
 //        mqttServer = new Server();
 //        mqttServer.startServer(MQTT_PORT);
+    }
+
+    protected void startMQTTBroker(int port) throws Exception {
+        Server server = new Server();
+        server.startServer(port);
     }
 
     /**
