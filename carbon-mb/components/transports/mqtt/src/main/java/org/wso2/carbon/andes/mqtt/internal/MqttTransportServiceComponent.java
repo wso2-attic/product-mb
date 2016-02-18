@@ -10,7 +10,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.andes.kernel.Andes;
-import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
@@ -64,31 +63,6 @@ public class MqttTransportServiceComponent {
 
         // Unregister Greeter OSGi service
         mqttTransportService.unregister();
-    }
-
-    /**
-     * This bind method will be called when CarbonRuntime OSGi service is registered.
-     *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
-     */
-    @Reference(
-            name = "carbon.runtime.service",
-            service = CarbonRuntime.class,
-            cardinality = ReferenceCardinality.MANDATORY,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetCarbonRuntime"
-    )
-    protected void setCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(carbonRuntime);
-    }
-
-    /**
-     * This is the unbind method which gets called at the un-registration of CarbonRuntime OSGi service.
-     *
-     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
-     */
-    protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(null);
     }
 
     /**

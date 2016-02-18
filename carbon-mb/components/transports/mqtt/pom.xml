@@ -83,14 +83,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty.wso2</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.fusesource.hawtdb</groupId>
             <artifactId>hawtdb</artifactId>
         </dependency>
@@ -99,21 +91,10 @@
             <artifactId>hawtbuf</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
     <properties>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <netty-all.version>4.0.23.wso2v1</netty-all.version>
-        <guava.version>19.0</guava.version>
 
 
         <private.package>org.wso2.carbon.andes.mqtt.internal</private.package>

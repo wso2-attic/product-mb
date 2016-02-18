@@ -238,6 +238,17 @@
                 <version>${orbit.version.h2.engine}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>msf4j-core</artifactId>
+                <version>${carbon.msf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>org.wso2.msf4j.feature</artifactId>
+                <version>${carbon.msf4j.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
                 <version>${pax.logging.version}</version>
@@ -323,6 +334,10 @@
         <commons-beanutils.wso2.version>1.8.0.wso2v1</commons-beanutils.wso2.version>
         <orbit.version.commons.collection>3.2.0.wso2v1</orbit.version.commons.collection>
         <org.apache.commons.lang.package.import.version.range>[2.6.0, 3.0.0)</org.apache.commons.lang.package.import.version.range>
+        <org.pax.logging.version>1.8.4</org.pax.logging.version>
+        <netty.version>4.0.30.Final</netty.version>
+        <gson.version>2.2.4</gson.version>
+        <slf4j.import.version.range>[1.7.1, 2.0.0)</slf4j.import.version.range>
 
         <!--Test related properties-->
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
@@ -342,6 +357,9 @@
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
         <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
+        <carbon.msf4j.version>1.0.0</carbon.msf4j.version>
+        <carbon.msf4j.import.version.range>[1.0.0, 2.0.0)</carbon.msf4j.import.version.range>
+        <rs-api.version>2.0</rs-api.version>
 
        <!--Transport Related Configrations -->
         <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
@@ -357,55 +375,6 @@
     </properties>
 
     <build>
-<!--
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <configLocation>
-                                    https://raw.githubusercontent.com/wso2/code-quality-tools/master/checkstyle/checkstyle.xml
-                                </configLocation>
-                                <suppressionsLocation>
-                                    https://raw.githubusercontent.com/wso2/code-quality-tools/master/checkstyle/suppressions.xml
-                                </suppressionsLocation>
-                                <encoding>UTF-8</encoding>
-                                <consoleOutput>true</consoleOutput>
-                                <failsOnError>true</failsOnError>
-                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <configuration>
-                        <effort>Max</effort>
-                        <threshold>Low</threshold>
-                        <xmlOutput>true</xmlOutput>
-                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>analyze-compile</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
             <plugin>
@@ -422,12 +391,11 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyleplugin.version}</version>
             </plugin>
-
-            <!-<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-                <!--<version>${maven.findbugsplugin.version}</version>-->
+            <!--<<plugin>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>findbugs-maven-plugin</artifactId>-->
+            <!--<version>${maven.findbugsplugin.version}</version>-->
             <!--</plugin>-->
-
+        </plugins>
     </build>
 </project>

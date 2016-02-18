@@ -24,6 +24,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.andes.configuration.AndesConfigurationManager;
 import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
@@ -35,7 +37,6 @@ import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 import org.wso2.carbon.kernel.utils.Utils;
 
-import java.util.logging.Logger;
 
 /**
  * Service component to consume CarbonRuntime instance which has been registered as an OSGi service
@@ -49,7 +50,7 @@ import java.util.logging.Logger;
 )
 public class AndesServiceComponent {
 
-    Logger logger = Logger.getLogger(AndesServiceComponent.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(AndesServiceComponent.class);
     private ServiceRegistration serviceRegistration;
 
     /**
@@ -77,8 +78,8 @@ public class AndesServiceComponent {
                          "-q" + qpidServiceImpl.getMqttPort()};
         Main.main(args);
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
-        bundleContext.registerService(Andes.class, Andes.getInstance(), null);
-        logger.info("Andes service component activated");
+        serviceRegistration = bundleContext.registerService(Andes.class.getName(), Andes.getInstance(), null);
+        log.info("Andes service component activated");
     }
 
     /**
@@ -92,7 +93,7 @@ public class AndesServiceComponent {
         // Unregister Greeter OSGi service
         serviceRegistration.unregister();
 
-        logger.info("Andes Service Component is deactivated");
+        log.info("Andes Service Component is deactivated");
     }
 
     /**
@@ -102,7 +103,7 @@ public class AndesServiceComponent {
      *                             service
      */
     @Reference(
-            name = "carbon-hazelcast-agent",
+            name = "carbon.hazelcast.agent",
             service = CarbonHazelcastAgent.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
@@ -121,7 +122,6 @@ public class AndesServiceComponent {
     protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
         AndesDataHolder.getInstance().setHazelcastAgent(null);
     }
-
 
     /**
      * This bind method will be called when Carbon Data Source OSGI service is registered.

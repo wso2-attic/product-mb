@@ -34,6 +34,8 @@ import java.util.Set;
  */
 public class HawtDBStorageService implements IStorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(HawtDBStorageService.class);
+
     /**
      * TODO: Comment to be added
      */
@@ -90,8 +92,8 @@ public class HawtDBStorageService implements IStorageService {
         try {
             tmpFile = new File(storeFile);
             boolean newFile = tmpFile.createNewFile();
-            if (!newFile) {
-                throw new IOException("Unable to create new file for subscription storage");
+            if (logger.isDebugEnabled() && !newFile) {
+                logger.debug("HawtDB subscription storage file already exists");
             }
         } catch (IOException ex) {
             LOG.error(null, ex);
