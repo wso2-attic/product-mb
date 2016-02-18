@@ -64,7 +64,6 @@
         <dependency>
             <groupId>org.wso2.orbit.com.lmax</groupId>
             <artifactId>disruptor</artifactId>
-            <version>${disruptor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -75,6 +74,29 @@
             <groupId>apache-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.1</version>
+        </dependency>
+
+        <!-- Importing pax logging for commons.logging package since pax is bundled from kernel -->
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty.wso2</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtdb</groupId>
+            <artifactId>hawtdb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtbuf</groupId>
+            <artifactId>hawtbuf</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -91,7 +113,6 @@
     <properties>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <netty-all.version>4.0.23.wso2v1</netty-all.version>
-        <disruptor.version>3.3.2.wso2v2</disruptor.version>
         <guava.version>19.0</guava.version>
 
 
@@ -105,7 +126,13 @@
             org.wso2.andes.*,
             org.slf4j.*,
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
-            org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)"
+            org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)",
+            com.lmax.disruptor.*;version="[3.3.2, 4.0.0]",
+            org.apache.commons.logging;version="[1.1.1, 1.2.0]",
+            com.google.common.util.concurrent;version="[19.0.0, 20.0.0]",
+            io.netty.*;version="[4.0.23.wso2v1, 4.1.0]",
+            org.fusesource.hawtbuf.*;version="[1.9, 2.0]",
+            org.fusesource.hawtdb.api;version="[1.6, 1.7]"
         </import.package>
 
     </properties>

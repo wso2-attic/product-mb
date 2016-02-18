@@ -46,7 +46,6 @@ public class MQTTUtils {
 
     private static Log log = LogFactory.getLog(MQTTUtils.class);
     public static final String MESSAGE_ID = "MessageID";
-    public static final String PROTOCOL_TYPE = "MQTT";
     private static final String TOPIC = "Topic";
     public static final String ARRIVAL_TIME = "ArrivalTime";
     private static final String DESTINATION = "Destination";

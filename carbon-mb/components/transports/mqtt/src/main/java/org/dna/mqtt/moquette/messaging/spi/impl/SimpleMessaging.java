@@ -228,8 +228,7 @@ public class SimpleMessaging implements IMessaging, EventHandler<ValueEvent> {
 
         subscriptions.init(storageService);
 
-        String authenticatorClassName = AndesConfigurationManager.readValue(AndesConfiguration
-                .TRANSPORTS_MQTT_USER_AUTHENTICATOR_CLASS);
+        String authenticatorClassName = "org.wso2.carbon.andes.mqtt.DummyAuthenticator";
 
         try {
             Class<? extends IAuthenticator> authenticatorClass = Class.forName(authenticatorClassName).asSubclass

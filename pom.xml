@@ -237,6 +237,28 @@
                 <artifactId>h2-database-engine</artifactId>
                 <version>${orbit.version.h2.engine}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax.logging.version}</version>
+            </dependency>
+
+            <!-- MQTT Dependancies -->
+            <dependency>
+                <groupId>io.netty.wso2</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-all.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.hawtdb</groupId>
+                <artifactId>hawtdb</artifactId>
+                <version>${hawtdb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.hawtbuf</groupId>
+                <artifactId>hawtbuf</artifactId>
+                <version>${hawtbuf.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -325,8 +347,13 @@
         <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
 
         <geronimo-jms_1.1_spec.version>1.1.0.wso2v1</geronimo-jms_1.1_spec.version>
-
+        <pax.logging.version>1.8.4</pax.logging.version>
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
+        <netty-all.version>4.0.23.wso2v1</netty-all.version>
+        <hawtdb.version>1.6</hawtdb.version>
+        <hawtdb.bundle.version>1.6.0</hawtdb.bundle.version>
+        <hawtbuf.version>1.9</hawtbuf.version>
+        <hawtbuf.bundle.version>1.9.0</hawtbuf.bundle.version>
     </properties>
 
     <build>

@@ -333,7 +333,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         MQTTAuthorizationSubject authSubject = authSubjects.get(clientID);
 //        String tenant = MQTTUtils.getTenantFromTopic(topic);
 
-        boolean authenticated = false;
+        // TODO : Implement Auth with Carbon 5 & JAAS
+        boolean authenticated = true;
         // Currently we avoid domain check for super tenant users
         // TODO: Need to implement a proper authentication model for tenant users to work with hierarchical topics
         if ((!isAuthenticationRequired && !authSubject.isUserFlag()) || (authSubject.isUserFlag() && (
@@ -784,7 +785,8 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
         // Authorize publish
         MQTTAuthorizationSubject authSubject = authSubjects.get(clientID);
 
-        boolean authenticatedForOneOrMore = false;
+        // TODO : Impment Auth with Carbon 5 & JAAS
+        boolean authenticatedForOneOrMore = true;
 
         for (SubscribeMessage.Couple req : msg.subscriptions()) {
 

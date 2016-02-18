@@ -28,6 +28,7 @@ import org.wso2.andes.kernel.ConcurrentTrackingList;
 import org.wso2.andes.kernel.DeliverableAndesMetadata;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolMessage;
+import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.andes.subscription.OutboundSubscription;
 import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -68,7 +69,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
     /**
      * Will set the protocol type of the subscription
      */
-    private String protocolType;
+    private ProtocolType protocolType;
 
     /**
      * The QOS level the subscription is bound to
@@ -146,7 +147,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
         this.isActive = isActive;
         this.wildcardDestination = wildCardDestination;
         this.isDurable = isDurable;
-        this.protocolType = MQTTUtils.PROTOCOL_TYPE;
+        this.protocolType = ProtocolType.MQTT;
 
     }
 
@@ -275,7 +276,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
     }
 
 
-    public String getProtocolType() {
+    public ProtocolType getProtocolType() {
         return protocolType;
     }
 
