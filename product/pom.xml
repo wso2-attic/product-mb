@@ -97,6 +97,12 @@
             <version>${carbon.datasources.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>org.wso2.msf4j.feature</artifactId>
+            <version>${carbon.msf4j.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -177,6 +183,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.datasource.core.feature</id>
                                     <version>${carbon.datasources.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.msf4j.feature</id>
+                                    <version>${carbon.msf4j.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -261,6 +271,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.hazelcast.feature.group</id>
                                     <version>${carbon.hazelcast.feature.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.msf4j.feature.group</id>
+                                    <version>${carbon.msf4j.version}</version>
                                 </feature>
                             </features>
                         </configuration>

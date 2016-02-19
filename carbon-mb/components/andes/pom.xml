@@ -101,6 +101,14 @@
             <groupId>org.apache.geronimo.specs.wso2</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>msf4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -115,7 +123,11 @@
             org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
-            org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}"
+            org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
+            org.wso2.msf4j.*;version="${carbon.msf4j.import.version.range}",
+            org.slf4j.*;version="${slf4j.import.version.range}",
+            javax.ws.rs.*,
+            javax.management.*
         </import.package>
     </properties>
 
