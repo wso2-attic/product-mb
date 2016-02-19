@@ -127,7 +127,10 @@
             org.wso2.msf4j.*;version="${carbon.msf4j.import.version.range}",
             org.slf4j.*;version="${slf4j.import.version.range}",
             javax.ws.rs.*,
-            javax.management.*
+            javax.management.*,
+            javax.jms.*,
+            javax.naming.*,
+            javax.xml.stream.*
         </import.package>
     </properties>
 
