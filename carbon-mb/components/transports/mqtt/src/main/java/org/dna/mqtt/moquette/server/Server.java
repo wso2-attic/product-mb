@@ -29,19 +29,13 @@ public class Server {
     private ServerAcceptor acceptor;
     SimpleMessaging messaging;
 
-    public void startServer(int port) throws IOException {
+    public void startServer() throws IOException {
         if (AndesConfigurationManager.<Boolean>readValue(AndesConfiguration.TRANSPORTS_MQTT_ENABLED)) {
             Properties configProps = loadConfigurations();
-            configProps.put("port", Integer.toString(port));
             serverInit(configProps);
         } else {
             log.warn("MQTT Transport is disabled as per configuration.");
         }
-    }
-
-    public void startServer() throws IOException {
-        Properties configProps = loadConfigurations();
-        serverInit(configProps);
     }
 
     /**
@@ -54,20 +48,20 @@ public class Server {
 
         Properties mqttProperties = new Properties();
 
-        mqttProperties.put(Constants.SSL_PORT_PROPERTY_NAME, AndesConfigurationManager.
-                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_PORT));
+        mqttProperties.setProperty(Constants.PORT_PROPERTY_NAME, AndesConfigurationManager.
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_PORT).toString());
 
-        mqttProperties.put(Constants.SSL_PORT_PROPERTY_NAME, AndesConfigurationManager.
-                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_PORT));
+        mqttProperties.setProperty(Constants.SSL_PORT_PROPERTY_NAME, AndesConfigurationManager.
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_PORT).toString());
 
-        mqttProperties.put(Constants.SSL_CONNECTION_ENABLED, AndesConfigurationManager.
-                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_ENABLED));
+        mqttProperties.setProperty(Constants.SSL_CONNECTION_ENABLED, AndesConfigurationManager.
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_SSL_CONNECTION_ENABLED).toString());
 
-        mqttProperties.put(Constants.DEFAULT_CONNECTION_ENABLED, AndesConfigurationManager.
-                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_ENABLED));
+        mqttProperties.setProperty(Constants.DEFAULT_CONNECTION_ENABLED, AndesConfigurationManager.
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_DEFAULT_CONNECTION_ENABLED).toString());
 
-        mqttProperties.put(Constants.HOST_PROPERTY_NAME, AndesConfigurationManager.
-                readValue(AndesConfiguration.TRANSPORTS_MQTT_BIND_ADDRESS));
+        mqttProperties.setProperty(Constants.HOST_PROPERTY_NAME, AndesConfigurationManager.
+                readValue(AndesConfiguration.TRANSPORTS_MQTT_BIND_ADDRESS).toString());
 
         return mqttProperties;
     }

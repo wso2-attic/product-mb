@@ -9,6 +9,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.andes.configuration.AndesConfigurationManager;
+import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.andes.kernel.Andes;
 
 import java.util.logging.Logger;
@@ -43,7 +45,7 @@ public class MqttTransportServiceComponent {
         //TODO this is a bad way of starting the service, without registering a service
         //This is temporary
         mqttServer = new Server();
-        mqttServer.startServer(MQTT_PORT);
+        mqttServer.startServer();
     }
 
     /**

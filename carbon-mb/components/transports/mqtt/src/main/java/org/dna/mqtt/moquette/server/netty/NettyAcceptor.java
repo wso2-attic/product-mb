@@ -86,8 +86,8 @@ public class NettyAcceptor implements ServerAcceptor {
         //TODO need to re look into using getProperty here
         String sslTcpPortProp = props.getProperty(Constants.SSL_PORT_PROPERTY_NAME);
 //        String wssPortProp = props.getProperty(Constants.WSS_PORT_PROPERTY_NAME);
-        Boolean sslPortEnabled = Boolean.parseBoolean(props.get(Constants.SSL_CONNECTION_ENABLED).toString());
-        Boolean defaultPortEnabled = Boolean.parseBoolean(props.get(Constants.DEFAULT_CONNECTION_ENABLED).toString());
+        Boolean sslPortEnabled = Boolean.parseBoolean(props.getProperty(Constants.SSL_CONNECTION_ENABLED));
+        Boolean defaultPortEnabled = Boolean.parseBoolean(props.getProperty(Constants.DEFAULT_CONNECTION_ENABLED));
 
         // non-secure port will be enabled/disabled as per configuration.
         if (defaultPortEnabled) {

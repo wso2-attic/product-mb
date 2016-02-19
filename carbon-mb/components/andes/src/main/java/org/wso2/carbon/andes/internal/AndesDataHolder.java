@@ -18,6 +18,7 @@ package org.wso2.carbon.andes.internal;
 
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
+import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class AndesDataHolder {
 
     private static AndesDataHolder instance = new AndesDataHolder();
     private CarbonHazelcastAgent carbonHazelcastAgent;
-
+    private CarbonRuntime carbonRuntime;
 
     /**
      * The datasource service instance provided by OSGI.
@@ -87,4 +88,23 @@ public class AndesDataHolder {
     public void setDataSourceService(DataSourceService dataSourceManager) {
         this.dataSourceService = dataSourceManager;
     }
+    /**
+     * Returns the CarbonRuntime service which gets set through a service component.
+     *
+     * @return CarbonRuntime Service
+     */
+    public CarbonRuntime getCarbonRuntime() {
+        return carbonRuntime;
+    }
+
+    /**
+     * This method is for setting the CarbonRuntime service. This method is used by
+     * ServiceComponent.
+     *
+     * @param carbonRuntime The reference being passed through ServiceComponent
+     */
+    public void setCarbonRuntime(CarbonRuntime carbonRuntime) {
+        this.carbonRuntime = carbonRuntime;
+    }
+
 }
