@@ -31,7 +31,6 @@ import org.wso2.andes.kernel.ProtocolMessage;
 import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.andes.subscription.OutboundSubscription;
 import org.wso2.carbon.andes.mqtt.utils.MQTTUtils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -165,7 +164,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
      */
     @Override
     public void forcefullyDisconnect() throws AndesException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Forceful disconnection not implemented.");
     }
 
     /**
@@ -275,7 +274,7 @@ public class MQTTLocalSubscription implements OutboundSubscription {
         return storageQueueName;
     }
 
-
+    @Override
     public ProtocolType getProtocolType() {
         return protocolType;
     }

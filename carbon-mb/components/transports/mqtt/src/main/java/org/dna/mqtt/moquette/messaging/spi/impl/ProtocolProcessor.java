@@ -794,9 +794,10 @@ public class ProtocolProcessor implements EventHandler<ValueEvent>, PubAckHandle
 //            String tenant = MQTTUtils.getTenantFromTopic(req.getTopicFilter());
 
             // Currently we avoid domain check for super tenant users
-            // TODO: Need to implement a proper authentication model for tenant users to work with hierarchical topics
-            if ((!isAuthenticationRequired && !authSubject.isUserFlag()) || (authSubject.isUserFlag() && (
-                    CARBON_SUPER_TENANT_DOMAIN.equals(authSubject.getTenantDomain())))) {
+            // TODO : Impment Auth with Carbon 5 & JAAS
+            if (true) {
+//            if ((!isAuthenticationRequired && !authSubject.isUserFlag()) || (authSubject.isUserFlag() && (
+//                    CARBON_SUPER_TENANT_DOMAIN.equals(authSubject.getTenantDomain())))) {
 
                 authenticatedForOneOrMore = true;
             } else {

@@ -51,7 +51,7 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
+            <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>andes</artifactId>
             <version>${andes.dependency.version}</version>
         </dependency>
