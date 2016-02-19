@@ -35,6 +35,7 @@ import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
+import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.kernel.utils.Utils;
 
 
@@ -64,7 +65,8 @@ public class AndesServiceComponent {
     protected void start(BundleContext bundleContext) throws Exception {
 
         //Initialize AndesConfigurationManager
-        AndesConfigurationManager.initialize(0);
+        int offset = AndesDataHolder.getInstance().getCarbonRuntime().getConfiguration().getPortsConfig().getOffset();
+        AndesConfigurationManager.initialize(offset);
 
         //Load qpid specific configurations
         QpidServiceImpl qpidServiceImpl = new QpidServiceImpl("carbon");
@@ -146,5 +148,31 @@ public class AndesServiceComponent {
      */
     protected void unsetDataSourceService(DataSourceService dataSourceService) {
         AndesDataHolder.getInstance().setDataSourceService(null);
+    }
+
+
+    /**
+     * This bind method will be called when CarbonRuntime OSGi service is registered.
+     *
+     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     */
+    @Reference(
+            name = "carbon.runtime.service",
+            service = CarbonRuntime.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetCarbonRuntime"
+    )
+    protected void setCarbonRuntime(CarbonRuntime carbonRuntime) {
+        AndesDataHolder.getInstance().setCarbonRuntime(carbonRuntime);
+    }
+
+    /**
+     * This is the unbind method which gets called at the un-registration of CarbonRuntime OSGi service.
+     *
+     * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
+     */
+    protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
+        AndesDataHolder.getInstance().setCarbonRuntime(null);
     }
 }
