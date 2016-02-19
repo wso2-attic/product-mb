@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.andes.kernel.Andes;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
@@ -40,17 +41,10 @@ public class MqttTransportServiceComponent {
      */
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
-        logger.info("MqttTransportServiceComponent started in disabled mode");
         //TODO this is a bad way of starting the service, without registering a service
         //This is temporary
-        startMQTTBroker(Server.DEFAULT_MQTT_PORT);
-//        mqttServer = new Server();
-//        mqttServer.startServer(MQTT_PORT);
-    }
-
-    protected void startMQTTBroker(int port) throws Exception {
-        Server server = new Server();
-        server.startServer(port);
+        mqttServer = new Server();
+        mqttServer.startServer(MQTT_PORT);
     }
 
     /**
@@ -95,6 +89,29 @@ public class MqttTransportServiceComponent {
      */
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
         DataHolder.getInstance().setCarbonRuntime(null);
+    }
+
+    /**
+     * This bind method will be called when Andes OSGI service is registered.
+     * @param andesInstance The Andes instance registered
+     */
+    @Reference(
+            name = "andes.instance",
+            service = Andes.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetAndesInstance"
+    )
+    protected void setAndesInstance(Andes andesInstance) {
+        DataHolder.getInstance().setAndesInstance(andesInstance);
+    }
+
+    /**
+     * The unbind which gets called at the un-registration of Andes component.
+     * @param andesInstance
+     */
+    protected void unsetAndesInstance(Andes andesInstance) {
+        DataHolder.getInstance().setAndesInstance(null);
     }
 
 }

@@ -56,6 +56,31 @@
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>mqtt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty.wso2</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty-all.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtdb</groupId>
+            <artifactId>hawtdb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtbuf</groupId>
+            <artifactId>hawtbuf</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -104,6 +129,30 @@
                                 <bundle>
                                     <symbolicName>mqtt</symbolicName>
                                     <version>${carbon.mb.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>disruptor</symbolicName>
+                                    <version>${disruptor.wso2.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.ops4j.pax.logging.pax-logging-api</symbolicName>
+                                    <version>${pax.logging.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>com.google.guava</symbolicName>
+                                    <version>${guava.bundle.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>netty-all</symbolicName>
+                                    <version>${netty-all.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.fusesource.hawtdb.hawtdb</symbolicName>
+                                    <version>${hawtdb.bundle.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.fusesource.hawtbuf.hawtbuf</symbolicName>
+                                    <version>${hawtbuf.bundle.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>

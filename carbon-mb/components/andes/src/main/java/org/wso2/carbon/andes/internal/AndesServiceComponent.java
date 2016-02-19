@@ -25,6 +25,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.andes.configuration.AndesConfigurationManager;
+import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
@@ -76,6 +77,7 @@ public class AndesServiceComponent {
                          "-q" + qpidServiceImpl.getMqttPort()};
         Main.main(args);
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
+        bundleContext.registerService(Andes.class, Andes.getInstance(), null);
         logger.info("Andes service component activated");
     }
 

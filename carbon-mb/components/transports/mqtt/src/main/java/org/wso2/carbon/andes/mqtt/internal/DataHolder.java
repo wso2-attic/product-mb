@@ -1,12 +1,12 @@
 package org.wso2.carbon.andes.mqtt.internal;
 
+import org.wso2.andes.kernel.Andes;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
 /**
- * DataHolder to hold org.wso2.carbon.kernel.CarbonRuntime instance referenced through
- * org.wso2.carbon.helloworld.internal.MqttTransportServiceComponent.
+ * DataHolder to holds instances referenced through org.wso2.carbon.helloworld.internal.MqttTransportServiceComponent.
  *
  * @since 3.5.0-SNAPSHOT
  */
@@ -15,6 +15,7 @@ public class DataHolder {
 
     private static DataHolder instance = new DataHolder();
     private CarbonRuntime carbonRuntime;
+    private Andes andesInstance;
 
     private DataHolder() {
 
@@ -46,5 +47,13 @@ public class DataHolder {
      */
     public void setCarbonRuntime(CarbonRuntime carbonRuntime) {
         this.carbonRuntime = carbonRuntime;
+    }
+
+    public Andes getAndesInstance() {
+        return andesInstance;
+    }
+
+    public void setAndesInstance(Andes andesInstance) {
+        this.andesInstance = andesInstance;
     }
 }
