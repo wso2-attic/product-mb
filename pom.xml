@@ -331,6 +331,11 @@
                 <artifactId>pax-exam-testng</artifactId>
                 <version>${pax.exam.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -445,6 +450,7 @@
 
         <!--UUF-->
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
+        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
         <carbon.cache.version>1.0.0-m1</carbon.cache.version>
     </properties>
 
