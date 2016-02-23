@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.internal;
 
+import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -34,7 +35,6 @@ import org.wso2.andes.server.Main;
 import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
-import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.kernel.utils.Utils;
 
@@ -99,30 +99,30 @@ public class AndesServiceComponent {
     }
 
     /**
-     * This bind method will be called when {@link CarbonHazelcastAgent} OSGi service is registered.
+     * This bind method will be called when {@link HazelcastOSGiInstance} OSGi service is registered.
      *
-     * @param carbonHazelcastAgent The {@link CarbonHazelcastAgent} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastOSGIInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
     @Reference(
             name = "carbon.hazelcast.agent",
-            service = CarbonHazelcastAgent.class,
+            service = HazelcastOSGiInstance.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetCarbonHazelcastAgent"
+            unbind = "unsetHazelcastOSGiInstance"
     )
-    protected void setCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
-        AndesDataHolder.getInstance().setHazelcastAgent(carbonHazelcastAgent);
+    protected void setHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastOSGIInstance) {
+        AndesDataHolder.getInstance().setHazelcastInstance(hazelcastOSGIInstance);
     }
 
     /**
-     * This is the unbind method which gets called at the un-registration of {@link CarbonHazelcastAgent} OSGi service.
+     * This is the unbind method which gets called at the un-registration of {@link HazelcastOSGiInstance} OSGi service.
      *
-     * @param carbonHazelcastAgent The {@link CarbonHazelcastAgent} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastOSGIInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
-    protected void unsetCarbonHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
-        AndesDataHolder.getInstance().setHazelcastAgent(null);
+    protected void unsetHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastOSGIInstance) {
+        AndesDataHolder.getInstance().setHazelcastInstance(null);
     }
 
     /**

@@ -16,21 +16,21 @@
 
 package org.wso2.carbon.andes.internal;
 
+import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
-import org.wso2.carbon.hazelcast.CarbonHazelcastAgent;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
 /**
- * AndesDataHolder to hold {@link CarbonHazelcastAgent} instance referenced through {@link AndesServiceComponent}.
+ * AndesDataHolder to hold {@link HazelcastOSGiInstance} instance referenced through {@link AndesServiceComponent}.
  *
  */
 public class AndesDataHolder {
     Logger logger = Logger.getLogger(AndesDataHolder.class.getName());
 
     private static AndesDataHolder instance = new AndesDataHolder();
-    private CarbonHazelcastAgent carbonHazelcastAgent;
+    private HazelcastOSGiInstance carbonHazelcastAgent;
     private CarbonRuntime carbonRuntime;
 
     /**
@@ -52,21 +52,21 @@ public class AndesDataHolder {
     }
 
     /**
-     * Returns the {@link CarbonHazelcastAgent} service which gets set through a service component.
+     * Returns the {@link HazelcastOSGiInstance} service which gets set through a service component.
      *
-     * @return {@link CarbonHazelcastAgent} Service
+     * @return {@link HazelcastOSGiInstance} Service
      */
-    public CarbonHazelcastAgent getCarbonHazelcastAgent() {
+    public HazelcastOSGiInstance getCarbonHazelcastAgent() {
         return carbonHazelcastAgent;
     }
 
     /**
-     * This method is for setting the {@link CarbonHazelcastAgent} service. This method is used by
+     * This method is for setting the {@link HazelcastOSGiInstance} service. This method is used by
      * {@link AndesServiceComponent}.
      *
      * @param carbonHazelcastAgent The reference being passed through {@link AndesServiceComponent}
      */
-    public void setHazelcastAgent(CarbonHazelcastAgent carbonHazelcastAgent) {
+    public void setHazelcastInstance(HazelcastOSGiInstance carbonHazelcastAgent) {
         this.carbonHazelcastAgent = carbonHazelcastAgent;
     }
 
