@@ -472,7 +472,6 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
         AndesJMSPublisher publisher1 = publisherClient1.getPublishers().get(0);
 
-
         // Reading message content
         char[] inputContent = new char[messageSize];
         BufferedReader inputFileReader =
@@ -491,6 +490,48 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         } finally {
             publisherClient1.stopClient();
             consumerClient1.stopClient();
+        }
+    }
+
+    /**
+     * Create transactional publisher and commit for a topic with no subscribers. MB should drop the messages but the
+     * commit request should be successful.
+     *
+     * Test for a fix done for https://wso2.org/jira/browse/MB-1629
+     *
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue", "transaction" },description = "Test topic publisher without subscribers")
+    public void topicPublishingWithoutSubsribers() throws XPathExpressionException, IOException, AndesClientException,
+            NamingException, JMSException {
+
+        String topicName = "Transactional-pubwithoutSub";
+        int messageCount = 20;
+        String messageStr = "Transactional-pubwithoutSub Message";
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.TOPIC, topicName);
+        publisherConfig.setTransactionalSession(true);
+
+        AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher publisher1 = publisherClient1.getPublishers().get(0);
+
+        try {
+
+            Message message = publisher1.getSession().createTextMessage(messageStr);
+
+            for (int i = 0; i < messageCount; i++) {
+                publisher1.getSender().send(message);
+            }
+
+            publisher1.getSession().commit();
+
+        } finally {
+            publisherClient1.stopClient();
         }
     }
 }
