@@ -121,6 +121,7 @@
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
+            com.hazelcast.*;version="[3.6,4)",
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
