@@ -334,6 +334,7 @@
         <netty.version>4.0.30.Final</netty.version>
         <gson.version>2.2.4</gson.version>
         <slf4j.import.version.range>[1.7.1, 2.0.0)</slf4j.import.version.range>
+        <com.hazelcast.package.import.version.range>[3.6.4)</com.hazelcast.package.import.version.range>
 
         <!--Test related properties-->
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
