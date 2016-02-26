@@ -19,6 +19,7 @@ package org.wso2.carbon.andes.internal;
 import com.hazelcast.core.HazelcastInstance;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
+import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
 import java.util.logging.Logger;
 
@@ -32,6 +33,7 @@ public class AndesDataHolder {
     private static AndesDataHolder instance = new AndesDataHolder();
     private HazelcastInstance carbonHazelcastAgent;
     private CarbonRuntime carbonRuntime;
+    private RealmService realmService;
 
     /**
      * The datasource service instance provided by OSGI.
@@ -107,4 +109,11 @@ public class AndesDataHolder {
         this.carbonRuntime = carbonRuntime;
     }
 
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
+    public RealmService getRealmService() {
+        return realmService;
+    }
 }
