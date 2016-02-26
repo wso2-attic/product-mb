@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.internal;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -101,27 +102,27 @@ public class AndesServiceComponent {
     /**
      * This bind method will be called when {@link HazelcastOSGiInstance} OSGi service is registered.
      *
-     * @param hazelcastOSGIInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
     @Reference(
             name = "carbon.hazelcast.agent",
-            service = HazelcastOSGiInstance.class,
+            service = HazelcastInstance.class,
             cardinality = ReferenceCardinality.MANDATORY,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetHazelcastOSGiInstance"
     )
-    protected void setHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastOSGIInstance) {
-        AndesDataHolder.getInstance().setHazelcastInstance(hazelcastOSGIInstance);
+    protected void setHazelcastOSGiInstance(HazelcastInstance hazelcastInstance) {
+        AndesDataHolder.getInstance().setHazelcastInstance(hazelcastInstance);
     }
 
     /**
      * This is the unbind method which gets called at the un-registration of {@link HazelcastOSGiInstance} OSGi service.
      *
-     * @param hazelcastOSGIInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
-    protected void unsetHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastOSGIInstance) {
+    protected void unsetHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastInstance) {
         AndesDataHolder.getInstance().setHazelcastInstance(null);
     }
 

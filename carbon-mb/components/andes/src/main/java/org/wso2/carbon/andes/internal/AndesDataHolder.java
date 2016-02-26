@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.internal;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
@@ -30,7 +31,7 @@ public class AndesDataHolder {
     Logger logger = Logger.getLogger(AndesDataHolder.class.getName());
 
     private static AndesDataHolder instance = new AndesDataHolder();
-    private HazelcastOSGiInstance carbonHazelcastAgent;
+    private HazelcastInstance carbonHazelcastAgent;
     private CarbonRuntime carbonRuntime;
 
     /**
@@ -56,7 +57,7 @@ public class AndesDataHolder {
      *
      * @return {@link HazelcastOSGiInstance} Service
      */
-    public HazelcastOSGiInstance getCarbonHazelcastAgent() {
+    public HazelcastInstance getCarbonHazelcastAgent() {
         return carbonHazelcastAgent;
     }
 
@@ -66,7 +67,7 @@ public class AndesDataHolder {
      *
      * @param carbonHazelcastAgent The reference being passed through {@link AndesServiceComponent}
      */
-    public void setHazelcastInstance(HazelcastOSGiInstance carbonHazelcastAgent) {
+    public void setHazelcastInstance(HazelcastInstance carbonHazelcastAgent) {
         this.carbonHazelcastAgent = carbonHazelcastAgent;
     }
 
