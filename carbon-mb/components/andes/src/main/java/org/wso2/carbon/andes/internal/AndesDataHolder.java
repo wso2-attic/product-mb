@@ -17,14 +17,13 @@
 package org.wso2.carbon.andes.internal;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 import java.util.logging.Logger;
 
 /**
- * AndesDataHolder to hold {@link HazelcastOSGiInstance} instance referenced through {@link AndesServiceComponent}.
+ * AndesDataHolder to hold {@link HazelcastInstance} instance referenced through {@link AndesServiceComponent}.
  *
  */
 public class AndesDataHolder {
@@ -53,16 +52,16 @@ public class AndesDataHolder {
     }
 
     /**
-     * Returns the {@link HazelcastOSGiInstance} service which gets set through a service component.
+     * Returns the {@link HazelcastInstance} service which gets set through a service component.
      *
-     * @return {@link HazelcastOSGiInstance} Service
+     * @return {@link HazelcastInstance} Service
      */
     public HazelcastInstance getCarbonHazelcastAgent() {
         return carbonHazelcastAgent;
     }
 
     /**
-     * This method is for setting the {@link HazelcastOSGiInstance} service. This method is used by
+     * This method is for setting the {@link HazelcastInstance} service. This method is used by
      * {@link AndesServiceComponent}.
      *
      * @param carbonHazelcastAgent The reference being passed through {@link AndesServiceComponent}
