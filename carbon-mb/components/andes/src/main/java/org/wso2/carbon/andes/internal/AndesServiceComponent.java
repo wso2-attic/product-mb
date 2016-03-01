@@ -17,7 +17,6 @@
 package org.wso2.carbon.andes.internal;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.osgi.HazelcastOSGiInstance;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -100,9 +99,9 @@ public class AndesServiceComponent {
     }
 
     /**
-     * This bind method will be called when {@link HazelcastOSGiInstance} OSGi service is registered.
+     * This bind method will be called when {@link HazelcastInstance} OSGi service is registered.
      *
-     * @param hazelcastInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastInstance The {@link HazelcastInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
     @Reference(
@@ -117,12 +116,12 @@ public class AndesServiceComponent {
     }
 
     /**
-     * This is the unbind method which gets called at the un-registration of {@link HazelcastOSGiInstance} OSGi service.
+     * This is the unbind method which gets called at the un-registration of {@link HazelcastInstance} OSGi service.
      *
-     * @param hazelcastInstance The {@link HazelcastOSGiInstance} instance registered by Carbon Kernel as an OSGi
+     * @param hazelcastInstance The {@link HazelcastInstance} instance registered by Carbon Kernel as an OSGi
      *                             service
      */
-    protected void unsetHazelcastOSGiInstance(HazelcastOSGiInstance hazelcastInstance) {
+    protected void unsetHazelcastOSGiInstance(HazelcastInstance hazelcastInstance) {
         AndesDataHolder.getInstance().setHazelcastInstance(null);
     }
 
