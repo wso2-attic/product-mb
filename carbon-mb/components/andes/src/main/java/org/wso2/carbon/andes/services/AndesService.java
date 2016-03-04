@@ -38,8 +38,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.services.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.services.exceptions.MessageManagerException;
@@ -163,9 +163,9 @@ public class AndesService implements Microservice {
             responseContainer = "List")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of protocols.")})
     public List<String> getProtocols() {
-        return Stream.of(ProtocolType.values())
-                                .map(e -> e.name().toLowerCase())
-                                .collect(Collectors.toList());
+        return AndesContext.getInstance().getAndesContextStore().getProtocols().stream()
+                .map(protocolType ->  protocolType.toString())
+                .collect(Collectors.toList());
     }
 
     /**

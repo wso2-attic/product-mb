@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.services.beans;
 
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.andes.server.util.CompositeDataHelper;
@@ -230,8 +231,9 @@ public class DestinationManagementBeans {
      *
      * @param compositeDestination The composite data object.
      * @return A {@link Destination}.
+     * @throws DestinationManagerException
      */
-    private Destination getDestinationInfo(CompositeData compositeDestination) {
+    private Destination getDestinationInfo(CompositeData compositeDestination) throws DestinationManagerException {
         Destination destination = new Destination();
         destination.setDestinationName((String) compositeDestination.get(CompositeDataHelper
                 .DestinationCompositeDataHelper.DESTINATION_NAME));
@@ -243,8 +245,12 @@ public class DestinationManagementBeans {
                 .DestinationCompositeDataHelper.SUBSCRIPTION_COUNT));
         destination.setMessageCount((Long) compositeDestination.get(CompositeDataHelper
                 .DestinationCompositeDataHelper.MESSAGE_COUNT));
-        destination.setProtocolType(ProtocolType.valueOf((String) compositeDestination.get(CompositeDataHelper
-                .DestinationCompositeDataHelper.PROTOCOL_TYPE)));
+        try {
+            destination.setProtocolType(new ProtocolType((String) compositeDestination.get(CompositeDataHelper
+                    .DestinationCompositeDataHelper.PROTOCOL_TYPE)));
+        } catch (AndesException e) {
+            throw new DestinationManagerException("Error in identifying the protocol Type", e);
+        }
         destination.setDestinationType(DestinationType.valueOf((String) compositeDestination.get(CompositeDataHelper
                 .DestinationCompositeDataHelper.DESTINATION_TYPE)));
         return destination;

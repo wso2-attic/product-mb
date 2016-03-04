@@ -19,6 +19,7 @@ package org.wso2.carbon.andes.tests.unit;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.services.DestinationManagerService;
@@ -46,11 +47,12 @@ public class DestinationManagerServiceImplTestCase extends UnitBaseTest {
      */
     @Test(expectedExceptions = {org.wso2.carbon.andes.services.exceptions.DestinationManagerException.class,
                                 NullPointerException.class})
-    public void createQueue() throws DestinationManagerException {
+    public void createQueue() throws DestinationManagerException, AndesException {
         // QueueManagementBeans beans = new QueueManagementBeans();
         // beans.createQueue("queue1", "admin");
         Destination destination = destinationManagerService.createDestination("amqp", "queue", "testQueue");
-        Assert.assertEquals(destination.getProtocolType(), ProtocolType.AMQP, "Invalid protocol type assigned");
+        Assert.assertEquals(destination.getProtocolType(), new ProtocolType("AMQP", "0-91"),
+                "Invalid protocol type assigned");
         Assert.assertEquals(destination.getDestinationType(), DestinationType.QUEUE, "Invalid destination type " +
                                                                                      "assigned");
         Assert.assertEquals(destination.getDestinationName(), "testQueue", "Invalid destination name assigned");

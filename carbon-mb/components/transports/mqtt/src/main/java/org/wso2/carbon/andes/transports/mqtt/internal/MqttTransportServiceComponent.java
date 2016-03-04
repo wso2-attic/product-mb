@@ -29,6 +29,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.AndesException;
+import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolInfo;
+import org.wso2.andes.subscription.LocalDurableTopicSubscriptionStore;
+import org.wso2.andes.subscription.QueueSubscriptionStore;
 import org.wso2.carbon.andes.transports.config.MqttSecuredTransportProperties;
 import org.wso2.carbon.andes.transports.config.MqttTransportConfiguration;
 import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
@@ -36,6 +41,7 @@ import org.wso2.carbon.andes.transports.config.YAMLTransportConfigurationBuilder
 import org.wso2.carbon.andes.transports.mqtt.MqttSSLServer;
 import org.wso2.carbon.andes.transports.mqtt.MqttServer;
 import org.wso2.carbon.andes.transports.mqtt.Util;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.kernel.startupresolver.CapabilityProvider;
@@ -100,6 +106,8 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
 
+        MqttTransportDataHolder.getInstance().getAndesInstance().registerProtocolType(createProtocolInformation());
+
         MqttTransportConfiguration mqttTransportConfiguration = YAMLTransportConfigurationBuilder.readConfiguration();
 
         MqttTransportDataHolder.getInstance().setContext(bundleContext);
@@ -128,6 +136,25 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
         log.info("MQTT Server Component Activated");
     }
 
+
+    /**
+     * Create protocol information for MQTT.
+     *
+     * @return The protocol information object.
+     * @throws AndesException
+     */
+    private ProtocolInfo createProtocolInformation() throws AndesException {
+        ProtocolInfo protocolInfo = new ProtocolInfo("MQTT", "default");
+
+        protocolInfo.addClusterSubscriptionStore(DestinationType.TOPIC, new MQTTopicSubscriptionBitMapStore());
+        protocolInfo.addClusterSubscriptionStore(DestinationType.DURABLE_TOPIC, new MQTTopicSubscriptionBitMapStore());
+
+        protocolInfo.addLocalSubscriptionStore(DestinationType.TOPIC, new QueueSubscriptionStore());
+        protocolInfo.addLocalSubscriptionStore(DestinationType.DURABLE_TOPIC, new LocalDurableTopicSubscriptionStore());
+
+        return protocolInfo;
+    }
+
     /**
      * This is the deactivation method of MqttTransportServiceComponent. This will be called when this component
      * is being stopped or references are satisfied during runtime.
@@ -136,6 +163,9 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
      */
     @Deactivate
     protected void stop() throws Exception {
+
+        MqttTransportDataHolder.getInstance().getAndesInstance().unregisterProtocolType(createProtocolInformation());
+
         if (log.isDebugEnabled()) {
             log.debug("Stopping MqttTransportServiceComponent");
         }
