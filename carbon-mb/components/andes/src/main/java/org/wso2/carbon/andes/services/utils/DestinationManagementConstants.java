@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.andes.services.utils;
 
-/***
- * This class holds the MBean related constants so that they can be referred and modified from a single point.
+/**
+ * Stores destination management constants which are used to contact through MBeans.
  */
-public class SubscriptionManagementConstants {
-    public static final String SUBSCRIPTIONS_MBEAN_ATTRIBUTE = "getSubscriptions";
-    public static final String SUBSCRIPTIONS_CLOSE_MBEAN_ATTRIBUTE = "removeSubscriptions";
-    public static final String SUBSCRIPTION_CLOSE_MBEAN_ATTRIBUTE = "removeSubscription";
+public class DestinationManagementConstants {
+    public static final String GET_DESTINATIONS_MBEAN_ATTRIBUTE = "getDestinations";
+    public static final String DELETE_DESTINATIONS_MBEAN_OPERATION = "deleteDestinations";
+    public static final String GET_DESTINATION_MBEAN_ATTRIBUTE = "getDestination";
+    public static final String CREATE_DESTINATION_MBEAN_OPERATION = "createDestination";
+    public static final String DELETE_DESTINATION_MBEAN_OPERATION = "deleteDestination";
 }

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.services.utils;
+package org.wso2.carbon.andes.services.types;
 
-/***
- * This class holds the MBean related constants so that they can be referred and modified from a single point.
+/**
+ * This class represent a store information object.
  */
-public class SubscriptionManagementConstants {
-    public static final String SUBSCRIPTIONS_MBEAN_ATTRIBUTE = "getSubscriptions";
-    public static final String SUBSCRIPTIONS_CLOSE_MBEAN_ATTRIBUTE = "removeSubscriptions";
-    public static final String SUBSCRIPTION_CLOSE_MBEAN_ATTRIBUTE = "removeSubscription";
+public class StoreInformation {
+    private boolean healthy;
+
+    public boolean isHealthy() {
+        return healthy;
+    }
+
+    public void setHealthy(boolean healthy) {
+        this.healthy = healthy;
+    }
 }

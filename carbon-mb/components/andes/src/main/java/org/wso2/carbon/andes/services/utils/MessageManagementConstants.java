@@ -16,11 +16,12 @@
 
 package org.wso2.carbon.andes.services.utils;
 
-/***
- * This class holds the MBean related constants so that they can be referred and modified from a single point.
+/**
+ * Stores message management constants which are used to contact through MBeans.
  */
-public class SubscriptionManagementConstants {
-    public static final String SUBSCRIPTIONS_MBEAN_ATTRIBUTE = "getSubscriptions";
-    public static final String SUBSCRIPTIONS_CLOSE_MBEAN_ATTRIBUTE = "removeSubscriptions";
-    public static final String SUBSCRIPTION_CLOSE_MBEAN_ATTRIBUTE = "removeSubscription";
+public class MessageManagementConstants {
+    public static final String BROWSE_DESTINATIONS_WITH_MESSAGE_ID_MBEAN_ATTRIBUTE = "browseDestinationWithMessageID";
+    public static final String BROWSE_DESTINATIONS_WITH_OFFSET_MBEAN_ATTRIBUTE = "browseDestinationWithOffset";
+    public static final String GET_MESSAGE_MBEAN_ATTRIBUTE = "getMessage";
+    public static final String DELETE_MESSAGE_MBEAN_OPERATION = "deleteMessages";
 }
