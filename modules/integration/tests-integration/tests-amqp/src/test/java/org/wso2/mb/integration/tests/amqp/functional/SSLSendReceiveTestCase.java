@@ -124,4 +124,64 @@ public class SSLSendReceiveTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient
                                     .getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
     }
+
+    /**
+     * 1. Creates a queue named "SSLSingleQueue".
+     * 2. Consumer listens to receiving messages using an ssl connection where consumer does not provide the keystore
+     * to connect.
+     * 3. Publisher publishes messages using an ssl connection.
+     * 4. Consumer should receive all messages sent.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
+    @Test(groups = {"wso2.mb", "queue", "security"})
+    public void performKeyStoreOptionalTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+            AndesClientException, XPathExpressionException {
+        // Creating ssl connection string elements
+        // The following truststore path should be as follows regardless the OS(platform).
+        String trustStorePath = System.getProperty("carbon.home").replace("\\", "/") + "/repository/resources/" +
+                                "security/client-truststore.jks";
+        String trustStorePassword = "wso2carbon";
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(
+                        "admin", "admin", "127.0.0.1", getSecureAMQPPort(), ExchangeType.QUEUE, "SSLSingleQueue",
+                        "RootCA", trustStorePath, trustStorePassword, null,
+                        null);
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        consumerConfig.setPrintsPerMessageCount(EXPECTED_COUNT / 10L);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(
+                        "admin", "admin", "127.0.0.1", getSecureAMQPPort(), ExchangeType.QUEUE, "SSLSingleQueue",
+                        "RootCA", trustStorePath, trustStorePassword, null,
+                        null);
+
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setPrintsPerMessageCount(SEND_COUNT / 10L);
+
+        // Creating consumer client
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient
+                .getSentMessageCount(), SEND_COUNT, "Message sending failed");
+        Assert.assertEquals(consumerClient
+                .getReceivedMessageCount(), EXPECTED_COUNT, "Message receive error from consumerClient");
+    }
 }
