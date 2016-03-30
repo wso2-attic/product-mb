@@ -281,11 +281,17 @@ public class AndesJMSClientConfiguration implements Cloneable {
         this.password = password;
         this.hostName = hostName;
         this.port = port;
-        this.queryStringForConnection = "?ssl='true'" +
-                                        "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath + "'&trust_store_password='" +
-                                        trustStorePassword
-                                        + "'&key_store='" + keyStorePath + "'&key_store_password='" + keyStorePassword + "'";
-
+        if ((keyStorePath == null) || (keyStorePassword == null)) {
+            this.queryStringForConnection = "?ssl='true'" +
+                                            "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath +
+                                            "'&trust_store_password='" + trustStorePassword + "'";
+        } else {
+            this.queryStringForConnection = "?ssl='true'" +
+                                            "&ssl_cert_alias='" + sslAlias + "'&trust_store='" + trustStorePath +
+                                            "'&trust_store_password='" +
+                                            trustStorePassword + "'&key_store='" + keyStorePath +
+                                            "'&key_store_password='" + keyStorePassword + "'";
+        }
         this.createConnectionString();
 
         // Setting default values
