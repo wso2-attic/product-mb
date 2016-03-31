@@ -27,7 +27,6 @@ public class MqttTransportServiceComponent {
     private ServiceRegistration mqttTransportService;
     //TODO we need to change this to get from the configuration
     //This will be a temporary measure
-    private static final int MQTT_PORT = 1883;
     //The running MQTT server instance
     private Server mqttServer = null;
 

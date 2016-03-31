@@ -32,6 +32,7 @@ import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
+import org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent;
 import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
@@ -73,6 +74,9 @@ public class AndesServiceComponent {
         qpidServiceImpl.loadConfigurations();
 
         // set message store and andes context store related configurations
+        // TODO: C5 migration - Use data holder after moving core to product
+        HazelcastAgent.getInstance().init(AndesDataHolder.getInstance().getCarbonHazelcastAgent());
+        AndesContext.getInstance().setClusteringEnabled(true);
         AndesContext.getInstance().constructStoreConfiguration();
 
         System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
