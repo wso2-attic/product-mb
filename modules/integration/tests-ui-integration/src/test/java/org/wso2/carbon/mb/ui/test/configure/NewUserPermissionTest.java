@@ -65,8 +65,7 @@ public class NewUserPermissionTest extends MBIntegrationUiBaseTest{
         //create a new login user role with login permission
         ConfigurePage configurePage = homePage.getConfigurePage();
         UserManagementPage usrMgtPage = configurePage.getUserManagementPage();
-        RolesPage rolesPage = usrMgtPage.getRolesPage();
-        AddRoleStep1Page step1 = rolesPage.getAddRolePage();
+        AddRoleStep1Page step1 = usrMgtPage.getAddRolePage();
         step1.setDetails("loginRole");
         AddRoleStep2Page step2 = step1.next();
         step2.selectPermission("usr.mgt.add.role.step2.login.role.xpath");
@@ -78,8 +77,7 @@ public class NewUserPermissionTest extends MBIntegrationUiBaseTest{
         // create a new user and assign newly created login user role
         configurePage = new ConfigurePage(driver);
         usrMgtPage = configurePage.getUserManagementPage();
-        UsersPage usersPage = usrMgtPage.getUsersPage();
-        AddUserStep1Page addUserStep1Page = usersPage.getAddNewUserPage();
+        AddUserStep1Page addUserStep1Page = usrMgtPage.getAddNewUserPage();
         addUserStep1Page.addUserDetails("loginUser", "password", "password");
         AddUserStep2Page addUserStep2Page = addUserStep1Page.next();
         addUserStep2Page.selectRole("loginRole");

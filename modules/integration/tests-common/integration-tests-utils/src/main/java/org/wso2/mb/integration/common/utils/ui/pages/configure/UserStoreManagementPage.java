@@ -35,7 +35,8 @@ public class UserStoreManagementPage {
         this.driver = driver;
         this.uiElementMapper = UIElementMapper.getInstance();
         // Check that we're on the right page.
-        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id"))).getText().contains("User Store Management")) {
+        if (!driver.findElement(By.id(uiElementMapper.getElement("configure.user.store.management.header.id")))
+                                                                            .getText().contains("Add New User Store")) {
             throw new IllegalStateException("This is not the User Store Management page");
         }
     }

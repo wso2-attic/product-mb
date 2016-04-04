@@ -64,8 +64,7 @@ public class UserStoreManagementTestCase extends MBIntegrationUiBaseTest {
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = loginPage.loginAs(getCurrentUserName(), getCurrentPassword());
         ConfigurePage configurePage = homePage.getConfigurePage();
-        UserStoreManagementPage userStoreManagementPage = configurePage.getUserStoreManagementPage();
-        userStoreManagementPage.addSecondaryUserStore();
+        configurePage.getUserStoreManagementPage();
     }
 
     /**
