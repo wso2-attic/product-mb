@@ -51,6 +51,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,152 +62,160 @@ import java.util.List;
  */
 public class BasicAuthorizationTestCase extends MBIntegrationBaseTest {
 
-    private UserManagementClient userMgtClient;
-    private ResourceAdminServiceClient resourceAdminServiceClient;
-    private static final String TOPIC = "authorization/test";
-    private LogViewerClient logViewerClient;
-    /**
-     * Initialize super class.
-     *
-     * @throws Exception
-     */
-    @BeforeClass
-    public void prepare() throws Exception {
-        super.init(TestUserMode.SUPER_TENANT_USER);
-    }
+	private UserManagementClient userMgtClient;
+	private ResourceAdminServiceClient resourceAdminServiceClient;
+	private static final int MAX_LEVELS = 50;
+	private static final int UNAUTHORIZED_USERS = 10;
 
-    /**
-     * Setup test configuration by creating users and providing permission to access topics.
-     */
-    @BeforeClass
-    public void setupConfiguration() throws XPathExpressionException, IOException, ConfigurationException,
-                                            AutomationUtilException, UserAdminUserAdminException,
-                                            UserStoreExceptionException, ResourceAdminServiceExceptionException {
+	/**
+	 * Initialize super class.
+	 *
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public void prepare() throws Exception {
+		super.init(TestUserMode.SUPER_TENANT_USER);
+	}
 
-        super.serverManager = new ServerConfigurationManager(automationContext);
-        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
-                File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
+	/**
+	 * Setup test configuration by creating users and providing permission to access topics.
+	 */
+	@BeforeClass
+	public void setupConfiguration() throws XPathExpressionException, IOException, ConfigurationException,
+											AutomationUtilException, UserAdminUserAdminException,
+											UserStoreExceptionException, ResourceAdminServiceExceptionException {
 
-        ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
+		super.serverManager = new ServerConfigurationManager(automationContext);
+		String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
+				File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
 
-        configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_MQTT_USER_AUTHENTICATION, "REQUIRED");
-        configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_MQTT_USER_AUTHORIZATION, "REQUIRED");
-        configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
+		ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 
-        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(automationContext);
-        String sessionCookie = loginLogoutClient.login();
-        userMgtClient = new UserManagementClient(backendURL, sessionCookie);
-        userMgtClient.addUser("user1-mqtt", "passWord1@", null, "default");
-        userMgtClient.addUser("user2-mqtt", "passWord1@", null, "default");
+		configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_MQTT_USER_AUTHENTICATION, "REQUIRED");
+		configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_MQTT_USER_AUTHORIZATION, "REQUIRED");
+		configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
 
-        resourceAdminServiceClient = new ResourceAdminServiceClient(backendURL, sessionCookie);
-        resourceAdminServiceClient.addCollection("/_system/governance/permission/admin/mqtt","connect", "", "");
-        resourceAdminServiceClient.addCollection("/_system/governance/permission/admin/mqtt/topic/authorization" , "test", "", "");
+		LoginLogoutClient loginLogoutClient = new LoginLogoutClient(automationContext);
+		String sessionCookie = loginLogoutClient.login();
+		userMgtClient = new UserManagementClient(backendURL, sessionCookie);
+		resourceAdminServiceClient = new ResourceAdminServiceClient(backendURL, sessionCookie);
+		resourceAdminServiceClient.addCollection("/_system/governance/permission/admin/mqtt", "connect", "", "");
+		resourceAdminServiceClient.addCollection("/_system/governance/permission/admin/mqtt/topic/authorization",
+												 "test", "", "");
+		String resource = "/_system/governance/permission/admin/mqtt/topic/authorization/test";
+		String usersList[] = new String[MAX_LEVELS];
+		RemoteAuthorizationManagerServiceClient remoteAuthorizationManagerServiceClient =
+				new RemoteAuthorizationManagerServiceClient(backendURL, sessionCookie);
+		for (int i = 0; i < MAX_LEVELS; i++) {
+			//create user
+			userMgtClient.addUser("user" + i + "-mqtt", "passWord1@", null, "default");
 
-        RemoteAuthorizationManagerServiceClient  remoteAuthorizationManagerServiceClient = new RemoteAuthorizationManagerServiceClient(backendURL, sessionCookie);
-        remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-connect", "/permission/admin/mqtt/connect", "authorize");
-        remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-publish", "/permission/admin/mqtt/topic/authorization/test", "publish");
-        remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-subscribe", "/permission/admin/mqtt/topic/authorization/test", "subscribe");
+			//create permission resource
+			resourceAdminServiceClient.addCollection(resource, "" + i, "", "");
+			resource = resource + "/" + i;
 
-        String users[] = new String[1];
-        users[0] = "user2-mqtt";
-        // Create roles
-        userMgtClient.addRole("mqtt-connect", users, null);
-        userMgtClient.addRole("mqtt-publish", users, null);
-        userMgtClient.addRole("mqtt-subscribe", users, null);
+			//create role
+			String users[] = new String[1];
+			users[0] = "user" + i + "-mqtt";
+			// Create roles
+			usersList[i] = ("user" + i + "-mqtt");
+			userMgtClient.addRole("mqtt-publish-" + i, users, null);
+			userMgtClient.addRole("mqtt-subscribe-" + i, users, null);
 
-        logViewerClient = new LogViewerClient(backendURL, sessionCookie);
-    }
+			remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-publish-" + i,
+																  resource.split("/_system/governance")[1],
+																  "publish");
+			remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-subscribe-" + i,
+																  resource.split("/_system/governance")[1],
+																  "subscribe");
+		}
+		remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-connect", "/permission/admin/mqtt/connect",
+															  "authorize");
 
-    /**
-     * Send a single mqtt message on qos {@link QualityOfService#LEAST_ONCE} and receive.
-     *
-     * @throws MqttException
-     */
-    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performConnectionAuthorizationTestWithUnAuthorizedUser()
-            throws MqttException, XPathExpressionException, LogViewerLogViewerException, RemoteException {
-        try {
-            int noOfMessages = 1;
-            MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-            MQTTClientConnectionConfiguration mqttClientConnectionConfiguration = mqttClientEngine.getConfigurations(
-                    automationContext);
-            mqttClientConnectionConfiguration.setBrokerUserName("user1-mqtt");
-            mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
-            mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, TOPIC,
-                                                       QualityOfService.LEAST_ONCE,
-                                                       MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
-                                                       ClientMode.BLOCKING);
-            LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-            boolean isPublished = false;
-            for (LogEvent logEvent : logs) {
-                String message = logEvent.getMessage();
-                if (message.contains("Lost connection with client")) {
-                    isPublished = true;
-                }
-            }
-            logViewerClient.clearLogs();
-            Assert.assertTrue(isPublished, "Access is been granted for unauthorized user");
-        } catch (MqttException e) {
-            Assert.assertTrue(true);
-        }
+		userMgtClient.addRole("mqtt-connect", usersList, null);
+		for (int i = 0; i < UNAUTHORIZED_USERS; i++)  {
+			userMgtClient.addUser("un_user" + i + "-mqtt", "passWord1@", null, "default");
+		}
+	}
 
-    }
+	/**
+	 * Send a single mqtt message on qos {@link QualityOfService#LEAST_ONCE} and receive.
+	 *
+	 * @throws MqttException
+	 */
+	@Test(groups = {"wso2.mb", "mqtt"}, description = "Test Subscription and Authorization with wildcard topics")
+	public void performAuthorizationBasedOnWildCardTopics()
+			throws MqttException, XPathExpressionException, LogViewerLogViewerException, RemoteException {
+		int noOfMessages = 1;
+		boolean saveMessages = true;
+		String topicPrefix = "authorization/test/0/#";
+		MQTTClientEngine mqttClientEngineSub;
+		mqttClientEngineSub = new MQTTClientEngine();
+		MQTTClientConnectionConfiguration mqttClientConnectionConfiguration =
+				mqttClientEngineSub.getConfigurations(automationContext);
+		mqttClientConnectionConfiguration.setBrokerUserName("user0-mqtt");
+		mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
+		mqttClientEngineSub.createSubscriberConnection(mqttClientConnectionConfiguration, topicPrefix,
+													   QualityOfService.LEAST_ONCE, saveMessages,
+													   ClientMode.BLOCKING);
+		topicPrefix = "authorization/test/0";
+		for (int i = 1; i < MAX_LEVELS; i++) {
+			topicPrefix = topicPrefix + "/" + i;
+			MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+			mqttClientConnectionConfiguration = mqttClientEngine.getConfigurations(automationContext);
+			mqttClientConnectionConfiguration.setBrokerUserName("user" + i + "-mqtt");
+			mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
+			mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, topicPrefix,
+													   QualityOfService.LEAST_ONCE,
+													   MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
+													   ClientMode.BLOCKING);
+		}
 
-    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performAuthorizationTestWithAuthorizedUser() throws MqttException, XPathExpressionException {
-        int noOfMessages = 1;
-        boolean saveMessages = true;
-        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        MQTTClientConnectionConfiguration mqttClientConnectionConfiguration = mqttClientEngine.getConfigurations(automationContext);
-        mqttClientConnectionConfiguration.setBrokerUserName("user2-mqtt");
-        mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
-        mqttClientEngine.createSubscriberConnection(mqttClientConnectionConfiguration, TOPIC,
-                                                    QualityOfService.LEAST_ONCE, saveMessages,
-                                                    ClientMode.BLOCKING);
-        mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, TOPIC,
-                                                   QualityOfService.LEAST_ONCE,
-                                                   MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
-                                                   ClientMode.BLOCKING);
-        mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
-        List<MqttMessage> receivedMessages = mqttClientEngine.getReceivedMessages();
-        Assert.assertEquals(receivedMessages.size(), noOfMessages, "The received message count is incorrect.");
-        Assert.assertEquals(receivedMessages.get(0).getPayload(), MQTTConstants.TEMPLATE_PAYLOAD,
-                            "The received message is incorrect");
-    }
+		mqttClientEngineSub.waitUntilAllMessageReceivedAndShutdownClients();
+		List<MqttMessage> receivedMessages = mqttClientEngineSub.getReceivedMessages();
+		Assert.assertEquals(receivedMessages.size(), MAX_LEVELS - 1, "The received message count is incorrect.");
+		Assert.assertEquals(receivedMessages.get(0).getPayload(), MQTTConstants.TEMPLATE_PAYLOAD,
+							"The received message is incorrect");
 
-    @Test(groups = {"wso2.mb", "mqtt"}, description = "Single mqtt message send receive test case")
-    public void performAuthorizationTestWithUnAuthorizedUser()
-            throws MqttException, XPathExpressionException, LogViewerLogViewerException, RemoteException {
-        int noOfMessages = 1;
-        MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
-        MQTTClientConnectionConfiguration mqttClientConnectionConfiguration = mqttClientEngine.getConfigurations(automationContext);
-        mqttClientConnectionConfiguration.setBrokerUserName("user2-mqtt");
-        mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
-        mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, "authorization",
-                                                   QualityOfService.LEAST_ONCE,
-                                                   MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
-                                                   ClientMode.BLOCKING);
-        LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
-        boolean isPublished = false;
-        for (LogEvent logEvent : logs) {
-            String message = logEvent.getMessage();
-            if (message.contains("does not have permission to publish to topic : authorization")) {
-                isPublished = true;
-            }
-        }
-        logViewerClient.clearLogs();
-        Assert.assertTrue(isPublished, "Access is been granted for unauthorized user");
-    }
+	}
 
-    /**
-     * Restore to the previous configurations when the message content test is complete.
-     *
-     * @throws IOException
-     * @throws AutomationUtilException
-     */
-    @AfterClass
-    public void tearDown() throws IOException, AutomationUtilException {
-        super.serverManager.restoreToLastConfiguration(true);
-    }
+	@Test(groups = {"wso2.mb", "mqtt"}, description = "Test Publish and Subscribe with Authorization")
+	public void performAuthorizationForPublishAndSubscribe()
+			throws MqttException, XPathExpressionException, LogViewerLogViewerException, RemoteException {
+		int noOfMessages = 500;
+		boolean saveMessages = true;
+
+		String topicPrefix = "authorization/test";
+		for (int i = 0; i < 10; i++) {
+			topicPrefix = topicPrefix + "/" + i;
+			MQTTClientEngine mqttClientEngine = new MQTTClientEngine();
+			MQTTClientConnectionConfiguration mqttClientConnectionConfiguration =
+					mqttClientEngine.getConfigurations(automationContext);
+			mqttClientConnectionConfiguration.setBrokerUserName("user" + i + "-mqtt");
+			mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
+			mqttClientEngine.createSubscriberConnection(mqttClientConnectionConfiguration, topicPrefix,
+														QualityOfService.LEAST_ONCE, saveMessages,
+														ClientMode.BLOCKING);
+			mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, topicPrefix,
+													   QualityOfService.LEAST_ONCE,
+													   MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
+													   ClientMode.BLOCKING);
+			mqttClientEngine.waitUntilAllMessageReceivedAndShutdownClients();
+			List<MqttMessage> receivedMessages = mqttClientEngine.getReceivedMessages();
+			Assert.assertEquals(receivedMessages.size(), noOfMessages, "The received message count is incorrect.");
+			Assert.assertEquals(receivedMessages.get(0).getPayload(), MQTTConstants.TEMPLATE_PAYLOAD,
+								"The received message is incorrect");
+		}
+	}
+
+	/**
+	 * Restore to the previous configurations when the message content test is complete.
+	 *
+	 * @throws IOException
+	 * @throws AutomationUtilException
+	 */
+	@AfterClass
+	public void tearDown() throws IOException, AutomationUtilException {
+		super.serverManager.restoreToLastConfiguration(true);
+	}
 }

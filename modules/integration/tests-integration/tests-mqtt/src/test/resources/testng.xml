@@ -35,19 +35,19 @@
 
         <classes>
             <!-- functional test cases -->
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.LongTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.ClientReconnectTestCase"/>
-            <class name="org.wso2.mb.integration.tests.mqtt.functional.SingleClientMultipleSubscriptionsTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.LongTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.QOSTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.BasicSecurityTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.CleanSessionTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.RetainTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.ClientReconnectTestCase"/>-->
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.SingleClientMultipleSubscriptionsTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.functional.PermissionTestCase"/>-->
 
             <!-- load test cases -->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.load.MultiThreadedMQTTTestCase"/>-->
             <!--<class name="org.wso2.mb.integration.tests.mqtt.load.QOSLoadTestCase"/>-->
-            <class name="org.wso2.mb.integration.tests.mqtt.load.OneMBMessageTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.mqtt.load.OneMBMessageTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.mqtt.functional.BasicAuthorizationTestCase"/>
         </classes>
     </test>

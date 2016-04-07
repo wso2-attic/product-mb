@@ -34,12 +34,12 @@
     <description>WSO2 Message Broker Server Parent</description>
 
     <modules>
-        <module>tests-common/admin-clients</module>
-        <module>tests-common/integration-tests-utils</module>
-        <module>tests-common/platform-tests-utils</module>
+        <!--<module>tests-common/admin-clients</module>-->
+        <!--<module>tests-common/integration-tests-utils</module>-->
+        <!--<module>tests-common/platform-tests-utils</module>-->
         <module>tests-integration</module>
-        <module>tests-ui-integration</module>
-        <module>tests-platform</module>
+        <!--<module>tests-ui-integration</module>-->
+        <!--<module>tests-platform</module>-->
     </modules>
 
     <dependencies>
