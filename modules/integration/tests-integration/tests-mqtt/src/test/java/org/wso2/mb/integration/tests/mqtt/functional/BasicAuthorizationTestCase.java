@@ -156,8 +156,7 @@ public class BasicAuthorizationTestCase extends MBIntegrationBaseTest {
 		mqttClientConnectionConfiguration.setBrokerUserName("user0-mqtt");
 		mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
 		mqttClientEngineSub.createSubscriberConnection(mqttClientConnectionConfiguration, topicPrefix,
-													   QualityOfService.LEAST_ONCE, saveMessages,
-													   ClientMode.BLOCKING);
+				QualityOfService.LEAST_ONCE, saveMessages, ClientMode.BLOCKING);
 		topicPrefix = "authorization/test/0";
 		for (int i = 1; i < MAX_LEVELS; i++) {
 			topicPrefix = topicPrefix + "/" + i;
@@ -166,9 +165,7 @@ public class BasicAuthorizationTestCase extends MBIntegrationBaseTest {
 			mqttClientConnectionConfiguration.setBrokerUserName("user" + i + "-mqtt");
 			mqttClientConnectionConfiguration.setBrokerPassword("passWord1@");
 			mqttClientEngine.createPublisherConnection(mqttClientConnectionConfiguration, topicPrefix,
-													   QualityOfService.LEAST_ONCE,
-													   MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages,
-													   ClientMode.BLOCKING);
+				QualityOfService.LEAST_ONCE, MQTTConstants.TEMPLATE_PAYLOAD, noOfMessages, ClientMode.BLOCKING);
 		}
 
 		mqttClientEngineSub.waitUntilAllMessageReceivedAndShutdownClients();
