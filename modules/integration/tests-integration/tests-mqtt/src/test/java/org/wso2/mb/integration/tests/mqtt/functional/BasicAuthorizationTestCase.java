@@ -123,14 +123,12 @@ public class BasicAuthorizationTestCase extends MBIntegrationBaseTest {
 			userMgtClient.addRole("mqtt-subscribe-" + i, users, null);
 
 			remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-publish-" + i,
-																  resource.split("/_system/governance")[1],
-																  "publish");
+				resource.split("/_system/governance")[1], "publish");
 			remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-subscribe-" + i,
-																  resource.split("/_system/governance")[1],
-																  "subscribe");
+				resource.split("/_system/governance")[1], "subscribe");
 		}
 		remoteAuthorizationManagerServiceClient.authorizeRole("mqtt-connect", "/permission/admin/mqtt/connect",
-															  "authorize");
+				"authorize");
 
 		userMgtClient.addRole("mqtt-connect", usersList, null);
 		for (int i = 0; i < UNAUTHORIZED_USERS; i++)  {
