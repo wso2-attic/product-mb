@@ -179,6 +179,9 @@ public class BasicAuthorizationTestCase extends MBIntegrationBaseTest {
 
 	}
 
+	/**
+	 * This will test the publish and subscribe flow with the authorized users.
+	 */
 	@Test(groups = {"wso2.mb", "mqtt"}, description = "Test Publish and Subscribe with Authorization")
 	public void performAuthorizationForPublishAndSubscribe()
 			throws MqttException, XPathExpressionException, LogViewerLogViewerException, RemoteException {
