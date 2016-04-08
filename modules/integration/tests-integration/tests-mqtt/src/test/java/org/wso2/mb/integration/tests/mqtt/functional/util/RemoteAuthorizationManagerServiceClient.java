@@ -60,7 +60,7 @@ public class RemoteAuthorizationManagerServiceClient {
 	 * @param roleName that needs to authorized.
 	 * @param resourceId Permission String
 	 * @param action Permission Action that relavant to the permission string
-	 * @throws RemoteException thrown when remote invocation failed.
+	 * @throws RemoteException thrown when remote invocation fails.
 	 * @throws UserStoreExceptionException throws when any errors thrown on authorize role flow releavant to userstore impl.
 	 */
 	public void authorizeRole(String roleName, String resourceId, String action) throws RemoteException,

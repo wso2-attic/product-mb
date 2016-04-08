@@ -71,7 +71,7 @@ public class ResourceAdminServiceClient {
 	 * @param description description of the resource
 	 * @return resource path.
 	 * @throws ResourceAdminServiceExceptionException exception that thrown when there is a error occurs whilst adding the resource.
-	 * @throws RemoteException
+	 * @throws RemoteException thrown when remote invocation fails.
 	 */
 	public String addCollection(String parentPath, String collectionName,
 								String mediaType, String description)
