@@ -28,6 +28,9 @@ import org.wso2.carbon.um.ws.api.stub.UserStoreExceptionException;
 
 import java.rmi.RemoteException;
 
+/**
+ * This is a utility class that is used to call the AuthorizationManagerService
+ */
 public class RemoteAuthorizationManagerServiceClient {
 	private static final Log log = LogFactory.getLog(RemoteAuthorizationManagerServiceClient.class);
 	private final String serviceName = "RemoteAuthorizationManagerService";
@@ -35,6 +38,12 @@ public class RemoteAuthorizationManagerServiceClient {
 
 	private String endPoint;
 
+	/**
+	 * Initialize the stub.
+	 * @param backEndUrl URL of the back end service.
+	 * @param sessionCookie sessionCookie of a logged in User
+	 * @throws AxisFault throws when initialization fails
+	 */
 	public RemoteAuthorizationManagerServiceClient(String backEndUrl, String sessionCookie) throws AxisFault {
 		this.endPoint = backEndUrl + serviceName;
 		remoteAuthorizationManagerServiceStub = new RemoteAuthorizationManagerServiceStub(endPoint);
@@ -46,88 +55,14 @@ public class RemoteAuthorizationManagerServiceClient {
 		option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, sessionCookie);
 	}
 
-	public boolean isRoleAuthorized(String roleName, String resourceId, String action) throws RemoteException,
-																							  UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.isRoleAuthorized(roleName, resourceId, action);
-	}
-
-	public void clearResourceAuthorizations(String resourceId) throws RemoteException, UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearResourceAuthorizations(resourceId);
-	}
-
-	public void clearAllUserAuthorization(String username) throws RemoteException, UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearAllUserAuthorization(username);
-	}
-
-	public boolean isUserAuthorized(String username, String resourceId, String action) throws RemoteException,
-																							  UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.isUserAuthorized(username, resourceId, action);
-	}
-
-	public void clearRoleActionOnAllResources(String roleName, String action) throws RemoteException,
-																					 UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearRoleActionOnAllResources(roleName, action);
-	}
-
-	public void clearRoleAuthorization(String roleName, String resourceId, String action) throws RemoteException,
-																								 UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearRoleAuthorization(roleName, resourceId, action);
-	}
-
-	public void clearAllRoleAuthorization(String roleName) throws RemoteException, UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearAllRoleAuthorization(roleName);
-	}
-
-	public String[] getExplicitlyDeniedUsersForResource(String resourceId, String action) throws RemoteException,
-																								 UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.getExplicitlyDeniedUsersForResource(resourceId, action);
-	}
-
-	public void authorizeUser(String username, String resourceId, String action) throws RemoteException,
-																						UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.authorizeUser(username, resourceId, action);
-	}
-
-	public String[] getAllowedRolesForResource(String resourceId, String action) throws RemoteException,
-																						UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.getAllowedRolesForResource(resourceId, action);
-	}
-
-	public void clearUserAuthorization(String username, String resourceId, String action) throws RemoteException,
-																								 UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.clearUserAuthorization(username, resourceId, action);
-	}
-
-	public String[] getDeniedRolesForResource(String resourceId, String action) throws RemoteException,
-																					   UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.getDeniedRolesForResource(resourceId, action);
-	}
-
-	public String[] getAllowedUIResourcesForUser(String username, String permissionRootPath) throws RemoteException,
-																									UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.getAllowedUIResourcesForUser(username, permissionRootPath);
-	}
-
-	public void resetPermissionOnUpdateRole(String roleName, String newRoleName) throws RemoteException,
-																						UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.resetPermissionOnUpdateRole(roleName, newRoleName);
-	}
-
-	public void denyRole(String roleName, String resourceId, String action) throws RemoteException,
-																				   UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.denyRole(roleName, resourceId, action);
-	}
-
-	public String[] getExplicitlyAllowedUsersForResource(String resourceId, String action) throws RemoteException,
-																								  UserStoreExceptionException {
-		return remoteAuthorizationManagerServiceStub.getExplicitlyAllowedUsersForResource(resourceId, action);
-	}
-
-	public void denyUser(String username, String resourceId, String action) throws RemoteException,
-																				   UserStoreExceptionException {
-		remoteAuthorizationManagerServiceStub.denyUser(username, resourceId, action);
-	}
-
+	/**
+	 * Call the internal stub to check whether the role is authorized with particular resource.
+	 * @param roleName that needs to authorized.
+	 * @param resourceId Permission String
+	 * @param action Permission Action that relavant to the permission string
+	 * @throws RemoteException thrown when remote invocation failed.
+	 * @throws UserStoreExceptionException throws when any errors thrown on authorize role flow releavant to userstore impl.
+	 */
 	public void authorizeRole(String roleName, String resourceId, String action) throws RemoteException,
 																						UserStoreExceptionException {
 		remoteAuthorizationManagerServiceStub.authorizeRole(roleName, resourceId, action);
