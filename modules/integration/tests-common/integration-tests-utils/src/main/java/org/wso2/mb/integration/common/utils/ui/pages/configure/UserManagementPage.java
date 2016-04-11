@@ -37,31 +37,31 @@ public class UserManagementPage {
         this.driver = driver;
 
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("configure.user.mgt.header.xpath"))).getText().contains("User Management")) {
+                .getElement("configure.user.mgt.header.xpath"))).getText().contains("Add Users and Roles")) {
 
             throw new IllegalStateException("This is not the User Management page");
         }
     }
 
     /**
-     * Gets the roles pages.
+     * Gets the first page in creating a new role
      *
-     * @return The roles page.
+     * @return The page that appears first when creating a new role
      */
-    public RolesPage getRolesPage() {
+    public AddRoleStep1Page getAddRolePage() {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.roles.link.xpath")))
                 .click();
-        return new RolesPage(driver);
+        return new AddRoleStep1Page(driver);
     }
 
     /**
-     * Gets the users pages.
+     * Gets the first page in creating a new new
      *
-     * @return The users page.
+     * @return The page that appears first when creating a new user
      */
-    public UsersPage getUsersPage() {
+    public AddUserStep1Page getAddNewUserPage() {
         driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.users.link.xpath")))
                 .click();
-        return new UsersPage(driver);
+        return new AddUserStep1Page(driver);
     }
 }

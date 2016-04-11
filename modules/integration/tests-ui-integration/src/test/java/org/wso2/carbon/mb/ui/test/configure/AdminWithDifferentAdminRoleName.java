@@ -28,14 +28,13 @@ import org.wso2.mb.integration.common.utils.ui.pages.configure.AddUserStep1Page;
 import org.wso2.mb.integration.common.utils.ui.pages.configure.AddUserStep2Page;
 import org.wso2.mb.integration.common.utils.ui.pages.configure.ConfigurePage;
 import org.wso2.mb.integration.common.utils.ui.pages.configure.UserManagementPage;
-import org.wso2.mb.integration.common.utils.ui.pages.configure.UsersPage;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.HomePage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueueAddPage;
 import org.wso2.mb.integration.common.utils.ui.pages.main.QueuesBrowsePage;
 
-import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * test for fix https://wso2.org/jira/browse/MB-850
@@ -88,8 +87,7 @@ public class AdminWithDifferentAdminRoleName extends MBIntegrationUiBaseTest {
         // create new user, John
         ConfigurePage configurePage = queueAddPage.getConfigurePage();
         UserManagementPage userManagementPage = configurePage.getUserManagementPage();
-        UsersPage usersPage = userManagementPage.getUsersPage();
-        AddUserStep1Page addUserStep1Page = usersPage.getAddNewUserPage();
+        AddUserStep1Page addUserStep1Page = userManagementPage.getAddNewUserPage();
         addUserStep1Page.addUserDetails(userName, password, password);
         AddUserStep2Page addUserStep2Page = addUserStep1Page.next();
         addUserStep2Page.selectRole(CUSTOM_ADMIN_ROLE_NAME);
