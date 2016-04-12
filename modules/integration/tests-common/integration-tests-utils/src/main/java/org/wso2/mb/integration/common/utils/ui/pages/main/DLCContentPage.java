@@ -131,4 +131,47 @@ public class DLCContentPage {
         return reroutingMessageID;
     }
 
+    /**
+     * Test reroute all messages function in DLC when its enabled.
+     *
+     * @param sourceDestination The destination from which the messages needs to be transferred.
+     * @param targetDestination The destination which the messages need to be transferred to.
+     * @throws IOException
+     */
+    public void rerouteAllFunction(String sourceDestination, String targetDestination) throws IOException {
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.all.button"))).click();
+
+        // Selection source destination
+        WebElement sourceDestinationDropDown = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.all.source.select")));
+        List<WebElement> sourceDestinationOptions = sourceDestinationDropDown.findElements(By.tagName(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.queue.option")));
+        for (WebElement option : sourceDestinationOptions) {
+            if (option.getText().equals(sourceDestination)) {
+                option.click();
+                break;
+            }
+        }
+
+        // Selection target destination
+        WebElement targetDestinationDropDown = driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.all.target.select")));
+        List<WebElement> targetDestinationOptions = targetDestinationDropDown.findElements(By.tagName(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.queue.option")));
+        for (WebElement option : targetDestinationOptions) {
+            if (option.getText().equals(targetDestination)) {
+                option.click();
+                break;
+            }
+        }
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.table.reroute.confirm"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.function.confirm"))).click();
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.dlc.browse.function.success"))).click();
+    }
+
 }
