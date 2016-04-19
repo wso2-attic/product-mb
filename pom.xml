@@ -174,6 +174,18 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.transport</groupId>
+                <artifactId>org.wso2.carbon.transport.http.netty.feature</artifactId>
+                <version>${carbon.transport.http.netty.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging.feature</artifactId>
+                <version>${carbon.messaging.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.uuf</groupId>
                 <artifactId>org.wso2.uuf.core.feature</artifactId>
                 <version>${uuf.version}</version>
@@ -445,6 +457,8 @@
         <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
         <carbon.msf4j.version>1.1.0-SNAPSHOT</carbon.msf4j.version>
         <carbon.msf4j.import.version.range>[1.0.0, 2.0.0)</carbon.msf4j.import.version.range>
+        <carbon.transport.http.netty.version>2.0.1</carbon.transport.http.netty.version>
+        <carbon.messaging.version>1.0.2</carbon.messaging.version>
         <rs-api.version>2.0</rs-api.version>
 
        <!--Transport Related Configrations -->

@@ -121,6 +121,18 @@
             <version>${carbon.cache.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty.feature</artifactId>
+            <version>${carbon.transport.http.netty.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.messaging</groupId>
+            <artifactId>org.wso2.carbon.messaging.feature</artifactId>
+            <version>${carbon.messaging.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -237,6 +249,14 @@
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${carbon.cache.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.messaging.feature</id>
+                                    <version>${carbon.messaging.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -336,6 +356,14 @@
                                 <feature>
                                     <id>org.wso2.carbon.caching.feature.group</id>
                                     <version>${carbon.cache.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature.group</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.messaging.feature.group</id>
+                                    <version>${carbon.messaging.version}</version>
                                 </feature>
                             </features>
                         </configuration>
