@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>2</version>
+        <version>5</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -134,6 +134,16 @@
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
             </dependency>
+            <dependency>
+                <groupId>apache-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
 
 
             <!--Carbon Dependencies-->
@@ -180,6 +190,12 @@
                 <artifactId>org.wso2.carbon.caching.feature</artifactId>
                 <version>${carbon.cache.version}</version>
                 <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <version>${carbon.messaging.version}</version>
             </dependency>
 
             <!--Message Broker Dependencies-->
@@ -341,21 +357,6 @@
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
-             <dependency>
-                <groupId>org.wso2.orbit.org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${org.snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.messaging</groupId>
-                <artifactId>org.wso2.carbon.messaging</artifactId>
-                <version>${carbon.messaging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>apache-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -429,7 +430,7 @@
 
         <!--Carbon related properties-->
         <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.0.0</carbon.kernel.version>
+        <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
@@ -442,8 +443,8 @@
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
         <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
-        <msf4j.version>1.0.0</msf4j.version>
-        <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
+        <carbon.msf4j.version>1.1.0-SNAPSHOT</carbon.msf4j.version>
+        <carbon.msf4j.import.version.range>[1.0.0, 2.0.0)</carbon.msf4j.import.version.range>
         <rs-api.version>2.0</rs-api.version>
 
        <!--Transport Related Configrations -->
