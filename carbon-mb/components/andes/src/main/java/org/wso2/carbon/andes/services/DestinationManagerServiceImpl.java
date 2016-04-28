@@ -29,6 +29,11 @@ import java.util.Set;
  * This implementation provides the base for managing all messages related services.
  */
 public class DestinationManagerServiceImpl implements DestinationManagerService {
+
+    /**
+     * TODO : Remove this and use user-core
+     * Sample permission storage.
+     */
     private static Set<DestinationRolePermission> destinationRolePermissions = new HashSet<>();
 
     /**

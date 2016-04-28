@@ -37,60 +37,28 @@ public class Destination {
     private String owner = null;
     private int subscriptionCount;
 
-    long getId() {
-        return this.id;
-    }
-
-    String getDestinationName() {
-        return this.destinationName;
-    }
-
-    Date getCreatedDate() {
-        return this.createdDate;
-    }
-
-    public long getMessageCount() {
-        return messageCount;
-    }
-
-    public String getOwner() {
-        return owner;
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
         this.id = id;
     }
 
+    public String getDestinationName() {
+        return destinationName;
+    }
+
     public void setDestinationName(String destinationName) {
         this.destinationName = destinationName;
     }
 
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public void setMessageCount(long messageCount) {
-        this.messageCount = messageCount;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public boolean isDurable() {
-        return isDurable;
-    }
-
-    public void setDurable(boolean durable) {
-        isDurable = durable;
-    }
-
-    public void setSubscriptionCount(int subscriptionCount) {
-        this.subscriptionCount = subscriptionCount;
-    }
-
-    public int getSubscriptionCount() {
-        return subscriptionCount;
     }
 
     public DestinationType getDestinationType() {
@@ -101,7 +69,43 @@ public class Destination {
         this.destinationType = destinationType;
     }
 
+    public ProtocolType getProtocolType() {
+        return protocolType;
+    }
+
     public void setProtocolType(ProtocolType protocolType) {
         this.protocolType = protocolType;
+    }
+
+    public long getMessageCount() {
+        return messageCount;
+    }
+
+    public void setMessageCount(long messageCount) {
+        this.messageCount = messageCount;
+    }
+
+    public boolean isDurable() {
+        return isDurable;
+    }
+
+    public void setDurable(boolean durable) {
+        isDurable = durable;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public int getSubscriptionCount() {
+        return subscriptionCount;
+    }
+
+    public void setSubscriptionCount(int subscriptionCount) {
+        this.subscriptionCount = subscriptionCount;
     }
 }
