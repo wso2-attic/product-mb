@@ -17,18 +17,18 @@
 package org.wso2.carbon.andes.services.exceptions;
 
 /**
- * Exception class for subscription manager MBeans.
+ * Exception class for destination manager MBeans.
  */
-public class SubscriptionManagerException extends Exception {
-    private static final long serialVersionUID = 4228586304474947585L;
+public class MessageManagerException extends Exception {
+    private static final long serialVersionUID = 4377416787928752102L;
     private String faultCode;
     private String faultString;
 
-    public SubscriptionManagerException() {
+    public MessageManagerException() {
         super();
     }
 
-    public SubscriptionManagerException(String message, Throwable cause) {
+    public MessageManagerException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -40,16 +40,16 @@ public class SubscriptionManagerException extends Exception {
         return faultString;
     }
 
-    public SubscriptionManagerException(String message) {
+    public MessageManagerException(String message) {
         super(message);
     }
 
-    public SubscriptionManagerException(String faultString, String faultCode) {
+    public MessageManagerException(String faultString, String faultCode) {
         this.faultCode = faultCode;
         this.faultString = faultString;
     }
 
-    public SubscriptionManagerException(Throwable cause) {
+    public MessageManagerException(Throwable cause) {
         super(cause);
     }
 }
