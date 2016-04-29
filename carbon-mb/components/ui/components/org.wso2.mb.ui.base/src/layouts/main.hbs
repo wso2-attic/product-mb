@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/mb/public/org.wso2.mb.ui.base/base/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/mb/public/org.wso2.mb.ui.base/base/css/theme.css" rel="stylesheet" type="text/css"/>
+    <title>WSO2 Template</title>
+
+{{placeholder 'headerJs'}}
+{{placeholder 'css'}}
+</head>
+<body>
+
+<header class="header header-default">
+    <div class="container-fluid">
+        <div class="pull-left brand float-remove-xs text-center-xs">
+            <a href="/mb">
+                <img src="/mb/public/org.wso2.mb.ui.base/base/images/logo.png"
+                     class="logo"/>
+                <h1>WSO2 Message Broker - Management Console</h1>
+            </a>
+        </div>
+        <div class="pull-right auth float-remove-xs text-center-xs">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/mb/basicauth/login">Login</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+<div class="page-content-wrapper">
+    <div class="container-fluid body-wrapper">
+        {{defineZone "content"}}
+    </div>
+</div>
+
+</body>
+</html>

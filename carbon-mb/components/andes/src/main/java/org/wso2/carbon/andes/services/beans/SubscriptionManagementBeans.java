@@ -36,7 +36,8 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to subscription resources.
  */
 public class SubscriptionManagementBeans {
-    public static SubscriptionManagementBeans self = new SubscriptionManagementBeans();
+    private static final Object lock = new Object();
+    private static SubscriptionManagementBeans instance = new SubscriptionManagementBeans();
 
     /**
      * Gets the active subscription managing instance.
@@ -44,10 +45,14 @@ public class SubscriptionManagementBeans {
      * @return A subscription managing instance.
      */
     public static SubscriptionManagementBeans getInstance() {
-        if (self == null) {
-            self = new SubscriptionManagementBeans();
+        if (null == instance) { // avoid sync penalty if we can
+            synchronized (lock) { // declare a private static Object to use for mutex
+                if (null == instance) {  // have to do this inside the sync
+                    instance = new SubscriptionManagementBeans();
+                }
+            }
         }
-        return self;
+        return instance;
     }
 
     /**
@@ -181,7 +186,7 @@ public class SubscriptionManagementBeans {
                 .SubscriptionCompositeDataHelper.TARGET_QUEUE_BOUND_EXCHANGE_NAME));
         subscription.setSubscriberQueueName((String) compositeSubscription.get(CompositeDataHelper
                 .SubscriptionCompositeDataHelper.TARGET_QUEUE));
-        subscription.isDurable((Boolean) compositeSubscription.get(CompositeDataHelper
+        subscription.setDurable((Boolean) compositeSubscription.get(CompositeDataHelper
                 .SubscriptionCompositeDataHelper.IS_DURABLE));
         subscription.setActive((Boolean) compositeSubscription.get(CompositeDataHelper
                 .SubscriptionCompositeDataHelper.HAS_EXTERNAL_SUBSCRIPTIONS));
