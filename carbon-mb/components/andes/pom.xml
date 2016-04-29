@@ -258,7 +258,7 @@
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
-            org.wso2.msf4j.*;version="${carbon.msf4j.import.version.range}",
+            org.wso2.msf4j.*;version="${msf4j.import.version.range}",
             org.slf4j.*;version="${slf4j.import.version.range}",
             javax.ws.rs.*,
             javax.management.*,

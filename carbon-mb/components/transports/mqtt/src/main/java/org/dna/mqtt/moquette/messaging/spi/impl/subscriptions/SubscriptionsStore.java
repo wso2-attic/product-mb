@@ -274,9 +274,10 @@ public class SubscriptionsStore {
                     if (subToken == Token.MULTI) {
                         return true;
                     }
-                    if (subToken == Token.SINGLE) {
-                        //skip a step forward
-                    }
+                    // TODO : Address UCF_USELESS_CONTROL_FLOW
+//                    if (subToken == Token.SINGLE) {
+//                        //skip a step forward
+//                    }
                 }
             }
 

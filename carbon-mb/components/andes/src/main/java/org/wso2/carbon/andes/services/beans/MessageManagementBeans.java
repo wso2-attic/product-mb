@@ -38,7 +38,8 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to message resources.
  */
 public class MessageManagementBeans {
-    public static MessageManagementBeans self;
+    private static final Object lock = new Object();
+    private static MessageManagementBeans instance;
 
     /**
      * Gets the active message managing instance.
@@ -46,10 +47,14 @@ public class MessageManagementBeans {
      * @return A message managing instance.
      */
     public static MessageManagementBeans getInstance() {
-        if (self == null) {
-            self = new MessageManagementBeans();
+        if (null == instance) { // avoid sync penalty if we can
+            synchronized (lock) { // declare a private static Object to use for mutex
+                if (null == instance) {  // have to do this inside the sync
+                    instance = new MessageManagementBeans();
+                }
+            }
         }
-        return self;
+        return instance;
     }
 
     /**

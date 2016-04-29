@@ -18,6 +18,7 @@ package org.wso2.carbon.andes.services.providers;
 
 import org.wso2.andes.kernel.DestinationType;
 
+import java.util.Locale;
 import javax.ws.rs.ext.ParamConverter;
 
 /**
@@ -27,7 +28,7 @@ public class DestinationTypeConverter implements ParamConverter<DestinationType>
 
     @Override
     public DestinationType fromString(String destinationTypeAsString) {
-        return DestinationType.valueOf(destinationTypeAsString.toUpperCase().replace("-", "_"));
+        return DestinationType.valueOf(destinationTypeAsString.toUpperCase(Locale.getDefault()).replace("-", "_"));
     }
 
     @Override

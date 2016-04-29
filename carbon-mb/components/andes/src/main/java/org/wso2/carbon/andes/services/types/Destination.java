@@ -54,11 +54,11 @@ public class Destination {
     }
 
     public Date getCreatedDate() {
-        return createdDate;
+        return (Date) createdDate.clone();
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+        this.createdDate = (Date) createdDate.clone();
     }
 
     public DestinationType getDestinationType() {

@@ -64,7 +64,7 @@ public class Subscription {
         this.subscriberQueueName = subscriberQueueName;
     }
 
-    public boolean isDurable(boolean b) {
+    public boolean isDurable() {
         return isDurable;
     }
 

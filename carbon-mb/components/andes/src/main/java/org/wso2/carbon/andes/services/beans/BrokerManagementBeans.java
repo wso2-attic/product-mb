@@ -35,7 +35,8 @@ import javax.management.ReflectionException;
  * JMX client for managing broker configuration 40related resources.
  */
 public class BrokerManagementBeans {
-    public static BrokerManagementBeans self;
+    private static final Object lock = new Object();
+    private static BrokerManagementBeans instance;
 
     /**
      * Gets the running instance for {@link BrokerManagementBeans}.
@@ -43,11 +44,16 @@ public class BrokerManagementBeans {
      * @return A {@link BrokerManagementBeans}.
      */
     public static BrokerManagementBeans getInstance() {
-        if (self == null) {
-            self = new BrokerManagementBeans();
+        if (null == instance) { // avoid sync penalty if we can
+            synchronized (lock) { // declare a private static Object to use for mutex
+                if (null == instance) {  // have to do this inside the sync
+                    instance = new BrokerManagementBeans();
+                }
+            }
         }
-        return self;
+        return instance;
     }
+
     /**
      * Checks whether clustering is enabled.
      *

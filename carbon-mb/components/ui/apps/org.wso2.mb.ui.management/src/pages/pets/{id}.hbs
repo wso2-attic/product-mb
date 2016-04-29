@@ -1,0 +1,17 @@
+{{layout "org.wso2.mb.ui.base.main"}}
+
+{{#fillZone "content"}}
+    {{css "/css/mb.css"}}
+    <div class="col-md-8">
+        <h2>Pet Info</h2>
+        <br/>
+        {{includeFragment "thumbnail"}}
+        <br/>
+        <div class="pet-info">
+            name : {{name}}
+        </div>
+    </div>
+    <div class="col-md-4">
+        {{includeFragment "org.wso2.mb.ui.store-common.tags"}}
+    </div>
+{{/fillZone}}

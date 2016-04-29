@@ -27,6 +27,10 @@ public class Message {
     private Map<String, String> messageProperties;
     private String[] messageContent;
 
+    public Message() {
+        this.messageContent = new String[0];
+    }
+
     public Long getAndesMsgMetadataId() {
         return andesMsgMetadataId;
     }
@@ -52,10 +56,10 @@ public class Message {
     }
 
     public String[] getMessageContent() {
-        return messageContent;
+        return messageContent.clone();
     }
 
     public void setMessageContent(String[] messageContent) {
-        this.messageContent = messageContent;
+        this.messageContent = messageContent.clone();
     }
 }

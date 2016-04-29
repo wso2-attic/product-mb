@@ -18,6 +18,7 @@ package org.wso2.carbon.andes.services.providers;
 
 import org.wso2.andes.kernel.ProtocolType;
 
+import java.util.Locale;
 import javax.ws.rs.ext.ParamConverter;
 
 /**
@@ -37,7 +38,7 @@ import javax.ws.rs.ext.ParamConverter;
 public class ProtocolTypeConverter implements ParamConverter<ProtocolType> {
     @Override
     public ProtocolType fromString(String protocolAsString) {
-        return ProtocolType.valueOf(protocolAsString.toUpperCase());
+        return ProtocolType.valueOf(protocolAsString.toUpperCase(Locale.getDefault()));
     }
 
     @Override
