@@ -45,9 +45,9 @@ public class SubscriptionManagementBeans {
      * @return A subscription managing instance.
      */
     public static SubscriptionManagementBeans getInstance() {
-        if (null == instance) { // avoid sync penalty if we can
-            synchronized (lock) { // declare a private static Object to use for mutex
-                if (null == instance) {  // have to do this inside the sync
+        if (null == instance) {
+            synchronized (lock) {
+                if (null == instance) {
                     instance = new SubscriptionManagementBeans();
                 }
             }

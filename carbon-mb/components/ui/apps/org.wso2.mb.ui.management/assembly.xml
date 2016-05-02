@@ -43,7 +43,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.build.outputDirectory}</directory>
-            <outputDirectory>/components/root</outputDirectory>
+            <outputDirectory>/components/</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
