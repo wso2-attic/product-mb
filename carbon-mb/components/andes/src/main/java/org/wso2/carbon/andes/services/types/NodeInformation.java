@@ -16,24 +16,14 @@
 
 package org.wso2.carbon.andes.services.types;
 
-import java.util.List;
-
 /**
- * This class represent a cluster information object.
+ * Represents the information related to a single node in a cluster.
  */
-public class ClusterInformation {
-    private boolean isClusteringEnabled;
+public class NodeInformation {
     private String nodeID;
-    private String coordinatorAddress;
-    private List<NodeInformation> nodeAddresses;
-
-    public boolean isClusteringEnabled() {
-        return isClusteringEnabled;
-    }
-
-    public void setClusteringEnabled(boolean clusteringEnabled) {
-        isClusteringEnabled = clusteringEnabled;
-    }
+    private String hostname;
+    private int port;
+    private boolean isCoordinator;
 
     public String getNodeID() {
         return nodeID;
@@ -43,19 +33,27 @@ public class ClusterInformation {
         this.nodeID = nodeID;
     }
 
-    public String getCoordinatorAddress() {
-        return coordinatorAddress;
+    public String getHostname() {
+        return hostname;
     }
 
-    public void setCoordinatorAddress(String coordinatorAddress) {
-        this.coordinatorAddress = coordinatorAddress;
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
-    public List<NodeInformation> getNodeAddresses() {
-        return nodeAddresses;
+    public int getPort() {
+        return port;
     }
 
-    public void setNodeAddresses(List<NodeInformation> nodeAddresses) {
-        this.nodeAddresses = nodeAddresses;
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isCoordinator() {
+        return isCoordinator;
+    }
+
+    public void setCoordinator(boolean coordinator) {
+        isCoordinator = coordinator;
     }
 }

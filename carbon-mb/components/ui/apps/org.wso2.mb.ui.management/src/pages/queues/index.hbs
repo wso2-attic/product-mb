@@ -1,0 +1,108 @@
+{{layout "org.wso2.mb.ui.base.main"}}
+
+{{#fillZone "content"}}
+    {{headerJs "/js/list-queues.js"}}
+    <div class="alert alert-success" role="alert" id="success-alert" style="display:none">
+        <i class="icon fw fw-success"></i><strong>Success!</strong>
+        <span id="success-message"></span>
+        <button type="button" class="close" aria-label="close" data-hide="alert">
+                        <span aria-hidden="true">
+                            <i class="fw fw-cancel"></i>
+                        </span>
+        </button>
+    </div>
+    <div class="alert alert-danger" role="alert" id="error-alert" style="display:none">
+        <i class="icon fw fw-error"></i><strong>Error!</strong>
+        <span id="error-message"></span>
+        <button type="button" class="close" aria-label="close" data-hide="alert">
+                        <span aria-hidden="true">
+                            <i class="fw fw-cancel"></i>
+                        </span>
+        </button>
+    </div>
+    <h1>List of Queues</h1>
+    <hr/>
+    <!-- Purge All Modal -->
+    <div class="modal fade" id="modalPurgeAll" tabindex="-1" role="dialog" aria-labelledby="modalDemo">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content clearfix">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    <h3 class="modal-title" id="deleteModalLabel">Are you sure you want to purge all queues ?</h3>
+                </div>
+                <div class="pull-right">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Purge All</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete All Modal -->
+    <div class="modal fade" id="modalDeleteAll" tabindex="-1" role="dialog" aria-labelledby="modalDemo">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content clearfix">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    <h3 class="modal-title" id="deleteModalLabel">Are you sure you want to delete all queues ?</h3>
+                </div>
+                <div class="pull-right">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Delete</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-responsive table-striped" id="queue-list-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Number of Messages</th>
+            <th>Number of Subscribers</th>
+            <th>Owner</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <!-- Purge Modal -->
+    <div class="modal fade" id="modalPurge" tabindex="-1" role="dialog" aria-labelledby="modalDemo">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content clearfix">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fw fw-cancel"></i></button>
+                    <h3 class="modal-title" id="deleteModalLabel">Are you sure you want to purge queue '<span id="purge-queue-name"></span>' ?</h3>
+                </div>
+                <div class="pull-right">
+                    <div class="modal-footer">
+                        <button type="button" id="purge-button" onClick="purgeQueue(this)" data-purge-button-queue-name="" class="btn btn-primary">Purge</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDemo">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content clearfix">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fw fw-cancel"></i></button>
+                    <h3 class="modal-title" id="deleteModalLabel">Are you sure you want to delete queue '<span id="delete-queue-name"></span>' ?</h3>
+                </div>
+                <div class="pull-right">
+                    <div class="modal-footer">
+                        <button type="button" id="delete-button" onClick="deleteQueue(this)" data-delete-button-queue-name="" class="btn btn-primary">Delete</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/fillZone}}

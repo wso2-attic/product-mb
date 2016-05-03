@@ -20,7 +20,11 @@ import org.wso2.carbon.andes.services.beans.BrokerManagementBeans;
 import org.wso2.carbon.andes.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.services.types.BrokerInformation;
 import org.wso2.carbon.andes.services.types.ClusterInformation;
+import org.wso2.carbon.andes.services.types.NodeInformation;
 import org.wso2.carbon.andes.services.types.StoreInformation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This implementation provides the base for managing all messages related services.
@@ -36,7 +40,22 @@ public class BrokerManagerServiceImpl implements BrokerManagerService {
         clusterInformation.setClusteringEnabled(BrokerManagementBeans.getInstance().isClusteringEnabled());
         clusterInformation.setNodeID(BrokerManagementBeans.getInstance().getMyNodeID());
         clusterInformation.setCoordinatorAddress(BrokerManagementBeans.getInstance().getCoordinatorNodeAddress());
-        clusterInformation.setNodeAddresses(BrokerManagementBeans.getInstance().getAllClusterNodeAddresses());
+        List<String> allClusterNodeAddresses = BrokerManagementBeans.getInstance().getAllClusterNodeAddresses();
+        List<NodeInformation> nodeInformationList = new ArrayList<>();
+        for (String allClusterNodeAddress : allClusterNodeAddresses) {
+            String[] nodeDetails = allClusterNodeAddress.split(",");
+            NodeInformation nodeInformation = new NodeInformation();
+            nodeInformation.setNodeID(nodeDetails[0]);
+            nodeInformation.setHostname(nodeDetails[1]);
+            nodeInformation.setPort(Integer.parseInt(nodeDetails[2]));
+            if (clusterInformation.getCoordinatorAddress().equals(nodeDetails[1] + "," + nodeDetails[2])) {
+                nodeInformation.setCoordinator(true);
+            } else {
+                nodeInformation.setCoordinator(false);
+            }
+            nodeInformationList.add(nodeInformation);
+        }
+        clusterInformation.setNodeAddresses(nodeInformationList);
         return clusterInformation;
     }
 

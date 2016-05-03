@@ -278,12 +278,13 @@ public class AndesService implements Microservice {
      */
     @DELETE
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDestination(@PathParam("protocol") String protocol,
                                       @PathParam("destination-type") String destinationType,
                                       @PathParam("destination-name") String destinationName) {
         try {
             destinationManagerService.deleteDestination(protocol, destinationType, destinationName);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (DestinationManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
