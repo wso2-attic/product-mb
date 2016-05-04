@@ -36,6 +36,7 @@
     <modules>
         <module>components/org.wso2.mb.ui.basicauth</module>
         <module>components/org.wso2.mb.ui.base</module>
+        <module>components/org.wso2.mb.ui.common</module>
         <module>apps/org.wso2.mb.ui.management</module>
     </modules>
 

@@ -20,6 +20,8 @@ package org.wso2.carbon.andes.services.utils;
  * Stores message management constants which are used to contact through MBeans.
  */
 public class MessageManagementConstants {
+    public static final String MESSAGE_OBJECT_NAME
+                                = "org.wso2.andes:type=MessageManagementInformation,name=MessageManagementInformation";
     public static final String BROWSE_DESTINATIONS_WITH_MESSAGE_ID_MBEAN_ATTRIBUTE = "browseDestinationWithMessageID";
     public static final String BROWSE_DESTINATIONS_WITH_OFFSET_MBEAN_ATTRIBUTE = "browseDestinationWithOffset";
     public static final String GET_MESSAGE_MBEAN_ATTRIBUTE = "getMessage";

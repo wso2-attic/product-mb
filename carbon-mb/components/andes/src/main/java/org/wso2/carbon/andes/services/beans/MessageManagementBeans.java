@@ -41,6 +41,7 @@ public class MessageManagementBeans {
     private static final Object lock = new Object();
     private static MessageManagementBeans instance;
 
+
     /**
      * Gets the active message managing instance.
      *
@@ -80,7 +81,7 @@ public class MessageManagementBeans {
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName =
-                    new ObjectName("org.wso2.andes:type=QueueManagementInformation,name=QueueManagementInformation");
+                    new ObjectName(MessageManagementConstants.MESSAGE_OBJECT_NAME);
             String operationName = MessageManagementConstants.BROWSE_DESTINATIONS_WITH_MESSAGE_ID_MBEAN_ATTRIBUTE;
             Object[] parameters = new Object[]{protocol, destinationType, destinationName, content, nextMessageID,
                                                                                                                 limit};
@@ -125,7 +126,7 @@ public class MessageManagementBeans {
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName =
-                    new ObjectName("org.wso2.andes:type=QueueManagementInformation,name=QueueManagementInformation");
+                    new ObjectName(MessageManagementConstants.MESSAGE_OBJECT_NAME);
             String operationName = MessageManagementConstants.BROWSE_DESTINATIONS_WITH_OFFSET_MBEAN_ATTRIBUTE;
             Object[] parameters = new Object[]{protocol, destinationType, destinationName, content, offset, limit};
             String[] signature = new String[]{String.class.getName(), String.class.getName(), String.class.getName(),
@@ -164,7 +165,7 @@ public class MessageManagementBeans {
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName =
-                    new ObjectName("org.wso2.andes:type=QueueManagementInformation,name=QueueManagementInformation");
+                    new ObjectName(MessageManagementConstants.MESSAGE_OBJECT_NAME);
             String operationName = MessageManagementConstants.GET_MESSAGE_MBEAN_ATTRIBUTE;
             Object[] parameters = new Object[]{protocol, destinationType, destinationName, andesMessageID, content};
             String[] signature = new String[]{String.class.getName(), String.class.getName(), String.class.getName(),
@@ -197,7 +198,7 @@ public class MessageManagementBeans {
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             ObjectName objectName =
-                    new ObjectName("org.wso2.andes:type=QueueManagementInformation,name=QueueManagementInformation");
+                    new ObjectName(MessageManagementConstants.MESSAGE_OBJECT_NAME);
             String operationName = MessageManagementConstants.DELETE_MESSAGE_MBEAN_OPERATION;
             Object[] parameters = new Object[]{protocol, destinationType, destinationName};
             String[] signature = new String[]{String.class.getName(), String.class.getName(), String.class.getName()};

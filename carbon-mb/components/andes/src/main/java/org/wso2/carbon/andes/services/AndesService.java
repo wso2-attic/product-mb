@@ -609,7 +609,7 @@ public class AndesService implements Microservice {
                                    @PathParam("destination-name") String destinationName) {
         try {
             messageManagerService.deleteMessages(protocol, destinationType, destinationName);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (MessageManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
