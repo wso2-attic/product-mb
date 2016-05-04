@@ -16,21 +16,17 @@
   -->
 
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-    <baseDirectory>mb</baseDirectory>
-    <id>mb.ui.management</id>
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <baseDirectory>/</baseDirectory>
+    <id>mb.ui.common</id>
     <formats>
         <format>zip</format>
     </formats>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/uuf-components/</directory>
-            <outputDirectory>/components/</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>${project.basedir}/src</directory>
-            <outputDirectory>/components/root</outputDirectory>
+            <outputDirectory>/${project.artifactId}</outputDirectory>
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/pom.xml</exclude>
@@ -43,7 +39,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.build.outputDirectory}</directory>
-            <outputDirectory>/components/root</outputDirectory>
+            <outputDirectory>/${project.artifactId}</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

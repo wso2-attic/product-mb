@@ -1,4 +1,9 @@
 //noinspection JSUnusedGlobalSymbols
 var onRequest = function () {
-    return {};
+    return {
+           	"alert": {
+           		"success": {},
+           		"danger": {}
+           	}
+           };
 };

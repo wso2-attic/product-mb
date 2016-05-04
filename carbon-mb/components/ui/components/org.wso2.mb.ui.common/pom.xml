@@ -26,31 +26,17 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.mb.ui.management</artifactId>
+    <artifactId>org.wso2.mb.ui.common</artifactId>
 
-    <name>WSO2 MB UI - Management Console Component</name>
+    <name>WSO2 MB UI - Common Component</name>
     <url>http://wso2.org</url>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>org.wso2.mb.ui.base</artifactId>
-            <version>${carbon.mb.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>org.wso2.mb.ui.basicauth</artifactId>
-            <version>${carbon.mb.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>org.wso2.mb.ui.common</artifactId>
-            <version>${carbon.mb.version}</version>
-            <type>zip</type>
-        </dependency>
-    </dependencies>
+    <properties>
+        <import.package>
+            org.wso2.msf4j,
+            org.wso2.carbon.uuf
+        </import.package>
+    </properties>
 
     <build>
         <plugins>
@@ -72,37 +58,7 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-components</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/uuf-components/</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-dependency.tree</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>tree</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>${project.build.directory}/uuf-components/dependency.tree</outputFile>
-                            <verbose>true</verbose>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptor>assembly.xml</descriptor>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
@@ -111,6 +67,9 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
