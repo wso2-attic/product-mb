@@ -56,8 +56,8 @@ public class Subscription implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription other = (org.dna.mqtt.moquette
-                .messaging.spi.impl.subscriptions.Subscription) obj;
+        final org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription other =
+                (org.dna.mqtt.moquette.messaging.spi.impl.subscriptions.Subscription) obj;
         if (this.requestedQos != other.requestedQos) {
             return false;
         }

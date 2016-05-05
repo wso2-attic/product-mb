@@ -65,10 +65,6 @@ public class HawtDBStorageService implements IStorageService {
         }
     }
 
-
-    private static final Logger LOG = LoggerFactory.getLogger(org.dna.mqtt.moquette.messaging.spi.impl
-            .HawtDBStorageService.class);
-
     private MultiIndexFactory multiIndexFactory;
     private PageFileFactory pageFactory;
 
@@ -90,13 +86,20 @@ public class HawtDBStorageService implements IStorageService {
         pageFactory = new PageFileFactory();
         File tmpFile;
         try {
+            
             tmpFile = new File(storeFile);
+            
+            if ((!tmpFile.getParentFile().isDirectory()) && tmpFile.getParentFile().mkdirs()) {
+                logger.error("unable to create : " + tmpFile.getParentFile().toString());
+            }
+            
             boolean newFile = tmpFile.createNewFile();
+            
             if (logger.isDebugEnabled() && !newFile) {
                 logger.debug("HawtDB subscription storage file already exists");
             }
         } catch (IOException ex) {
-            LOG.error(null, ex);
+            logger.error("unable to create " + Server.STORAGE_FILE_PATH, ex);
             throw new MQTTException("Can't create temp file for subscriptions storage [" + storeFile + "]", ex);
         }
         pageFactory.setFile(tmpFile);
@@ -175,7 +178,7 @@ public class HawtDBStorageService implements IStorageService {
     }
 
     public Collection<StoredMessage> searchMatching(IMatchingCondition condition) {
-        LOG.debug("searchMatching scanning all retained messages, presents are {}", retainedStore.size());
+        logger.debug("searchMatching scanning all retained messages, presents are {}", retainedStore.size());
 
         List<StoredMessage> results = new ArrayList<StoredMessage>();
 
@@ -200,7 +203,7 @@ public class HawtDBStorageService implements IStorageService {
         storedEvents.add(convertToStored(evt));
         persistentMessageStore.put(clientID, storedEvents);
         //NB rewind the evt message content
-        LOG.debug("Stored published message for client <{}> on topic <{}>", clientID, evt.getTopic());
+        logger.debug("Stored published message for client <{}> on topic <{}>", clientID, evt.getTopic());
     }
 
     public List<PublishEvent> retrivePersistedPublishes(String clientID) {
@@ -244,15 +247,15 @@ public class HawtDBStorageService implements IStorageService {
     }
 
     public void addNewSubscription(Subscription newSubscription, String clientID) {
-        LOG.debug("addNewSubscription invoked with subscription {} for client {}", newSubscription, clientID);
+        logger.debug("addNewSubscription invoked with subscription {} for client {}", newSubscription, clientID);
         if (!persistentSubscriptions.containsKey(clientID)) {
-            LOG.debug("clientID {} is a newcome, creating it's subscriptions set", clientID);
+            logger.debug("clientID {} is a newcome, creating it's subscriptions set", clientID);
             persistentSubscriptions.put(clientID, new HashSet<Subscription>());
         }
 
         Set<Subscription> subs = persistentSubscriptions.get(clientID);
         if (!subs.contains(newSubscription)) {
-            LOG.debug("updating clientID {} subscriptions set with new subscription", clientID);
+            logger.debug("updating clientID {} subscriptions set with new subscription", clientID);
             //TODO check the subs doesn't contain another subscription to the same topic with different
             Subscription existingSubscription = null;
             for (Subscription scanSub : subs) {
@@ -266,7 +269,7 @@ public class HawtDBStorageService implements IStorageService {
             }
             subs.add(newSubscription);
             persistentSubscriptions.put(clientID, subs);
-            LOG.debug("clientID {} subscriptions set now is {}", clientID, subs);
+            logger.debug("clientID {} subscriptions set now is {}", clientID, subs);
         }
     }
 
@@ -279,22 +282,22 @@ public class HawtDBStorageService implements IStorageService {
         for (Map.Entry<String, Set<Subscription>> entry : persistentSubscriptions) {
             allSubscriptions.addAll(entry.getValue());
         }
-        LOG.debug("retrieveAllSubscriptions returning subs {}", allSubscriptions);
+        logger.debug("retrieveAllSubscriptions returning subs {}", allSubscriptions);
         return allSubscriptions;
     }
 
     public void close() {
-        LOG.debug("closing disk storage");
+        logger.debug("closing disk storage");
         try {
             pageFactory.close();
         } catch (IOException ex) {
-            LOG.error(null, ex);
+            logger.error("unable to close", ex);
         }
     }
 
     /*-------- QoS 2  storage management --------------*/
     public void persistQoS2Message(String publishKey, PublishEvent evt) {
-        LOG.debug("persistQoS2Message store pubKey {}, evt {}", publishKey, evt);
+        logger.debug("persistQoS2Message store pubKey {}, evt {}", publishKey, evt);
         qos2Store.put(publishKey, convertToStored(evt));
     }
 

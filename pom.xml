@@ -51,7 +51,7 @@
     <modules>
         <!--Components-->
         <module>carbon-mb/components/andes</module>
-        <module>carbon-mb/components/mb-ui</module>
+        <module>carbon-mb/components/ui</module>
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
@@ -163,6 +163,18 @@
                 <version>${carbon.hazelcast.feature.version}</version>
                 <type>zip</type>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.uuf</groupId>
+                <artifactId>org.wso2.uuf.core.feature</artifactId>
+                <version>${uuf.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.uuf</groupId>
+                <artifactId>org.wso2.uuf.handlebars.feature</artifactId>
+                <version>${uuf.version}</version>
+                <type>zip</type>
+            </dependency>
 
             <!--Message Broker Dependencies-->
             <dependency>
@@ -184,7 +196,7 @@
 
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>mb-ui</artifactId>
+                <artifactId>ui</artifactId>
                 <version>${carbon.mb.version}</version>
             </dependency>
             <dependency>
@@ -240,12 +252,12 @@
             <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>msf4j-core</artifactId>
-                <version>${carbon.msf4j.version}</version>
+                <version>${msf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>org.wso2.msf4j.feature</artifactId>
-                <version>${carbon.msf4j.version}</version>
+                <version>${msf4j.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
@@ -269,6 +281,49 @@
                 <groupId>org.fusesource.hawtbuf</groupId>
                 <artifactId>hawtbuf</artifactId>
                 <version>${hawtbuf.version}</version>
+            </dependency>
+
+            <!--Dependencies for Testing-->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.agent</artifactId>
+                <classifier>runtime</classifier>
+                <version>${jacoco.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.ant</artifactId>
+                <version>${jacoco.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${jmockit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>${pax.exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-native</artifactId>
+                <version>${pax.exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-testng</artifactId>
+                <version>${pax.exam.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -354,8 +409,8 @@
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
         <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
-        <carbon.msf4j.version>1.0.0</carbon.msf4j.version>
-        <carbon.msf4j.import.version.range>[1.0.0, 2.0.0)</carbon.msf4j.import.version.range>
+        <msf4j.version>1.0.0</msf4j.version>
+        <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
         <rs-api.version>2.0</rs-api.version>
 
        <!--Transport Related Configrations -->
@@ -369,6 +424,21 @@
         <hawtdb.bundle.version>1.6.0</hawtdb.bundle.version>
         <hawtbuf.version>1.9</hawtbuf.version>
         <hawtbuf.bundle.version>1.9.0</hawtbuf.bundle.version>
+
+        <!--Pax Exam Versions-->
+        <pax.exam.version>4.6.0</pax.exam.version>
+        <pax.url.aether.version>1.6.0</pax.url.aether.version>
+        <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
+        <slf4j.api.version>1.7.12</slf4j.api.version>
+        <javax.inject.version>1</javax.inject.version>
+
+        <!-- Unit Test dependency versions-->
+        <testng.version>6.9.4</testng.version>
+        <jacoco.version>0.7.6.201602180812</jacoco.version>
+        <jmockit.version>1.8</jmockit.version>
+
+        <!--UUF-->
+        <uuf.version>1.0.0-SNAPSHOT</uuf.version>
     </properties>
 
     <build>
