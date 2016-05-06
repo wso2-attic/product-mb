@@ -26,23 +26,30 @@ import java.util.List;
  * This implementation provides the base for managing all subscriptions related services.
  */
 public class SubscriptionManagerServiceImpl implements SubscriptionManagerService {
+    
+    private SubscriptionManagementBeans subscriptionManagementBeans;
+    
+    public SubscriptionManagerServiceImpl() {
+        subscriptionManagementBeans = new SubscriptionManagementBeans();
+    }
+    
     @Override
     public List<Subscription> getSubscriptions(String protocol, String subscriptionType, String
             subscriptionName, String destinationName, String active, int offset, int limit)
                                                                                 throws SubscriptionManagerException {
-        return SubscriptionManagementBeans.getInstance().getSubscriptions(protocol, subscriptionType, subscriptionName,
+        return subscriptionManagementBeans.getSubscriptions(protocol, subscriptionType, subscriptionName,
                                                                             destinationName, active, offset, limit);
     }
 
     @Override
     public void closeSubscriptions(String protocol, String subscriptionType, String destinationName)
                                                                                 throws SubscriptionManagerException {
-        SubscriptionManagementBeans.getInstance().closeSubscriptions(protocol, subscriptionType, destinationName);
+        subscriptionManagementBeans.closeSubscriptions(protocol, subscriptionType, destinationName);
     }
 
     @Override
     public void closeSubscription(String protocol, String subscriptionType, String destinationName)
                                                                                 throws SubscriptionManagerException {
-        SubscriptionManagementBeans.getInstance().closeSubscription(protocol, subscriptionType, destinationName);
+        subscriptionManagementBeans.closeSubscription(protocol, subscriptionType, destinationName);
     }
 }

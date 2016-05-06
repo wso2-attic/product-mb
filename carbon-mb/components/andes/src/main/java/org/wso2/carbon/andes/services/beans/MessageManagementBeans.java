@@ -38,25 +38,6 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to message resources.
  */
 public class MessageManagementBeans {
-    private static final Object lock = new Object();
-    private static MessageManagementBeans instance;
-
-
-    /**
-     * Gets the active message managing instance.
-     *
-     * @return A message managing instance.
-     */
-    public static MessageManagementBeans getInstance() {
-        if (null == instance) {
-            synchronized (lock) {
-                if (null == instance) {
-                    instance = new MessageManagementBeans();
-                }
-            }
-        }
-        return instance;
-    }
 
     /**
      * Browse message of a destination using message ID.

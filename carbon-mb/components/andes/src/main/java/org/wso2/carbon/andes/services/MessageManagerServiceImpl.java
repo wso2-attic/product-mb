@@ -27,13 +27,19 @@ import java.util.List;
  */
 public class MessageManagerServiceImpl implements MessageManagerService {
 
+    private MessageManagementBeans messageManagementBeans;
+    
+    public MessageManagerServiceImpl() {
+        messageManagementBeans = new MessageManagementBeans();
+    }
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public List<Message> getMessagesOfDestinationByMessageID(String protocol, String destinationType, String
             destinationName, boolean content, long nextMessageID, int limit) throws MessageManagerException {
-        return MessageManagementBeans.getInstance().getMessagesOfDestinationByMessageID(protocol, destinationType,
+        return messageManagementBeans.getMessagesOfDestinationByMessageID(protocol, destinationType,
                                                                         destinationName, content, nextMessageID, limit);
     }
 
@@ -43,7 +49,7 @@ public class MessageManagerServiceImpl implements MessageManagerService {
     @Override
     public List<Message> getMessagesOfDestinationByOffset(String protocol, String destinationType, String
             destinationName, boolean content, int offset, int limit) throws MessageManagerException {
-        return MessageManagementBeans.getInstance().getMessagesOfDestinationByOffset(protocol, destinationType,
+        return messageManagementBeans.getMessagesOfDestinationByOffset(protocol, destinationType,
                                                                             destinationType, content, offset, limit);
     }
 
@@ -53,7 +59,7 @@ public class MessageManagerServiceImpl implements MessageManagerService {
     @Override
     public Message getMessage(String protocol, String destinationType, String destinationName, String andesMessageID,
                               boolean content) throws MessageManagerException {
-        return MessageManagementBeans.getInstance().getMessage(protocol, destinationType, destinationName,
+        return messageManagementBeans.getMessage(protocol, destinationType, destinationName,
                                                                                             andesMessageID, content);
     }
 
@@ -63,6 +69,6 @@ public class MessageManagerServiceImpl implements MessageManagerService {
     @Override
     public void deleteMessages(String protocol, String destinationType, String destinationName)
                                                                                         throws MessageManagerException {
-        MessageManagementBeans.getInstance().deleteMessages(protocol, destinationType, destinationName);
+        messageManagementBeans.deleteMessages(protocol, destinationType, destinationName);
     }
 }
