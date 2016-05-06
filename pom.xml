@@ -175,6 +175,12 @@
                 <version>${uuf.version}</version>
                 <type>zip</type>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.caching</groupId>
+                <artifactId>org.wso2.carbon.caching.feature</artifactId>
+                <version>${carbon.cache.version}</version>
+                <type>zip</type>
+            </dependency>
 
             <!--Message Broker Dependencies-->
             <dependency>
@@ -439,6 +445,7 @@
 
         <!--UUF-->
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
+        <carbon.cache.version>1.0.0-m1</carbon.cache.version>
     </properties>
 
     <build>
