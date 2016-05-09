@@ -21,7 +21,7 @@ package org.wso2.carbon.andes.transports.mqtt.broker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.transports.mqtt.broker.v311.MqttBroker;
-import org.wso2.carbon.andes.transports.mqtt.protocol.Utils;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.Utils;
 import org.wso2.carbon.andes.transports.server.Broker;
 
 /**

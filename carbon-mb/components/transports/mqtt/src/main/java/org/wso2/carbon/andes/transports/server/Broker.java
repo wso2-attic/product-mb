@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.andes.transports.server;
 
-import org.wso2.carbon.andes.transports.mqtt.MqttChannel;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.AbstractMessage;
+import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 
 /**
  * The abstraction between the protocol layer and the brokering

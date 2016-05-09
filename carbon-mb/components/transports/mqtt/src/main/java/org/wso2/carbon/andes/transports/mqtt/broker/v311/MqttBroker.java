@@ -20,31 +20,31 @@ package org.wso2.carbon.andes.transports.mqtt.broker.v311;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.andes.transports.mqtt.MqttChannel;
 import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.Connect;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.Disconnect;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.PingRequest;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.Publish;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.PublisherAck;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.PublisherComplete;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.PublisherReceived;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.PublisherRelease;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.Subscribe;
-import org.wso2.carbon.andes.transports.mqtt.commands.v300.UnSubscribe;
-import org.wso2.carbon.andes.transports.mqtt.connectors.IConnector;
-import org.wso2.carbon.andes.transports.mqtt.distribution.bridge.AndesConnector;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.AbstractMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.ConnAckMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.ConnectMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.PubAckMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.PubCompMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.PubRecMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.PubRelMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.PublishMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.SubscribeMessage;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.SubscribeMessage.Couple;
-import org.wso2.carbon.andes.transports.mqtt.protocol.messages.UnsubscribeMessage;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.AndesAdaptor;
+import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Connect;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Disconnect;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.PingRequest;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Publish;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.PublisherAck;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.PublisherComplete;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.PublisherReceived;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.PublisherRelease;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Subscribe;
+import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.UnSubscribe;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnAckMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnectMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubAckMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubCompMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRecMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRelMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PublishMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubscribeMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubscribeMessage.Couple;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.UnsubscribeMessage;
 import org.wso2.carbon.andes.transports.server.Broker;
 import org.wso2.carbon.andes.transports.server.BrokerException;
 
@@ -58,7 +58,7 @@ public class MqttBroker implements Broker {
 
     private static final Log log = LogFactory.getLog(MqttBroker.class);
 
-    private IConnector messageStore = new AndesConnector();
+    private MessagingAdaptor messageStore = new AndesAdaptor();
 
     /**
      * <p>

@@ -2,10 +2,10 @@ package org.wso2.carbon.andes.transports.mqtt;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.wso2.carbon.andes.transports.mqtt.handlers.IdleStateEventMqttHandler;
-import org.wso2.carbon.andes.transports.mqtt.handlers.MqttMessagingHandler;
-import org.wso2.carbon.andes.transports.mqtt.protocol.decoders.MQTTDecoder;
-import org.wso2.carbon.andes.transports.mqtt.protocol.encoders.MQTTEncoder;
+import org.wso2.carbon.andes.transports.mqtt.netty.handlers.IdleStateEventMqttHandler;
+import org.wso2.carbon.andes.transports.mqtt.netty.handlers.MqttMessagingHandler;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.decoders.MQTTDecoder;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.encoders.MQTTEncoder;
 import org.wso2.carbon.andes.transports.server.AbstractServer;
 
 /**
