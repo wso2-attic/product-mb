@@ -25,6 +25,7 @@ import org.wso2.carbon.andes.services.types.StoreInformation;
  * This interface provides the base for managing all broker information related services.
  */
 public interface BrokerManagerService {
+
     /**
      * Gets information regarding clustering of the broker. Following information are returned :
      * <p>

@@ -336,6 +336,11 @@
                 <artifactId>pax-exam-testng</artifactId>
                 <version>${pax.exam.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -448,6 +453,7 @@
         <testng.version>6.9.4</testng.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
         <jmockit.version>1.8</jmockit.version>
+        <mockito.version>1.9.5</mockito.version>
 
         <!--UUF-->
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>

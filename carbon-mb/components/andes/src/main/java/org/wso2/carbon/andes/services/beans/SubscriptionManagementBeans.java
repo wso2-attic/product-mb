@@ -36,24 +36,6 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to subscription resources.
  */
 public class SubscriptionManagementBeans {
-    private static final Object lock = new Object();
-    private static SubscriptionManagementBeans instance = new SubscriptionManagementBeans();
-
-    /**
-     * Gets the active subscription managing instance.
-     *
-     * @return A subscription managing instance.
-     */
-    public static SubscriptionManagementBeans getInstance() {
-        if (null == instance) {
-            synchronized (lock) {
-                if (null == instance) {
-                    instance = new SubscriptionManagementBeans();
-                }
-            }
-        }
-        return instance;
-    }
 
     /**
      * Gets subscriptions belonging to a specific protocol type and destination type. The subscriptions can be filtered

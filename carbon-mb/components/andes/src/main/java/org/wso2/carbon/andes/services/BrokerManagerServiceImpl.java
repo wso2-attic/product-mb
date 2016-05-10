@@ -30,17 +30,23 @@ import java.util.List;
  * This implementation provides the base for managing all messages related services.
  */
 public class BrokerManagerServiceImpl implements BrokerManagerService {
-
+    
+    private BrokerManagementBeans brokerManagementBeans;
+    
+    public BrokerManagerServiceImpl() {
+        brokerManagementBeans = new BrokerManagementBeans();
+    }
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public ClusterInformation getClusterInformation() throws BrokerManagerException {
         ClusterInformation clusterInformation = new ClusterInformation();
-        clusterInformation.setClusteringEnabled(BrokerManagementBeans.getInstance().isClusteringEnabled());
-        clusterInformation.setNodeID(BrokerManagementBeans.getInstance().getMyNodeID());
-        clusterInformation.setCoordinatorAddress(BrokerManagementBeans.getInstance().getCoordinatorNodeAddress());
-        List<String> allClusterNodeAddresses = BrokerManagementBeans.getInstance().getAllClusterNodeAddresses();
+        clusterInformation.setClusteringEnabled(brokerManagementBeans.isClusteringEnabled());
+        clusterInformation.setNodeID(brokerManagementBeans.getMyNodeID());
+        clusterInformation.setCoordinatorAddress(brokerManagementBeans.getCoordinatorNodeAddress());
+        List<String> allClusterNodeAddresses = brokerManagementBeans.getAllClusterNodeAddresses();
         List<NodeInformation> nodeInformationList = new ArrayList<>();
         for (String allClusterNodeAddress : allClusterNodeAddresses) {
             String[] nodeDetails = allClusterNodeAddress.split(",");
@@ -65,7 +71,7 @@ public class BrokerManagerServiceImpl implements BrokerManagerService {
     @Override
     public StoreInformation getStoreInformation() throws BrokerManagerException {
         StoreInformation storeInformation = new StoreInformation();
-        storeInformation.setHealthy(BrokerManagementBeans.getInstance().getStoreHealth());
+        storeInformation.setHealthy(brokerManagementBeans.getStoreHealth());
         return storeInformation;
     }
 

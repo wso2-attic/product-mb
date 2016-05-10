@@ -38,24 +38,6 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to queue resources.
  */
 public class DestinationManagementBeans {
-    private static final Object lock = new Object();
-    private static DestinationManagementBeans instance;
-
-    /**
-     * Gets the active queue managing instance.
-     *
-     * @return A queue managing instance.
-     */
-    public static DestinationManagementBeans getInstance() {
-        if (null == instance) {
-            synchronized (lock) {
-                if (null == instance) {
-                    instance = new DestinationManagementBeans();
-                }
-            }
-        }
-        return instance;
-    }
 
     /**
      * Gets the collection of destinations(queues/topics)

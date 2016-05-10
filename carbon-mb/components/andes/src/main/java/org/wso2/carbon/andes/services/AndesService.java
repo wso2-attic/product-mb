@@ -116,7 +116,7 @@ public class AndesService implements Microservice {
         messageManagerService = new MessageManagerServiceImpl();
         brokerManagerService = new BrokerManagerServiceImpl();
     }
-    
+
     /**
      * Gets the protocol types supported by the broker.
      * <p>
@@ -351,7 +351,7 @@ public class AndesService implements Microservice {
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
      * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
      *                        "durable_topic" is considered as a topic.
-     * @param destination     The name of the destination to create.
+     * @param destination     The destination object. {@link Destination#destinationName} is required.
      * @return A JSON representation of the newly created {@link Destination}. <p>
      * <ul>
      *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a {@link Destination} as a JSON response.</li>
@@ -360,7 +360,8 @@ public class AndesService implements Microservice {
      * </ul>
      */
     @POST
-    @Path("/{protocol}/destination-type/{destination-type}/")
+    @Path("/{protocol}/destination-type/{destination-type}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
             value = "Creates a destination.",
@@ -844,6 +845,10 @@ public class AndesService implements Microservice {
         } catch (BrokerManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
+    }
+
+    public void setDestinationManagerService(DestinationManagerService destinationManagerService) {
+        this.destinationManagerService = destinationManagerService;
     }
 
     /**
