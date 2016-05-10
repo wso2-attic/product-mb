@@ -16,6 +16,12 @@
 
 package org.wso2.carbon.andes.services;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import io.netty.handler.codec.http.HttpRequest;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -27,6 +33,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.services.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.services.exceptions.MessageManagerException;
@@ -35,6 +43,7 @@ import org.wso2.carbon.andes.services.types.BrokerInformation;
 import org.wso2.carbon.andes.services.types.ClusterInformation;
 import org.wso2.carbon.andes.services.types.Destination;
 import org.wso2.carbon.andes.services.types.DestinationRolePermission;
+import org.wso2.carbon.andes.services.types.ErrorResponse;
 import org.wso2.carbon.andes.services.types.Message;
 import org.wso2.carbon.andes.services.types.StoreInformation;
 import org.wso2.carbon.andes.services.types.Subscription;
@@ -42,6 +51,8 @@ import org.wso2.msf4j.Microservice;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -51,18 +62,23 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * Andes REST service is a microservice built on top of WSO2 msf4j. The REST service provides the capability of managing
- * resources of the WSO2 message broker.
+ * resources of the WSO2 message broker. Resources being destinations, subscriptions and messages.
  */
 @Component(
         name = "org.wso2.carbon.andes.AndesService",
         service = Microservice.class,
         immediate = true
 )
+
+// TODO : Come up with a way to maintain versions.
+@Api(value = "/mb/v1.0.0/", description = "Endpoint to WSO2 message broker services",
+     produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, protocols = "https")
 @Path("/mb/v1.0.0/")
 public class AndesService implements Microservice {
     private static final Logger log = LoggerFactory.getLogger(AndesService.class);
@@ -100,21 +116,81 @@ public class AndesService implements Microservice {
         messageManagerService = new MessageManagerServiceImpl();
         brokerManagerService = new BrokerManagerServiceImpl();
     }
+    
+    /**
+     * Gets the protocol types supported by the broker.
+     * <p>
+     * curl command :
+     * <pre>
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/protocol-types
+     * </pre>
+     *
+     * @return Return a collection of supported protocol. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a collection of protocols as a
+     *     response.</li>
+     * </ul>
+     */
+    @GET
+    @Path("/protocol-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets supported protocols.",
+            notes = "Gets supported protocols by the broker.",
+            tags = "Protocol",
+            response = String.class,
+            responseContainer = "List")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "List of protocols.")})
+    public List<String> getProtocols() {
+        return Stream.of(ProtocolType.values())
+                                .map(e -> e.name().toLowerCase())
+                                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the destination types supported by the broker.
+     * <p>
+     * curl command :
+     * <pre>
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/destination-types
+     * </pre>
+     *
+     * @return Return a collection of supported destinations. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a collection of destinations as a
+     *     response.</li>
+     * </ul>
+     */
+    @GET
+    @Path("/destination-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets supported destinations.",
+            notes = "Gets supported destinations by the broker.",
+            tags = "Destination",
+            response = String.class,
+            responseContainer = "List")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "List of destinations.")})
+    public List<String> getDestinationTypes() {
+        return Stream.of(DestinationType.values())
+                .map(e -> e.name().toLowerCase())
+                .collect(Collectors.toList());
+    }
 
     /**
      * Gets destinations that belongs to a specific protocol and destination type.
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/topic
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/durable_topic
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue?name=MyQueue&offset=5&limit=3
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/topic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/durable_topic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue?name=MyQueue&offset=5&limit=3
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
      * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
-     * @param destinationName The name of the destination. If "*", all destinations all returned, else destinations that
+     * @param destinationName The name of the destination. If "*", all destinations are returned, else destinations that
      *                        <strong>contains</strong> the value will be returned.
      * @param offset          The starting index of the return destination list for pagination. Default value is 0.
      * @param limit           The number of destinations to return for pagination. Default value is 20.
@@ -129,11 +205,30 @@ public class AndesService implements Microservice {
     @GET
     @Path("/{protocol}/destination-type/{destination-type}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDestinations(@PathParam("protocol") String protocol,
-                                    @PathParam("destination-type") String destinationType,
-                                    @DefaultValue("*") @QueryParam("name") String destinationName,
-                                    @DefaultValue("0") @QueryParam("offset") int offset,
-                                    @DefaultValue("20") @QueryParam("limit") int limit
+    @ApiOperation(
+            value = "Gets destinations.",
+            notes = "Gets destinations that belongs to a specific protocol and destination type. Supports pagination.",
+            tags = "Destination",
+            response = Destination.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful list of destinations.", response = Destination.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getDestinations(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the destination.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination. If \"*\", all destinations are returned, else " +
+                              "destinations that contains the value will be returned.")
+            @DefaultValue("*") @QueryParam("name") String destinationName,
+            @ApiParam(value = "The starting index of the return destination list for pagination.",
+                      allowableValues = "range[1, infinity]")
+            @DefaultValue("0") @QueryParam("offset") int offset,
+            @ApiParam(value = "The number of destinations to return for pagination.",
+                      allowableValues = "range[1, infinity]")
+            @DefaultValue("20") @QueryParam("limit") int limit
     ) {
         try {
             List<Destination> destinations = destinationManagerService.getDestinations(protocol, destinationType,
@@ -149,10 +244,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/durable_topic
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/mqtt/destination-type/topic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/topic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/durable_topic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/mqtt/destination-type/topic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -166,8 +261,20 @@ public class AndesService implements Microservice {
      */
     @DELETE
     @Path("/{protocol}/destination-type/{destination-type}")
-    public Response deleteDestinations(@PathParam("protocol") String protocol,
-                                       @PathParam("destination-type") String destinationType) {
+    @ApiOperation(
+            value = "Deletes destinations.",
+            notes = "Deletes destinations that belongs to a specific protocol and destination type.",
+            tags = "Destination")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Destinations deleted.", response = Destination.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response deleteDestinations(
+            @ApiParam(value = "Protocol for the destination")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the destination")
+            @PathParam("destination-type") String destinationType
+    ) {
         try {
             destinationManagerService.deleteDestinations(protocol, destinationType);
             return Response.status(Response.Status.OK).build();
@@ -181,10 +288,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue/name/MyQueue
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/topic/name/MyTopic
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/durable_topic/name/MyDurable
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/mqtt/destination-type/topic/name/MyMQTTTopic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue/name/MyQueue
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/topic/name/MyTopic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/durable_topic/name/MyDurable
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/mqtt/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -201,9 +308,22 @@ public class AndesService implements Microservice {
     @GET
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDestination(@PathParam("protocol") String protocol,
-                                   @PathParam("destination-type") String destinationType,
-                                   @PathParam("destination-name") String destinationName) {
+    @ApiOperation(
+            value = "Gets a destination.",
+            notes = "Gets a destination that belongs to a specific protocol and destination type.",
+            tags = "Destination")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Destination returned.", response = Destination.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getDestination(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the destination.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination.")
+            @PathParam("destination-name") String destinationName) {
         try {
             Destination newDestination = destinationManagerService.getDestination(protocol, destinationType,
                     destinationName);
@@ -222,16 +342,16 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X POST http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue/name/MyQueue
-     *  curl -v -X POST http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/topic/name/MyTopic
-     *  curl -v -X POST http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/durable_topic/name/MyDurable
-     *  curl -v -X POST http://127.0.0.1:8081/mb/v1.0.0/mqtt/destination-type/topic/name/MyMQTTTopic
+     *  curl -v -X POST http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue
+     *  curl -v -X POST http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/topic
+     *  curl -v -X POST http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/durable_topic
+     *  curl -v -X POST http://127.0.0.1:9443/mb/v1.0.0/mqtt/destination-type/topic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
      * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
      *                        "durable_topic" is considered as a topic.
-     * @param destinationName The name of the destination to create.
+     * @param destination     The name of the destination to create.
      * @return A JSON representation of the newly created {@link Destination}. <p>
      * <ul>
      *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a {@link Destination} as a JSON response.</li>
@@ -240,15 +360,32 @@ public class AndesService implements Microservice {
      * </ul>
      */
     @POST
-    @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}")
+    @Path("/{protocol}/destination-type/{destination-type}/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createDestination(@PathParam("protocol") String protocol,
-                                      @PathParam("destination-type") String destinationType,
-                                      @PathParam("destination-name") String destinationName) {
+    @ApiOperation(
+            value = "Creates a destination.",
+            notes = "Creates a destination that belongs to a specific protocol and destination type.",
+            tags = "Destination",
+            response = Destination.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "New destination successfully created.", response = Destination.class),
+            @ApiResponse(code = 500, message = "Server error on creating destination", response = ErrorResponse.class)})
+    public Response createDestination(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "Destination object.")
+            Destination destination,
+            @Context HttpRequest request) {
         try {
             Destination newDestination = destinationManagerService.createDestination(protocol, destinationType,
-                    destinationName);
-            return Response.status(Response.Status.OK).entity(newDestination).build();
+                    destination.getDestinationName());
+
+            return Response.status(Response.Status.OK)
+                    .entity(newDestination)
+                    .header("Location", request.getUri() + "/name/" + destination.getDestinationName())
+                    .build();
         } catch (DestinationManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
@@ -259,10 +396,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/queue/name/MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/topic/name/MyTopic
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/destination-type/durable_topic/name/MyDurable
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/mqtt/destination-type/topic/name/MyMQTTTopic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/queue/name/MyQueue
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/topic/name/MyTopic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/destination-type/durable_topic/name/MyDurable
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/mqtt/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -279,9 +416,22 @@ public class AndesService implements Microservice {
     @DELETE
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteDestination(@PathParam("protocol") String protocol,
-                                      @PathParam("destination-type") String destinationType,
-                                      @PathParam("destination-name") String destinationName) {
+    @ApiOperation(
+            value = "Deletes a destination.",
+            notes = "Deletes a destination that belongs to a specific protocol and destination type.",
+            tags = "Destination")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Destination deleted.", response = Destination.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response deleteDestination(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination")
+            @PathParam("destination-name") String destinationName) {
         try {
             destinationManagerService.deleteDestination(protocol, destinationType, destinationName);
             return Response.status(Response.Status.NO_CONTENT).build();
@@ -295,10 +445,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/permission/destination-type/queue/name/MyQueue
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/permission/destination-type/topic/name/MyTopic
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/permission/destination-type/durable_topic/name/MyDurable
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/mqtt/permission/destination-type/topic/name/MyMQTTTopic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/permissions/destination-type/queue/name/MyQueue
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/permissions/destination-type/topic/name/MyTopic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/permissions/destination-type/durable_topic/name/MyDurable
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/mqtt/permissions/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -314,7 +464,7 @@ public class AndesService implements Microservice {
      * </ul>
      */
     @GET
-    @Path("/{protocol}/permission/destination-type/{destination-type}/name/{destination-name}")
+    @Path("/{protocol}/permissions/destination-type/{destination-type}/name/{destination-name}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDestinationPermission(@PathParam("protocol") String protocol,
                                              @PathParam("destination-type") String destinationType,
@@ -332,7 +482,7 @@ public class AndesService implements Microservice {
      *  curl -v -X POST \
      *          -H "Content-Type:application/json" \
      *          -d '{"role" : "abc", "consume" : true, "publish" : false}' \
-     *          http://127.0.0.1:8081/mb/v1.0.0/amqp/permission/destination-type/queue/name/MyQueue
+     *          http://127.0.0.1:9443/mb/v1.0.0/amqp/permissions/destination-type/queue/name/MyQueue
      *
      * </pre>
      *
@@ -352,7 +502,7 @@ public class AndesService implements Microservice {
      * </ul>
      */
     @POST
-    @Path("/{protocol}/permission/destination-type/{destination-type}/name/{destination-name}")
+    @Path("/{protocol}/permissions/destination-type/{destination-type}/name/{destination-name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateDestinationPermission(@PathParam("protocol") String protocol,
@@ -371,10 +521,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/queue?destination=MyQueue&offset=2&limit=5
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/topic
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/durable_topic?active=true
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/queue?destination=MyQueue&offset=2&limit=5
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/topic
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/durable_topic?active=true
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/durable_topic?active=false&name=subID01
      * </pre>
      *
      * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
@@ -419,10 +569,10 @@ public class AndesService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/queue?destination=MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:8081/mb/v1.0.0/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/queue?destination=MyQueue
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/topic
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/durable_topic?active=true
+     *  curl -v -X DELETE http://127.0.0.1:9443/mb/v1.0.0/amqp/subscription-type/durable_topic?active=false&name=subID01
      * </pre>
      *
      * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
@@ -620,7 +770,7 @@ public class AndesService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/information/cluster
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/information/cluster
      * </pre>
      *
      * @return Return a {@link ClusterInformation}. <p>
@@ -647,7 +797,7 @@ public class AndesService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/information/store
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/information/store
      * </pre>
      *
      * @return Return a {@link StoreInformation}. <p>
@@ -674,7 +824,7 @@ public class AndesService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:8081/mb/v1.0.0/information/broker
+     *  curl -v http://127.0.0.1:9443/mb/v1.0.0/information/broker
      * </pre>
      *
      * @return Return a {@link BrokerInformation}. <p>

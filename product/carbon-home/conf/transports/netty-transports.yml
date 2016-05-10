@@ -17,7 +17,7 @@ listenerConfigurations:
  -
   id: "msf4j-http"
   host: "127.0.0.1"
-  port: 6969
+  port: 9443
   bossThreadPoolSize: 2
   workerThreadPoolSize: 250
   execHandlerThreadPoolSize: 60

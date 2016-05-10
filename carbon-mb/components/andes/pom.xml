@@ -144,6 +144,10 @@
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-testng</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -260,6 +264,7 @@
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
             org.wso2.msf4j.*;version="${msf4j.import.version.range}",
             org.slf4j.*;version="${slf4j.import.version.range}",
+            io.netty.*;version="${netty.version.range}",
             javax.ws.rs.*,
             javax.management.*,
             javax.jms.*,

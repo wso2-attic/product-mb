@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.andes.services.types;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
 
@@ -24,7 +26,9 @@ import java.util.Date;
 /**
  * This class represent a destination information object.
  */
+@ApiModel(value = "Person", description = "Person resource representation")
 public class Destination {
+    @ApiModelProperty(value = "Person's first name", required = true)
     private long id = 0;
     private String destinationName = null;
     private Date createdDate = null;
