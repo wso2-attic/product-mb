@@ -86,8 +86,9 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * {@inheritDoc}
      */
     @Override
-    public Set<DestinationRolePermission> getDestinationPermission(String protocol, String destinationType,
+    public Set<DestinationRolePermission> getDestinationPermissions(String protocol, String destinationType,
                                                                     String destinationName) {
+        // Null if invalid destination.
         destinationRolePermissions.add(new DestinationRolePermission("admin-role", true, true));
         return destinationRolePermissions;
     }
@@ -96,7 +97,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * {@inheritDoc}
      */
     @Override
-    public DestinationRolePermission updateDestinationPermissions(
+    public DestinationRolePermission createDestinationPermission(
             String protocol, String destinationType,
             String destinationName,
             DestinationRolePermission destinationRolePermission) {
@@ -105,6 +106,15 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
         // Update the permissions for the destination.
         // Return the new list of permissions.
         return new DestinationRolePermission("admin-role", true, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DestinationRolePermission updateDestinationPermission(String protocol, String destinationType, String
+            destinationName, DestinationRolePermission destinationRolePermission) {
+        return null;
     }
 
     /**

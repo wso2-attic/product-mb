@@ -37,7 +37,8 @@ public interface SubscriptionManagerService {
      *                         that <strong>contains</strong> the value are included.
      * @param destinationName  The name of the destination name. If "*", all destinations are included. Else
      *                         destinations that <strong>equals</strong> the value are included.
-     * @param active           Filtering the subscriptions that are active or inactive.
+     * @param active           Filtering the subscriptions that are active or inactive. Supported values = "*", "true"
+     *                         and "false".
      * @param offset           The starting index to return.
      * @param limit            The number of subscriptions to return.
      * @return A list of {@link Subscription}s.
@@ -66,10 +67,10 @@ public interface SubscriptionManagerService {
      * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
      * @param subscriptionType The subscription type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
-     * @param destinationName  The name of the destination to close/unsubscribe. If "*", all destinations are included.
-     *                         Else destinations that <strong>equals</strong> the value are included.
+     * @param subscriptionID   The subscription ID.
+     * @param unsubscribeOnly
      * @throws SubscriptionManagerException
      */
-    void closeSubscription(String protocol, String subscriptionType, String destinationName)
+    void closeSubscription(String protocol, String subscriptionType, String subscriptionID, boolean unsubscribeOnly)
                                                                                     throws SubscriptionManagerException;
 }

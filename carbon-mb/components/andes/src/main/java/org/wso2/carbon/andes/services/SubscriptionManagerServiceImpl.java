@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.services;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.wso2.carbon.andes.services.beans.SubscriptionManagementBeans;
 import org.wso2.carbon.andes.services.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.services.types.Subscription;
@@ -28,11 +29,14 @@ import java.util.List;
 public class SubscriptionManagerServiceImpl implements SubscriptionManagerService {
     
     private SubscriptionManagementBeans subscriptionManagementBeans;
-    
+
     public SubscriptionManagerServiceImpl() {
         subscriptionManagementBeans = new SubscriptionManagementBeans();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Subscription> getSubscriptions(String protocol, String subscriptionType, String
             subscriptionName, String destinationName, String active, int offset, int limit)
@@ -41,15 +45,25 @@ public class SubscriptionManagerServiceImpl implements SubscriptionManagerServic
                                                                             destinationName, active, offset, limit);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void closeSubscriptions(String protocol, String subscriptionType, String destinationName)
                                                                                 throws SubscriptionManagerException {
         subscriptionManagementBeans.closeSubscriptions(protocol, subscriptionType, destinationName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void closeSubscription(String protocol, String subscriptionType, String destinationName)
-                                                                                throws SubscriptionManagerException {
-        subscriptionManagementBeans.closeSubscription(protocol, subscriptionType, destinationName);
+    public void closeSubscription(String protocol, String subscriptionType, String subscriptionID,
+                                  boolean unsubscribeOnly) throws SubscriptionManagerException {
+        if (unsubscribeOnly) {
+            throw new NotImplementedException();
+        } else {
+            subscriptionManagementBeans.closeSubscription(protocol, subscriptionType, subscriptionID);
+        }
     }
 }

@@ -81,10 +81,23 @@ public interface DestinationManagerService {
      * @param protocol        The protocol type matching for the destination type. Example : amqp, mqtt.
      * @param destinationType The destination type matching for the destination. Example : queue, topic, durable_topic.
      * @param destinationName The name of the destination.
-     * @return A set of {@link DestinationRolePermission}s.
+     * @return A set of {@link DestinationRolePermission}s. Null if invalid destination.
      */
-    Set<DestinationRolePermission> getDestinationPermission(String protocol, String destinationType, String
+    Set<DestinationRolePermission> getDestinationPermissions(String protocol, String destinationType, String
             destinationName);
+
+    /**
+     * Create permissions on a destination.
+     *
+     * @param protocol                   The protocol type matching for the destination type. Example : amqp, mqtt.
+     * @param destinationType            The destination type matching for the destination. Example : queue, topic,
+     *                                   durable_topic.
+     * @param destinationName            The name of the destination.
+     * @param destinationRolePermission  New permission.
+     * @return Newly created permission.
+     */
+    DestinationRolePermission createDestinationPermission(String protocol, String destinationType, String
+            destinationName, DestinationRolePermission destinationRolePermission);
 
     /**
      * Updates permissions on a destination.
@@ -93,11 +106,12 @@ public interface DestinationManagerService {
      * @param destinationType            The destination type matching for the destination. Example : queue, topic,
      *                                   durable_topic.
      * @param destinationName            The name of the destination.
-     * @param destinationRolePermissions New/Updated permissions.
-     * @return List of all the permissions for the destination.
+     * @param destinationRolePermission  Updated permission.
+     * @return Updated permission.
      */
-    DestinationRolePermission updateDestinationPermissions(String protocol, String destinationType, String
-            destinationName, DestinationRolePermission destinationRolePermissions);
+    DestinationRolePermission updateDestinationPermission(String protocol, String destinationType,
+                                                          String destinationName,
+                                                          DestinationRolePermission destinationRolePermission);
 
     /**
      * Deletes a destination.
@@ -109,5 +123,4 @@ public interface DestinationManagerService {
      */
     void deleteDestination(String protocol, String destinationType, String destinationName)
                                                                                     throws DestinationManagerException;
-
 }

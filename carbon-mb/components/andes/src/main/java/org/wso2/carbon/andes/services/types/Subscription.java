@@ -16,20 +16,35 @@
 
 package org.wso2.carbon.andes.services.types;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Representation class a subscription.
  */
+@ApiModel(value = "Subscription", description = "The structure for a subscription.")
 public class Subscription {
+    @ApiModelProperty(value = "The unique identifier for a subscription.")
     private String subscriptionIdentifier;
+    @ApiModelProperty(value = "Routing key of the binding to whom subscription is made.")
     private String subscribedQueueOrTopicName;
+    @ApiModelProperty(value = "Exchange subscribed queue is bound.")
     private String subscriberQueueBoundExchange;
+    @ApiModelProperty(value = "Subscribed queue name.")
     private String subscriberQueueName;
+    @ApiModelProperty(value = ".")
     private String destination;
+    @ApiModelProperty(value = "Whether subscribed to a durable queue/binding.")
     private boolean isDurable;
+    @ApiModelProperty(value = "Whether the subscription is active or not..")
     private boolean isActive;
+    @ApiModelProperty(value = "The number of messages to be delivered to the subscription.")
     private int numberOfMessagesRemainingForSubscriber;
+    @ApiModelProperty(value = "The node ID which the subscription is in.")
     private String subscriberNodeAddress;
+    @ApiModelProperty(value = "The protocol type for which the message belongs to.")
     private String protocolType;
+    @ApiModelProperty(value = "The destination type for which the message belongs to.")
     private String destinationType;
 
     public String getSubscriptionIdentifier() {

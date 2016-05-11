@@ -16,15 +16,26 @@
 
 package org.wso2.carbon.andes.services.types;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
  * This class represent a cluster information object.
  */
+@ApiModel(value = "Cluster Information", description = "Contains clustering related information and it's member " +
+                                                       "details.")
 public class ClusterInformation {
+    @ApiModelProperty(value = "Whether clustering is enabled for the current node.")
     private boolean isClusteringEnabled;
+    @ApiModelProperty(value = "The Node ID for the current node. Modifiable via conf/broker.xml")
     private String nodeID;
+    @ApiModelProperty(value = "The coordinator node's hostname and port used for clustering. " +
+                              "Example : 123.234.345.456:888")
     private String coordinatorAddress;
+    @ApiModelProperty(value = "Hostname and port of all the member's in the cluster. The port refers to the " +
+                              "clustering port.")
     private List<NodeInformation> nodeAddresses;
 
     public boolean isClusteringEnabled() {
