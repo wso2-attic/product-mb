@@ -16,15 +16,15 @@
 
 package org.wso2.carbon.andes.services.types;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * This class represent a error object.
  */
 @ApiModel(value = "Error", description = "Represents an error response.")
 public class ErrorResponse {
-
     @ApiModelProperty(value = "Title of the error", required = true)
     private String title;
     @ApiModelProperty(value = "Error code", required = true)

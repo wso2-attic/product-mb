@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.andes.services.types;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
 
@@ -26,19 +26,25 @@ import java.util.Date;
 /**
  * This class represent a destination information object.
  */
-@ApiModel(value = "Person", description = "Person resource representation")
+@ApiModel(value = "Destination", description = "A destination representation which message can be pub/sub.")
 public class Destination {
-    @ApiModelProperty(value = "Person's first name", required = true)
+    @ApiModelProperty(value = "ID of the destination.")
     private long id = 0;
+    @ApiModelProperty(value = "Name of the destination.", required = true)
     private String destinationName = null;
+    @ApiModelProperty(value = "The created date of the destination.")
     private Date createdDate = null;
+    @ApiModelProperty(value = "The type of the destination.")
     private DestinationType destinationType = null;
+    @ApiModelProperty(value = "The type of the protocol.")
     private ProtocolType protocolType = null;
+    @ApiModelProperty(value = "The message count for the destination.")
     private long messageCount = 0;
+    @ApiModelProperty(value = "Whether the destination is durable.")
     private boolean isDurable = false;
-
-    //TODO : Use user object from user core
+    @ApiModelProperty(value = "The owner's username.")
     private String owner = null;
+    @ApiModelProperty(value = "The subscription count for the destination.")
     private int subscriptionCount;
 
     public long getId() {
