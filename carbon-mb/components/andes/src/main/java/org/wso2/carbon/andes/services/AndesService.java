@@ -717,10 +717,10 @@ public class AndesService implements Microservice {
     @Path("/{protocol}/subscription-type/{subscription-type}")
     @ApiOperation(
             value = "Close subscriptions.",
-            notes = "Gets subscriptions that belongs to a specific protocol and subscription type.",
+            notes = "Closes subscriptions that belongs to a specific protocol and subscription type.",
             tags = "Subscriptions")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Subscription successfully close.", response = Subscription.class),
+        @ApiResponse(code = 200, message = "Subscriptions successfully close.", response = Subscription.class),
         @ApiResponse(code = 400, message = "Invalid protocol or subscription type.", response = ErrorResponse.class),
         @ApiResponse(code = 404, message = "Destinations not found.", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
@@ -734,7 +734,7 @@ public class AndesService implements Microservice {
             @DefaultValue("*") @QueryParam("destination") String destinationName,
             @DefaultValue("false") @QueryParam("unsubscribe-only") boolean unsubscribeOnly) {
         try {
-            subscriptionManagerService.closeSubscriptions(protocol, subscriptionType, destinationName);
+            subscriptionManagerService.closeSubscriptions(protocol, subscriptionType, destinationName, unsubscribeOnly);
             return Response.status(Response.Status.OK).build();
         } catch (SubscriptionManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
@@ -764,13 +764,26 @@ public class AndesService implements Microservice {
      */
     @DELETE
     @Path("/{protocol}/subscription-type/{subscription-type}/subscription-id/{subscription-id}")
-    public Response closeSubscription(@PathParam("protocol") String protocol,
-                                      @PathParam("subscription-type") String subscriptionType,
-                                      @PathParam("subscription-id") String subscriptionID,
-                                      @DefaultValue("false") @QueryParam("unsubscribe-only") boolean unsubscribeOnly) {
+    @ApiOperation(
+            value = "Close subscription.",
+            notes = "Closes subscription that belongs to a specific protocol and subscription type.",
+            tags = "Subscriptions")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Subscription successfully close.", response = Subscription.class),
+        @ApiResponse(code = 400, message = "Invalid protocol or subscription type.", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Subscription not found.", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response closeSubscription(
+            @ApiParam(value = "Protocol for the subscription.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "The type of subscription.")
+            @PathParam("subscription-type") String subscriptionType,
+            @ApiParam(value = "The subscription ID.")
+            @PathParam("subscription-id") String subscriptionID,
+            @DefaultValue("false") @QueryParam("unsubscribe-only") boolean unsubscribeOnly) {
         try {
             subscriptionManagerService.closeSubscription(protocol, subscriptionType, subscriptionID,
-                    false);
+                    unsubscribeOnly);
             return Response.status(Response.Status.OK).build();
         } catch (SubscriptionManagerException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
@@ -808,12 +821,31 @@ public class AndesService implements Microservice {
     @GET
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}/messages")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets message by message ID.",
+            notes = "Gets message that belongs to a specific protocol,destination type and destination name. " +
+                    "Supports pagination.",
+            tags = "Messages",
+            response = Message.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful list of messages.", response = Message.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
     public Response getMessagesOfDestinationByMessageID(
+            @ApiParam(value = "Protocol for the message.")
             @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the message.")
             @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination of the message.")
             @PathParam("destination-name") String destinationName,
+            @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
             @DefaultValue("false") @QueryParam("content") boolean content,
+            @ApiParam(value = "The starting message ID to return from.")
             @DefaultValue("0") @QueryParam("next-message-id") long nextMessageID,
+            @ApiParam(value = "The number of messages to return for pagination.",
+                      allowableValues = "range[1, infinity]")
             @DefaultValue("100") @QueryParam("limit") int limit) {
         try {
             List<Message> messages = messageManagerService.getMessagesOfDestinationByMessageID(protocol,
@@ -855,12 +887,32 @@ public class AndesService implements Microservice {
     @GET
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}/messages")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMessagesOfDestinationByOffset(@PathParam("protocol") String protocol,
-                                                     @PathParam("destination-type") String destinationType,
-                                                     @PathParam("destination-name") String destinationName,
-                                                     @DefaultValue("false") @QueryParam("content") boolean content,
-                                                     @DefaultValue("0") @QueryParam("offset") int offset,
-                                                     @DefaultValue("100") @QueryParam("limit") int limit) {
+    @ApiOperation(
+            value = "Gets message by offset.",
+            notes = "Gets message that belongs to a specific protocol,destination type and destination name. " +
+                    "Supports pagination.",
+            tags = "Messages",
+            response = Message.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful list of messages.", response = Message.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getMessagesOfDestinationByOffset(
+            @ApiParam(value = "Protocol for the message.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the message.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination of the message.")
+            @PathParam("destination-name") String destinationName,
+            @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
+            @DefaultValue("false") @QueryParam("content") boolean content,
+            @ApiParam(value = "Starting index of the messages to return.")
+            @DefaultValue("0") @QueryParam("offset") int offset,
+            @ApiParam(value = "The number of messages to return for pagination.",
+                      allowableValues = "range[1, infinity]")
+            @DefaultValue("100") @QueryParam("limit") int limit) {
         try {
             List<Message> messages = messageManagerService.getMessagesOfDestinationByOffset(protocol,
                     destinationType, destinationName, content, offset, limit);
@@ -897,11 +949,29 @@ public class AndesService implements Microservice {
     @GET
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}/messages/{message-id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMessage(@PathParam("protocol") String protocol,
-                               @PathParam("destination-type") String destinationType,
-                               @PathParam("destination-name") String destinationName,
-                               @PathParam("message-id") String andesMessageID,
-                               @DefaultValue("false") @QueryParam("content") boolean content) {
+    @ApiOperation(
+            value = "Gets a message.",
+            notes = "Gets a message using message ID.",
+            tags = "Messages",
+            response = Message.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful received message.", response = Message.class),
+            @ApiResponse(code = 400, message = "Invalid protocol,destination type or destination name.",
+                         response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Message not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getMessage(
+            @ApiParam(value = "Protocol for the message.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the message.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination of the message.")
+            @PathParam("destination-name") String destinationName,
+            @ApiParam(value = "The andes message ID.")
+            @PathParam("message-id") String andesMessageID,
+            @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
+            @DefaultValue("false") @QueryParam("content") boolean content) {
         try {
             Message message = messageManagerService.getMessage(protocol, destinationType, destinationName,
                     andesMessageID, content);
@@ -934,9 +1004,22 @@ public class AndesService implements Microservice {
      */
     @DELETE
     @Path("/{protocol}/destination-type/{destination-type}/name/{destination-name}/messages")
-    public Response deleteMessages(@PathParam("protocol") String protocol,
-                                   @PathParam("destination-type") String destinationType,
-                                   @PathParam("destination-name") String destinationName) {
+    @ApiOperation(
+            value = "Deletes/Purge message.",
+            notes = "Deletes/Purge message belonging to a specific destination.",
+            tags = "Messages")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Messages purged successfully.", response = Message.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response deleteMessages(
+            @ApiParam(value = "Protocol for the message.")
+            @PathParam("protocol") String protocol,
+            @ApiParam(value = "Destination type for the message.")
+            @PathParam("destination-type") String destinationType,
+            @ApiParam(value = "The name of the destination of the message.")
+            @PathParam("destination-name") String destinationName) {
         try {
             messageManagerService.deleteMessages(protocol, destinationType, destinationName);
             return Response.status(Response.Status.NO_CONTENT).build();
