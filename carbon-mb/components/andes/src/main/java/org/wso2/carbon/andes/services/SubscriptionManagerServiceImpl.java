@@ -49,9 +49,13 @@ public class SubscriptionManagerServiceImpl implements SubscriptionManagerServic
      * {@inheritDoc}
      */
     @Override
-    public void closeSubscriptions(String protocol, String subscriptionType, String destinationName)
-                                                                                throws SubscriptionManagerException {
-        subscriptionManagementBeans.closeSubscriptions(protocol, subscriptionType, destinationName);
+    public void closeSubscriptions(String protocol, String subscriptionType, String destinationName, boolean
+            unsubscribeOnly) throws SubscriptionManagerException {
+        if (unsubscribeOnly) {
+            throw new NotImplementedException();
+        } else {
+            subscriptionManagementBeans.closeSubscriptions(protocol, subscriptionType, destinationName);
+        }
     }
 
     /**

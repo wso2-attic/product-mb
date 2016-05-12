@@ -56,9 +56,10 @@ public interface SubscriptionManagerService {
      *                         durable_topic.
      * @param destinationName  The name of the destination to close/unsubscribe. If "*", all destinations are included.
      *                         Else destinations that <strong>contains</strong> the value are included.
+     * @param unsubscribeOnly
      * @throws SubscriptionManagerException
      */
-    void closeSubscriptions(String protocol, String subscriptionType, String destinationName)
+    void closeSubscriptions(String protocol, String subscriptionType, String destinationName, boolean unsubscribeOnly)
                                                                                     throws SubscriptionManagerException;
 
     /**
