@@ -40,6 +40,11 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     private String readMessagesFromFilePath = null;
 
     /**
+     * Message content as a string which would be used when publishing.
+     */
+    private String messagesContentToSet = null;
+
+    /**
      * JMS message type. Text will be used as default message type.
      */
     private JMSMessageType jmsMessageType = JMSMessageType.TEXT;
@@ -191,6 +196,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
             numberOfMessagesToSend = config.getLong("base.publisher.numberOfMessagesToSend", 10L);
             jmsMessageExpiryTime = config.getLong("base.publisher.jmsMessageExpiryTime", 0L);
             readMessagesFromFilePath = config.getString("base.publisher.readMessagesFromFilePath", null);
+            messagesContentToSet = config.getString("base.publisher.messagesContentToSet", null);
             jmsMessageType = JMSMessageType.valueOf(config.getString("base.publisher.jmsMessageType", "TEXT"));
             filePathToWritePublishedMessages = config.getString("base.publisher.filePathToWritePublishedMessages", null);
             JMSHeaderProperties = new ArrayList<JMSHeaderProperty>(5);
@@ -391,6 +397,7 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
     @Override
     public String toString() {
         return super.toString() +
+               "MessagesContentToSet=" + this.messagesContentToSet + "\n" +
                "ReadMessagesFromFilePath=" + this.readMessagesFromFilePath + "\n" +
                "JmsMessageType=" + this.jmsMessageType + "\n" +
                "NumberOfMessagesToSend=" + this.numberOfMessagesToSend + "\n" +
@@ -422,5 +429,23 @@ public class AndesJMSPublisherClientConfiguration extends AndesJMSClientConfigur
 
     public List<JMSHeaderProperty> getJMSHeaderProperties() {
         return JMSHeaderProperties;
+    }
+
+    /**
+     * Get the message content to send
+     *
+     * @return The message content to send
+     */
+    public String getMessagesContentToSet() {
+        return messagesContentToSet;
+    }
+
+    /**
+     * Set the message content to send
+     *
+     * @param messagesContentToSet The message content to send
+     */
+    public void setMessagesContentOfConfiguration(String messagesContentToSet) {
+        this.messagesContentToSet = messagesContentToSet;
     }
 }

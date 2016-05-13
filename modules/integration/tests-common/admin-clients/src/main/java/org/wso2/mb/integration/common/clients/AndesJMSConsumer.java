@@ -486,6 +486,8 @@ public class AndesJMSConsumer extends AndesJMSBase
                     AndesClientUtils
                             .writeReceivedMessagesToFile(textMessage.getText(), this.consumerConfig
                                     .getFilePathToWriteReceivedMessages());
+                } else {
+                    this.consumerConfig.addReceivedMessage(textMessage.getText());
                 }
             }
 

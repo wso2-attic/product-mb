@@ -44,7 +44,7 @@ import java.util.Random;
 /**
  * This class contains tests for MQTT message content validity, with compression.
  */
-public class BasicSendCompressReceiveTestCase extends MBIntegrationBaseTest {
+public class MQTTLZ4CompressionTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initialize super class.
@@ -91,7 +91,7 @@ public class BasicSendCompressReceiveTestCase extends MBIntegrationBaseTest {
     public void performBasicSendCompressReceiveTestCase() throws MqttException, XPathExpressionException,
             IOException {
 
-        String topic = "BasicSendCompressReceiveTestCase";
+        String topic = "MQTTLZ4CompressionTestCase";
         int noOfSubscribers = 1;
         int noOfPublishers = 1;
         int noOfMessages = 1;
