@@ -29,10 +29,19 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.andes.kernel.Andes;
-import org.wso2.carbon.andes.transports.config.NettyServerContext;
+import org.wso2.carbon.andes.transports.config.MqttSecuredTransportProperties;
+import org.wso2.carbon.andes.transports.config.MqttTransportConfiguration;
+import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
 import org.wso2.carbon.andes.transports.config.YAMLTransportConfigurationBuilder;
+import org.wso2.carbon.andes.transports.mqtt.MqttSSLServer;
+import org.wso2.carbon.andes.transports.mqtt.MqttServer;
+import org.wso2.carbon.andes.transports.mqtt.Util;
+import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.CarbonRuntime;
+import org.wso2.carbon.kernel.startupresolver.CapabilityProvider;
+import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
+
 
 /**
  * <p>
@@ -44,19 +53,29 @@ import org.wso2.carbon.kernel.transports.CarbonTransport;
  * </p>
  */
 @Component(
-        name = "org.wso2.carbon.andes.mqtt.internal.NettyTransportServiceComponent",
+        name = "org.wso2.carbon.andes.mqtt.internal.MqttTransportServiceComponent",
         immediate = true,
-        property = {"component-key=mqtt-transport"}
+        service = RequiredCapabilityListener.class,
+        property = {
+                "capability-name=org.wso2.andes.kernel.Andes",
+                "component-key=mqtt-server"
+        }
+
 )
 @SuppressWarnings("unused")
-public class NettyTransportServiceComponent {
+public class MqttTransportServiceComponent implements RequiredCapabilityListener, CapabilityProvider {
 
-    private static final Log log = LogFactory.getLog(NettyTransportServiceComponent.class);
+    private static final Log log = LogFactory.getLog(MqttTransportServiceComponent.class);
 
     /**
      * Provides the name of the protocol addressed by the transport
      */
     private static final String PROTOCOL = "MQTT";
+
+    /**
+     * Holds the number of transports which will be initialized through the service component
+     */
+    private static final int TRANSPORT_COUNT = 2;
 
 
     /**
@@ -64,7 +83,7 @@ public class NettyTransportServiceComponent {
      *
      * @param ctx server context which holds server initialization information
      */
-    private void processConfiguration(NettyServerContext ctx) {
+    private void processConfiguration(MqttTransportProperties ctx) {
         //If an offset has being defined at carbon level, we need to add that here
         int offset = MqttTransportDataHolder.getInstance().getCarbonRuntime().getConfiguration().getPortsConfig()
                 .getOffset();
@@ -72,7 +91,7 @@ public class NettyTransportServiceComponent {
     }
 
     /**
-     * This is the activation method of NettyTransportServiceComponent. This will be called when its references are
+     * This is the activation method of MqttTransportServiceComponent. This will be called when its references are
      * satisfied.
      *
      * @param bundleContext the bundle context instance of this bundle.
@@ -81,20 +100,36 @@ public class NettyTransportServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
 
-        NettyServerContext nettyServerContext = YAMLTransportConfigurationBuilder.readConfiguration();
-        processConfiguration(nettyServerContext);
-        nettyServerContext.setProtocol(PROTOCOL);
+        MqttTransportConfiguration mqttTransportConfiguration = YAMLTransportConfigurationBuilder.readConfiguration();
+
+        MqttTransportDataHolder.getInstance().setContext(bundleContext);
+        //Default MQTT transport
+        MqttTransportProperties mqttTransportProperties = mqttTransportConfiguration.getMqttTransportProperties();
+        processConfiguration(mqttTransportProperties);
+        mqttTransportProperties.setProtocol(PROTOCOL);
+        Server mqttServer = new MqttServer();
+
+        //Secured transport properties
+        MqttSecuredTransportProperties mqttSecuredTransportProperties = mqttTransportConfiguration
+                .getMqttSecuredTransportProperties();
+        processConfiguration(mqttSecuredTransportProperties);
+        mqttSecuredTransportProperties.setProtocol(PROTOCOL);
+
+        MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
 
         //Creates a transport from the given configuration
-        MqttTransport transport = new MqttTransport(nettyServerContext);
+        MqttTransport transport = new MqttTransport(mqttTransportProperties, mqttServer);
+        MqttTransport securedTransport = new MqttTransport(mqttSecuredTransportProperties, securedMqttServer);
+
 
         bundleContext.registerService(CarbonTransport.class, transport, null);
+        bundleContext.registerService(CarbonTransport.class, securedTransport, null);
 
-        log.info("MQTT Server Component Activate");
+        log.info("MQTT Server Component Activated");
     }
 
     /**
-     * This is the deactivation method of NettyTransportServiceComponent. This will be called when this component
+     * This is the deactivation method of MqttTransportServiceComponent. This will be called when this component
      * is being stopped or references are satisfied during runtime.
      *
      * @throws Exception this will be thrown if an issue occurs while executing the de-activate method
@@ -102,7 +137,7 @@ public class NettyTransportServiceComponent {
     @Deactivate
     protected void stop() throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("Stopping NettyTransportServiceComponent");
+            log.debug("Stopping MqttTransportServiceComponent");
         }
     }
 
@@ -156,4 +191,14 @@ public class NettyTransportServiceComponent {
         MqttTransportDataHolder.getInstance().setAndesInstance(null);
     }
 
+    @Override
+    public void onAllRequiredCapabilitiesAvailable() {
+        MqttTransportDataHolder.getInstance().getContext().registerService(MqttTransportServiceComponent.class, this,
+                null);
+    }
+
+    @Override
+    public int getCount() {
+        return TRANSPORT_COUNT;
+    }
 }

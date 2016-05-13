@@ -23,39 +23,40 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Holds the configuration required for server startup
+ * Holds information relevant for MQTT secured server
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NettyServerContext {
+public class MqttSecuredTransportProperties extends MqttTransportProperties {
     /**
-     * holds the port of the server
+     * Specifies the path of the trust store
      */
     @XmlAttribute
-    private int port = 1883;
+    private String trustStoreFile;
 
     /**
-     * holds the host name of the server
+     * Specifies the password of the trust store
      */
     @XmlAttribute
-    private String host = "localhost";
+    private String trustStorePass;
 
     /**
-     * number of acceptance threads
+     * Specifies the path of the key store
      */
+
     @XmlAttribute
-    private int acceptanceThreads = 0;
+    private String keyStoreFile;
 
     /**
-     * number of worker threads
+     * Specifies the password of the key store
      */
     @XmlAttribute
-    private int workerThreads = 0;
+    private String keyStorePass;
 
     /**
-     * Defines the unique id for the transport
+     * Specifies the password of the certificate
      */
     @XmlAttribute
-    private String id = "mqtt";
+    private String certPass;
 
     /**
      * Holds the name of the protocol
@@ -70,42 +71,44 @@ public class NettyServerContext {
         this.protocol = protocol;
     }
 
-    public String getHost() {
-        return host;
+    public String getTrustStoreFile() {
+        return trustStoreFile;
     }
 
-    public int getAcceptanceThreads() {
-        return acceptanceThreads;
+    public void setTrustStoreFile(String trustStoreFile) {
+        this.trustStoreFile = trustStoreFile;
     }
 
-    public void setAcceptanceThreads(int acceptanceThreads) {
-        this.acceptanceThreads = acceptanceThreads;
+    public String getTrustStorePass() {
+        return trustStorePass;
     }
 
-    public int getWorkerThreads() {
-        return workerThreads;
+    public void setTrustStorePass(String trustStorePass) {
+        this.trustStorePass = trustStorePass;
     }
 
-    public void setWorkerThreads(int workerThreads) {
-        this.workerThreads = workerThreads;
+    public String getKeyStoreFile() {
+        return keyStoreFile;
     }
 
-    public void setHost(String host) {
-
-        this.host = host;
+    public void setKeyStoreFile(String keyStoreFile) {
+        this.keyStoreFile = keyStoreFile;
     }
 
-    public int getPort() {
-        return port;
-    }
-    public void setPort(int port) {
-        this.port = port;
-    }
-    public String getId() {
-        return id;
+    public String getKeyStorePass() {
+        return keyStorePass;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setKeyStorePass(String keyStorePass) {
+        this.keyStorePass = keyStorePass;
     }
+
+    public String getCertPass() {
+        return certPass;
+    }
+
+    public void setCertPass(String certPass) {
+        this.certPass = certPass;
+    }
+
 }

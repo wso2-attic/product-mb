@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.andes.transports.server;
 
-import org.wso2.carbon.andes.transports.config.NettyServerContext;
+import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
 
 /**
  * Creates a server and allows it to be started and stopped
@@ -30,7 +30,7 @@ public interface Server {
      * @param ctx the set of properties used to start the server i.e host, port
      * @throws BrokerException occurs when netty transport is not initialized properly
      */
-    void start(NettyServerContext ctx) throws BrokerException;
+    void start(MqttTransportProperties ctx) throws BrokerException;
 
     /**
      * Stops a given server instance gracefully

@@ -85,17 +85,6 @@
             <groupId>org.wso2.orbit.org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.fusesource.hawtdb</groupId>
-            <artifactId>hawtdb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.hawtbuf</groupId>
-            <artifactId>hawtbuf</artifactId>
-        </dependency>
-        -->
-
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging</artifactId>
@@ -106,8 +95,6 @@
     <properties>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <netty-all.version>4.0.23.wso2v1</netty-all.version>
-
-
         <private.package>org.wso2.carbon.andes.mqtt.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.mqtt.internal,
@@ -122,9 +109,14 @@
             org.apache.commons.logging;version="[1.1.1, 1.2.0]",
             com.google.common.util.concurrent;version="[19.0.0, 20.0.0]",
             io.netty.*;version="[4.0.23.wso2v1, 4.1.0]",
-            org.yaml.snakeyaml.*;version="[1.16.0, 2.0.0)"
+            org.yaml.snakeyaml.*;version="[1.16.0, 2.0.0)",
+            javax.net.ssl.*;version="[0.0.0, 1.0.0)"
         </import.package>
-
+        <provide.capability>
+            osgi.service;effective:=active;
+            objectClass="org.wso2.carbon.andes.transports.mqtt.internal.MqttTransportServiceComponent";
+            dependent-component-key="carbon-transport-mgt"
+        </provide.capability>
     </properties>
 
 </project>

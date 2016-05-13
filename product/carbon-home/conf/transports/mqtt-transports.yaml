@@ -14,7 +14,22 @@
 #   limitations under the License.
 ################################################################################
 
-host: localhost
-port: 1883
-acceptanceThreads: 0
-workerThreads: 0
+mqttTransportProperties:
+
+ host: localhost
+ port: 1883
+ acceptanceThreads: 0
+ workerThreads: 0
+ id: mqtt
+mqttSecuredTransportProperties:
+
+ host: localhost
+ port: 8833
+ acceptanceThreads: 0
+ workerThreads: 0
+ id: mqttSSL
+ trustStoreFile: "resources/security/wso2carbon.jks"
+ trustStorePass: "wso2carbon"
+ keyStoreFile: "resources/security/wso2carbon.jks"
+ keyStorePass: "wso2carbon"
+ certPass: "wso2carbon"

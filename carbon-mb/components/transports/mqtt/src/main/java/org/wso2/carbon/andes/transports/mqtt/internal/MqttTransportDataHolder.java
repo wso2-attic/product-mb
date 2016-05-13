@@ -18,13 +18,15 @@
 
 package org.wso2.carbon.andes.transports.mqtt.internal;
 
+
+import org.osgi.framework.BundleContext;
 import org.wso2.andes.kernel.Andes;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 
 /**
  * MqttTransportDataHolder to holds instances referenced through org.wso2.carbon.helloworld.internal
- * .NettyTransportServiceComponent.
+ * .MqttTransportServiceComponent.
  *
  * @since 3.5.0-SNAPSHOT
  */
@@ -33,6 +35,7 @@ public class MqttTransportDataHolder {
     private static MqttTransportDataHolder instance = new MqttTransportDataHolder();
     private CarbonRuntime carbonRuntime;
     private Andes andesInstance;
+    private BundleContext context;
 
     private MqttTransportDataHolder() {
 
@@ -58,9 +61,9 @@ public class MqttTransportDataHolder {
 
     /**
      * This method is for setting the CarbonRuntime service. This method is used by
-     * NettyTransportServiceComponent.
+     * MqttTransportServiceComponent.
      *
-     * @param carbonRuntime The reference being passed through NettyTransportServiceComponent
+     * @param carbonRuntime The reference being passed through MqttTransportServiceComponent
      */
     public void setCarbonRuntime(CarbonRuntime carbonRuntime) {
         this.carbonRuntime = carbonRuntime;
@@ -68,5 +71,13 @@ public class MqttTransportDataHolder {
 
     public void setAndesInstance(Andes andesInstance) {
         this.andesInstance = andesInstance;
+    }
+
+    public BundleContext getContext() {
+        return context;
+    }
+
+    public void setContext(BundleContext context) {
+        this.context = context;
     }
 }

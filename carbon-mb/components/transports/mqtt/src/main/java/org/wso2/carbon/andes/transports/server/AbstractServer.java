@@ -31,7 +31,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.andes.transports.config.NettyServerContext;
+import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
 
 
 /**
@@ -67,9 +67,9 @@ public abstract class AbstractServer implements Server {
      * Starts the MQTT server
      *
      * @param ctx the property values required for the server startup i.e hostname/port
-     * @see NettyServerContext
+     * @see MqttTransportProperties
      */
-    public void start(NettyServerContext ctx) throws BrokerException {
+    public void start(MqttTransportProperties ctx) throws BrokerException {
         if (log.isDebugEnabled()) {
             log.debug("Initiating netty transport service with " + ctx.getHost() + ":" + ctx.getPort());
         }
@@ -114,7 +114,7 @@ public abstract class AbstractServer implements Server {
      *
      * @param ctx server details
      */
-    private void init(NettyServerContext ctx) throws BrokerException {
+    private void init(MqttTransportProperties ctx) throws BrokerException {
         try {
             //The thread group which accepts connections
             bossGroup = new NioEventLoopGroup(ctx.getAcceptanceThreads());

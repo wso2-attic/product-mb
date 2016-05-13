@@ -21,8 +21,7 @@ package org.wso2.carbon.andes.transports.mqtt.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.andes.transports.config.NettyServerContext;
-import org.wso2.carbon.andes.transports.mqtt.MqttServer;
+import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
 import org.wso2.carbon.andes.transports.server.BrokerException;
 import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
@@ -35,19 +34,20 @@ public class MqttTransport extends CarbonTransport {
     /**
      * Holds the running instance of the MQTT service
      */
-    private Server mqttServer = null;
+    private Server server = null;
 
     /**
      * Holds the configuration which provides information related to bootstrapping the transport
      */
-    private NettyServerContext nettyConfiguration;
+    private MqttTransportProperties mqttTransportConfiguration;
 
     private static final Log log = LogFactory.getLog(MqttTransport.class);
 
 
-    public MqttTransport(NettyServerContext nettyConfiguration) {
-        super(nettyConfiguration.getId());
-        this.nettyConfiguration = nettyConfiguration;
+    public MqttTransport(MqttTransportProperties mqttTransportConfiguration, Server server) {
+        super(mqttTransportConfiguration.getId());
+        this.mqttTransportConfiguration = mqttTransportConfiguration;
+        this.server = server;
     }
 
     /**
@@ -57,11 +57,11 @@ public class MqttTransport extends CarbonTransport {
         //We stop the server when the bundle is deactivated
         log.info("Stopping MQTT Transport");
 
-        if (null != mqttServer) {
+        if (null != server) {
             if (log.isDebugEnabled()) {
-                log.debug("Stopping MQTT transport " + nettyConfiguration.getId());
+                log.debug("Stopping MQTT transport " + mqttTransportConfiguration.getId());
             }
-            mqttServer.stop();
+            server.stop();
 
         } else {
             log.error("MQTT server was not initialized properly, hence cannot stop the server");
@@ -73,11 +73,13 @@ public class MqttTransport extends CarbonTransport {
      * Starts the transport gracefully
      */
     private void startTransport() {
-        mqttServer = new MqttServer();
+
+        log.info("Starting MQTT Server");
+        //  server = new MqttServer();
         try {
-            mqttServer.start(this.nettyConfiguration);
+            server.start(this.mqttTransportConfiguration);
         } catch (BrokerException e) {
-            String message = "Error occurred while starting the transport " + nettyConfiguration.getId();
+            String message = "Error occurred while starting the transport " + mqttTransportConfiguration.getId();
             log.error(message, e);
         }
     }
@@ -87,7 +89,7 @@ public class MqttTransport extends CarbonTransport {
      */
     @Override
     protected void start() {
-        log.info("Starting " + nettyConfiguration.getId() + " Transport");
+        log.info("Starting " + mqttTransportConfiguration.getId() + " Transport");
         startTransport();
     }
 
@@ -105,7 +107,7 @@ public class MqttTransport extends CarbonTransport {
      */
     @Override
     protected void beginMaintenance() {
-        log.info("Maintenance mode begins for MQTT transport " + nettyConfiguration.getId());
+        log.info("Maintenance mode begins for MQTT transport " + mqttTransportConfiguration.getId());
         stopTransport();
     }
 
@@ -114,7 +116,7 @@ public class MqttTransport extends CarbonTransport {
      */
     @Override
     protected void endMaintenance() {
-        log.info("Maintenance complete, restarting the transport " + nettyConfiguration.getId());
+        log.info("Maintenance complete, restarting the MQTT transport " + mqttTransportConfiguration.getId());
         startTransport();
     }
 

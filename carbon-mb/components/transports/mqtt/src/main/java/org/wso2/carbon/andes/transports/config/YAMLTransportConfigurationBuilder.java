@@ -33,14 +33,14 @@ public class YAMLTransportConfigurationBuilder {
 
     public static final String MQTT_TRANSPORT_CONF = "transport.mqtt.conf";
 
-    public static NettyServerContext readConfiguration() throws FileNotFoundException {
+    public static MqttTransportConfiguration readConfiguration() throws FileNotFoundException {
 
         String mqttTransportConfigPath = System.getProperty(MQTT_TRANSPORT_CONF, "conf" + File
                 .separator + "transports" + File.separator + "mqtt-transports.yaml");
         InputStream input = new FileInputStream(new File(mqttTransportConfigPath));
         Yaml yaml = new Yaml();
         yaml.setBeanAccess(BeanAccess.FIELD);
-        NettyServerContext mqttConfiguration = yaml.loadAs(input, NettyServerContext.class);
+        MqttTransportConfiguration mqttConfiguration = yaml.loadAs(input, MqttTransportConfiguration.class);
 
         return mqttConfiguration;
     }
