@@ -420,7 +420,7 @@
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
-        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
+        <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
         <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
