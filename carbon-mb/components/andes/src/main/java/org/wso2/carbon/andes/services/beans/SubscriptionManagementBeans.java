@@ -36,24 +36,6 @@ import javax.management.openmbean.CompositeData;
  * The following class contains the MBeans invoking services related to subscription resources.
  */
 public class SubscriptionManagementBeans {
-    private static final Object lock = new Object();
-    private static SubscriptionManagementBeans instance = new SubscriptionManagementBeans();
-
-    /**
-     * Gets the active subscription managing instance.
-     *
-     * @return A subscription managing instance.
-     */
-    public static SubscriptionManagementBeans getInstance() {
-        if (null == instance) {
-            synchronized (lock) {
-                if (null == instance) {
-                    instance = new SubscriptionManagementBeans();
-                }
-            }
-        }
-        return instance;
-    }
 
     /**
      * Gets subscriptions belonging to a specific protocol type and destination type. The subscriptions can be filtered
@@ -66,7 +48,8 @@ public class SubscriptionManagementBeans {
      *                         that <strong>contains</strong> the value are included.
      * @param destinationName  The name of the destination name. If "*", all destinations are included. Else
      *                         destinations that <strong>equals</strong> the value are included.
-     * @param active           Filtering the subscriptions that are active or inactive.
+     * @param active           Filtering the subscriptions that are active or inactive. Supported values = "*", "true"
+     *                         and "false".
      * @param offset           The starting index to return.
      * @param limit            The number of subscriptions to return.
      * @return A list of {@link Subscription}s.
@@ -144,18 +127,17 @@ public class SubscriptionManagementBeans {
      * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
      * @param subscriptionType The subscription type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
-     * @param destinationName  The name of the destination to close/unsubscribe. If "*", all destinations are included.
-     *                         Else destinations that <strong>equals</strong> the value are included.
+     * @param subscriptionID  Subscription ID
      * @throws SubscriptionManagerException
      */
-    public void closeSubscription(String protocol, String subscriptionType, String destinationName)
-            throws SubscriptionManagerException {
+    public void closeSubscription(String protocol, String subscriptionType, String subscriptionID)
+                                                                                throws SubscriptionManagerException {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         try {
             ObjectName objectName = new ObjectName("org.wso2.andes:type=SubscriptionManagementInformation," +
                                                    "name=SubscriptionManagementInformation");
 
-            Object[] parameters = new Object[]{protocol, subscriptionType, destinationName};
+            Object[] parameters = new Object[]{protocol, subscriptionType, subscriptionID};
             String[] signature = new String[]{String.class.getName(), String.class.getName(), String.class.getName()};
 
             mBeanServer.invoke(objectName,

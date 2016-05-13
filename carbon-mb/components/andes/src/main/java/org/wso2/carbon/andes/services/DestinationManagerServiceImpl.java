@@ -35,15 +35,23 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * Sample permission storage.
      */
     private static Set<DestinationRolePermission> destinationRolePermissions = new HashSet<>();
+    private DestinationManagementBeans destinationManagementBeans;
+    
+    public DestinationManagerServiceImpl() {
+        destinationManagementBeans = new DestinationManagementBeans();
+    }
 
+    public DestinationManagerServiceImpl(DestinationManagementBeans destinationManagementBeans) {
+        this.destinationManagementBeans = destinationManagementBeans;
+    }
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public List<Destination> getDestinations(String protocol, String destinationType, String keyword,
                                              int offset, int limit) throws DestinationManagerException {
-        return DestinationManagementBeans.getInstance().getDestinations(protocol, destinationType, keyword, offset,
-                                                                                                                limit);
+        return destinationManagementBeans.getDestinations(protocol, destinationType, keyword, offset, limit);
     }
 
     /**
@@ -51,7 +59,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      */
     @Override
     public void deleteDestinations(String protocol, String destinationType) throws DestinationManagerException {
-        DestinationManagementBeans.getInstance().deleteDestinations(protocol, destinationType);
+        destinationManagementBeans.deleteDestinations(protocol, destinationType);
     }
 
     /**
@@ -60,7 +68,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
     @Override
     public Destination getDestination(String protocol, String destinationType, String
             destinationName) throws DestinationManagerException {
-        return DestinationManagementBeans.getInstance().getDestination(protocol, destinationType, destinationName);
+        return destinationManagementBeans.getDestination(protocol, destinationType, destinationName);
     }
 
     /**
@@ -70,7 +78,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
     public Destination createDestination(String protocol, String destinationType, String
             destinationName) throws DestinationManagerException {
         String currentUsername = "admin";
-        return DestinationManagementBeans.getInstance().createDestination(protocol, destinationType, destinationName,
+        return destinationManagementBeans.createDestination(protocol, destinationType, destinationName,
                                                                                                     currentUsername);
     }
 
@@ -78,8 +86,9 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * {@inheritDoc}
      */
     @Override
-    public Set<DestinationRolePermission> getDestinationPermission(String protocol, String destinationType,
+    public Set<DestinationRolePermission> getDestinationPermissions(String protocol, String destinationType,
                                                                     String destinationName) {
+        // Null if invalid destination.
         destinationRolePermissions.add(new DestinationRolePermission("admin-role", true, true));
         return destinationRolePermissions;
     }
@@ -88,7 +97,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * {@inheritDoc}
      */
     @Override
-    public DestinationRolePermission updateDestinationPermissions(
+    public DestinationRolePermission createDestinationPermission(
             String protocol, String destinationType,
             String destinationName,
             DestinationRolePermission destinationRolePermission) {
@@ -103,8 +112,17 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      * {@inheritDoc}
      */
     @Override
+    public DestinationRolePermission updateDestinationPermission(String protocol, String destinationType, String
+            destinationName, DestinationRolePermission destinationRolePermission) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void deleteDestination(String protocol, String destinationType, String destinationName)
                                                                                 throws DestinationManagerException {
-        DestinationManagementBeans.getInstance().deleteDestination(protocol, destinationType, destinationName);
+        destinationManagementBeans.deleteDestination(protocol, destinationType, destinationName);
     }
 }

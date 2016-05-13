@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.andes.services;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.wso2.carbon.andes.services.beans.SubscriptionManagementBeans;
 import org.wso2.carbon.andes.services.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.services.types.Subscription;
@@ -26,23 +27,47 @@ import java.util.List;
  * This implementation provides the base for managing all subscriptions related services.
  */
 public class SubscriptionManagerServiceImpl implements SubscriptionManagerService {
+    
+    private SubscriptionManagementBeans subscriptionManagementBeans;
+
+    public SubscriptionManagerServiceImpl() {
+        subscriptionManagementBeans = new SubscriptionManagementBeans();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Subscription> getSubscriptions(String protocol, String subscriptionType, String
             subscriptionName, String destinationName, String active, int offset, int limit)
                                                                                 throws SubscriptionManagerException {
-        return SubscriptionManagementBeans.getInstance().getSubscriptions(protocol, subscriptionType, subscriptionName,
+        return subscriptionManagementBeans.getSubscriptions(protocol, subscriptionType, subscriptionName,
                                                                             destinationName, active, offset, limit);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void closeSubscriptions(String protocol, String subscriptionType, String destinationName)
-                                                                                throws SubscriptionManagerException {
-        SubscriptionManagementBeans.getInstance().closeSubscriptions(protocol, subscriptionType, destinationName);
+    public void closeSubscriptions(String protocol, String subscriptionType, String destinationName, boolean
+            unsubscribeOnly) throws SubscriptionManagerException {
+        if (unsubscribeOnly) {
+            throw new NotImplementedException();
+        } else {
+            subscriptionManagementBeans.closeSubscriptions(protocol, subscriptionType, destinationName);
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void closeSubscription(String protocol, String subscriptionType, String destinationName)
-                                                                                throws SubscriptionManagerException {
-        SubscriptionManagementBeans.getInstance().closeSubscription(protocol, subscriptionType, destinationName);
+    public void closeSubscription(String protocol, String subscriptionType, String subscriptionID,
+                                  boolean unsubscribeOnly) throws SubscriptionManagerException {
+        if (unsubscribeOnly) {
+            throw new NotImplementedException();
+        } else {
+            subscriptionManagementBeans.closeSubscription(protocol, subscriptionType, subscriptionID);
+        }
     }
 }

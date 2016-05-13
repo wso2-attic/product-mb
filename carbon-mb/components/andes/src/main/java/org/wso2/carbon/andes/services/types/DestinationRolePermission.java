@@ -16,13 +16,20 @@
 
 package org.wso2.carbon.andes.services.types;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Class for representing permissions for role to a specific destination.
  */
+@ApiModel(value = "Destination Role Permission", description = "The structure for permissions assigned to a role " +
+                                                              "which can be linked to a destination.")
 public class DestinationRolePermission {
-
+    @ApiModelProperty(value = "The name of the role which the permission is assigned to.", required = true)
     private String roleName;
+    @ApiModelProperty(value = "Whether consumer permission is assigned for the role.", required = true)
     private boolean isAllowedToConsume;
+    @ApiModelProperty(value = "Whether publisher permission is assigned for the role.", required = true)
     private boolean isAllowedToPublish;
 
     public DestinationRolePermission(String role, boolean allowedToConsume, boolean allowedToPublish) {

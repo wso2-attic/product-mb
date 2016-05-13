@@ -16,13 +16,21 @@
 
 package org.wso2.carbon.andes.services.types;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Represents the information related to a single node in a cluster.
  */
+@ApiModel(value = "Node Information", description = "Information related to a single node in the cluster.")
 public class NodeInformation {
+    @ApiModelProperty(value = "The Node ID for the current node. Modifiable via conf/broker.xml")
     private String nodeID;
+    @ApiModelProperty(value = "The hostname for the node.")
     private String hostname;
+    @ApiModelProperty(value = "The port for the node used for clustering.")
     private int port;
+    @ApiModelProperty(value = "Whether the node is the coordinator node.")
     private boolean isCoordinator;
 
     public String getNodeID() {
