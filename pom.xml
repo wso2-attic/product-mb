@@ -341,6 +341,11 @@
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
+             <dependency>
+                <groupId>org.wso2.orbit.org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -460,6 +465,9 @@
 
         <!--Swagger-->
         <swagger.annotations.version>1.5.8</swagger.annotations.version>
+
+        <!--Configuration Managment-->
+        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
     </properties>
 
     <build>
