@@ -102,8 +102,8 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Test the message content integrity of a single message when compression is enabled, by comparing the sent and
-     * received message content which spreads over several message content chunks.
+     * Test the Queue message content integrity of a single message when compression is enabled, by comparing the
+     * sent and received message content which spreads over several message content chunks.
      *
      * @throws AndesClientConfigurationException
      * @throws IOException
@@ -111,8 +111,8 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      * @throws AndesClientException
      */
-    @Test(groups = "wso2.mb", description = "Compressed message content validation test case")
-    public void performQueueContentSendCompressReceiveTestCase() throws AndesClientConfigurationException, IOException,
+    @Test(groups = "wso2.mb", description = "Compressed queue message content validation test case")
+    public void performQueueContentSendCompressQueueReceiveTestCase() throws AndesClientConfigurationException, IOException,
             JMSException, NamingException, AndesClientException, XPathExpressionException {
 
         // Reading message content
@@ -160,6 +160,132 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
     }
+
+
+    /**
+     * Test the durable topic message content integrity of a single message when compression is enabled, by comparing
+     * the sent and received message content which spreads over several message content chunks.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
+     */
+    @Test(groups = "wso2.mb", description = "Compressed durable topic message content validation test case")
+    public void performQueueContentSendCompressDurableTopicReceiveTestCase() throws AndesClientConfigurationException, IOException,
+            JMSException, NamingException, AndesClientException, XPathExpressionException {
+
+        // Reading message content
+        char[] inputContent = new char[SIZE_TO_READ];
+
+        BufferedReader inputFileReader = new BufferedReader(
+                new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB));
+        inputFileReader.read(inputContent);
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.TOPIC, "DurableTopicContentSendCompressReceive");
+        consumerConfig.setDurable(true, "compression-new1");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // writing received messages.
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.TOPIC, "DurableTopicContentSendCompressReceive");
+
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        // message content will be read from this path and published
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants
+                .MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Reading received message content
+        char[] outputContent = new char[SIZE_TO_READ];
+
+        BufferedReader outFileReader =
+                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
+        outFileReader.read(outputContent);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+    }
+
+
+
+
+    /**
+     * Test the topic message content integrity of a single message when compression is enabled, by comparing
+     * the sent and received message content which spreads over several message content chunks.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
+     */
+    @Test(groups = "wso2.mb", description = "Compressed topic message content validation test case")
+    public void performQueueContentSendCompressTopicReceiveTestCase() throws AndesClientConfigurationException, IOException,
+            JMSException, NamingException, AndesClientException, XPathExpressionException {
+
+        // Reading message content
+        char[] inputContent = new char[SIZE_TO_READ];
+
+        BufferedReader inputFileReader = new BufferedReader(
+                new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB));
+        inputFileReader.read(inputContent);
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.TOPIC, "TopicContentSendCompressReceive");
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+        // writing received messages.
+        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.TOPIC, "TopicContentSendCompressReceive");
+
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        // message content will be read from this path and published
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants
+                .MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Reading received message content
+        char[] outputContent = new char[SIZE_TO_READ];
+
+        BufferedReader outFileReader =
+                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
+        outFileReader.read(outputContent);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
+        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+    }
+
 
     /**
      * Restore to the previous configurations when the message content compression test is complete.

@@ -90,6 +90,28 @@ public class QueuesBrowsePage {
     }
 
     /**
+     * Gets message count of a specific queue
+     *
+     * @param queueName name of the queue
+     * @return the number of messages
+     */
+    public int getMessageCount(String queueName) {
+        WebElement row = getTableRowByQueueName(queueName);
+        if (row == null) {
+            log.warn("Unable to find the table row for queue name: " + queueName);
+        }
+
+        if (row != null) {
+            List<WebElement> columnList;
+            columnList = row.findElements(By.tagName("td"));
+            return Integer.parseInt(columnList.get(1).getText());
+        } else {
+            log.warn("Unable to get message count.");
+            return -1;
+        }
+    }
+
+    /**
      * Navigates the browser to 'Queue Content' page where user can see messages it contains etc.
      *
      * @param qName name of the Queue to browse
