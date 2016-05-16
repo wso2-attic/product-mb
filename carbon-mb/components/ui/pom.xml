@@ -30,7 +30,7 @@
     <packaging>pom</packaging>
     <artifactId>ui</artifactId>
 
-    <name>WSO2 MB UI - Main - Parent</name>
+    <name>WSO2 Message Broker - UI - Main - Parent</name>
     <url>http://wso2.org</url>
 
     <modules>

@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.services.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.services.exceptions.MessageManagerException;
@@ -164,7 +165,7 @@ public class AndesService implements Microservice {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of protocols.")})
     public List<String> getProtocols() {
         return AndesContext.getInstance().getAndesContextStore().getProtocols().stream()
-                .map(protocolType ->  protocolType.toString())
+                .map(ProtocolType::toString)
                 .collect(Collectors.toList());
     }
 
@@ -191,7 +192,7 @@ public class AndesService implements Microservice {
             tags = "Destinations",
             response = String.class,
             responseContainer = "List")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "List of destinations.")})
+    @ApiResponses(@ApiResponse(code = 200, message = "List of destinations."))
     public List<String> getDestinationTypes() {
         return Stream.of(DestinationType.values())
                 .map(e -> e.name().toLowerCase())

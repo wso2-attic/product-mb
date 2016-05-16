@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.mb.ui.basicauth</artifactId>
 
-    <name>WSO2 MB UI - Basic Auth Component</name>
+    <name>WSO2 Message Broker - UI - Basic Auth Component</name>
     <url>http://wso2.org</url>
 
     <properties>

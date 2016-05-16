@@ -51,7 +51,7 @@ public class DestinationManagerServiceImplTestCase extends UnitBaseTest {
         // QueueManagementBeans beans = new QueueManagementBeans();
         // beans.createQueue("queue1", "admin");
         Destination destination = destinationManagerService.createDestination("amqp", "queue", "testQueue");
-        Assert.assertEquals(destination.getProtocolType(), new ProtocolType("AMQP", "0-91"),
+        Assert.assertEquals(destination.getProtocol(), new ProtocolType("AMQP", "0-91"),
                 "Invalid protocol type assigned");
         Assert.assertEquals(destination.getDestinationType(), DestinationType.QUEUE, "Invalid destination type " +
                                                                                      "assigned");
