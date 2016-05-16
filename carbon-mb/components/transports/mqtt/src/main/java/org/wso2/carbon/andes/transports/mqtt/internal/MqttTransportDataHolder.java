@@ -80,4 +80,8 @@ public class MqttTransportDataHolder {
     public void setContext(BundleContext context) {
         this.context = context;
     }
+
+    public Andes getAndesInstance() {
+        return andesInstance;
+    }
 }

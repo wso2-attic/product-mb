@@ -108,7 +108,7 @@ public class AndesAdaptor implements MessagingAdaptor {
                 //We need to create a queue in-order to preserve messages relevant for the durable subscription
                 InboundQueueEvent createQueueEvent = new InboundQueueEvent(
                         MqttUtils.getTopicSpecificQueueName(clientId, topic),
-                        username, false, true, ProtocolType.MQTT, DestinationType.TOPIC);
+                        username, false, true, new ProtocolType("MQTT", "default"), DestinationType.TOPIC);
                 Andes.getInstance().createQueue(createQueueEvent);
             }
 
@@ -270,7 +270,7 @@ public class AndesAdaptor implements MessagingAdaptor {
                 //The other is un-subscription, if is the case of un-subscription the subscription should be removed
                 //Andes will automatically remove all the subscriptions bound to a queue when the queue is deleted
                 InboundQueueEvent queueChange = new InboundQueueEvent(queueIdentifier, username, false, true,
-                        ProtocolType.MQTT, DestinationType.DURABLE_TOPIC);
+                        new ProtocolType("MQTT", "default"), DestinationType.DURABLE_TOPIC);
                 Andes.getInstance().deleteQueue(queueChange);
             } else {
                 //create a close subscription event
@@ -398,6 +398,7 @@ public class AndesAdaptor implements MessagingAdaptor {
      * @param cleanSession          has the subscriber subscribed with clean session
      * @return the andes specific object that will be registered in the cluster
      * @throws MQTTException
+     * @throws AndesException
      */
     private MqttLocalSubscription createSubscription(String wildcardDestination,
                                                      String mqttClientID, int qos,
@@ -405,7 +406,7 @@ public class AndesAdaptor implements MessagingAdaptor {
                                                      boolean isActive,
                                                      boolean cleanSession,
                                                      MqttChannel mqttChannel)
-            throws MQTTException {
+            throws MQTTException, AndesException {
 
         boolean durable = MqttUtils.isDurable(cleanSession, qos);
 

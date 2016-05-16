@@ -97,6 +97,11 @@ public class MqttLocalSubscription implements OutboundSubscription {
     private boolean isDurable;
 
     /**
+     * The protocol type of this subscriber along with it's protocol version details.
+     */
+    private ProtocolType protocolType;
+
+    /**
      * Track messages sent as retained messages
      */
     private ConcurrentTrackingList<Long> retainedMessageList = new ConcurrentTrackingList<Long>();
@@ -149,15 +154,17 @@ public class MqttLocalSubscription implements OutboundSubscription {
      * @param channelID           ID of the underlying subscription channel
      * @param isActive            true if subscription is active (TCP connection is live)
      * @param isDurable           Should this subscriber fall into durable path
+     * @throws AndesException
      */
     public MqttLocalSubscription(String wildCardDestination, UUID channelID, boolean isActive, boolean isDurable,
-                                 MqttChannel mqttChannel) {
+                                 MqttChannel mqttChannel) throws AndesException {
 
         this.channelID = channelID;
         this.isActive = isActive;
         this.wildcardDestination = wildCardDestination;
         this.isDurable = isDurable;
         this.channel = mqttChannel;
+        this.protocolType = new ProtocolType("MQTT", "default");
     }
 
     public void messageAck(long messageID, UUID channelID)
@@ -325,6 +332,6 @@ public class MqttLocalSubscription implements OutboundSubscription {
 
     @Override
     public ProtocolType getProtocolType() {
-        return ProtocolType.MQTT;
+        return protocolType;
     }
 }

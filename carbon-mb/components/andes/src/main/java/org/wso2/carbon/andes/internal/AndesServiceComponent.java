@@ -80,8 +80,7 @@ public class AndesServiceComponent {
         AndesContext.getInstance().constructStoreConfiguration();
 
         System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
-        String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort(),
-                         "-q" + qpidServiceImpl.getMqttPort()};
+        String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort()};
         Main.main(args);
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
         serviceRegistration = bundleContext.registerService(Andes.class.getName(), Andes.getInstance(), null);
