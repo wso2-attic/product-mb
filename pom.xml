@@ -346,6 +346,16 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <version>${carbon.messaging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>apache-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -428,6 +438,7 @@
         <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
         <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
+        <carbon.messaging.version>1.0.3</carbon.messaging.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
         <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
@@ -468,6 +479,7 @@
 
         <!--Configuration Managment-->
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
+        <commons-lang.version>2.1</commons-lang.version>
     </properties>
 
     <build>

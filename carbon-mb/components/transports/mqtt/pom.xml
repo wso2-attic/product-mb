@@ -53,12 +53,10 @@
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>andes</artifactId>
-            <version>${andes.dependency.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty.wso2</groupId>
             <artifactId>netty-all</artifactId>
-            <version>${netty-all.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -68,14 +66,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>apache-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.1</version>
         </dependency>
-
         <!-- Importing pax logging for commons.logging package since pax is bundled from kernel -->
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -88,7 +83,6 @@
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
             <artifactId>org.wso2.carbon.messaging</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
