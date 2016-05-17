@@ -61,12 +61,7 @@ import org.wso2.carbon.kernel.transports.CarbonTransport;
 @Component(
         name = "org.wso2.carbon.andes.mqtt.internal.MqttTransportServiceComponent",
         immediate = true,
-        service = RequiredCapabilityListener.class,
-        property = {
-                "capability-name=org.wso2.andes.kernel.Andes",
-                "component-key=mqtt-server"
-        }
-
+        property = {"componentName=mqtt-transport-component"}
 )
 @SuppressWarnings("unused")
 public class MqttTransportServiceComponent implements RequiredCapabilityListener, CapabilityProvider {
