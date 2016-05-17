@@ -276,6 +276,10 @@
             javax.naming.*,
             javax.xml.stream.*
         </import.package>
+        <carbon.component>
+            startup.listener;componentName="andes-component";
+            osgi.service; objectClass="org.wso2.carbon.andes.internal.AndesServiceComponent"
+        </carbon.component>
     </properties>
 
 </project>

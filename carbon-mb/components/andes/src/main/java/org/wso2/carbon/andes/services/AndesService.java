@@ -80,7 +80,10 @@ import javax.ws.rs.core.Response;
 @Component(
         name = "org.wso2.carbon.andes.AndesService",
         service = Microservice.class,
-        immediate = true
+        immediate = true,
+        property = {
+                "componentName=andes-rest-microservice"
+        }
 )
 
 @SwaggerDefinition(

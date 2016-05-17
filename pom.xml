@@ -481,7 +481,6 @@
         <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
         <carbon.cache.version>1.0.0-m1</carbon.cache.version>
         <carbon.transport.http.netty.version>2.0.3-SNAPSHOT</carbon.transport.http.netty.version>
-        <carbon.messaging.version>1.0.2</carbon.messaging.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <carbon.messaging.version>1.0.3</carbon.messaging.version>
         <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
