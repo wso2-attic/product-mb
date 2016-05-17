@@ -87,11 +87,11 @@
             <artifactId>org.wso2.carbon.andes.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.mb</groupId>
-            <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
-            <type>zip</type>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.carbon.mb</groupId>-->
+            <!--<artifactId>org.wso2.carbon.mb.ui.feature</artifactId>-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
@@ -102,21 +102,21 @@
             <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.msf4j</groupId>
-            <artifactId>org.wso2.msf4j.feature</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.uuf</groupId>
-            <artifactId>org.wso2.uuf.core.feature</artifactId>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.uuf</groupId>
-            <artifactId>org.wso2.uuf.handlebars.feature</artifactId>
-            <type>zip</type>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.msf4j</groupId>-->
+            <!--<artifactId>org.wso2.msf4j.feature</artifactId>-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.uuf</groupId>-->
+            <!--<artifactId>org.wso2.uuf.core.feature</artifactId>-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.uuf</groupId>-->
+            <!--<artifactId>org.wso2.uuf.handlebars.feature</artifactId>-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -217,10 +217,10 @@
                                     <id>org.wso2.carbon.andes.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.mb.ui.feature</id>
-                                    <version>${carbon.mb.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.mb.ui.feature</id>-->
+                                    <!--<version>${carbon.mb.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.mb.amqp.feature</id>
                                     <version>${carbon.mb.version}</version>
@@ -229,18 +229,18 @@
                                     <id>org.wso2.carbon.mb.mqtt.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.msf4j.feature</id>
-                                    <version>${msf4j.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.uuf.core.feature</id>
-                                    <version>${uuf.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.uuf.handlebars.feature</id>
-                                    <version>${uuf.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.msf4j.feature</id>-->
+                                    <!--<version>${msf4j.version}</version>-->
+                                <!--</feature>-->
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.uuf.core.feature</id>-->
+                                    <!--<version>${uuf.version}</version>-->
+                                <!--</feature>-->
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.uuf.handlebars.feature</id>-->
+                                    <!--<version>${uuf.version}</version>-->
+                                <!--</feature>-->
                             </features>
                         </configuration>
                     </execution>
@@ -325,10 +325,10 @@
                                     <id>org.wso2.carbon.andes.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.mb.ui.feature.group</id>
-                                    <version>${carbon.mb.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.mb.ui.feature.group</id>-->
+                                    <!--<version>${carbon.mb.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.mb.amqp.feature.group</id>
                                     <version>${carbon.mb.version}</version>
@@ -337,18 +337,18 @@
                                     <id>org.wso2.carbon.mb.mqtt.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.msf4j.feature.group</id>
-                                    <version>${msf4j.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.uuf.core.feature.group</id>
-                                    <version>${uuf.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.uuf.handlebars.feature.group</id>
-                                    <version>${uuf.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.msf4j.feature.group</id>-->
+                                    <!--<version>${msf4j.version}</version>-->
+                                <!--</feature>-->
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.uuf.core.feature.group</id>-->
+                                    <!--<version>${uuf.version}</version>-->
+                                <!--</feature>-->
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.uuf.handlebars.feature.group</id>-->
+                                    <!--<version>${uuf.version}</version>-->
+                                <!--</feature>-->
                             </features>
                         </configuration>
                     </execution>
