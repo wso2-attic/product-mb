@@ -466,16 +466,18 @@
         <slf4j.import.version.range>[1.7.1, 2.0.0)</slf4j.import.version.range>
         <slf4j.version>1.7.5</slf4j.version>
         <swagger.annotations.version>1.5.8</swagger.annotations.version>
+        <commons-lang.version>2.1</commons-lang.version>
+        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
 
         <!--WSO2 related properties-->
-        <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
-        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
-        <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
+        <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
+        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
         <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
         <carbon.cache.version>1.0.0-m1</carbon.cache.version>
         <carbon.transport.http.netty.version>2.0.1</carbon.transport.http.netty.version>
