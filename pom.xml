@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>2</version>
+        <version>5</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -51,13 +51,15 @@
     <modules>
         <!--Components-->
         <module>carbon-mb/components/andes</module>
-        <module>carbon-mb/components/ui</module>
+        <!--<module>carbon-mb/components/andes-rest-service</module>-->
+        <!--<module>carbon-mb/components/ui</module>-->
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
         <!--Features-->
         <module>carbon-mb/features/org.wso2.carbon.andes.feature</module>
-        <module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>
+        <!--TODO : Add REST service as a feature-->
+        <!--<module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>-->
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.amqp.feature</module>
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.mqtt.feature</module>
 
@@ -134,7 +136,37 @@
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax.logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs.wso2</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>${geronimo-jms_1.1_spec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database.wso2</groupId>
+                <artifactId>h2-database-engine</artifactId>
+                <version>${orbit.version.h2.engine}</version>
+            </dependency>
+            <dependency>
+                <groupId>apache-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${org.snakeyaml.version}</version>
+            </dependency>
+            <!--End 3rd Party Dependencies-->
 
             <!--Carbon Dependencies-->
             <dependency>
@@ -158,9 +190,101 @@
                 <version>${carbon.hazelcast.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.jndi</groupId>
+                <artifactId>org.wso2.carbon.jndi</artifactId>
+                <version>${carbon.jndi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core</artifactId>
+                <version>${carbon.datasources.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <version>${carbon.messaging.version}</version>
+            </dependency>
+            <!--End Carbon Dependencies-->
+
+            <!--Dependent Features-->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.kernel.feature</artifactId>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.runtime.feature</artifactId>
+                <version>${carbon.kernel.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.hazelcast</groupId>
                 <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
                 <version>${carbon.hazelcast.feature.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.jndi</groupId>
+                <artifactId>org.wso2.carbon.jndi.feature</artifactId>
+                <version>${carbon.jndi.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core.feature</artifactId>
+                <version>${carbon.datasources.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.caching</groupId>
+                <artifactId>org.wso2.carbon.caching.feature</artifactId>
+                <version>${carbon.cache.version}</version>
+                <type>zip</type>
+            </dependency>
+
+            <!--Message Broker Dependencies-->
+            <dependency>
+                <groupId>org.wso2.carbon.transport</groupId>
+                <artifactId>org.wso2.carbon.transport.http.netty.feature</artifactId>
+                <version>${carbon.transport.http.netty.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging.feature</artifactId>
+                <version>${carbon.messaging.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.andes.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>org.wso2.msf4j.feature</artifactId>
+                <version>${msf4j.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
@@ -175,12 +299,7 @@
                 <version>${uuf.version}</version>
                 <type>zip</type>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.caching</groupId>
-                <artifactId>org.wso2.carbon.caching.feature</artifactId>
-                <version>${carbon.cache.version}</version>
-                <type>zip</type>
-            </dependency>
+            <!--End of Dependent Features-->
 
             <!--Message Broker Dependencies-->
             <dependency>
@@ -195,23 +314,9 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>org.wso2.carbon.andes.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
-
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>ui</artifactId>
                 <version>${carbon.mb.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
-
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>amqp</artifactId>
@@ -219,63 +324,15 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
-
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>mqtt</artifactId>
                 <version>${carbon.mb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>org.wso2.carbon.mb.mqtt.feature</artifactId>
-                <version>${carbon.mb.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.jndi</groupId>
-                <artifactId>org.wso2.carbon.jndi</artifactId>
-                <version>${carbon.jndi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.datasources</groupId>
-                <artifactId>org.wso2.carbon.datasource.core</artifactId>
-                <version>${carbon.datasources.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs.wso2</groupId>
-                <artifactId>geronimo-jms_1.1_spec</artifactId>
-                <version>${geronimo-jms_1.1_spec.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database.wso2</groupId>
-                <artifactId>h2-database-engine</artifactId>
-                <version>${orbit.version.h2.engine}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>msf4j-core</artifactId>
                 <version>${msf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.msf4j</groupId>
-                <artifactId>org.wso2.msf4j.feature</artifactId>
-                <version>${msf4j.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.logging</groupId>
-                <artifactId>pax-logging-api</artifactId>
-                <version>${pax.logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.annotations.version}</version>
-            </dependency>
+            <!-- END of Message Broker Dependencies-->
 
             <!-- MQTT Dependancies -->
             <dependency>
@@ -293,6 +350,7 @@
                 <artifactId>hawtbuf</artifactId>
                 <version>${hawtbuf.version}</version>
             </dependency>
+            <!-- End of MQTT Dependancies -->
 
             <!--Dependencies for Testing-->
             <dependency>
@@ -341,21 +399,7 @@
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
-             <dependency>
-                <groupId>org.wso2.orbit.org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${org.snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.messaging</groupId>
-                <artifactId>org.wso2.carbon.messaging</artifactId>
-                <version>${carbon.messaging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>apache-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-            </dependency>
+            <!--End of Dependencies for Testing-->
         </dependencies>
     </dependencyManagement>
 
@@ -401,89 +445,82 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!--3rd party related properties-->
-        <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
-        <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <osgi.api.version>6.0.0</osgi.api.version>
-        <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
-        <guava.version>19.0</guava.version>
-        <guava.bundle.version>19.0.0</guava.bundle.version>
+        <com.hazelcast.package.import.version.range>[3.6,4)</com.hazelcast.package.import.version.range>
+        <commons-beanutils.wso2.version>1.8.0.wso2v1</commons-beanutils.wso2.version>
         <commons-cli.wso2.version>1.2.0.wso2v1</commons-cli.wso2.version>
-        <libthrift.version>0.9.2.wso2v1</libthrift.version>
+        <commons-digester.wso2.version>1.8.1.wso2v1</commons-digester.wso2.version>
         <commons.lang.wso2.version>2.6.0.wso2v1</commons.lang.wso2.version>
         <disruptor.wso2.version>3.3.2.wso2v2</disruptor.wso2.version>
-        <commons-digester.wso2.version>1.8.1.wso2v1</commons-digester.wso2.version>
-        <commons-beanutils.wso2.version>1.8.0.wso2v1</commons-beanutils.wso2.version>
+        <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
+        <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
+        <gson.version>2.2.4</gson.version>
+        <guava.bundle.version>19.0.0</guava.bundle.version>
+        <guava.version>19.0</guava.version>
+        <libthrift.version>0.9.2.wso2v1</libthrift.version>
+        <netty.version.range>[4.0,5)</netty.version.range>
+        <netty.version>4.0.30.Final</netty.version>
         <orbit.version.commons.collection>3.2.0.wso2v1</orbit.version.commons.collection>
         <org.apache.commons.lang.package.import.version.range>[2.6.0, 3.0.0)</org.apache.commons.lang.package.import.version.range>
         <org.pax.logging.version>1.8.4</org.pax.logging.version>
-        <netty.version>4.0.30.Final</netty.version>
-        <gson.version>2.2.4</gson.version>
+        <osgi.api.version>6.0.0</osgi.api.version>
+        <osgi.framework.import.version.range>[1.8.0, 2.0.0)</osgi.framework.import.version.range>
+        <rs-api.version>2.0</rs-api.version>
         <slf4j.import.version.range>[1.7.1, 2.0.0)</slf4j.import.version.range>
-        <com.hazelcast.package.import.version.range>[3.6,4)</com.hazelcast.package.import.version.range>
-        <netty.version.range>[4.0,5)</netty.version.range>
+        <slf4j.version>1.7.5</slf4j.version>
+        <swagger.annotations.version>1.5.8</swagger.annotations.version>
+        <commons-lang.version>2.1</commons-lang.version>
+        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
 
-        <!--Test related properties-->
-        <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
-        <maven.paxexam.plugin.version>1.2.4</maven.paxexam.plugin.version>
-
-        <!--Carbon related properties-->
-        <carbon.feature.plugin.version>2.0.0</carbon.feature.plugin.version>
-        <carbon.kernel.version>5.0.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
-        <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
+        <!--WSO2 related properties-->
+        <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
+        <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
+        <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
+        <carbon.cache.version>1.0.0-m1</carbon.cache.version>
+        <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
+        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
+        <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
-        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
-        <carbon.datasources.version>1.0.0-m1</carbon.datasources.version>
-        <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
+        <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
+        <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
+        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
+        <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <carbon.messaging.version>1.0.3</carbon.messaging.version>
-        <andes.dependency.version>3.5.0-SNAPSHOT</andes.dependency.version>
-        <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
-        <andes.package.export.version.range>3.5.0</andes.package.export.version.range>
-        <msf4j.version>1.0.0</msf4j.version>
+        <carbon.transport.http.netty.version>2.1.0</carbon.transport.http.netty.version>
         <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
-        <rs-api.version>2.0</rs-api.version>
+        <msf4j.version>1.1.0-SNAPSHOT</msf4j.version>
+        <uuf.version>1.0.0-SNAPSHOT</uuf.version>
 
-       <!--Transport Related Configrations -->
-        <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
+        <!--Transport Related Configrations -->
         <geronimo-jms_1.1_spec.version>1.1.0.wso2v1</geronimo-jms_1.1_spec.version>
-        <pax.logging.version>1.8.4</pax.logging.version>
-        <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
-        <netty-all.version>4.0.23.wso2v1</netty-all.version>
-        <hawtdb.version>1.6</hawtdb.version>
-        <hawtdb.bundle.version>1.6.0</hawtdb.bundle.version>
-        <hawtbuf.version>1.9</hawtbuf.version>
         <hawtbuf.bundle.version>1.9.0</hawtbuf.bundle.version>
+        <hawtbuf.version>1.9</hawtbuf.version>
+        <hawtdb.bundle.version>1.6.0</hawtdb.bundle.version>
+        <hawtdb.version>1.6</hawtdb.version>
+        <mqtt.transport.package.export.version>1.0.0</mqtt.transport.package.export.version>
+        <netty-all.version>4.0.23.wso2v1</netty-all.version>
+        <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
+        <pax.logging.version>1.8.4</pax.logging.version>
 
         <!--Pax Exam Versions-->
+        <javax.inject.version>1</javax.inject.version>
+        <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
         <pax.exam.version>4.6.0</pax.exam.version>
         <pax.url.aether.version>1.6.0</pax.url.aether.version>
-        <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
         <slf4j.api.version>1.7.12</slf4j.api.version>
-        <javax.inject.version>1</javax.inject.version>
 
         <!-- Unit Test dependency versions-->
-        <testng.version>6.9.4</testng.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
         <jmockit.version>1.8</jmockit.version>
+        <maven.paxexam.plugin.version>1.2.4</maven.paxexam.plugin.version>
         <mockito.version>1.9.5</mockito.version>
+        <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
+        <testng.version>6.9.4</testng.version>
 
-        <!--UUF-->
-        <uuf.version>1.0.0-SNAPSHOT</uuf.version>
-        <carbon.cache.version>1.0.0-m1</carbon.cache.version>
-
-        <!--Swagger-->
-        <swagger.annotations.version>1.5.8</swagger.annotations.version>
-
-        <!--Configuration Managment-->
-        <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
-        <commons-lang.version>2.1</commons-lang.version>
     </properties>
 
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -499,11 +536,11 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven.checkstyleplugin.version}</version>
             </plugin>
-            <!--<<plugin>-->
-            <!--<groupId>org.codehaus.mojo</groupId>-->
-            <!--<artifactId>findbugs-maven-plugin</artifactId>-->
-            <!--<version>${maven.findbugsplugin.version}</version>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${maven.findbugsplugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 </project>

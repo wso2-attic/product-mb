@@ -48,7 +48,10 @@ import org.wso2.carbon.kernel.utils.Utils;
  */
 @Component(
         name = "org.wso2.carbon.andes.internal.AndesServiceComponent",
-        immediate = true
+        immediate = true,
+        property = {
+                "componentName=andes-component"
+        }
 )
 public class AndesServiceComponent {
 

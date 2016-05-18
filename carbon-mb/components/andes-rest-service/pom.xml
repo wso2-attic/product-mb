@@ -27,12 +27,11 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>andes</artifactId>
+    <artifactId>andes-rest-service</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Message Broker - Andes Component</name>
+    <name>WSO2 Message Broker - Andes REST Service Component</name>
     <description>
-        This is the implementation for the Andes Carbon Component which initiates the Qpid broker and registers Qpid
-        OSGi service.
+        This is a REST service written using msf4 to expose andes resources.
     </description>
     <url>http://wso2.com</url>
 
@@ -50,71 +49,17 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.hazelcast</groupId>
-            <artifactId>org.wso2.carbon.hazelcast</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>qpid</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-cli.wso2</groupId>
-            <artifactId>commons-cli</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>libthrift.wso2</groupId>
-            <artifactId>libthrift</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang.wso2</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.orbit.com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-digester.wso2</groupId>
-            <artifactId>commons-digester</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils.wso2</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.jndi</groupId>
-            <artifactId>org.wso2.carbon.jndi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.datasources</groupId>
-            <artifactId>org.wso2.carbon.datasource.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs.wso2</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.msf4j</groupId>
             <artifactId>msf4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
-
-
         <!-- Testing dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -254,29 +199,22 @@
     </build>
 
     <properties>
-        <private.package>org.wso2.carbon.andes.internal</private.package>
+        <private.package>org.wso2.carbon.andes.service.internal</private.package>
         <export.package>
-            !org.wso2.carbon.andes.internal,
-            org.wso2.carbon.andes.*;version="${andes.package.export.version.range}"
+            !org.wso2.carbon.andes.service.internal,
+            org.wso2.carbon.andes.service.*;version="${andes.package.export.version.range}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
-            org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
-            com.hazelcast.*;version="${com.hazelcast.package.import.version.range}",
-            org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
-            org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
-            org.slf4j.*;version="${slf4j.import.version.range}",
-            io.netty.*;version="${netty.version.range}",
-            javax.management.*,
-            javax.jms.*,
-            javax.naming.*,
-            javax.xml.stream.*
+            org.wso2.andes.*;version="${andes.package.import.version.range}",
+            org.wso2.msf4j.*;version="${msf4j.import.version.range}",
+            javax.ws.rs.*,
         </import.package>
         <carbon.component>
-            osgi.service; objectClass="org.wso2.carbon.andes.internal.AndesServiceComponent"
+            startup.listener;componentName="andes-rest-microservice";
+            osgi.service; objectClass="org.wso2.carbon.andes.service.internal.AndesRESTServiceComponent"
         </carbon.component>
     </properties>
-
 </project>
