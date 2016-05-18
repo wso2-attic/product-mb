@@ -61,10 +61,12 @@ import org.wso2.carbon.kernel.transports.CarbonTransport;
 @Component(
         name = "org.wso2.carbon.andes.mqtt.internal.MqttTransportServiceComponent",
         immediate = true,
-        property = {"componentName=mqtt-transport-component"}
+        property = {
+                "componentName=mqtt-transport-component"
+        }
 )
 @SuppressWarnings("unused")
-public class MqttTransportServiceComponent implements RequiredCapabilityListener, CapabilityProvider {
+public class MqttTransportServiceComponent implements RequiredCapabilityListener {
 
     private static final Log log = LogFactory.getLog(MqttTransportServiceComponent.class);
 
@@ -72,11 +74,6 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
      * Provides the name of the protocol addressed by the transport
      */
     private static final String PROTOCOL = "MQTT";
-
-    /**
-     * Holds the number of transports which will be initialized through the service component
-     */
-    private static final int TRANSPORT_COUNT = 2;
 
 
     /**
@@ -220,10 +217,5 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
     public void onAllRequiredCapabilitiesAvailable() {
         MqttTransportDataHolder.getInstance().getContext().registerService(MqttTransportServiceComponent.class, this,
                 null);
-    }
-
-    @Override
-    public int getCount() {
-        return TRANSPORT_COUNT;
     }
 }
