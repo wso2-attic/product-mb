@@ -52,14 +52,14 @@
         <!--Components-->
         <module>carbon-mb/components/andes</module>
         <!--<module>carbon-mb/components/andes-rest-service</module>-->
-        <module>carbon-mb/components/ui</module>
+        <!--<module>carbon-mb/components/ui</module>-->
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
         <!--Features-->
         <module>carbon-mb/features/org.wso2.carbon.andes.feature</module>
         <!--TODO : Add REST service as a feature-->
-        <module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>
+        <!--<module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>-->
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.amqp.feature</module>
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.mqtt.feature</module>
 
@@ -487,7 +487,7 @@
         <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <carbon.messaging.version>1.0.3</carbon.messaging.version>
-        <carbon.transport.http.netty.version>2.0.3-SNAPSHOT</carbon.transport.http.netty.version>
+        <carbon.transport.http.netty.version>2.1.0</carbon.transport.http.netty.version>
         <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
         <msf4j.version>1.1.0-SNAPSHOT</msf4j.version>
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
