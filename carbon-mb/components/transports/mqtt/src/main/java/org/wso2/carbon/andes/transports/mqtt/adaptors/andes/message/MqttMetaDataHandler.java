@@ -17,6 +17,8 @@
  */
 package org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.andes.mqtt.MQTTMessageMetaData;
 import org.wso2.andes.mqtt.MQTTUtils;
 import org.wso2.andes.server.store.StorableMessageMetaData;
@@ -27,6 +29,8 @@ import java.nio.ByteBuffer;
  * Will be used to clone meta information of MQTT related topic messages received
  */
 public class MqttMetaDataHandler {
+
+    private static Log log = LogFactory.getLog(MqttMetaDataHandler.class);
 
     /**
      * Update message metadata for MQTT; after an update of the routing key and the exchange of a message, for
@@ -42,6 +46,12 @@ public class MqttMetaDataHandler {
                                            String exchange) {
 
         //For MQTT we just need to take a copy
+        if (!(originalMetadata instanceof MQTTMessageMetaData)) {
+            //If the message does not conform to the expected
+            log.warn("The object of type " + originalMetadata.getClass().getName() + "cannot be casted to " +
+                    "" + MQTTMessageMetaData.class.getName());
+            return new byte[0];
+        }
         MQTTMessageMetaData metaInformation = (MQTTMessageMetaData) originalMetadata;
         //Will re-encode the bytes
         return MQTTUtils.encodeMetaInfo(MQTTUtils.MQTT_META_INFO, metaInformation.getMessageID(),
@@ -65,6 +75,13 @@ public class MqttMetaDataHandler {
      */
     public static byte[] constructMetadata(ByteBuffer buf, StorableMessageMetaData originalMetadata,
                                            boolean newCompressedMessageValue) {
+
+        if (!(originalMetadata instanceof MQTTMessageMetaData)) {
+            //If the message does not conform to the expected
+            log.warn("The object of type " + originalMetadata.getClass().getName() + "cannot be casted to " +
+                    "" + MQTTMessageMetaData.class.getName());
+            return new byte[0];
+        }
 
         //For MQTT we just need to take a copy
         MQTTMessageMetaData metaInformation = (MQTTMessageMetaData) originalMetadata;

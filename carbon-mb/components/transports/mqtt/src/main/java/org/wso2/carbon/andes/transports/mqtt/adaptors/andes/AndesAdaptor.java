@@ -214,10 +214,11 @@ public class AndesAdaptor implements MessagingAdaptor {
     public void storeDisconnectMessage(String topicName,
                                        String clientId,
                                        boolean isCleanSession,
-                                       QOSLevel qosLevel) throws AdaptorException {
+                                       QOSLevel qosLevel,
+                                       String subscriptionId) throws AdaptorException {
 
         try {
-            UUID subscriberChannel = null;
+            UUID subscriberChannel = UUID.fromString(subscriptionId);
 
             MqttLocalSubscription mqttTopicSubscriber = createSubscription(topicName, clientId,
                     qosLevel.getValue(), subscriberChannel, isCleanSession, isCleanSession, null);
@@ -253,10 +254,10 @@ public class AndesAdaptor implements MessagingAdaptor {
      */
     @Override
     public void storeUnsubscribeMessage(String subscribedTopic, String username, String clientId, boolean
-            isCleanSession, QOSLevel qosLevel) throws AdaptorException {
+            isCleanSession, QOSLevel qosLevel, String subscriptionId) throws AdaptorException {
         try {
 
-            UUID subscriberChannel = null;
+            UUID subscriberChannel = UUID.fromString(subscriptionId);
 
             String queueIdentifier = MqttUtils.getTopicSpecificQueueName(clientId, subscribedTopic);
 

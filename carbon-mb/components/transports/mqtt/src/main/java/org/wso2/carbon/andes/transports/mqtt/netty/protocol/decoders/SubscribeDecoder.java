@@ -68,7 +68,7 @@ class SubscribeDecoder extends DemuxDecoder {
     private void decodeSubscription(ByteBuf in, SubscribeMessage message) throws UnsupportedEncodingException {
         String topic = Utils.decodeString(in);
         byte qosByte = in.readByte();
-        if ((qosByte & 0xFC) > 0) { //the first 6 bits is reserved => has to be 0
+        if ((qosByte & 0xFC) != 0) { //the first 6 bits is reserved => has to be 0
             throw new CorruptedFrameException("subscribe MUST have QoS byte with reserved buts to 0, found " +
                                               Integer.toHexString(qosByte));
         }

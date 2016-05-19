@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.exceptions.AdaptorException;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
@@ -47,13 +48,14 @@ public class Disconnect {
             throws
             BrokerException {
 
-      //  String mqttClientChannelID = channel.getProperty(MqttConstants.CLIENT_ID_PROPERTY_NAME);
+        //  String mqttClientChannelID = channel.getProperty(MqttConstants.CLIENT_ID_PROPERTY_NAME);
 
         try {
             //We need to also consider publisher disconnections here and clear the state
-           // publisherAckReceiver.disconnectionPublisher(mqttClientChannelID);
+            // publisherAckReceiver.disconnectionPublisher(mqttClientChannelID);
             boolean isCleanSession = Boolean.parseBoolean(channel.getProperty(MqttConstants
                     .SESSION_DURABILITY_PROPERTY_NAME));
+            String subscriptionId = channel.getProperty(MqttUtils.CLUSTER_SUB_ID_PROPERTY_NAME);
 
             for (Map.Entry<String, Integer> topicDetails : channel.getTopicList().entrySet()) {
                 String topicName = topicDetails.getKey();
@@ -61,7 +63,7 @@ public class Disconnect {
 
                 messageStore.storeDisconnectMessage(topicName, channel.getProperty(MqttConstants
                         .CLIENT_ID_PROPERTY_NAME), isCleanSession, QOSLevel
-                        .getQoSFromValue(qos));
+                        .getQoSFromValue(qos), subscriptionId);
             }
         } catch (AdaptorException e) {
             String error = "Error while disconnecting the subscription";

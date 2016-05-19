@@ -43,7 +43,7 @@ public enum BrokerVersion {
     /**
      * We maintain the instance of the broker which corresponds to its version
      */
-    private Broker broker;
+    private transient Broker broker;
 
     /**
      * Initializes the version of the broker

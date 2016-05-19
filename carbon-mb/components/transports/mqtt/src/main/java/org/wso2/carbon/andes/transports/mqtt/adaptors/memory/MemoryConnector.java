@@ -90,7 +90,8 @@ public class MemoryConnector implements MessagingAdaptor {
     }
 
     @Override
-    public void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel)
+    public void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel,
+                                       String subscriptionId)
             throws AdaptorException {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(topicName);
         stringMqttChannelMap.remove(clientId);
@@ -98,7 +99,7 @@ public class MemoryConnector implements MessagingAdaptor {
 
     @Override
     public void storeUnsubscribeMessage(String subscribedTopic, String username, String clientId, boolean
-            isCleanSession, QOSLevel qosLevel) throws AdaptorException {
+            isCleanSession, QOSLevel qosLevel, String subscriptionId) throws AdaptorException {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(subscribedTopic);
         stringMqttChannelMap.remove(clientId);
 
