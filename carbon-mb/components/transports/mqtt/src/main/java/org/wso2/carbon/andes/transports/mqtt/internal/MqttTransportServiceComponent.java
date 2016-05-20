@@ -44,7 +44,6 @@ import org.wso2.carbon.andes.transports.mqtt.Util;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.CarbonRuntime;
-import org.wso2.carbon.kernel.startupresolver.CapabilityProvider;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
 

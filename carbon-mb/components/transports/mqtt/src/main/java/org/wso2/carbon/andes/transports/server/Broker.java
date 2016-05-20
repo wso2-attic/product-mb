@@ -32,8 +32,8 @@ public interface Broker {
     /**
      * Triggers the connectivity with the broker
      *
-     * @param msg            the details of the message connectivity
-     * @param callback       used to send the CONNACK
+     * @param msg      the details of the message connectivity
+     * @param callback used to send the CONNACK
      * @throws BrokerException
      */
     void connect(AbstractMessage msg, MqttChannel callback) throws BrokerException;
@@ -41,8 +41,8 @@ public interface Broker {
     /**
      * Triggers when disconnected with the broker
      *
-     * @param msg            the details of the message which holds the disconnection
-     * @param channel        provides the details of the client connection which should be disconnected
+     * @param msg     the details of the message which holds the disconnection
+     * @param channel provides the details of the client connection which should be disconnected
      * @throws BrokerException
      */
     void disconnect(AbstractMessage msg, MqttChannel channel) throws BrokerException;

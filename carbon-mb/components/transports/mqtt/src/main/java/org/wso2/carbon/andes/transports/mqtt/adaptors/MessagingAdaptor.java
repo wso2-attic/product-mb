@@ -78,23 +78,15 @@ public interface MessagingAdaptor {
     /**
      * <p>Stores a disconnect message in the store</p>
      *
-     * @param message the message which contains details of the disconnection
-     * @param channel the details of the channel
-     * @throws AdaptorException
-     */
-
-
-    /**
-     * <p>Stores a disconnect message in the store</p>
-     *
      * @param topicName      the topic the subscription disconnection should be made
      * @param clientId       the channel id of the disconnected client
      * @param isCleanSession durability of the subscription
      * @param qosLevel       the quality of service level subscribed to
+     * @param subscriptionId id of the subscriber the disconnection should be initiated
      * @throws AdaptorException
      */
-    void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel) throws
-            AdaptorException;
+    void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel, String
+            subscriptionId) throws AdaptorException;
 
     /**
      * <p>Notifies the store on an un subscription made by the client</p>
@@ -112,11 +104,11 @@ public interface MessagingAdaptor {
      * @param clientId        the channel id of the disconnected client
      * @param isCleanSession  durability of the subscription
      * @param qosLevel        the quality of service level subscribed to
+     * @param subscriptionId  id of the subscriber the disconnection should be initiated
      * @throws AdaptorException
      */
     void storeUnsubscribeMessage(String subscribedTopic, String username, String clientId, boolean
-            isCleanSession, QOSLevel qosLevel) throws
-            AdaptorException;
+            isCleanSession, QOSLevel qosLevel, String subscriptionId) throws AdaptorException;
 
 
     /**

@@ -20,7 +20,6 @@ package org.wso2.carbon.andes.transports.mqtt.broker.v311.commands;
 
 
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
-import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.exceptions.AdaptorException;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
@@ -29,7 +28,7 @@ import org.wso2.carbon.andes.transports.server.BrokerException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Processors the ping request which is received through the client, we used the ping request to identify unacked
@@ -61,7 +60,7 @@ public class PingRequest {
             //We have the dataset sorted according to the traversal count, hence we could guarantee the most eligible
             // message ids which should be notified to be retried will be in the first entries.
             if (messageDeliveryTag.getKeepAliveTraversal() >= 2) {
-                UUID channelID = UUID.fromString(channel.getProperty(MqttUtils.CLUSTER_SUB_ID_PROPERTY_NAME));
+               // UUID channelID = UUID.fromString(channel.getProperty(MqttUtils.CLUSTER_SUB_ID_PROPERTY_NAME));
                 //if the message id has being traversed more than 2 time the message will be notified to be retried
                 //TODO notify andes
                 try {

@@ -33,6 +33,7 @@ import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMes
 
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -107,7 +108,7 @@ public class MqttUtils {
                 + "," + TOPIC + "=" + topic + "," + DESTINATION + "=" + destination + "," + PERSISTENCE
                 + "=" + persistence + "," + MESSAGE_CONTENT_LENGTH + "=" + contentLength + "," + QOSLEVEL + "=" + qos
                 + "," + IS_COMPRESSED + "=" + isCompressed;
-        metaInformation = information.getBytes();
+        metaInformation = information.getBytes(StandardCharsets.UTF_8);
         return metaInformation;
     }
 
@@ -230,7 +231,7 @@ public class MqttUtils {
      * @return A unique UUID for the given arguments
      */
     public static UUID generateSubscriptionChannelID(String clientId, String topic, int qos, boolean cleanSession) {
-        return UUID.nameUUIDFromBytes((clientId + topic + qos + cleanSession).getBytes());
+        return UUID.nameUUIDFromBytes((clientId + topic + qos + cleanSession).getBytes(StandardCharsets.UTF_8));
     }
 
     /**

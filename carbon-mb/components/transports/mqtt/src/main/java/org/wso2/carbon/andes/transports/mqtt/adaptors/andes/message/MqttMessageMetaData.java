@@ -22,6 +22,7 @@ import org.wso2.andes.server.store.StorableMessageMetaData;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,7 +147,7 @@ public class MqttMessageMetaData implements StorableMessageMetaData {
         private Map<String, String> decodeMetaData(ByteBuffer buffer) {
             Map<String, String> decodedValues = new HashMap<>();
 
-            String information = new String(buffer.array());
+            String information = new String(buffer.array(), StandardCharsets.UTF_8);
             //Will split the Meta Body information
             String[] messageParts = information.split("\\?");
             //Check whether the message parts is split into 2 properly

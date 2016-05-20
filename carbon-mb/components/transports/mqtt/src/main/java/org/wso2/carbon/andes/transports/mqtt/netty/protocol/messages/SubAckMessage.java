@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class SubAckMessage extends MessageIDMessage {
 
-    private byte returnCode;
+//    private byte returnCode;
 
     // MQTT spec 3.1.1 specific return codes
     public static final byte FORBIDDEN_SUBSCRIPTION = 0x08;
@@ -43,11 +43,11 @@ public class SubAckMessage extends MessageIDMessage {
         types.add(type);
     }
 
-    public byte getreturnCode() {
+/*    public byte getreturnCode() {
         return returnCode;
     }
 
     public void setreturnCode(byte returnCode) {
         this.returnCode = returnCode;
-    }
+    }*/
 }
