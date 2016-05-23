@@ -27,15 +27,19 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>andes-rest-service</artifactId>
+    <artifactId>andes.rest.service</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Message Broker - Andes REST Service Component</name>
     <description>
-        This is a REST service written using msf4 to expose andes resources.
+        This is a REST service written using msf4 to expose Andes resources.
     </description>
     <url>http://wso2.com</url>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.mb</groupId>
+            <artifactId>andes</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -49,17 +53,24 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
-            <artifactId>qpid</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.msf4j</groupId>
             <artifactId>msf4j-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
+            <artifactId>swagger-jaxrs</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
+
         <!-- Testing dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -73,14 +84,6 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.ant</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -198,15 +201,17 @@
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
-            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.wso2.msf4j.*;version="${msf4j.import.version.range}",
+            org.slf4j.*;version="${slf4j.import.version.range}",
+            io.netty.*;version="${netty.version.range}",
+            io.swagger.jaxrs.config.*;version="${io.swagger.version.range}",
+            javax.management.*,
             javax.ws.rs.*,
         </import.package>
         <carbon.component>
-            startup.listener;componentName="andes-rest-microservice";
-            osgi.service; objectClass="org.wso2.carbon.andes.service.internal.AndesRESTServiceComponent"
+            osgi.service; objectClass="org.wso2.msf4j.Microservice"
         </carbon.component>
     </properties>
 </project>

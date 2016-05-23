@@ -21,11 +21,11 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.carbon.andes.services.AndesService;
-import org.wso2.carbon.andes.services.DestinationManagerService;
-import org.wso2.carbon.andes.services.DestinationManagerServiceImpl;
 import org.wso2.carbon.andes.service.beans.DestinationManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
+import org.wso2.carbon.andes.service.internal.AndesRESTService;
+import org.wso2.carbon.andes.service.managers.DestinationManagerService;
+import org.wso2.carbon.andes.service.managers.DestinationManagerServiceImpl;
 import org.wso2.msf4j.MicroservicesRunner;
 
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class DestinationTestCase {
         DestinationManagerServiceImpl destinationManagerService = new DestinationManagerServiceImpl
                 (destinationManagementBeans);
 
-        AndesService andesService = new AndesService();
+        AndesRESTService andesService = new AndesRESTService();
         andesService.setDestinationManagerService(destinationManagerService);
 
         MicroservicesRunner microservicesRunner = new MicroservicesRunner(PORT).deploy(andesService);
