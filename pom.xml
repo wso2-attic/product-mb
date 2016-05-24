@@ -243,6 +243,7 @@
                 <version>${carbon.cache.version}</version>
                 <type>zip</type>
             </dependency>
+            <!--End of Dependent Features-->
 
             <!--Message Broker Dependencies-->
             <dependency>
@@ -297,6 +298,12 @@
                 <groupId>org.wso2.uuf</groupId>
                 <artifactId>org.wso2.uuf.handlebars.feature</artifactId>
                 <version>${uuf.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.metrics</groupId>
+                <artifactId>org.wso2.carbon.metrics.feature</artifactId>
+                <version>${carbon.metrics.version}</version>
                 <type>zip</type>
             </dependency>
             <!--End of Dependent Features-->
@@ -482,15 +489,16 @@
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
-        <carbon.jndi.version>1.0.0-m1</carbon.jndi.version>
-        <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
-        <carbon.kernel.version>5.1.0-alpha2</carbon.kernel.version>
+        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
+        <carbon.kernel.package.import.version.range>[5.1.0, 6.0.0)</carbon.kernel.package.import.version.range>
+        <carbon.kernel.version>5.1.0-SNAPSHOT</carbon.kernel.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <carbon.messaging.version>1.0.3</carbon.messaging.version>
         <carbon.transport.http.netty.version>2.1.0</carbon.transport.http.netty.version>
         <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
         <msf4j.version>1.1.0-SNAPSHOT</msf4j.version>
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
+        <carbon.metrics.version>2.0.0-SNAPSHOT</carbon.metrics.version>
 
         <!--Transport Related Configrations -->
         <geronimo-jms_1.1_spec.version>1.1.0.wso2v1</geronimo-jms_1.1_spec.version>

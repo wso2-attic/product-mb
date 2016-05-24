@@ -16,7 +16,8 @@
             </jndiConfig>
             <definition type="RDBMS">
                 <configuration>
-                    <url>jdbc:h2:repository/database/WSO2MB_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;INIT=runscript from 'dbscripts/mb-store/h2-mb.sql'</url>
+                    <url>jdbc:h2:./database/WSO2MB_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;INIT=runscript from
+                        'dbscripts/mb-store/h2-mb.sql'</url>
                     <username>wso2carbon</username>
                     <password>wso2carbon</password>
                     <driverClassName>org.h2.Driver</driverClassName>
