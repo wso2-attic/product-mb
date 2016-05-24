@@ -51,14 +51,14 @@
     <modules>
         <!--Components-->
         <module>carbon-mb/components/andes</module>
-        <!--<module>carbon-mb/components/andes-rest-service</module>-->
+        <module>carbon-mb/components/andes-rest-service</module>
         <!--<module>carbon-mb/components/ui</module>-->
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
         <!--Features-->
         <module>carbon-mb/features/org.wso2.carbon.andes.feature</module>
-        <!--TODO : Add REST service as a feature-->
+        <module>carbon-mb/features/org.wso2.carbon.andes.rest.service.feature</module>
         <!--<module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>-->
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.amqp.feature</module>
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.mqtt.feature</module>
@@ -143,8 +143,19 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
+                <artifactId>swagger-jaxrs</artifactId>
+                <version>${io.swagger.jaxrs.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>jsr311-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.annotations.version}</version>
+                <version>${io.swagger.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs.wso2</groupId>
@@ -166,6 +177,7 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
             </dependency>
+
             <!--End 3rd Party Dependencies-->
 
             <!--Carbon Dependencies-->
@@ -266,6 +278,12 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.carbon.andes.rest.service.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
                 <version>${carbon.mb.version}</version>
                 <type>zip</type>
@@ -318,6 +336,11 @@
                 <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>andes</artifactId>
                 <version>${carbon.mb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>andes.rest.service</artifactId>
+                <version>${andes.dependency.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
@@ -377,9 +400,9 @@
                 <version>${jacoco.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${jmockit.version}</version>
+                <groupId>javax.transaction</groupId>
+                <artifactId>jta</artifactId>
+                <version>${jta.version}}</version>
             </dependency>
             <dependency>
                 <groupId>javax.inject</groupId>
@@ -474,7 +497,9 @@
         <rs-api.version>2.0</rs-api.version>
         <slf4j.import.version.range>[1.7.1, 2.0.0)</slf4j.import.version.range>
         <slf4j.version>1.7.5</slf4j.version>
-        <swagger.annotations.version>1.5.8</swagger.annotations.version>
+        <io.swagger.annotations.version>1.5.8</io.swagger.annotations.version>
+        <io.swagger.jaxrs.version>1.5.8</io.swagger.jaxrs.version>
+        <io.swagger.version.range>[1.5.0,1.6.0)</io.swagger.version.range>
         <commons-lang.version>2.1</commons-lang.version>
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
 
@@ -519,8 +544,8 @@
         <slf4j.api.version>1.7.12</slf4j.api.version>
 
         <!-- Unit Test dependency versions-->
+        <jta.version>1.1</jta.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
-        <jmockit.version>1.8</jmockit.version>
         <maven.paxexam.plugin.version>1.2.4</maven.paxexam.plugin.version>
         <mockito.version>1.9.5</mockito.version>
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>

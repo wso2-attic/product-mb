@@ -44,7 +44,6 @@ import org.wso2.carbon.andes.transports.mqtt.Util;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.CarbonRuntime;
-import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
 
 
@@ -65,7 +64,7 @@ import org.wso2.carbon.kernel.transports.CarbonTransport;
         }
 )
 @SuppressWarnings("unused")
-public class MqttTransportServiceComponent implements RequiredCapabilityListener {
+public class MqttTransportServiceComponent {
 
     private static final Log log = LogFactory.getLog(MqttTransportServiceComponent.class);
 
@@ -210,11 +209,5 @@ public class MqttTransportServiceComponent implements RequiredCapabilityListener
      */
     protected void unsetAndesInstance(Andes andesInstance) {
         MqttTransportDataHolder.getInstance().setAndesInstance(null);
-    }
-
-    @Override
-    public void onAllRequiredCapabilitiesAvailable() {
-        MqttTransportDataHolder.getInstance().getContext().registerService(MqttTransportServiceComponent.class, this,
-                null);
     }
 }

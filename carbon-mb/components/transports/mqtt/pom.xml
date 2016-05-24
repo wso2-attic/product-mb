@@ -107,8 +107,7 @@
             javax.net.ssl.*;version="[0.0.0, 1.0.0)"
         </import.package>
         <carbon.component>
-            startup.listener;componentName="mqtt-transport-component";requiredService="org.wso2.carbon.andes.transports.mqtt.internal.MqttTransport",
-            osgi.service;objectClass="org.wso2.carbon.kernel.startupresolver.CapabilityProvider";capabilityName="mqtt-transport-capability-provider"
+            osgi.service; objectClass="org.wso2.carbon.kernel.transports.CarbonTransport";serviceCount="2"
         </carbon.component>
     </properties>
 </project>

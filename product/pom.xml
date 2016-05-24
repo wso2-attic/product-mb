@@ -89,6 +89,11 @@
         </dependency>
         <!--<dependency>-->
             <!--<groupId>org.wso2.carbon.mb</groupId>-->
+            <!--<artifactId>org.wso2.carbon.andes.rest.service.feature</artifactId>-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.carbon.mb</groupId>-->
             <!--<artifactId>org.wso2.carbon.mb.ui.feature</artifactId>-->
             <!--<type>zip</type>-->
         <!--</dependency>-->
@@ -222,6 +227,10 @@
                                     <version>${carbon.mb.version}</version>
                                 </feature>
                                 <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.andes.rest.service.feature</id>-->
+                                    <!--<version>${carbon.mb.version}</version>-->
+                                <!--</feature>-->
+                                <!--<feature>-->
                                     <!--<id>org.wso2.carbon.mb.ui.feature</id>-->
                                     <!--<version>${carbon.mb.version}</version>-->
                                 <!--</feature>-->
@@ -333,6 +342,10 @@
                                     <id>org.wso2.carbon.andes.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.andes.rest.service.feature.group</id>-->
+                                    <!--<version>${carbon.mb.version}</version>-->
+                                <!--</feature>-->
                                 <!--<feature>-->
                                     <!--<id>org.wso2.carbon.mb.ui.feature.group</id>-->
                                     <!--<version>${carbon.mb.version}</version>-->

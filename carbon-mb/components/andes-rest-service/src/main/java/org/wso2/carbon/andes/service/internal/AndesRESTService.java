@@ -41,6 +41,10 @@ import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
+import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
+import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
+import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
+import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.service.managers.BrokerManagerService;
 import org.wso2.carbon.andes.service.managers.BrokerManagerServiceImpl;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;
@@ -49,10 +53,6 @@ import org.wso2.carbon.andes.service.managers.MessageManagerService;
 import org.wso2.carbon.andes.service.managers.MessageManagerServiceImpl;
 import org.wso2.carbon.andes.service.managers.SubscriptionManagerService;
 import org.wso2.carbon.andes.service.managers.SubscriptionManagerServiceImpl;
-import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
-import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
-import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
-import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.service.types.BrokerInformation;
 import org.wso2.carbon.andes.service.types.ClusterInformation;
 import org.wso2.carbon.andes.service.types.Destination;
@@ -110,11 +110,11 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "Subscriptions", description = "Operations on handling subscription related resources."),
                 @Tag(name = "Node Details", description = "Operations on getting node details.")},
         schemes = SwaggerDefinition.Scheme.HTTPS)
-@Api(value = "/mb/api/", description = "Endpoint to WSO2 message broker REST services.",
+@Api(value = "mb", description = "Endpoint to WSO2 message broker REST services.",
      produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
-@Path("/mb/api/")
-public class AndesRESTServiceComponent implements Microservice {
-    private static final Logger log = LoggerFactory.getLogger(AndesRESTServiceComponent.class);
+@Path("/mb")
+public class AndesRESTService implements Microservice {
+    private static final Logger log = LoggerFactory.getLogger(AndesRESTService.class);
     /**
      * Bundle registration service for andes REST service.
      */
@@ -143,7 +143,7 @@ public class AndesRESTServiceComponent implements Microservice {
     /**
      * Initializes the service classes for resources.
      */
-    public AndesRESTServiceComponent() {
+    public AndesRESTService() {
         destinationManagerService = new DestinationManagerServiceImpl();
         subscriptionManagerService = new SubscriptionManagerServiceImpl();
         messageManagerService = new MessageManagerServiceImpl();
@@ -1156,7 +1156,7 @@ public class AndesRESTServiceComponent implements Microservice {
      */
     @Activate
     protected void start(BundleContext bundleContext) {
-        serviceRegistration = bundleContext.registerService(AndesRESTServiceComponent.class.getName(), this, null);
+        serviceRegistration = bundleContext.registerService(AndesRESTService.class.getName(), this, null);
         log.info("Andes REST Service has started successfully.");
     }
 
