@@ -17,6 +17,7 @@
 package org.wso2.carbon.andes.internal;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.osgi.HazelcastOSGiService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
@@ -31,6 +32,7 @@ public class AndesDataHolder {
 
     private static AndesDataHolder instance = new AndesDataHolder();
     private HazelcastInstance carbonHazelcastAgent;
+    private HazelcastOSGiService hazelcastOSGiService;
     private CarbonRuntime carbonRuntime;
 
     /**
@@ -50,26 +52,6 @@ public class AndesDataHolder {
     public static AndesDataHolder getInstance() {
         return instance;
     }
-
-    /**
-     * Returns the {@link HazelcastInstance} service which gets set through a service component.
-     *
-     * @return {@link HazelcastInstance} Service
-     */
-    public HazelcastInstance getCarbonHazelcastAgent() {
-        return carbonHazelcastAgent;
-    }
-
-    /**
-     * This method is for setting the {@link HazelcastInstance} service. This method is used by
-     * {@link AndesServiceComponent}.
-     *
-     * @param carbonHazelcastAgent The reference being passed through {@link AndesServiceComponent}
-     */
-    public void setHazelcastInstance(HazelcastInstance carbonHazelcastAgent) {
-        this.carbonHazelcastAgent = carbonHazelcastAgent;
-    }
-
 
     /**
      * Get the data source service reference.
@@ -105,6 +87,24 @@ public class AndesDataHolder {
      */
     public void setCarbonRuntime(CarbonRuntime carbonRuntime) {
         this.carbonRuntime = carbonRuntime;
+    }
+
+    /**
+     * Getter of {@link HazelcastOSGiService}
+     *
+     * @return {@link HazelcastOSGiService} object
+     */
+    public HazelcastOSGiService getHazelcastOSGiService() {
+        return hazelcastOSGiService;
+    }
+
+    /**
+     * Setter of {@link HazelcastOSGiService}
+     *
+     * @param hazelcastOSGiService {@link HazelcastOSGiService} object
+     */
+    public void setHazelcastOSGiService(HazelcastOSGiService hazelcastOSGiService) {
+        this.hazelcastOSGiService = hazelcastOSGiService;
     }
 
 }

@@ -177,7 +177,11 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
             <!--End 3rd Party Dependencies-->
 
             <!--Carbon Dependencies-->
@@ -195,11 +199,6 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.launcher</artifactId>
                 <version>${carbon.kernel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.hazelcast</groupId>
-                <artifactId>org.wso2.carbon.hazelcast</artifactId>
-                <version>${carbon.hazelcast.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.jndi</groupId>
@@ -232,12 +231,6 @@
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.hazelcast</groupId>
-                <artifactId>org.wso2.carbon.hazelcast.feature</artifactId>
-                <version>${carbon.hazelcast.feature.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.jndi</groupId>
                 <artifactId>org.wso2.carbon.jndi.feature</artifactId>
                 <version>${carbon.jndi.version}</version>
@@ -257,7 +250,7 @@
             </dependency>
             <!--End of Dependent Features-->
 
-            <!--Message Broker Dependencies-->
+            <!--Message Broker Dependent Features-->
             <dependency>
                 <groupId>org.wso2.carbon.transport</groupId>
                 <artifactId>org.wso2.carbon.transport.http.netty.feature</artifactId>
@@ -476,6 +469,7 @@
 
         <!--3rd party related properties-->
         <com.hazelcast.package.import.version.range>[3.6,4)</com.hazelcast.package.import.version.range>
+        <hazelcast.version>3.6</hazelcast.version>
         <commons-beanutils.wso2.version>1.8.0.wso2v1</commons-beanutils.wso2.version>
         <commons-cli.wso2.version>1.2.0.wso2v1</commons-cli.wso2.version>
         <commons-digester.wso2.version>1.8.1.wso2v1</commons-digester.wso2.version>

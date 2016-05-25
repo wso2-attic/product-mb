@@ -100,6 +100,10 @@
             <groupId>com.h2database.wso2</groupId>
             <artifactId>h2-database-engine</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -192,6 +196,10 @@
                                 <bundle>
                                     <symbolicName>h2-database-engine</symbolicName>
                                     <version>${orbit.version.h2.engine}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>com.hazelcast</symbolicName>
+                                    <version>${hazelcast.version}</version>
                                 </bundle>
                             </bundles>
                         </configuration>
