@@ -105,6 +105,18 @@
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.security.userstore</groupId>
+            <artifactId>org.wso2.carbon.security.userstore.jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
 
         <!-- Testing dependencies -->
         <dependency>
@@ -246,10 +258,14 @@
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
+            org.wso2.msf4j.*;version="${msf4j.import.version.range}",
+            org.wso2.carbon.security.caas.*;version="1.0.0",
+            org.wso2.msf4j.*;version="${msf4j.import.version.range}",
             org.slf4j.*;version="${slf4j.import.version.range}",
             javax.jms.*,
             javax.naming.*,
-            javax.xml.stream.*
+            javax.xml.stream.*,
+            javax.security.*
         </import.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.carbon.andes.internal.AndesServiceComponent"

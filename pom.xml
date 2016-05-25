@@ -381,6 +381,17 @@
                 <version>${hawtbuf.version}</version>
             </dependency>
             <!-- End of MQTT Dependancies -->
+            
+            <dependency>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas</artifactId>
+                <version>${carbon.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.security.userstore</groupId>
+                <artifactId>org.wso2.carbon.security.userstore.jdbc</artifactId>
+                <version>${carbon.security.version}</version>
+            </dependency>
 
             <!--Dependencies for Testing-->
             <dependency>
@@ -551,6 +562,7 @@
         <org.jacoco.ant.version>0.7.5.201505241946</org.jacoco.ant.version>
         <testng.version>6.9.4</testng.version>
 
+        <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
     </properties>
 
     <build>
