@@ -50,12 +50,12 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.hazelcast</groupId>
-            <artifactId>org.wso2.carbon.hazelcast</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
             <artifactId>qpid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -241,7 +241,6 @@
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
-            org.wso2.carbon.hazelcast.*;version="${carbon.hazelcast.package.import.version.range}",
             com.hazelcast.*;version="${com.hazelcast.package.import.version.range}",
             org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
@@ -251,6 +250,8 @@
             javax.naming.*,
             javax.xml.stream.*
         </import.package>
+        <!--Refer to https://wso2.org/jira/browse/MB-1681-->
+        <dynamic.import.package>*</dynamic.import.package>
         <carbon.component>
             osgi.service; objectClass="org.wso2.carbon.andes.internal.AndesServiceComponent"
         </carbon.component>
