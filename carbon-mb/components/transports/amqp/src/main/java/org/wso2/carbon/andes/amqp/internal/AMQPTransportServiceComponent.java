@@ -49,7 +49,7 @@ public class AMQPTransportServiceComponent {
 
         // Register AMQP protocol on andes
         for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
-            DataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
+            AMQPComponentDataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
         }
 
         logger.info("AMQP Service Component is activated");
@@ -123,7 +123,7 @@ public class AMQPTransportServiceComponent {
             unbind = "unsetCarbonRuntime"
     )
     protected void setCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(carbonRuntime);
+        AMQPComponentDataHolder.getInstance().setCarbonRuntime(carbonRuntime);
     }
 
     /**
@@ -132,7 +132,7 @@ public class AMQPTransportServiceComponent {
      * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(null);
+        AMQPComponentDataHolder.getInstance().setCarbonRuntime(null);
     }
 
     /**
@@ -147,7 +147,7 @@ public class AMQPTransportServiceComponent {
             unbind = "unsetAndesInstance"
     )
     protected void setAndesInstance(Andes andesInstance) {
-        DataHolder.getInstance().setAndesInstance(andesInstance);
+        AMQPComponentDataHolder.getInstance().setAndesInstance(andesInstance);
     }
 
     /**
@@ -155,6 +155,6 @@ public class AMQPTransportServiceComponent {
      * @param andesInstance
      */
     protected void unsetAndesInstance(Andes andesInstance) {
-        DataHolder.getInstance().setAndesInstance(null);
+        AMQPComponentDataHolder.getInstance().setAndesInstance(null);
     }
 }

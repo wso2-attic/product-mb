@@ -10,14 +10,14 @@ import java.util.logging.Logger;
  *
  * @since 3.5.0-SNAPSHOT
  */
-public class DataHolder {
-    Logger logger = Logger.getLogger(DataHolder.class.getName());
+public class AMQPComponentDataHolder {
+    Logger logger = Logger.getLogger(AMQPComponentDataHolder.class.getName());
 
-    private static DataHolder instance = new DataHolder();
+    private static AMQPComponentDataHolder instance = new AMQPComponentDataHolder();
     private CarbonRuntime carbonRuntime;
     private Andes andesInstance;
 
-    private DataHolder() {
+    private AMQPComponentDataHolder() {
 
     }
 
@@ -26,7 +26,7 @@ public class DataHolder {
      *
      * @return The DataHolder instance of this singleton class
      */
-    public static DataHolder getInstance() {
+    public static AMQPComponentDataHolder getInstance() {
         return instance;
     }
 
