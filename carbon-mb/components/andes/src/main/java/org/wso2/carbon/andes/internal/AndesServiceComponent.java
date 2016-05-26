@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.andes.configuration.AndesConfigurationManager;
 import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesContext;
+import org.wso2.andes.kernel.AndesKernelBoot;
 import org.wso2.andes.server.BrokerOptions;
 import org.wso2.andes.server.Main;
 import org.wso2.andes.server.cluster.coordination.hazelcast.HazelcastAgent;
@@ -100,12 +101,28 @@ public class AndesServiceComponent {
         AndesContext.getInstance().setClusteringEnabled(true);
         AndesContext.getInstance().constructStoreConfiguration();
 
+        startAndes();
+
         System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
         String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort()};
         Main.main(args);
+        // TODO: C5 migration - Decouple from qpid and move to andes startup
+        AndesKernelBoot.registerMBeans();
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
         serviceRegistration = bundleContext.registerService(Andes.class.getName(), Andes.getInstance(), null);
         log.info("Andes service component activated");
+    }
+
+    /**
+     * Start Andes core (data stores, scheduled tasks, messaging engine etc)
+     * @throws Exception
+     */
+    private void startAndes() throws Exception {
+        AndesKernelBoot.startAndesStores();
+        AndesKernelBoot.recoverDistributedSlotMap();
+        AndesKernelBoot.initializeComponents();
+        AndesKernelBoot.startMessaging();
+        AndesKernelBoot.createSuperTenantDLC();
     }
 
     /**
