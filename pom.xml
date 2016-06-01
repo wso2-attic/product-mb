@@ -510,10 +510,10 @@
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
         <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
         <carbon.kernel.package.import.version.range>[5.1.0, 6.0.0)</carbon.kernel.package.import.version.range>
-        <carbon.kernel.version>5.1.0-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.version>5.1.0</carbon.kernel.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
         <carbon.messaging.version>1.0.3</carbon.messaging.version>
-        <carbon.transport.http.netty.version>2.1.0</carbon.transport.http.netty.version>
+        <carbon.transport.http.netty.version>2.1.1-SNAPSHOT</carbon.transport.http.netty.version>
         <msf4j.import.version.range>[1.0.0, 2.0.0)</msf4j.import.version.range>
         <msf4j.version>1.1.0-SNAPSHOT</msf4j.version>
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
