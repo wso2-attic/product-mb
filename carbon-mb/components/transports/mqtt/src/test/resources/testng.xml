@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Broker 3.1.1v Test Suite" verbose="1" >
+    <test name="MqttCommandMessageTest" >
+        <classes>
+            <class name="org.wso2.carbon.transport.tests.mqtt.broker.v311.MqttBrokerTest" />
+        </classes>
+    </test>
+</suite>
