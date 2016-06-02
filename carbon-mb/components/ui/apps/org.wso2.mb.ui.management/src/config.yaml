@@ -1,7 +1,0 @@
-uuf.productName : WSO2 MB
-elementsPerPage: 10
-lifecycle:
-    - state: adopted
-      show: false
-    - state: new
-      show: true
