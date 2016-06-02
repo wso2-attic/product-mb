@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.andes.amqp.internal;
 
 import org.wso2.andes.kernel.Andes;
@@ -10,14 +26,14 @@ import java.util.logging.Logger;
  *
  * @since 3.5.0-SNAPSHOT
  */
-public class DataHolder {
-    Logger logger = Logger.getLogger(DataHolder.class.getName());
+public class AMQPComponentDataHolder {
+    Logger logger = Logger.getLogger(AMQPComponentDataHolder.class.getName());
 
-    private static DataHolder instance = new DataHolder();
+    private static AMQPComponentDataHolder instance = new AMQPComponentDataHolder();
     private CarbonRuntime carbonRuntime;
     private Andes andesInstance;
 
-    private DataHolder() {
+    private AMQPComponentDataHolder() {
 
     }
 
@@ -26,7 +42,7 @@ public class DataHolder {
      *
      * @return The DataHolder instance of this singleton class
      */
-    public static DataHolder getInstance() {
+    public static AMQPComponentDataHolder getInstance() {
         return instance;
     }
 

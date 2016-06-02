@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.andes.amqp.internal;
 
 import org.osgi.framework.BundleContext;
@@ -15,6 +31,10 @@ import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolInfo;
 import org.wso2.andes.subscription.LocalDurableTopicSubscriptionStore;
 import org.wso2.andes.subscription.QueueSubscriptionStore;
+import org.wso2.carbon.andes.amqp.AMQPTransport;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPDurableTopicResourceManager;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPQueueResourceManager;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPTopicResourceManager;
 import org.wso2.carbon.andes.amqp.subscription.AMQPTopicSubscriptionBitMapStore;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
@@ -23,14 +43,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Service component to consume CarbonRuntime instance which has been registered as an OSGi service
- * by Carbon Kernel.
- *
- * @since 3.5.0-SNAPSHOT
+ * The service component for AMQP transport used by andes broker.
  */
 @Component(
         name = "org.wso2.carbon.andes.amqp.internal.AMQPTransportServiceComponent",
-        immediate = true
+        immediate = true,
+        property = {
+                "componentName=amqp-transport"
+        }
 )
 public class AMQPTransportServiceComponent {
 
@@ -49,12 +69,50 @@ public class AMQPTransportServiceComponent {
 
         // Register AMQP protocol on andes
         for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
-            DataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
+            AMQPComponentDataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
         }
 
+        registerResourceManagers();
+
+        serviceRegistration = bundleContext.registerService(AMQPTransport.class.getName(), new AMQPTransport(), null);
         logger.info("AMQP Service Component is activated");
     }
 
+    /**
+     * Registering resource handlers.
+     *
+     * @throws AndesException
+     */
+    private void registerResourceManagers() throws AndesException {
+        for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
+            AMQPQueueResourceManager amqpResourceManager =
+                                    new AMQPQueueResourceManager(protocolInfo.getProtocolType(), DestinationType.QUEUE);
+            AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
+                                            protocolInfo.getProtocolType(), DestinationType.QUEUE, amqpResourceManager);
+        }
+
+        for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
+            AMQPTopicResourceManager amqpResourceManager =
+                                    new AMQPTopicResourceManager(protocolInfo.getProtocolType(), DestinationType.TOPIC);
+            AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
+                                            protocolInfo.getProtocolType(), DestinationType.TOPIC, amqpResourceManager);
+        }
+
+        for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
+            AMQPDurableTopicResourceManager amqpResourceManager =
+                    new AMQPDurableTopicResourceManager(protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC);
+            AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
+                                    protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC, amqpResourceManager);
+        }
+    }
+
+    /**
+     * Creates a {@link ProtocolInfo} which includes subscriptions stores for destination types.
+     *
+     * @param protocolVersion The protocol version for which the subsription stores to be added.
+     * @return A {@link ProtocolInfo}.
+     * @throws AndesException
+     */
     private ProtocolInfo createProtocolInfo(ProtocolVersion protocolVersion) throws AndesException {
         ProtocolInfo protocolInfo = new ProtocolInfo("AMQP", protocolVersion.toString());
 
@@ -123,7 +181,7 @@ public class AMQPTransportServiceComponent {
             unbind = "unsetCarbonRuntime"
     )
     protected void setCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(carbonRuntime);
+        AMQPComponentDataHolder.getInstance().setCarbonRuntime(carbonRuntime);
     }
 
     /**
@@ -132,7 +190,7 @@ public class AMQPTransportServiceComponent {
      * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
-        DataHolder.getInstance().setCarbonRuntime(null);
+        AMQPComponentDataHolder.getInstance().setCarbonRuntime(null);
     }
 
     /**
@@ -147,14 +205,15 @@ public class AMQPTransportServiceComponent {
             unbind = "unsetAndesInstance"
     )
     protected void setAndesInstance(Andes andesInstance) {
-        DataHolder.getInstance().setAndesInstance(andesInstance);
+        AMQPComponentDataHolder.getInstance().setAndesInstance(andesInstance);
     }
 
     /**
      * The unbind which gets called at the un-registration of Andes component.
      * @param andesInstance
      */
+    @SuppressWarnings("unused")
     protected void unsetAndesInstance(Andes andesInstance) {
-        DataHolder.getInstance().setAndesInstance(null);
+        AMQPComponentDataHolder.getInstance().setAndesInstance(null);
     }
 }

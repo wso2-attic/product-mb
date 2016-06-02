@@ -67,7 +67,7 @@
         <import.package>
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
             org.wso2.carbon.kernel;version="[5.0.0, 6.0.0)",
-            org.wso2.andes.*;version="[3.0.0, 4.0.0]"
+            org.wso2.andes.*;version="[3.0.0, 4.0.0)"
         </import.package>
     </properties>
 
