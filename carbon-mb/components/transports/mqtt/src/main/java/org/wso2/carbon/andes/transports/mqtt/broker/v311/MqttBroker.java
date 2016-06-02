@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
-import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.AndesAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
 import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Connect;
 import org.wso2.carbon.andes.transports.mqtt.broker.v311.commands.Disconnect;
@@ -58,7 +57,7 @@ public class MqttBroker implements Broker {
 
     private static final Log log = LogFactory.getLog(MqttBroker.class);
 
-    private MessagingAdaptor messageStore = new AndesAdaptor();
+    //private MessagingAdaptor messageStore = new AndesAdaptor();
 
     /**
      * <p>
@@ -67,8 +66,7 @@ public class MqttBroker implements Broker {
      * <b>{@inheritDoc}</b>
      */
     @Override
-    public void connect(AbstractMessage msg, MqttChannel callback)
-            throws BrokerException {
+    public void connect(AbstractMessage msg, MqttChannel callback) throws BrokerException {
 
         //For MQTT we just need to take a copy
         if (msg instanceof ConnectMessage) {
@@ -112,12 +110,12 @@ public class MqttBroker implements Broker {
      * <b>{@inheritDoc}</b>
      */
     @Override
-    public void disconnect(AbstractMessage msg, MqttChannel channel) throws
+    public void disconnect(AbstractMessage msg, MqttChannel channel, MessagingAdaptor messageAdaptor) throws
             BrokerException {
         log.info("Disconnect request was sent from the client " + channel.getProperty(MqttConstants
                 .CLIENT_ID_PROPERTY_NAME));
         try {
-            Disconnect.notifyStore(messageStore, channel);
+            Disconnect.notifyStore(messageAdaptor, channel);
         } finally {
             channel.close();
         }
@@ -131,13 +129,13 @@ public class MqttBroker implements Broker {
      * <b>{@inheritDoc}</b>
      */
     @Override
-    public void unSubscribe(AbstractMessage msg, MqttChannel callback) throws
+    public void unSubscribe(AbstractMessage msg, MqttChannel callback, MessagingAdaptor messageAdaptor) throws
             BrokerException {
         if (msg instanceof UnsubscribeMessage) {
             log.info("Un subscribe request was sent from the client " + callback.getProperty(MqttConstants
                     .CLIENT_ID_PROPERTY_NAME));
             UnsubscribeMessage message = (UnsubscribeMessage) msg;
-            UnSubscribe.notifyStore(messageStore, message, callback);
+            UnSubscribe.notifyStore(messageAdaptor, message, callback);
         } else {
             //If the message does not conform to the expected
             String error = "The object of type " + msg.getClass().getName() + "cannot be casted to " +
@@ -156,7 +154,8 @@ public class MqttBroker implements Broker {
      */
 
     @Override
-    public void subscribe(AbstractMessage msg, MqttChannel callback) throws BrokerException {
+    public void subscribe(AbstractMessage msg, MqttChannel callback, MessagingAdaptor messageAdaptor) throws
+            BrokerException {
         if (msg instanceof SubscribeMessage) {
             SubscribeMessage subscribeMessage = (SubscribeMessage) msg;
 
@@ -174,7 +173,7 @@ public class MqttBroker implements Broker {
             }
 
 
-            Subscribe.notifyStore(messageStore, subscribeMessage, callback);
+            Subscribe.notifyStore(messageAdaptor, subscribeMessage, callback);
         } else {
             //If the message does not conform to the expected
             String error = "The object of type " + msg.getClass().getName() + "cannot be casted to " +
@@ -193,7 +192,8 @@ public class MqttBroker implements Broker {
      */
 
     @Override
-    public void publish(AbstractMessage msg, MqttChannel callback) throws BrokerException {
+    public void publish(AbstractMessage msg, MqttChannel callback, MessagingAdaptor messageAdaptor) throws
+            BrokerException {
         if (msg instanceof PublishMessage) {
             PublishMessage message = (PublishMessage) msg;
             if (log.isDebugEnabled()) {
@@ -202,7 +202,7 @@ public class MqttBroker implements Broker {
                         .getQos() + " for topic " + message.getTopicName());
             }
 
-            Publish.notifyStore(messageStore, message, callback);
+            Publish.notifyStore(messageAdaptor, message, callback);
         } else {
             //If the message does not conform to the expected
             String error = "The object of type " + msg.getClass().getName() + "cannot be casted to " +
@@ -220,7 +220,8 @@ public class MqttBroker implements Broker {
      * <b>{@inheritDoc}</b>
      */
     @Override
-    public void pubAck(AbstractMessage msg, MqttChannel callback) throws BrokerException {
+    public void pubAck(AbstractMessage msg, MqttChannel callback, MessagingAdaptor messageAdaptor) throws
+            BrokerException {
         //Need to process the message type
         switch (msg.getMessageType()) {
             case AbstractMessage.PUBREL:
@@ -248,12 +249,13 @@ public class MqttBroker implements Broker {
      * <b>{@inheritDoc}</b>
      */
     @Override
-    public void subAck(AbstractMessage msg, MqttChannel callback) throws BrokerException {
+    public void subAck(AbstractMessage msg, MqttChannel callback, MessagingAdaptor messageAdaptor) throws
+            BrokerException {
         switch (msg.getMessageType()) {
             case AbstractMessage.PUBREC:
                 if (msg instanceof PubRecMessage) {
                     PubRecMessage pubRecMessage = (PubRecMessage) msg;
-                    PublisherReceived.notifyStore(messageStore, pubRecMessage, callback);
+                    PublisherReceived.notifyStore(messageAdaptor, pubRecMessage, callback);
                 } else {
                     //If the message does not conform to the expected
                     String error = "The object of type " + msg.getClass().getName() + "cannot be casted to " +
@@ -277,7 +279,7 @@ public class MqttBroker implements Broker {
             case AbstractMessage.PUBACK:
                 if (msg instanceof PubAckMessage) {
                     PubAckMessage publisherAckMessage = (PubAckMessage) msg;
-                    PublisherAck.notifyStore(messageStore, publisherAckMessage, callback);
+                    PublisherAck.notifyStore(messageAdaptor, publisherAckMessage, callback);
                 } else {
                     //If the message does not conform to the expected
                     String error = "The object of type " + msg.getClass().getName() + "cannot be casted to " +
@@ -296,8 +298,8 @@ public class MqttBroker implements Broker {
      * Specifies to invoke
      */
     @Override
-    public void nack(MqttChannel callback) throws BrokerException {
-        PingRequest.notifyStore(messageStore, callback);
+    public void nack(MqttChannel callback, MessagingAdaptor messageAdaptor) throws BrokerException {
+        PingRequest.notifyStore(messageAdaptor, callback);
     }
 
 

@@ -41,12 +41,14 @@ public class MemoryConnector implements MessagingAdaptor {
     /**
      * <p>
      * Holds the list of subscription against its topic
+     * key   - the topic name
+     * value - Map<clientId,channel>
      * </p>
      * <p>
      * <b>Note:</b> in-memory mode will always send/receive from QoS 0
      * </p>
      */
-    private Map<String, Map<String, MqttChannel>> subscriptions = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, MqttChannel>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
     public void storeConnection(ConnectMessage message) throws AdaptorException {
@@ -62,7 +64,7 @@ public class MemoryConnector implements MessagingAdaptor {
             mqttChannels = new HashMap<>();
         }
 
-        mqttChannels.put(mqttChannel.getProperty(MqttConstants.CLIENT_ID_PROPERTY_NAME), mqttChannel);
+        mqttChannels.put(clientId, mqttChannel);
         subscriptions.put(topic, mqttChannels);
     }
 
@@ -95,6 +97,11 @@ public class MemoryConnector implements MessagingAdaptor {
             throws AdaptorException {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(topicName);
         stringMqttChannelMap.remove(clientId);
+
+        //If there're no clients for the topic after the disconnection we could remove the topic
+        if(stringMqttChannelMap.size() == 0){
+            subscriptions.remove(topicName);
+        }
     }
 
     @Override

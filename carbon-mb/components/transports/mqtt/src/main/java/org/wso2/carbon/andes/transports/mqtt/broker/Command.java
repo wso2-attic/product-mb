@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.andes.transports.mqtt.broker;
 
+import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PingRespMessage;
 import org.wso2.carbon.andes.transports.server.Broker;
@@ -34,62 +35,72 @@ public enum Command {
 
     CONNECT(AbstractMessage.CONNECT) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
             broker.connect(msg, callback);
         }
     },
     DISCONNECT(AbstractMessage.DISCONNECT) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.disconnect(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.disconnect(msg, callback, messageAdaptor);
         }
     },
     PUBLISH(AbstractMessage.PUBLISH) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.publish(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.publish(msg, callback, messageAdaptor);
         }
     },
     PUBLISHER_ACK(AbstractMessage.PUBACK) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.subAck(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.subAck(msg, callback, messageAdaptor);
         }
     },
     PUBLISHER_COMPLETE(AbstractMessage.PUBCOMP) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.subAck(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.subAck(msg, callback, messageAdaptor);
         }
     },
     PUBLISHER_RECEIVED(AbstractMessage.PUBREC) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.subAck(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.subAck(msg, callback, messageAdaptor);
         }
     },
     PUBLISHER_RELEASE(AbstractMessage.PUBREL) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.pubAck(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messageAdaptor) throws BrokerException {
+            broker.pubAck(msg, callback, messageAdaptor);
         }
     },
     SUBSCRIBE(AbstractMessage.SUBSCRIBE) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.subscribe(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messagingAdaptor) throws BrokerException {
+            broker.subscribe(msg, callback, messagingAdaptor);
         }
     },
     UN_SUBSCRIBE(AbstractMessage.UNSUBSCRIBE) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.unSubscribe(msg, callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messagingAdaptor) throws BrokerException {
+            broker.unSubscribe(msg, callback, messagingAdaptor);
         }
     },
     PINGREQ(AbstractMessage.PINGREQ) {
         @Override
-        public void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException {
-            broker.nack(callback);
+        public void process(Broker broker, AbstractMessage msg, MqttChannel callback,
+                            MessagingAdaptor messagingAdaptor) throws BrokerException {
+            broker.nack(callback, messagingAdaptor);
             PingRespMessage message = new PingRespMessage();
             callback.write(message);
         }
@@ -138,7 +149,9 @@ public enum Command {
      * @param broker         the the implementation of the protocol  i.e MQTT 3.1, MQTT 3.1.1
      * @param msg            message which corresponds to the command
      * @param callback       the channel which the command was sent
+     * @param messageAdaptor the adopter interface the broker connects for storage/distribution
      * @throws BrokerException
      */
-    public abstract void process(Broker broker, AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    public abstract void process(Broker broker, AbstractMessage msg, MqttChannel callback, MessagingAdaptor
+            messageAdaptor) throws BrokerException;
 }
