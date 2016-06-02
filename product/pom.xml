@@ -78,6 +78,11 @@
             <type>zip</type>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.metrics</groupId>
+            <artifactId>org.wso2.carbon.metrics.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.andes.feature</artifactId>
             <type>zip</type>
@@ -117,11 +122,6 @@
             <!--<artifactId>org.wso2.uuf.handlebars.feature</artifactId>-->
             <!--<type>zip</type>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.wso2.carbon.metrics</groupId>
-            <artifactId>org.wso2.carbon.metrics.feature</artifactId>
-            <type>zip</type>
-        </dependency>
     </dependencies>
 
     <build>
@@ -210,6 +210,10 @@
                                     <version>${carbon.transport.http.netty.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.carbon.metrics.feature</id>
+                                    <version>${carbon.metrics.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
@@ -245,10 +249,6 @@
                                     <!--<id>org.wso2.uuf.handlebars.feature</id>-->
                                     <!--<version>${uuf.version}</version>-->
                                 <!--</feature>-->
-                                <feature>
-                                    <id>org.wso2.carbon.metrics.feature</id>
-                                    <version>${carbon.metrics.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -322,6 +322,10 @@
                                     <version>${carbon.transport.http.netty.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.carbon.metrics.feature</id>
+                                    <version>${carbon.metrics.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.messaging.feature.group</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
@@ -357,10 +361,6 @@
                                     <!--<id>org.wso2.uuf.handlebars.feature.group</id>-->
                                     <!--<version>${uuf.version}</version>-->
                                 <!--</feature>-->
-                                <feature>
-                                    <id>org.wso2.carbon.metrics.feature</id>
-                                    <version>${carbon.metrics.version}</version>
-                                </feature>
                             </features>
                         </configuration>
                     </execution>

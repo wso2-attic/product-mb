@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.andes.amqp.resource.manager.utils;
 
 import com.gs.collections.impl.list.mutable.primitive.LongArrayList;
@@ -26,7 +42,7 @@ import javax.jms.MessageEOFException;
 import javax.management.MBeanException;
 
 /**
- *
+ * A helper class to convert an andes message to viewable content.
  */
 public class AMQPMessageConverterHelper {
     private static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
@@ -42,37 +58,31 @@ public class AMQPMessageConverterHelper {
      */
     LZ4CompressionHelper lz4CompressionHelper = new LZ4CompressionHelper();
 
-
     /**
      * This is set when reading a byte array. The readBytes(byte[]) method supports multiple calls to read
      * a byte array in multiple chunks, hence this is used to track how much is left to be read
      */
     private int byteArrayRemaining = -1;
 
-
     private static final byte BOOLEAN_TYPE = (byte) 1;
-
     protected static final byte BYTE_TYPE = (byte) 2;
-
     protected static final byte BYTEARRAY_TYPE = (byte) 3;
-
     protected static final byte SHORT_TYPE = (byte) 4;
-
     protected static final byte CHAR_TYPE = (byte) 5;
-
     protected static final byte INT_TYPE = (byte) 6;
-
     protected static final byte LONG_TYPE = (byte) 7;
-
     protected static final byte FLOAT_TYPE = (byte) 8;
-
     protected static final byte DOUBLE_TYPE = (byte) 9;
-
     protected static final byte STRING_TYPE = (byte) 10;
-
     protected static final byte NULL_STRING_TYPE = (byte) 11;
 
-
+    /**
+     * Gets the JMS properties as a map from a {@link AndesMessageMetadata}.
+     *
+     * @param andesMessageMetadata The messages.
+     * @return A map with all JMS properties.
+     * @throws AndesException
+     */
     public Map<String, String> getJMSMessageProperties(AndesMessageMetadata andesMessageMetadata)
                                                                                                 throws AndesException {
         try {
@@ -97,6 +107,14 @@ public class AMQPMessageConverterHelper {
         }
     }
 
+    /**
+     * Gets the message content from an andes message metadata.
+     *
+     * @param andesMessageMetadata Message metadata.
+     * @return Content as a String.
+     * @throws AndesException
+     */
+    @Deprecated
     public String getJMSMessageContent(AndesMessageMetadata andesMessageMetadata) throws AndesException {
         try {
             //get AMQMessage from AndesMessageMetadata
@@ -206,7 +224,7 @@ public class AMQPMessageConverterHelper {
             }
             //create message content to readable text from ByteBuffer
             ByteBuffer wrapMsgContent = ByteBuffer.wrap(messageContent);
-            String wholeMsg = "";
+            String wholeMsg;
 
             //get TextMessage content to display
             switch (mimeType) {
@@ -331,8 +349,6 @@ public class AMQPMessageConverterHelper {
         return wholeMsg;
     }
 
-
-
     /**
      * Read object from StreamMessage ByteBuffer content
      *
@@ -347,7 +363,7 @@ public class AMQPMessageConverterHelper {
         int position = wrapMsgContent.position();
         checkAvailable(1, wrapMsgContent);
         byte wireType = wrapMsgContent.get();
-        Object result = null;
+        Object result;
         try {
             switch (wireType) {
                 case BOOLEAN_TYPE:
