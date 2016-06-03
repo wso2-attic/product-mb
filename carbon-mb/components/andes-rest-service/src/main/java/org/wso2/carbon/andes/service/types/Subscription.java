@@ -39,7 +39,7 @@ public class Subscription {
     @ApiModelProperty(value = "Whether the subscription is active or not..")
     private boolean isActive;
     @ApiModelProperty(value = "The number of messages to be delivered to the subscription.")
-    private int numberOfMessagesRemainingForSubscriber;
+    private long numberOfMessagesRemainingForSubscriber;
     @ApiModelProperty(value = "The node ID which the subscription is in.")
     private String subscriberNodeAddress;
     @ApiModelProperty(value = "The protocol type for which the message belongs to.")
@@ -95,11 +95,11 @@ public class Subscription {
         isActive = active;
     }
 
-    public int getNumberOfMessagesRemainingForSubscriber() {
+    public long getNumberOfMessagesRemainingForSubscriber() {
         return numberOfMessagesRemainingForSubscriber;
     }
 
-    public void setNumberOfMessagesRemainingForSubscriber(int numberOfMessagesRemainingForSubscriber) {
+    public void setNumberOfMessagesRemainingForSubscriber(long numberOfMessagesRemainingForSubscriber) {
         this.numberOfMessagesRemainingForSubscriber = numberOfMessagesRemainingForSubscriber;
     }
 

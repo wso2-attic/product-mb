@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wso2.carbon.andes.service.utils;
+
+package org.wso2.carbon.andes.service.managers.bean.utils;
 
 /**
  * Stores destination management constants which are used to contact through MBeans.

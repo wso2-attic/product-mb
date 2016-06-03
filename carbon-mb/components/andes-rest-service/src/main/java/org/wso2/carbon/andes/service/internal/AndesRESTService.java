@@ -38,21 +38,23 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
-import org.wso2.andes.kernel.AndesContext;
 import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
 import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.service.managers.BrokerManagerService;
-import org.wso2.carbon.andes.service.managers.BrokerManagerServiceImpl;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;
-import org.wso2.carbon.andes.service.managers.DestinationManagerServiceImpl;
 import org.wso2.carbon.andes.service.managers.MessageManagerService;
-import org.wso2.carbon.andes.service.managers.MessageManagerServiceImpl;
 import org.wso2.carbon.andes.service.managers.SubscriptionManagerService;
-import org.wso2.carbon.andes.service.managers.SubscriptionManagerServiceImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.BrokerManagerServiceBeanImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.DestinationManagerServiceBeanImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.MessageManagerServiceBeanImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.SubscriptionManagerServiceBeanImpl;
+import org.wso2.carbon.andes.service.managers.osgi.impl.BrokerManagerServiceOSGiImpl;
+import org.wso2.carbon.andes.service.managers.osgi.impl.DestinationManagerServiceOSGiImpl;
+import org.wso2.carbon.andes.service.managers.osgi.impl.MessageManagerServiceOSGiImpl;
+import org.wso2.carbon.andes.service.managers.osgi.impl.SubscriptionManagerServiceOSGiImpl;
 import org.wso2.carbon.andes.service.types.BrokerInformation;
 import org.wso2.carbon.andes.service.types.ClusterInformation;
 import org.wso2.carbon.andes.service.types.Destination;
@@ -110,7 +112,7 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "Subscriptions", description = "Operations on handling subscription related resources."),
                 @Tag(name = "Node Details", description = "Operations on getting node details.")},
         schemes = SwaggerDefinition.Scheme.HTTPS)
-@Api(value = "mb", description = "Endpoint to WSO2 message broker REST services.",
+@Api(value = "mb", description = "Endpoint to WSO2 message broker REST service.",
      produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
 @Path("/mb")
 public class AndesRESTService implements Microservice {
@@ -144,10 +146,10 @@ public class AndesRESTService implements Microservice {
      * Initializes the service classes for resources.
      */
     public AndesRESTService() {
-        destinationManagerService = new DestinationManagerServiceImpl();
-        subscriptionManagerService = new SubscriptionManagerServiceImpl();
-        messageManagerService = new MessageManagerServiceImpl();
-        brokerManagerService = new BrokerManagerServiceImpl();
+        destinationManagerService = new DestinationManagerServiceBeanImpl();
+        subscriptionManagerService = new SubscriptionManagerServiceBeanImpl();
+        messageManagerService = new MessageManagerServiceBeanImpl();
+        brokerManagerService = new BrokerManagerServiceBeanImpl();
     }
 
     /**
@@ -174,10 +176,12 @@ public class AndesRESTService implements Microservice {
             response = String.class,
             responseContainer = "List")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of protocols.")})
-    public List<String> getProtocols() {
-        return AndesContext.getInstance().getAndesContextStore().getProtocols().stream()
-                .map(ProtocolType::toString)
-                .collect(Collectors.toList());
+    public Response getProtocols() {
+        try {
+            return Response.status(Response.Status.OK).entity(brokerManagerService.getSupportedProtocols()).build();
+        } catch (BrokerManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
 
     /**
@@ -515,9 +519,13 @@ public class AndesRESTService implements Microservice {
             @PathParam("destination-type") String destinationType,
             @ApiParam(value = "The name of the destination.")
             @PathParam("destination-name") String destinationName) {
-        Set<DestinationRolePermission> permissions = destinationManagerService.getDestinationPermissions(protocol,
+        try {
+            Set<DestinationRolePermission> permissions = destinationManagerService.getDestinationPermissions(protocol,
                 destinationType, destinationName);
-        return Response.status(Response.Status.OK).entity(permissions).build();
+            return Response.status(Response.Status.OK).entity(permissions).build();
+        } catch (DestinationManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
 
     /**
@@ -570,9 +578,13 @@ public class AndesRESTService implements Microservice {
             // Payload
             @ApiParam(value = "New role permission payload.")
             DestinationRolePermission newDestinationRolePermissions) {
-        DestinationRolePermission newPermission = destinationManagerService.createDestinationPermission
+        try {
+            DestinationRolePermission newPermission = destinationManagerService.createDestinationPermission
                 (protocol, destinationType, destinationName, newDestinationRolePermissions);
-        return Response.status(Response.Status.OK).entity(newPermission).build();
+            return Response.status(Response.Status.OK).entity(newPermission).build();
+        } catch (DestinationManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
 
     /**
@@ -625,9 +637,13 @@ public class AndesRESTService implements Microservice {
             // Payload
             @ApiParam(value = "New role permission payload.")
             DestinationRolePermission updatedDestinationRolePermissions) {
-        DestinationRolePermission updatedPermission = destinationManagerService.updateDestinationPermission
+        try {
+            DestinationRolePermission updatedPermission = destinationManagerService.updateDestinationPermission
                 (protocol, destinationType, destinationName, updatedDestinationRolePermissions);
-        return Response.status(Response.Status.OK).entity(updatedPermission).build();
+            return Response.status(Response.Status.OK).entity(updatedPermission).build();
+        } catch (DestinationManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
 
     /**
@@ -981,7 +997,7 @@ public class AndesRESTService implements Microservice {
             @ApiParam(value = "The name of the destination of the message.")
             @PathParam("destination-name") String destinationName,
             @ApiParam(value = "The andes message ID.")
-            @PathParam("message-id") String andesMessageID,
+            @PathParam("message-id") long andesMessageID,
             @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
             @DefaultValue("false") @QueryParam("content") boolean content) {
         try {
@@ -1187,11 +1203,16 @@ public class AndesRESTService implements Microservice {
     @Reference(
             name = "carbon.andes.service",
             service = Andes.class,
-            cardinality = ReferenceCardinality.MANDATORY,
+            cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unsetAndesRuntime"
     )
     protected void setAndesRuntime(Andes andesInstance) {
+        AndesRESTComponentDataHolder.getInstance().setAndesInstance(andesInstance);
+        destinationManagerService = new DestinationManagerServiceOSGiImpl();
+        subscriptionManagerService = new SubscriptionManagerServiceOSGiImpl();
+        messageManagerService = new MessageManagerServiceOSGiImpl();
+        brokerManagerService = new BrokerManagerServiceOSGiImpl();
     }
 
     /**

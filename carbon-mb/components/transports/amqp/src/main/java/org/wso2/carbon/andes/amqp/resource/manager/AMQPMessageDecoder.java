@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.amqp.resource.manager.utils;
+package org.wso2.carbon.andes.amqp.resource.manager;
 
 import com.gs.collections.impl.list.mutable.primitive.LongArrayList;
 import com.gs.collections.impl.map.mutable.primitive.LongObjectHashMap;
@@ -25,11 +25,13 @@ import org.wso2.andes.AMQException;
 import org.wso2.andes.amqp.AMQPUtils;
 import org.wso2.andes.framing.BasicContentHeaderProperties;
 import org.wso2.andes.kernel.AndesException;
+import org.wso2.andes.kernel.AndesMessage;
 import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.andes.kernel.AndesMessagePart;
 import org.wso2.andes.kernel.MessagingEngine;
 import org.wso2.andes.kernel.disruptor.compression.LZ4CompressionHelper;
 import org.wso2.andes.server.message.AMQMessage;
+import org.wso2.andes.server.resource.manager.MessageDecoder;
 import org.wso2.andes.transport.codec.BBDecoder;
 
 import java.nio.charset.CharacterCodingException;
@@ -44,7 +46,7 @@ import javax.management.MBeanException;
 /**
  * A helper class to convert an andes message to viewable content.
  */
-public class AMQPMessageConverterHelper {
+public class AMQPMessageDecoder implements MessageDecoder {
     private static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
     private static final String MIMI_TYPE_TEXT_XML = "text/xml";
     private static final String MIME_TYPE_APPLICATION_JAVA_OBJECT_STREAM = "application/java-object-stream";
@@ -77,14 +79,10 @@ public class AMQPMessageConverterHelper {
     protected static final byte NULL_STRING_TYPE = (byte) 11;
 
     /**
-     * Gets the JMS properties as a map from a {@link AndesMessageMetadata}.
-     *
-     * @param andesMessageMetadata The messages.
-     * @return A map with all JMS properties.
-     * @throws AndesException
+     * {@inheritDoc}
      */
-    public Map<String, String> getJMSMessageProperties(AndesMessageMetadata andesMessageMetadata)
-                                                                                                throws AndesException {
+    @Override
+    public Map<String, String> getMessageProperties(AndesMessageMetadata andesMessageMetadata) throws AndesException {
         try {
             Map<String, String> properties = new HashMap<>();
             //get AMQMessage from AndesMessageMetadata
@@ -108,17 +106,13 @@ public class AMQPMessageConverterHelper {
     }
 
     /**
-     * Gets the message content from an andes message metadata.
-     *
-     * @param andesMessageMetadata Message metadata.
-     * @return Content as a String.
-     * @throws AndesException
+     * {@inheritDoc}
      */
-    @Deprecated
-    public String getJMSMessageContent(AndesMessageMetadata andesMessageMetadata) throws AndesException {
+    @Override
+    public String getMessageContent(AndesMessage andesMessage) throws AndesException {
         try {
             //get AMQMessage from AndesMessageMetadata
-            AMQMessage amqMessage = AMQPUtils.getAMQMessageFromAndesMetaData(andesMessageMetadata);
+            AMQMessage amqMessage = AMQPUtils.getAMQMessageFromAndesMetaData(andesMessage.getMetadata());
             //content is constructing
             final int bodySize = (int) amqMessage.getSize();
 

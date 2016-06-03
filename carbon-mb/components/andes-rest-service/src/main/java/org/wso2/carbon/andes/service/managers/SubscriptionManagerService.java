@@ -56,7 +56,7 @@ public interface SubscriptionManagerService {
      *                         durable_topic.
      * @param destinationName  The name of the destination to close/unsubscribe. If "*", all destinations are included.
      *                         Else destinations that <strong>contains</strong> the value are included.
-     * @param unsubscribeOnly
+     * @param unsubscribeOnly  Whether only to unsubscribe only or remove the the subscription.
      * @throws SubscriptionManagerException
      */
     void closeSubscriptions(String protocol, String subscriptionType, String destinationName, boolean unsubscribeOnly)
@@ -69,7 +69,7 @@ public interface SubscriptionManagerService {
      * @param subscriptionType The subscription type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
      * @param subscriptionID   The subscription ID.
-     * @param unsubscribeOnly
+     * @param unsubscribeOnly  Whether only to unsubscribe only or remove the the subscription.
      * @throws SubscriptionManagerException
      */
     void closeSubscription(String protocol, String subscriptionType, String subscriptionID, boolean unsubscribeOnly)

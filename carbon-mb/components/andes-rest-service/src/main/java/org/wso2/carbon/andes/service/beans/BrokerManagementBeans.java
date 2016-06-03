@@ -18,7 +18,7 @@ package org.wso2.carbon.andes.service.beans;
 
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
-import org.wso2.carbon.andes.service.utils.BrokerManagementConstants;
+import org.wso2.carbon.andes.service.managers.bean.utils.BrokerManagementConstants;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;

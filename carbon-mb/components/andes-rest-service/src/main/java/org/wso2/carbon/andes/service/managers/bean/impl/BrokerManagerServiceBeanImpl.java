@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.service.managers;
+package org.wso2.carbon.andes.service.managers.bean.impl;
 
 import org.wso2.carbon.andes.service.beans.BrokerManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
+import org.wso2.carbon.andes.service.managers.BrokerManagerService;
 import org.wso2.carbon.andes.service.types.BrokerInformation;
 import org.wso2.carbon.andes.service.types.ClusterInformation;
 import org.wso2.carbon.andes.service.types.NodeInformation;
@@ -27,16 +28,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This implementation provides the base for managing all messages related services.
+ * This implementation provides the base for managing all messages related services through JMX.
  */
-public class BrokerManagerServiceImpl implements BrokerManagerService {
+public class BrokerManagerServiceBeanImpl implements BrokerManagerService {
     
     private BrokerManagementBeans brokerManagementBeans;
     
-    public BrokerManagerServiceImpl() {
+    public BrokerManagerServiceBeanImpl() {
         brokerManagementBeans = new BrokerManagementBeans();
     }
     
+    @Override
+    public List<String> getSupportedProtocols() throws BrokerManagerException {
+        throw new BrokerManagerException("Not Implemented");
+    }
+
     /**
      * {@inheritDoc}
      */

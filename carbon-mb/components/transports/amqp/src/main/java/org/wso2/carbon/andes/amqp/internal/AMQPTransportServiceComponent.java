@@ -33,6 +33,7 @@ import org.wso2.andes.subscription.LocalDurableTopicSubscriptionStore;
 import org.wso2.andes.subscription.QueueSubscriptionStore;
 import org.wso2.carbon.andes.amqp.AMQPTransport;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPDurableTopicResourceManager;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPMessageDecoder;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPQueueResourceManager;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPTopicResourceManager;
 import org.wso2.carbon.andes.amqp.subscription.AMQPTopicSubscriptionBitMapStore;
@@ -67,12 +68,16 @@ public class AMQPTransportServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
 
-        // Register AMQP protocol on andes
         for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
+            // Register AMQP protocol on andes
             AMQPComponentDataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
+
+            AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().
+                                    registerMessageDecoder(protocolInfo.getProtocolType(), new AMQPMessageDecoder());
         }
 
         registerResourceManagers();
+
 
         serviceRegistration = bundleContext.registerService(AMQPTransport.class.getName(), new AMQPTransport(), null);
         logger.info("AMQP Service Component is activated");
@@ -210,7 +215,7 @@ public class AMQPTransportServiceComponent {
 
     /**
      * The unbind which gets called at the un-registration of Andes component.
-     * @param andesInstance
+     * @param andesInstance The andes instance
      */
     @SuppressWarnings("unused")
     protected void unsetAndesInstance(Andes andesInstance) {

@@ -253,7 +253,7 @@
         <!--Refer to https://wso2.org/jira/browse/MB-1681-->
         <dynamic.import.package>*</dynamic.import.package>
         <carbon.component>
-            osgi.service; objectClass="org.wso2.carbon.andes.internal.AndesServiceComponent"
+            osgi.service; objectClass="org.wso2.andes.kernel.Andes"
         </carbon.component>
     </properties>
 

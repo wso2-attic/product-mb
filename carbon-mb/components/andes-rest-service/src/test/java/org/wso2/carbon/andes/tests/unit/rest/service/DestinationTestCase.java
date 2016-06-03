@@ -25,7 +25,7 @@ import org.wso2.carbon.andes.service.beans.DestinationManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.internal.AndesRESTService;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;
-import org.wso2.carbon.andes.service.managers.DestinationManagerServiceImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.DestinationManagerServiceBeanImpl;
 import org.wso2.msf4j.MicroservicesRunner;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class DestinationTestCase {
      */
     @BeforeTest
     public void init() {
-        destinationManagerService = new DestinationManagerServiceImpl();
+        destinationManagerService = new DestinationManagerServiceBeanImpl();
     }
 
     /**
@@ -67,7 +67,7 @@ public class DestinationTestCase {
         DestinationManagementBeans destinationManagementBeans = Mockito.mock(DestinationManagementBeans.class);
         when(destinationManagementBeans.getDestination("amqp", "queue", queueName)).thenReturn(null);
 
-        DestinationManagerServiceImpl destinationManagerService = new DestinationManagerServiceImpl
+        DestinationManagerServiceBeanImpl destinationManagerService = new DestinationManagerServiceBeanImpl
                 (destinationManagementBeans);
 
         AndesRESTService andesService = new AndesRESTService();
