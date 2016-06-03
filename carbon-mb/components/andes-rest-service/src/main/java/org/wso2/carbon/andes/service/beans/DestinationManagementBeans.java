@@ -16,11 +16,12 @@
 
 package org.wso2.carbon.andes.service.beans;
 
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.server.util.CompositeDataHelper;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
+import org.wso2.carbon.andes.service.managers.bean.utils.DestinationManagementConstants;
 import org.wso2.carbon.andes.service.types.Destination;
-import org.wso2.carbon.andes.service.utils.DestinationManagementConstants;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -232,21 +233,26 @@ public class DestinationManagementBeans {
      * @throws DestinationManagerException
      */
     private Destination getDestinationInfo(CompositeData compositeDestination) throws DestinationManagerException {
-        Destination destination = new Destination();
-        destination.setDestinationName((String) compositeDestination.get(CompositeDataHelper
-                .DestinationCompositeDataHelper.DESTINATION_NAME));
-        destination.setOwner((String) compositeDestination.get(CompositeDataHelper.DestinationCompositeDataHelper
-                .DESTINATION_OWNER));
-        destination.setDurable((Boolean) compositeDestination.get(CompositeDataHelper.DestinationCompositeDataHelper
-                .IS_DURABLE));
-        destination.setSubscriptionCount((Integer) compositeDestination.get(CompositeDataHelper
-                .DestinationCompositeDataHelper.SUBSCRIPTION_COUNT));
-        destination.setMessageCount((Long) compositeDestination.get(CompositeDataHelper
-                .DestinationCompositeDataHelper.MESSAGE_COUNT));
-        destination.setProtocol((String) compositeDestination.get(CompositeDataHelper
-                    .DestinationCompositeDataHelper.PROTOCOL_TYPE));
-        destination.setDestinationType(DestinationType.valueOf((String) compositeDestination.get(CompositeDataHelper
-                .DestinationCompositeDataHelper.DESTINATION_TYPE)));
+        Destination destination;
+        try {
+            destination = new Destination();
+            destination.setDestinationName((String) compositeDestination.get(CompositeDataHelper
+                    .DestinationCompositeDataHelper.DESTINATION_NAME));
+            destination.setOwner((String) compositeDestination.get(CompositeDataHelper.DestinationCompositeDataHelper
+                    .DESTINATION_OWNER));
+            destination.setDurable((Boolean) compositeDestination.get(CompositeDataHelper.DestinationCompositeDataHelper
+                    .IS_DURABLE));
+            destination.setSubscriptionCount((Integer) compositeDestination.get(CompositeDataHelper
+                    .DestinationCompositeDataHelper.SUBSCRIPTION_COUNT));
+            destination.setMessageCount((Long) compositeDestination.get(CompositeDataHelper
+                    .DestinationCompositeDataHelper.MESSAGE_COUNT));
+            destination.setProtocol((String) compositeDestination.get(CompositeDataHelper
+                        .DestinationCompositeDataHelper.PROTOCOL_TYPE));
+            destination.setDestinationType(DestinationType.valueOf((String) compositeDestination.get(CompositeDataHelper
+                    .DestinationCompositeDataHelper.DESTINATION_TYPE)));
+        } catch (AndesException e) {
+            throw new DestinationManagerException("Error occurred while converting data.", e);
+        }
         return destination;
     }
 }

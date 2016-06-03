@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.service.utils;
+package org.wso2.carbon.andes.service.managers.bean.utils;
 
 /**
  * Queue resources management constants

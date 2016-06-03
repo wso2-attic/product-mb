@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.service.managers;
+package org.wso2.carbon.andes.service.managers.bean.impl;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.wso2.carbon.andes.service.beans.SubscriptionManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
+import org.wso2.carbon.andes.service.managers.SubscriptionManagerService;
 import org.wso2.carbon.andes.service.types.Subscription;
 
 import java.util.List;
 
 /**
- * This implementation provides the base for managing all subscriptions related services.
+ * This implementation provides the base for managing all subscriptions related services through JMX.
  */
-public class SubscriptionManagerServiceImpl implements SubscriptionManagerService {
+public class SubscriptionManagerServiceBeanImpl implements SubscriptionManagerService {
     
     private SubscriptionManagementBeans subscriptionManagementBeans;
 
-    public SubscriptionManagerServiceImpl() {
+    public SubscriptionManagerServiceBeanImpl() {
         subscriptionManagementBeans = new SubscriptionManagementBeans();
     }
 

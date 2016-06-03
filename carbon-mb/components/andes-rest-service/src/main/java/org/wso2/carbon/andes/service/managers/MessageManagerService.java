@@ -75,7 +75,7 @@ public interface MessageManagerService {
      * @return A {@link Message}.
      * @throws MessageManagerException
      */
-    Message getMessage(String protocol, String destinationType, String destinationName, String andesMessageID, boolean
+    Message getMessage(String protocol, String destinationType, String destinationName, long andesMessageID, boolean
             content) throws MessageManagerException;
 
     /**

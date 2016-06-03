@@ -21,10 +21,19 @@ import org.wso2.carbon.andes.service.types.BrokerInformation;
 import org.wso2.carbon.andes.service.types.ClusterInformation;
 import org.wso2.carbon.andes.service.types.StoreInformation;
 
+import java.util.List;
+
 /**
  * This interface provides the base for managing all broker information related services.
  */
 public interface BrokerManagerService {
+
+    /**
+     * Gets the supported protocol types by the broker.
+     *
+     * @return A list of supported protocols.
+     */
+    List<String> getSupportedProtocols() throws BrokerManagerException;
 
     /**
      * Gets information regarding clustering of the broker. Following information are returned :

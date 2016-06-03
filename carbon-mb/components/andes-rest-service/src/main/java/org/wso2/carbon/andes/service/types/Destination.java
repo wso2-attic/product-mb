@@ -18,7 +18,9 @@ package org.wso2.carbon.andes.service.types;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolType;
 
 import java.util.Date;
 
@@ -36,7 +38,7 @@ public class Destination {
     @ApiModelProperty(value = "The type of the destination.")
     private DestinationType destinationType = null;
     @ApiModelProperty(value = "The type of the protocol.")
-    private String protocol = null;
+    private ProtocolType protocol = null;
     @ApiModelProperty(value = "The message count for the destination.")
     private long messageCount = 0;
     @ApiModelProperty(value = "Whether the destination is durable.")
@@ -78,12 +80,16 @@ public class Destination {
         this.destinationType = destinationType;
     }
 
-    public String getProtocol() {
+    public ProtocolType getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(String protocol) {
+    public void setProtocol(ProtocolType protocol) {
         this.protocol = protocol;
+    }
+
+    public void setProtocol(String protocolAsString) throws AndesException {
+        this.protocol = new ProtocolType(protocolAsString);
     }
 
     public long getMessageCount() {

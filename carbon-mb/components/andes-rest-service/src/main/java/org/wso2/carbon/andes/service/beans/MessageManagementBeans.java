@@ -20,8 +20,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.wso2.andes.server.util.CompositeDataHelper;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
+import org.wso2.carbon.andes.service.managers.bean.utils.MessageManagementConstants;
 import org.wso2.carbon.andes.service.types.Message;
-import org.wso2.carbon.andes.service.utils.MessageManagementConstants;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class MessageManagementBeans {
      * @return A {@link Message}.
      * @throws MessageManagerException
      */
-    public Message getMessage(String protocol, String destinationType, String destinationName, String andesMessageID,
+    public Message getMessage(String protocol, String destinationType, String destinationName, long andesMessageID,
                               boolean content) throws MessageManagerException {
         Message message = new Message();
         try {
@@ -296,7 +296,7 @@ public class MessageManagementBeans {
                 .DESTINATION_NAME));
         message.setMessageProperties(ArrayUtils.toMap((String[][]) compositeMessage.get(CompositeDataHelper
                 .MessagesCompositeDataHelper.MESSAGE_PROPERTIES)));
-        message.setMessageContent((String[]) compositeMessage.get(CompositeDataHelper.MessagesCompositeDataHelper
+        message.setMessageContent((String) compositeMessage.get(CompositeDataHelper.MessagesCompositeDataHelper
                 .MESSAGE_CONTENT));
         return message;
     }

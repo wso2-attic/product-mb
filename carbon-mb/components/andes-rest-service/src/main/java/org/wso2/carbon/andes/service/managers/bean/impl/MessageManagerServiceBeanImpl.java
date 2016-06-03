@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.service.managers;
+package org.wso2.carbon.andes.service.managers.bean.impl;
 
 import org.wso2.carbon.andes.service.beans.MessageManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
+import org.wso2.carbon.andes.service.managers.MessageManagerService;
 import org.wso2.carbon.andes.service.types.Message;
 
 import java.util.List;
 
 /**
- * This interface provides the base for managing all messages related services.
+ * This interface provides the base for managing all messages related services through JMX.
  */
-public class MessageManagerServiceImpl implements MessageManagerService {
+public class MessageManagerServiceBeanImpl implements MessageManagerService {
 
     private MessageManagementBeans messageManagementBeans;
     
-    public MessageManagerServiceImpl() {
+    public MessageManagerServiceBeanImpl() {
         messageManagementBeans = new MessageManagementBeans();
     }
     
@@ -57,10 +58,9 @@ public class MessageManagerServiceImpl implements MessageManagerService {
      * {@inheritDoc}
      */
     @Override
-    public Message getMessage(String protocol, String destinationType, String destinationName, String andesMessageID,
+    public Message getMessage(String protocol, String destinationType, String destinationName, long andesMessageID,
                               boolean content) throws MessageManagerException {
-        return messageManagementBeans.getMessage(protocol, destinationType, destinationName,
-                                                                                            andesMessageID, content);
+        return messageManagementBeans.getMessage(protocol, destinationType, destinationName, andesMessageID, content);
     }
 
     /**

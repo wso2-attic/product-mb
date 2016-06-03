@@ -82,9 +82,10 @@ public interface DestinationManagerService {
      * @param destinationType The destination type matching for the destination. Example : queue, topic, durable_topic.
      * @param destinationName The name of the destination.
      * @return A set of {@link DestinationRolePermission}s. Null if invalid destination.
+     * @throws DestinationManagerException
      */
     Set<DestinationRolePermission> getDestinationPermissions(String protocol, String destinationType, String
-            destinationName);
+            destinationName) throws DestinationManagerException;
 
     /**
      * Create permissions on a destination.
@@ -95,9 +96,10 @@ public interface DestinationManagerService {
      * @param destinationName            The name of the destination.
      * @param destinationRolePermission  New permission.
      * @return Newly created permission.
+     * @throws DestinationManagerException
      */
     DestinationRolePermission createDestinationPermission(String protocol, String destinationType, String
-            destinationName, DestinationRolePermission destinationRolePermission);
+            destinationName, DestinationRolePermission destinationRolePermission) throws DestinationManagerException;
 
     /**
      * Updates permissions on a destination.
@@ -108,10 +110,12 @@ public interface DestinationManagerService {
      * @param destinationName            The name of the destination.
      * @param destinationRolePermission  Updated permission.
      * @return Updated permission.
+     * @throws DestinationManagerException
      */
     DestinationRolePermission updateDestinationPermission(String protocol, String destinationType,
                                                           String destinationName,
-                                                          DestinationRolePermission destinationRolePermission);
+                                                          DestinationRolePermission destinationRolePermission)
+                                                                                throws DestinationManagerException;
 
     /**
      * Deletes a destination.

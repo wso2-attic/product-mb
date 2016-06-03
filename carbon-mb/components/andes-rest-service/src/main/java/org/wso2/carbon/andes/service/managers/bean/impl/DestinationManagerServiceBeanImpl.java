@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.andes.service.managers;
+package org.wso2.carbon.andes.service.managers.bean.impl;
 
 import org.wso2.carbon.andes.service.beans.DestinationManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
+import org.wso2.carbon.andes.service.managers.DestinationManagerService;
 import org.wso2.carbon.andes.service.types.Destination;
 import org.wso2.carbon.andes.service.types.DestinationRolePermission;
 
@@ -26,9 +27,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This implementation provides the base for managing all messages related services.
+ * This implementation provides the base for managing all messages related services through JMX.
  */
-public class DestinationManagerServiceImpl implements DestinationManagerService {
+public class DestinationManagerServiceBeanImpl implements DestinationManagerService {
 
     /**
      * TODO : Remove this and use user-core
@@ -37,11 +38,11 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
     private static Set<DestinationRolePermission> destinationRolePermissions = new HashSet<>();
     private DestinationManagementBeans destinationManagementBeans;
     
-    public DestinationManagerServiceImpl() {
+    public DestinationManagerServiceBeanImpl() {
         destinationManagementBeans = new DestinationManagementBeans();
     }
 
-    public DestinationManagerServiceImpl(DestinationManagementBeans destinationManagementBeans) {
+    public DestinationManagerServiceBeanImpl(DestinationManagementBeans destinationManagementBeans) {
         this.destinationManagementBeans = destinationManagementBeans;
     }
     
@@ -87,7 +88,8 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      */
     @Override
     public Set<DestinationRolePermission> getDestinationPermissions(String protocol, String destinationType,
-                                                                    String destinationName) {
+                                                                    String destinationName) throws
+            DestinationManagerException {
         // Null if invalid destination.
         destinationRolePermissions.add(new DestinationRolePermission("admin-role", true, true));
         return destinationRolePermissions;
@@ -100,7 +102,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
     public DestinationRolePermission createDestinationPermission(
             String protocol, String destinationType,
             String destinationName,
-            DestinationRolePermission destinationRolePermission) {
+            DestinationRolePermission destinationRolePermission) throws DestinationManagerException {
         destinationRolePermissions.add(destinationRolePermission);
         // Get permissions for the destination.
         // Update the permissions for the destination.
@@ -113,7 +115,7 @@ public class DestinationManagerServiceImpl implements DestinationManagerService 
      */
     @Override
     public DestinationRolePermission updateDestinationPermission(String protocol, String destinationType, String
-            destinationName, DestinationRolePermission destinationRolePermission) {
+            destinationName, DestinationRolePermission destinationRolePermission) throws DestinationManagerException {
         return null;
     }
 

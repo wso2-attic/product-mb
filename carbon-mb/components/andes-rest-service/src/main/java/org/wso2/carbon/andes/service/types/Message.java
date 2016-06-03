@@ -34,11 +34,7 @@ public class Message {
                               "the message.")
     private Map<String, String> messageProperties;
     @ApiModelProperty(value = "The content of the message.")
-    private String[] messageContent;
-
-    public Message() {
-        this.messageContent = new String[0];
-    }
+    private String messageContent;
 
     public Long getAndesMsgMetadataId() {
         return andesMsgMetadataId;
@@ -64,11 +60,11 @@ public class Message {
         this.messageProperties = messageProperties;
     }
 
-    public String[] getMessageContent() {
-        return messageContent.clone();
+    public String getMessageContent() {
+        return messageContent;
     }
 
-    public void setMessageContent(String[] messageContent) {
-        this.messageContent = messageContent.clone();
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
     }
 }

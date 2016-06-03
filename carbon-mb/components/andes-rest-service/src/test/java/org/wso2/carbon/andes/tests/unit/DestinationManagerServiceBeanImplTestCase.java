@@ -24,20 +24,20 @@ import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;
-import org.wso2.carbon.andes.service.managers.DestinationManagerServiceImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.DestinationManagerServiceBeanImpl;
 import org.wso2.carbon.andes.service.types.Destination;
 import org.wso2.carbon.andes.tests.core.UnitBaseTest;
 
 /**
  * Tests the implementation for destination manager services.
  */
-public class DestinationManagerServiceImplTestCase extends UnitBaseTest {
+public class DestinationManagerServiceBeanImplTestCase extends UnitBaseTest {
 
     DestinationManagerService destinationManagerService;
 
     @BeforeTest
     public void init() {
-        destinationManagerService = new DestinationManagerServiceImpl();
+        destinationManagerService = new DestinationManagerServiceBeanImpl();
     }
 
     /**
