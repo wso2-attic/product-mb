@@ -45,7 +45,7 @@ public class BrokerManagerServiceOSGiImpl implements BrokerManagerService {
      * {@inheritDoc}
      */
     @Override
-    public List<String> getSupportedProtocols() throws BrokerManagerException {
+    public List<String> getSupportedProtocols() {
         return andesInstance.getSupportedProtocols()
                 .stream()
                 .map(p -> p.toString().toLowerCase())

@@ -33,7 +33,7 @@ public interface BrokerManagerService {
      *
      * @return A list of supported protocols.
      */
-    List<String> getSupportedProtocols() throws BrokerManagerException;
+    List<String> getSupportedProtocols();
 
     /**
      * Gets information regarding clustering of the broker. Following information are returned :

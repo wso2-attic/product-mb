@@ -27,6 +27,7 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -38,20 +39,27 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.AndesConstants;
+import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
+import org.wso2.andes.kernel.ProtocolType;
+import org.wso2.andes.server.queue.DLCQueueUtils;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
 import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.service.managers.BrokerManagerService;
+import org.wso2.carbon.andes.service.managers.DLCManagerService;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;
 import org.wso2.carbon.andes.service.managers.MessageManagerService;
 import org.wso2.carbon.andes.service.managers.SubscriptionManagerService;
 import org.wso2.carbon.andes.service.managers.bean.impl.BrokerManagerServiceBeanImpl;
+import org.wso2.carbon.andes.service.managers.bean.impl.DLCManagerServiceBeanImpl;
 import org.wso2.carbon.andes.service.managers.bean.impl.DestinationManagerServiceBeanImpl;
 import org.wso2.carbon.andes.service.managers.bean.impl.MessageManagerServiceBeanImpl;
 import org.wso2.carbon.andes.service.managers.bean.impl.SubscriptionManagerServiceBeanImpl;
 import org.wso2.carbon.andes.service.managers.osgi.impl.BrokerManagerServiceOSGiImpl;
+import org.wso2.carbon.andes.service.managers.osgi.impl.DLCManagerServiceOSGiImpl;
 import org.wso2.carbon.andes.service.managers.osgi.impl.DestinationManagerServiceOSGiImpl;
 import org.wso2.carbon.andes.service.managers.osgi.impl.MessageManagerServiceOSGiImpl;
 import org.wso2.carbon.andes.service.managers.osgi.impl.SubscriptionManagerServiceOSGiImpl;
@@ -110,11 +118,12 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "Permissions", description = "Operations on handling permission related resources."),
                 @Tag(name = "Messages", description = "Operations on handling message related resources."),
                 @Tag(name = "Subscriptions", description = "Operations on handling subscription related resources."),
-                @Tag(name = "Node Details", description = "Operations on getting node details.")},
+                @Tag(name = "Broker Details", description = "Operations on getting broker details."),
+                @Tag(name = "Dead Letter Channel", description = "Operations related to dead letter channel.")},
         schemes = SwaggerDefinition.Scheme.HTTPS)
-@Api(value = "mb", description = "Endpoint to WSO2 message broker REST service.",
+@Api(value = "mb/api", description = "Endpoint to WSO2 message broker REST service.",
      produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
-@Path("/mb")
+@Path("/mb/api")
 public class AndesRESTService implements Microservice {
     private static final Logger log = LoggerFactory.getLogger(AndesRESTService.class);
     /**
@@ -143,13 +152,27 @@ public class AndesRESTService implements Microservice {
     private BrokerManagerService brokerManagerService;
 
     /**
+     * Service class for managing dead letter channel functions.
+     */
+    private DLCManagerService dlcManagerService;
+
+    /**
+     * The protocol for the dead letter channel.
+     */
+    private ProtocolType dlcProtocol;
+
+    /**
      * Initializes the service classes for resources.
      */
-    public AndesRESTService() {
+    public AndesRESTService() throws AndesException {
         destinationManagerService = new DestinationManagerServiceBeanImpl();
         subscriptionManagerService = new SubscriptionManagerServiceBeanImpl();
         messageManagerService = new MessageManagerServiceBeanImpl();
         brokerManagerService = new BrokerManagerServiceBeanImpl();
+        dlcManagerService = new DLCManagerServiceBeanImpl();
+
+        // Setting DLC queue information
+        dlcProtocol = new ProtocolType(AndesConstants.DLC_PROTOCOL_NAME, AndesConstants.DLC_PROTOCOL_VERSION);
     }
 
     /**
@@ -157,7 +180,7 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/protocol-types
+     *  curl -v http://127.0.0.1:9090/mb/api/protocol-types
      * </pre>
      *
      * @return Return a collection of supported protocol. <p>
@@ -172,16 +195,12 @@ public class AndesRESTService implements Microservice {
     @ApiOperation(
             value = "Gets supported protocols.",
             notes = "Gets supported protocols by the broker.",
-            tags = "Protocol",
+            tags = "Broker Details",
             response = String.class,
             responseContainer = "List")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "List of protocols.")})
     public Response getProtocols() {
-        try {
-            return Response.status(Response.Status.OK).entity(brokerManagerService.getSupportedProtocols()).build();
-        } catch (BrokerManagerException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
-        }
+        return Response.status(Response.Status.OK).entity(brokerManagerService.getSupportedProtocols()).build();
     }
 
     /**
@@ -189,7 +208,7 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/destination-types
+     *  curl -v http://127.0.0.1:9090/mb/api/destination-types
      * </pre>
      *
      * @return Return a collection of supported destinations. <p>
@@ -204,7 +223,7 @@ public class AndesRESTService implements Microservice {
     @ApiOperation(
             value = "Gets supported destinations.",
             notes = "Gets supported destinations by the broker.",
-            tags = "Destinations",
+            tags = {"Broker Details", "Destinations"},
             response = String.class,
             responseContainer = "List")
     @ApiResponses(@ApiResponse(code = 200, message = "List of destinations."))
@@ -219,10 +238,10 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/queue
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/topic
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/durable_topic
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/queue?name=MyQueue&offset=5&limit=3
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/topic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue?name=MyQueue&offset=5&limit=3
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -280,10 +299,10 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/queue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/durable_topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/mqtt/destination-type/topic
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/topic
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -324,10 +343,10 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/queue/name/MyQueue
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/topic/name/MyTopic
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/destination-type/durable_topic/name/MyDurable
-     *  curl -v http://127.0.0.1:9443/mb/api/mqtt/destination-type/topic/name/MyMQTTTopic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/topic/name/MyTopic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/MyDurable
+     *  curl -v http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -361,10 +380,10 @@ public class AndesRESTService implements Microservice {
             @ApiParam(value = "The name of the destination.")
             @PathParam("destination-name") String destinationName) {
         try {
-            Destination newDestination = destinationManagerService.getDestination(protocol, destinationType,
+            Destination destination = destinationManagerService.getDestination(protocol, destinationType,
                     destinationName);
-            if (null != newDestination) {
-                return Response.status(Response.Status.OK).entity(newDestination).build();
+            if (null != destination) {
+                return Response.status(Response.Status.OK).entity(destination).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -374,14 +393,14 @@ public class AndesRESTService implements Microservice {
     }
 
     /**
-     * Creates a new destination.  A topic will be created even if "durable_topic" is requested as the destination type.
+     * Creates a new destination. A topic will be created even if "durable_topic" is requested as the destination type.
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X POST http://127.0.0.1:9443/mb/api/amqp/destination-type/queue
-     *  curl -v -X POST http://127.0.0.1:9443/mb/api/amqp/destination-type/topic
-     *  curl -v -X POST http://127.0.0.1:9443/mb/api/amqp/destination-type/durable_topic
-     *  curl -v -X POST http://127.0.0.1:9443/mb/api/mqtt/destination-type/topic
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/topic
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -433,10 +452,10 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/queue/name/MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/topic/name/MyTopic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/durable_topic/name/MyDurable
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/mqtt/destination-type/topic/name/MyMQTTTopic
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/topic/name/MyTopic
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/MyDurable
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -482,10 +501,10 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/permissions/destination-type/queue/name/MyQueue
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/permissions/destination-type/topic/name/MyTopic
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/permissions/destination-type/durable_topic/name/MyDurable
-     *  curl -v http://127.0.0.1:9443/mb/api/mqtt/permissions/destination-type/topic/name/MyMQTTTopic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/permissions/destination-type/queue/name/MyQueue
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/permissions/destination-type/topic/name/MyTopic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/permissions/destination-type/durable_topic/name/MyDurable
+     *  curl -v http://127.0.0.1:9090/mb/api/mqtt-default/permissions/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
      * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
@@ -536,7 +555,7 @@ public class AndesRESTService implements Microservice {
      *  curl -v -X POST \
      *          -H "Content-Type:application/json" \
      *          -d '{"role" : "abc", "consume" : true, "publish" : false}' \
-     *          http://127.0.0.1:9443/mb/api/amqp/permissions/destination-type/queue/name/MyQueue
+     *          http://127.0.0.1:9090/mb/api/amqp-0-91/permissions/destination-type/queue/name/MyQueue
      *
      * </pre>
      *
@@ -595,7 +614,7 @@ public class AndesRESTService implements Microservice {
      *  curl -v -X PUT \
      *          -H "Content-Type:application/json" \
      *          -d '{"role" : "abc", "consume" : true, "publish" : false}' \
-     *          http://127.0.0.1:9443/mb/api/amqp/permissions/destination-type/queue/name/MyQueue
+     *          http://127.0.0.1:9090/mb/api/amqp-0-91/permissions/destination-type/queue/name/MyQueue
      *
      * </pre>
      *
@@ -647,18 +666,254 @@ public class AndesRESTService implements Microservice {
     }
 
     /**
+     * Gets the DLC queue for the current tenant.
+     * <p>
+     * curl command example :
+     * <pre>
+     *  curl -v http://127.0.0.1:9090/mb/api/dlc
+     * </pre>
+     *
+     * @return A JSON representation of {@link Destination}. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a {@link Destination} as a JSON response.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#NOT_FOUND} - Such destination does not exists.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} - Error occurred when getting the
+     *     destination from the broker.</li>
+     * </ul>
+     */
+    @GET
+    @Path("/dlc")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets DLC queue.",
+            notes = "Gets the DLC queue for the current user.",
+            tags = "Destinations")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Destination returned.", response = Destination.class),
+            @ApiResponse(code = 400, message = "Invalid protocol or destination type.", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Destination not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getDLCQueue() {
+        try {
+            //TODO : get queue name for tenant.
+            String dlcQueueName = DLCQueueUtils.generateDLCQueueNameFromTenant("carbon.super");
+            Destination dlcQueue = destinationManagerService.getDestination(dlcProtocol.toString(),
+                                                        AndesConstants.DLC_DESTINATION_TYPE.toString(), dlcQueueName);
+            if (null != dlcQueue) {
+                return Response.status(Response.Status.OK).entity(dlcQueue).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (DestinationManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+
+    /**
+     * Gets messages from a dead letter channel using a message ID as the offset.
+     * <p>
+     * curl command example :
+     * <pre>
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages?content=true
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages?next-message-id=1234&limit=10
+     * </pre>
+     *
+     * @param dlcQueueName    The DLC queue name.
+     * @param content         Whether to return message content or not.
+     * @param nextMessageID   The starting message ID to return from.
+     * @param limit           The number of messages to return.
+     * @return Return a collection of {@link Message}s. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a collection of {@link Message}s
+     *     as a JSON response.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} - Error occurred when getting the
+     *     messages from the server.</li>
+     * </ul>
+     */
+    @GET
+    @Path("/dlc/{dlc-queue-name}/messages")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets DLC messages.",
+            notes = "Gets messages of a dead letter channel using message IDs.",
+            tags = {"Dead Letter Channel", "Messages"},
+            response = Message.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful list of messages.", response = Message.class),
+            @ApiResponse(code = 404, message = "DLC not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getDLCMessagesByMessageID(
+            @ApiParam(value = "The DLC queue name.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
+            @DefaultValue("false") @QueryParam("content") boolean content,
+            @ApiParam(value = "The starting message ID to return from.")
+            @DefaultValue("0") @QueryParam("next-message-id") long nextMessageID,
+            @ApiParam(value = "The number of messages to return for pagination.",
+                      allowableValues = "range[1, infinity]")
+            @DefaultValue("100") @QueryParam("limit") int limit) {
+        try {
+            List<Message> messages = messageManagerService.getMessagesOfDestinationByMessageID(dlcProtocol.toString(),
+                    AndesConstants.DLC_DESTINATION_TYPE.toString(), dlcQueueName, content, nextMessageID, limit);
+            return Response.status(Response.Status.OK).entity(messages).build();
+        } catch (MessageManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+
+    /**
+     * Gets messages from a dead letter channel using offset.
+     * <p>
+     * curl command example :
+     * <pre>
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages?content=true
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages
+     *  curl -v -X GET http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages?offset=2000&limit=10
+     * </pre>
+     *
+     * @param dlcQueueName    The DLC queue name.
+     * @param content         Whether to return message content or not.
+     * @param offset          Starting index of the messages to return.
+     * @param limit           The number of messages to return.
+     * @return Return a collection of {@link Message}s. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Returns a collection of {@link Message}s
+     *     as a JSON response.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} - Error occurred when getting the
+     *     messages from the server.</li>
+     * </ul>
+     */
+    @GET
+    @Path("/dlc/{dlc-queue-name}/messages")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Gets DLC messages.",
+            notes = "Gets messages of a dead letter channel using offset.",
+            tags = {"Dead Letter Channel", "Messages"},
+            response = Message.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful list of messages.", response = Message.class),
+            @ApiResponse(code = 404, message = "DLC queue not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response getDLCMessagesByOffset(
+            @ApiParam(value = "The DLC queue name.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @ApiParam(value = "Whether to return message content or not.", allowableValues = "[true, false]")
+            @DefaultValue("false") @QueryParam("content") boolean content,
+            @ApiParam(value = "Starting index of the messages to return.")
+            @DefaultValue("0") @QueryParam("offset") int offset,
+            @ApiParam(value = "The number of messages to return for pagination.",
+                      allowableValues = "range[1, infinity]")
+            @DefaultValue("100") @QueryParam("limit") int limit) {
+        try {
+            List<Message> messages = messageManagerService.getMessagesOfDestinationByOffset(dlcProtocol.toString(),
+                    AndesConstants.DLC_DESTINATION_TYPE.toString(), dlcQueueName, content, offset, limit);
+            return Response.status(Response.Status.OK).entity(messages).build();
+        } catch (MessageManagerException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+
+    /**
+     * Restore or reroute messages from DLC to a queue or same queue which originated.
+     * <p>
+     * curl command example :
+     * <pre>
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages/restore
+     *  curl -v -X POST http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages/restore?new-queue-name=MyQueue
+     * </pre>
+     *
+     * @param dlcQueueName       The DLC queue name.
+     * @param newDestinationName The name of the new queue to which the messages to be rerouted. If "" is received,
+     *                           messages will be restored to the same queue.
+     * @param andesMessageIDs    The andes message metadata IDs of the messages.
+     * @return No response body. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - When messages are successfully restored/rerouted.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} - Error occurred when rerouting/restoring
+     *     messages from the server.</li>
+     * </ul>
+     */
+    @POST
+    @Path("/dlc/{dlc-queue-name}/messages/restore")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Reroute or Restores messages from DLC.",
+            notes = "Reroute or Restores messages from DLC with a given list of message IDs.",
+            tags = {"Dead Letter Channel", "Messages"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Messages successfully rerouted/restored..", response = Message.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response restoreMessagesFromDeadLetterQueue(
+            @ApiParam(value = "The DLC queue name.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            // Payload
+            @ApiParam(value = "List of message IDs to restore.")
+            List<Long> andesMessageIDs,
+            @ApiParam(value = "The new queue name to redirect messages.")
+            @DefaultValue("") @QueryParam("new-queue-name") String newDestinationName) {
+        if (StringUtils.isEmpty(newDestinationName)) {
+            dlcManagerService.restoreMessagesFromDeadLetterQueue(andesMessageIDs, dlcQueueName);
+        } else {
+            dlcManagerService.restoreMessagesFromDeadLetterQueue(andesMessageIDs, newDestinationName, dlcQueueName);
+        }
+        return Response.status(Response.Status.OK).build();
+    }
+
+    /**
+     * Deletes messages from DLC with given list of message IDs.
+     * <p>
+     * curl command example :
+     * <pre>
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/dlc/DeadLetterChannel/messages
+     * </pre>
+     *
+     * @param dlcQueueName    The DLC queue name.
+     * @param andesMessageIDs Message IDs to delete.
+     * @return No response body. <p>
+     * <ul>
+     *     <li>{@link javax.ws.rs.core.Response.Status#OK} - If messages were successfully deleted.</li>
+     *     <li>{@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} - Error occurred when deleting dlc
+     *     messages from the server.</li>
+     * </ul>
+     */
+    @DELETE
+    @Path("/dlc/{dlc-queue-name}/messages")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Deletes messages from DLC.",
+            notes = "Deletes messages from DLC with given list of message IDs.",
+            tags = {"Dead Letter Channel", "Messages"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Messages were successfully deleted.", response = Message.class),
+            @ApiResponse(code = 404, message = "DLC queue not found.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response deleteMessagesFromDeadLetterQueue(
+            @ApiParam(value = "The DLC queue name.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            // Payload
+            @ApiParam(value = "List of message IDs to delete.")
+            List<Long> andesMessageIDs) {
+        dlcManagerService.deleteMessagesFromDeadLetterQueue(andesMessageIDs, dlcQueueName);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    /**
      * Gets subscriptions belonging to a specific protocol type and destination type. The subscriptions can be filtered
      * by subscription name, destination name and whether they are active or not.
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue?destination=MyQueue&offset=2&limit=5
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/queue?destination=MyQueue&offset=2&limit=5
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/topic
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/durable_topic?active=true
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/durable_topic?active=false&name=subID01
      * </pre>
      *
-     * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
+     * @param protocol         The protocol type matching for the subscription.
      * @param subscriptionType The destination type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
      * @param subscriptionName The name of the subscription. If "*", all subscriptions are included. Else subscriptions
@@ -723,13 +978,11 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue?destination=MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/queue
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/durable_topic?unsubscribe-only=true
      * </pre>
      *
-     * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
+     * @param protocol         The protocol type matching for the subscription.
      * @param subscriptionType The subscription type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
      * @param destinationName  The name of the destination to close/unsubscribe. If "*", all destinations are included.
@@ -774,11 +1027,13 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue/subscription-id/sub1
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic/subscription-id/sub1
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/queue/subscription-id/sub1
+     *  curl -v -X DELETE \
+     *      http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/queue/subscription-id/sub2?unsubscribe-only=true
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/subscription-type/durable_topic/subscription-id/sub1
      * </pre>
      *
-     * @param protocol         The protocol type matching for the subscription. Example : amqp, mqtt.
+     * @param protocol         The protocol type matching for the subscription.
      * @param subscriptionType The subscription type matching for the subscription. Example : queue, topic,
      *                         durable_topic.
      * @param subscriptionID  The subscription ID to close/unsubscribe.
@@ -826,14 +1081,14 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue?destination=MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue/messages?content=true
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/mq1/messages?next-message-id=12345678
+     *  curl \
+     *      http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/carbon:MySub/messages?limit=100
      * </pre>
      *
-     * @param protocol        The protocol type matching for the message. Example : amqp, mqtt.
-     * @param destinationType The destination type matching for the message. Example : queue, topic, durable_topic.
+     * @param protocol        The protocol type matching for the message.
+     * @param destinationType The destination type matching for the message.
      * @param destinationName The name of the destination.
      * @param content         Whether to return message content or not.
      * @param nextMessageID   The starting message ID to return from.
@@ -892,14 +1147,14 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue?destination=MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue/messages?content=true
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/mq1/messages?offset=5000
+     *  curl \
+     *      http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/carbon:MySub/messages?limit=100
      * </pre>
      *
-     * @param protocol        The protocol type matching for the message. Example : amqp, mqtt.
-     * @param destinationType The destination type matching for the message. Example : queue, topic, durable_topic.
+     * @param protocol        The protocol type matching for the message.
+     * @param destinationType The destination type matching for the message.
      * @param destinationName The name of the destination
      * @param content         Whether to return message content or not.
      * @param offset          Starting index of the messages to return.
@@ -955,14 +1210,13 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/queue?destination=MyQueue
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue/messages/12345678
+     *  curl \
+     *      http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/carbon:MySub/messages/9876543
      * </pre>
      *
-     * @param protocol        The protocol type matching for the message. Example : amqp, mqtt.
-     * @param destinationType The destination type matching for the message. Example : queue, topic, durable_topic.
+     * @param protocol        The protocol type matching for the message.
+     * @param destinationType The destination type matching for the message.
      * @param destinationName The name of the destination to which the message belongs to.
      * @param andesMessageID  The message ID. This message is the andes metadata message ID.
      * @param content         Whether to return content or not.
@@ -1014,14 +1268,12 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command example :
      * <pre>
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/destination-type/queue/name/MyQueue/messages
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/topic
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=true
-     *  curl -v -X DELETE http://127.0.0.1:9443/mb/api/amqp/subscription-type/durable_topic?active=false&name=subID01
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue/name/MyQueue/messages
+     *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/durable_topic/name/carbon:Sub/messages
      * </pre>
      *
-     * @param protocol        The protocol type matching for the message. Example : amqp, mqtt.
-     * @param destinationType The destination type matching for the message. Example : queue, topic, durable_topic.
+     * @param protocol        The protocol type matching for the message.
+     * @param destinationType The destination type matching for the message.
      * @param destinationName The name of the destination to purge messages.
      * @return No response body. <p>
      * <ul>
@@ -1061,7 +1313,7 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/information/cluster
+     *  curl -v http://127.0.0.1:9090/mb/api/information/cluster
      * </pre>
      *
      * @return Return a {@link ClusterInformation}. <p>
@@ -1096,7 +1348,7 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/information/store
+     *  curl -v http://127.0.0.1:9090/mb/api/information/store
      * </pre>
      *
      * @return Return a {@link StoreInformation}. <p>
@@ -1131,7 +1383,7 @@ public class AndesRESTService implements Microservice {
      * <p>
      * curl command :
      * <pre>
-     *  curl -v http://127.0.0.1:9443/mb/api/information/broker
+     *  curl -v http://127.0.0.1:9090/mb/api/information/broker
      * </pre>
      *
      * @return Return a {@link BrokerInformation}. <p>
@@ -1213,6 +1465,7 @@ public class AndesRESTService implements Microservice {
         subscriptionManagerService = new SubscriptionManagerServiceOSGiImpl();
         messageManagerService = new MessageManagerServiceOSGiImpl();
         brokerManagerService = new BrokerManagerServiceOSGiImpl();
+        dlcManagerService = new DLCManagerServiceOSGiImpl();
     }
 
     /**
@@ -1222,6 +1475,12 @@ public class AndesRESTService implements Microservice {
      */
     @SuppressWarnings("unused")
     protected void unsetAndesRuntime(Andes andesInstance) {
-
+        AndesRESTComponentDataHolder.getInstance().setAndesInstance(null);
+        // Setting bean implementations for services.
+        destinationManagerService = new DestinationManagerServiceBeanImpl();
+        subscriptionManagerService = new SubscriptionManagerServiceBeanImpl();
+        messageManagerService = new MessageManagerServiceBeanImpl();
+        brokerManagerService = new BrokerManagerServiceBeanImpl();
+        dlcManagerService = new DLCManagerServiceBeanImpl();
     }
 }
