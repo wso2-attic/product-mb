@@ -503,12 +503,12 @@
         <andes.package.import.version.range>[3.5.0, 4.0.0)</andes.package.import.version.range>
         <carbon.cache.version>1.0.0-m1</carbon.cache.version>
         <carbon.datasources.import.version.range>[1.0.0, 2.0.0)</carbon.datasources.import.version.range>
-        <carbon.datasources.version>1.0.0-SNAPSHOT</carbon.datasources.version>
+        <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.hazelcast.feature.version>1.0.0</carbon.hazelcast.feature.version>
         <carbon.hazelcast.package.import.version.range>[1.0.0, 2.0.0)</carbon.hazelcast.package.import.version.range>
         <carbon.hazelcast.version>1.0.0-SNAPSHOT</carbon.hazelcast.version>
-        <carbon.jndi.version>1.0.0-SNAPSHOT</carbon.jndi.version>
+        <carbon.jndi.version>1.0.0</carbon.jndi.version>
         <carbon.kernel.package.import.version.range>[5.1.0, 6.0.0)</carbon.kernel.package.import.version.range>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
         <carbon.mb.version>3.5.0-SNAPSHOT</carbon.mb.version>
