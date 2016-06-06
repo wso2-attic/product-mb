@@ -839,7 +839,7 @@ public class AndesRESTService implements Microservice {
      */
     @POST
     @Path("/dlc/{dlc-queue-name}/messages/restore")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
             value = "Reroute or Restores messages from DLC.",
             notes = "Reroute or Restores messages from DLC with a given list of message IDs.",
@@ -882,7 +882,7 @@ public class AndesRESTService implements Microservice {
      */
     @DELETE
     @Path("/dlc/{dlc-queue-name}/messages")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
             value = "Deletes messages from DLC.",
             notes = "Deletes messages from DLC with given list of message IDs.",
