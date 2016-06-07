@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.andes.transports.mqtt.adaptors.memory;
 
-import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message.MqttMessageContext;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
@@ -99,7 +98,7 @@ public class MemoryConnector implements MessagingAdaptor {
         stringMqttChannelMap.remove(clientId);
 
         //If there're no clients for the topic after the disconnection we could remove the topic
-        if(stringMqttChannelMap.size() == 0){
+        if (stringMqttChannelMap.size() == 0) {
             subscriptions.remove(topicName);
         }
     }

@@ -80,7 +80,6 @@ public class MqttChannel {
 
     /**
      * Handles subscriber side acknowledgements
-
      */
     private SubscriberAcknowledgementProcessor subscriberAck = new SubscriberAcknowledgementProcessor();
 
@@ -107,7 +106,7 @@ public class MqttChannel {
             return o1.compareTo(o2);
         });
 
-        this.deliveryTagMap =  new MessageDeliveryTagMap<>(messageIdList, messageDeliveryTag);
+        this.deliveryTagMap = new MessageDeliveryTagMap<>(messageIdList, messageDeliveryTag);
 
     }
 
@@ -138,7 +137,6 @@ public class MqttChannel {
     public Integer getTopic(String topic) {
         return topicQoSLevels.get(topic);
     }
-
 
     /**
      * Removes a topic off the list during disconnection/un-subscription

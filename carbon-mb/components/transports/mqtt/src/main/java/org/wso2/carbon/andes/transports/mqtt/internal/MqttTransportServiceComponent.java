@@ -39,10 +39,8 @@ import org.wso2.carbon.andes.transports.config.MqttTransportConfiguration;
 import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
 import org.wso2.carbon.andes.transports.config.MqttWebsocketTransportProperties;
 import org.wso2.carbon.andes.transports.config.YAMLTransportConfigurationBuilder;
-import org.wso2.carbon.andes.transports.mqtt.MqttSSLServer;
 import org.wso2.carbon.andes.transports.mqtt.MqttServer;
 import org.wso2.carbon.andes.transports.mqtt.MqttWebSocketServer;
-import org.wso2.carbon.andes.transports.mqtt.Util;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.mqtt.broker.BrokerVersion;
 import org.wso2.carbon.andes.transports.server.Server;
@@ -125,7 +123,7 @@ public class MqttTransportServiceComponent {
         processConfiguration(mqttSecuredTransportProperties);
         mqttSecuredTransportProperties.setProtocol(MqttTransport.PROTOCOL_NAME);
 
-        MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
+   //     MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
 
         MqttWebsocketTransportProperties websocketTransportProperties = mqttTransportConfiguration
                 .getMqttWebsocketTransportProperties();
@@ -137,7 +135,7 @@ public class MqttTransportServiceComponent {
 
         //Creates a transport from the given configuration
         MqttTransport transport = new MqttTransport(mqttTransportProperties, mqttServer);
-        MqttTransport securedTransport = new MqttTransport(mqttSecuredTransportProperties, securedMqttServer);
+//        MqttTransport securedTransport = new MqttTransport(mqttSecuredTransportProperties, securedMqttServer);
         MqttTransport webSocketTransport = new MqttTransport(websocketTransportProperties, webSocketServer);
 
 

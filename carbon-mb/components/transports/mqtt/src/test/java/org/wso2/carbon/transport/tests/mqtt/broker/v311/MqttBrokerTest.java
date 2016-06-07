@@ -27,6 +27,8 @@ import org.wso2.carbon.andes.transports.mqtt.broker.v311.MqttBroker;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnAckMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.DisconnectMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRecMessage;
+import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRelMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PublishMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubAckMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubscribeMessage;
@@ -176,13 +178,19 @@ public class MqttBrokerTest {
         if (message.getQos().getValue() > AbstractMessage.QOSType.MOST_ONE.getValue()) {
             //Here we need to validate whether the acknowledgment is sent properly
             AbstractMessage responseMessage = messageReceiver.getResponseMessage();
+            AbstractMessage.QOSType qos = responseMessage.getQos();
         }
     }
 
     @Test(dataProvider = "PublisherAckMessage", dataProviderClass = MqttBrokerDataProvider.class)
-    public void testPubAck() throws Exception {
+    public void testPubAck(Message pubAckMessage) throws Exception {
         MqttBroker broker = new MqttBroker();
-
+        PubRelMessage message = (PubRelMessage) pubAckMessage.getMessage();
+        //PRE-REQUESTS - this message is sent by the publisher to the broker for QoS 2 messages
+        // The message should receive the PUBREC from the publisher
+        PubRecMessage pubRecMessage = new PubRecMessage();
+        //Need to check whether the state didn't invary
+        //broker.pubAck();
     }
 
     @Test

@@ -40,11 +40,12 @@ public class MockMemoryAdaptor extends MemoryConnector {
 
     /**
      * Returns a verification on existence of live subscription for the topic
+     *
      * @param topicName the name of the topic
-     * @param clientId the id of the client who disconnected from the topic
+     * @param clientId  the id of the client who disconnected from the topic
      * @return true if the subscription is alive
      */
-    public boolean isSubscriptionLive(String topicName,String clientId){
+    public boolean isSubscriptionLive(String topicName, String clientId) {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(topicName);
         MqttChannel channel = null;
         if (stringMqttChannelMap != null) {

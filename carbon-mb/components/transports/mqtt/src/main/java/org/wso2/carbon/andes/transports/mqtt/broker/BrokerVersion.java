@@ -78,7 +78,7 @@ public enum BrokerVersion {
      * Gets the message adopter implementation
      * @return MessagingAdaptor
      */
-    public MessagingAdaptor getAdaptor(){
+    public MessagingAdaptor getAdaptor() {
         return adaptor;
     }
 
