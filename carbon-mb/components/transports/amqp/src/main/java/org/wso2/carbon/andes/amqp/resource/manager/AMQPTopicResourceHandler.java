@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * AMQP resource handler for durable topics.
+ * AMQP resource handler for topics.
  */
-public class AMQPDurableTopicResourceManager extends DefaultResourceHandler {
+public class AMQPTopicResourceHandler extends DefaultResourceHandler {
     /**
      * Wildcard character to include all.
      */
@@ -42,7 +42,7 @@ public class AMQPDurableTopicResourceManager extends DefaultResourceHandler {
     private ProtocolType protocolType;
     private DestinationType destinationType;
 
-    public AMQPDurableTopicResourceManager(ProtocolType protocolType, DestinationType destinationType) {
+    public AMQPTopicResourceHandler(ProtocolType protocolType, DestinationType destinationType) {
         super(protocolType, destinationType);
         this.protocolType = protocolType;
         this.destinationType = destinationType;
@@ -75,7 +75,6 @@ public class AMQPDurableTopicResourceManager extends DefaultResourceHandler {
      */
     @Override
     public void deleteMessages(String s) throws AndesException {
-
     }
 
     /**
@@ -87,10 +86,8 @@ public class AMQPDurableTopicResourceManager extends DefaultResourceHandler {
         Set<AndesSubscription> allClusterSubscriptions = AndesContext.getInstance()
                 .getSubscriptionEngine().getAllClusterSubscriptionsForDestinationType(protocolType, destinationType);
 
-        Set<AndesSubscription> filteredSubscriptions = allClusterSubscriptions.stream()
-                .filter(s -> s.getProtocolType() == protocolType)
-                .filter(s -> s.isDurable() == ((destinationType == DestinationType.QUEUE)
-                                               || (destinationType == DestinationType.DURABLE_TOPIC)))
+        Set<AndesSubscription> filteredSubscriptions = allClusterSubscriptions
+                .stream()
                 .filter(s -> s.hasExternalSubscriptions() == active)
                 .filter(s -> null != subscriptionName
                              && !ALL_WILDCARD.equals(subscriptionName)

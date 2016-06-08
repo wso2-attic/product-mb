@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * AMQP resource handler for topics.
+ * AMQP resource handler for durable topics.
  */
-public class AMQPTopicResourceManager extends DefaultResourceHandler {
+public class AMQPDurableTopicResourceHandler extends DefaultResourceHandler {
     /**
      * Wildcard character to include all.
      */
@@ -42,7 +42,7 @@ public class AMQPTopicResourceManager extends DefaultResourceHandler {
     private ProtocolType protocolType;
     private DestinationType destinationType;
 
-    public AMQPTopicResourceManager(ProtocolType protocolType, DestinationType destinationType) {
+    public AMQPDurableTopicResourceHandler(ProtocolType protocolType, DestinationType destinationType) {
         super(protocolType, destinationType);
         this.protocolType = protocolType;
         this.destinationType = destinationType;
@@ -61,6 +61,7 @@ public class AMQPTopicResourceManager extends DefaultResourceHandler {
     @Override
     public AndesQueue createDestination(String s, String s1) throws AndesException {
         return null;
+
     }
 
     /**
@@ -75,6 +76,7 @@ public class AMQPTopicResourceManager extends DefaultResourceHandler {
      */
     @Override
     public void deleteMessages(String s) throws AndesException {
+
     }
 
     /**
@@ -86,10 +88,8 @@ public class AMQPTopicResourceManager extends DefaultResourceHandler {
         Set<AndesSubscription> allClusterSubscriptions = AndesContext.getInstance()
                 .getSubscriptionEngine().getAllClusterSubscriptionsForDestinationType(protocolType, destinationType);
 
-        Set<AndesSubscription> filteredSubscriptions = allClusterSubscriptions.stream()
-                .filter(s -> s.getProtocolType() == protocolType)
-                .filter(s -> s.isDurable() == ((destinationType == DestinationType.QUEUE)
-                                               || (destinationType == DestinationType.DURABLE_TOPIC)))
+        Set<AndesSubscription> filteredSubscriptions = allClusterSubscriptions
+                .stream()
                 .filter(s -> s.hasExternalSubscriptions() == active)
                 .filter(s -> null != subscriptionName
                              && !ALL_WILDCARD.equals(subscriptionName)
@@ -97,6 +97,7 @@ public class AMQPTopicResourceManager extends DefaultResourceHandler {
                 .filter(s -> null != destinationName
                              && !ALL_WILDCARD.equals(destinationName)
                              && s.getSubscribedDestination().equals(destinationName))
+
                 .collect(Collectors.toSet());
 
         filteredSubscriptions = filterTopicSubscriptions(filteredSubscriptions);
