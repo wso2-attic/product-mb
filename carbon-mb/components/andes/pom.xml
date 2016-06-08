@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -251,9 +251,6 @@
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
             org.wso2.carbon.metrics.core.*,
             org.slf4j.*;version="${slf4j.import.version.range}",
-            javax.jms.*,
-            javax.naming.*,
-            javax.xml.stream.*
         </import.package>
         <!--Refer to https://wso2.org/jira/browse/MB-1681-->
         <dynamic.import.package>*</dynamic.import.package>

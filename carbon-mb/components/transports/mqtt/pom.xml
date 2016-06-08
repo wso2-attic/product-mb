@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -96,10 +96,8 @@
         </export.package>
         <import.package>
             org.wso2.andes.*,
-            org.slf4j.*,
             org.osgi.framework.*;version="[1.8.0, 2.0.0)",
             org.wso2.carbon.kernel.*;version="[5.0.0, 6.0.0)",
-            com.lmax.disruptor.*;version="[3.3.2, 4.0.0]",
             org.apache.commons.logging;version="[1.1.1, 1.2.0]",
             com.google.common.util.concurrent;version="[19.0.0, 20.0.0]",
             io.netty.*;version="[4.0.23.wso2v1, 4.1.0]",
