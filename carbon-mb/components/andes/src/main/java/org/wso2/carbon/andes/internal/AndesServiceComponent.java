@@ -42,6 +42,7 @@ import org.wso2.carbon.andes.internal.config.QpidServiceImpl;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.kernel.utils.Utils;
+import org.wso2.carbon.metrics.core.MetricService;
 
 import java.nio.file.Paths;
 
@@ -100,6 +101,7 @@ public class AndesServiceComponent {
         HazelcastAgent.getInstance().init(hazelcastInstance);
         AndesContext.getInstance().setClusteringEnabled(true);
         AndesContext.getInstance().constructStoreConfiguration();
+        AndesContext.getInstance().setMetricService(AndesDataHolder.getInstance().getMetricService());
 
         startAndes();
 
@@ -213,5 +215,30 @@ public class AndesServiceComponent {
      */
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
         AndesDataHolder.getInstance().setCarbonRuntime(null);
+    }
+
+    /**
+     * This bind method will be called when {@link MetricService} is registered.
+     *
+     * @param metricService The {@link MetricService} instance registered as an OSGi service
+     */
+    @Reference(
+            name = "carbon.metrics.service",
+            service = MetricService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetMetricService"
+    )
+    protected void setMetricService(MetricService metricService) {
+        AndesDataHolder.getInstance().setMetricService(metricService);
+    }
+
+    /**
+     * This is the unbind method which gets called at the un-registration of {@link MetricService}
+     *
+     * @param metricService The {@link MetricService} instance registered as an OSGi service
+     */
+    protected void unsetMetricService(MetricService metricService) {
+        AndesDataHolder.getInstance().setMetricService(null);
     }
 }
