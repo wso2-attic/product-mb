@@ -20,6 +20,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.osgi.HazelcastOSGiService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.kernel.CarbonRuntime;
+import org.wso2.carbon.metrics.core.MetricService;
 
 import java.util.logging.Logger;
 
@@ -34,6 +35,7 @@ public class AndesDataHolder {
     private HazelcastInstance carbonHazelcastAgent;
     private HazelcastOSGiService hazelcastOSGiService;
     private CarbonRuntime carbonRuntime;
+    private MetricService metricService;
 
     /**
      * The datasource service instance provided by OSGI.
@@ -105,6 +107,24 @@ public class AndesDataHolder {
      */
     public void setHazelcastOSGiService(HazelcastOSGiService hazelcastOSGiService) {
         this.hazelcastOSGiService = hazelcastOSGiService;
+    }
+
+    /**
+     * Returns the {@link MetricService}, which is set by the service component
+     *
+     * @return The {@link MetricService} instance
+     */
+    public MetricService getMetricService() {
+        return metricService;
+    }
+
+    /**
+     * Set the {@link MetricService} when the service component gets a reference to the {@link MetricService} instance.
+     *
+     * @param metricService The {@link MetricService} reference being passed through the service component
+     */
+    public void setMetricService(MetricService metricService) {
+        this.metricService = metricService;
     }
 
 }
