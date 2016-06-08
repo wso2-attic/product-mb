@@ -60,7 +60,7 @@ public class SubscriptionManagerServiceOSGiImpl implements SubscriptionManagerSe
                 andesSubscriptions = andesResourceManager.getSubscriptions(protocolType,
                         destinationType, subscriptionName, destinationName, true, offset, limit);
             } else {
-                throw new SubscriptionManagerException("Invalid active value provided. User * , true or false");
+                throw new SubscriptionManagerException("Invalid active value provided. Use * , true or false");
             }
 
             for (AndesSubscription andesSubscription : andesSubscriptions) {

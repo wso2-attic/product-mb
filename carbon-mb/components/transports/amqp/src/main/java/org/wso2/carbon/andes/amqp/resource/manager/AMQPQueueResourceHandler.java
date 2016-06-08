@@ -36,12 +36,12 @@ import javax.management.ReflectionException;
 /**
  * AMQP resource handler for queues.
  */
-public class AMQPQueueResourceManager extends DefaultResourceHandler {
+public class AMQPQueueResourceHandler extends DefaultResourceHandler {
     private final ProtocolType protocolType;
     private final DestinationType destinationType;
     private Andes andesInstance = AMQPComponentDataHolder.getInstance().getAndesInstance();
 
-    public AMQPQueueResourceManager(ProtocolType protocolType, DestinationType destinationType) throws AndesException {
+    public AMQPQueueResourceHandler(ProtocolType protocolType, DestinationType destinationType) throws AndesException {
         super(protocolType, destinationType);
         this.protocolType = protocolType;
         this.destinationType = destinationType;

@@ -29,13 +29,14 @@ import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolInfo;
+import org.wso2.andes.server.resource.manager.ResourceHandler;
 import org.wso2.andes.subscription.LocalDurableTopicSubscriptionStore;
 import org.wso2.andes.subscription.QueueSubscriptionStore;
 import org.wso2.carbon.andes.amqp.AMQPTransport;
-import org.wso2.carbon.andes.amqp.resource.manager.AMQPDurableTopicResourceManager;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPDurableTopicResourceHandler;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPMessageDecoder;
-import org.wso2.carbon.andes.amqp.resource.manager.AMQPQueueResourceManager;
-import org.wso2.carbon.andes.amqp.resource.manager.AMQPTopicResourceManager;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPQueueResourceHandler;
+import org.wso2.carbon.andes.amqp.resource.manager.AMQPTopicResourceHandler;
 import org.wso2.carbon.andes.amqp.subscription.AMQPTopicSubscriptionBitMapStore;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
@@ -76,7 +77,7 @@ public class AMQPTransportServiceComponent {
                                     registerMessageDecoder(protocolInfo.getProtocolType(), new AMQPMessageDecoder());
         }
 
-        registerResourceManagers();
+        registerResourceHandlers();
 
 
         serviceRegistration = bundleContext.registerService(AMQPTransport.class.getName(), new AMQPTransport(), null);
@@ -88,26 +89,22 @@ public class AMQPTransportServiceComponent {
      *
      * @throws AndesException
      */
-    private void registerResourceManagers() throws AndesException {
+    private void registerResourceHandlers() throws AndesException {
         for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
-            AMQPQueueResourceManager amqpResourceManager =
-                                    new AMQPQueueResourceManager(protocolInfo.getProtocolType(), DestinationType.QUEUE);
+            ResourceHandler amqpResourceHandler =
+                                    new AMQPQueueResourceHandler(protocolInfo.getProtocolType(), DestinationType.QUEUE);
             AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
-                                            protocolInfo.getProtocolType(), DestinationType.QUEUE, amqpResourceManager);
-        }
+                                            protocolInfo.getProtocolType(), DestinationType.QUEUE, amqpResourceHandler);
 
-        for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
-            AMQPTopicResourceManager amqpResourceManager =
-                                    new AMQPTopicResourceManager(protocolInfo.getProtocolType(), DestinationType.TOPIC);
+            amqpResourceHandler =
+                    new AMQPTopicResourceHandler(protocolInfo.getProtocolType(), DestinationType.TOPIC);
             AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
-                                            protocolInfo.getProtocolType(), DestinationType.TOPIC, amqpResourceManager);
-        }
+                    protocolInfo.getProtocolType(), DestinationType.TOPIC, amqpResourceHandler);
 
-        for (ProtocolInfo protocolInfo : getAMQPProtocolInformationList()) {
-            AMQPDurableTopicResourceManager amqpResourceManager =
-                    new AMQPDurableTopicResourceManager(protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC);
+            amqpResourceHandler =
+                    new AMQPDurableTopicResourceHandler(protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC);
             AMQPComponentDataHolder.getInstance().getAndesInstance().getAndesResourceManager().registerResourceHandler(
-                                    protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC, amqpResourceManager);
+                    protocolInfo.getProtocolType(), DestinationType.DURABLE_TOPIC, amqpResourceHandler);
         }
     }
 
@@ -194,6 +191,7 @@ public class AMQPTransportServiceComponent {
      *
      * @param carbonRuntime The CarbonRuntime instance registered by Carbon Kernel as an OSGi service
      */
+    @SuppressWarnings("unused")
     protected void unsetCarbonRuntime(CarbonRuntime carbonRuntime) {
         AMQPComponentDataHolder.getInstance().setCarbonRuntime(null);
     }
@@ -221,4 +219,6 @@ public class AMQPTransportServiceComponent {
     protected void unsetAndesInstance(Andes andesInstance) {
         AMQPComponentDataHolder.getInstance().setAndesInstance(null);
     }
+
+
 }

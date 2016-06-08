@@ -37,10 +37,13 @@ public class BrokerManagerServiceBeanImpl implements BrokerManagerService {
     public BrokerManagerServiceBeanImpl() {
         brokerManagementBeans = new BrokerManagementBeans();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<String> getSupportedProtocols() throws BrokerManagerException {
-        throw new BrokerManagerException("Not Implemented");
+    public List<String> getSupportedProtocols() {
+        return null;
     }
 
     /**

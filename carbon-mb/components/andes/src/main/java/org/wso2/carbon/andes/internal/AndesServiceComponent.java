@@ -106,8 +106,6 @@ public class AndesServiceComponent {
         System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
         String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort()};
         Main.main(args);
-        // TODO: C5 migration - Decouple from qpid and move to andes startup
-        AndesKernelBoot.registerMBeans();
         Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
         serviceRegistration = bundleContext.registerService(Andes.class.getName(), Andes.getInstance(), null);
         log.info("Andes service component activated");
@@ -123,6 +121,7 @@ public class AndesServiceComponent {
         AndesKernelBoot.initializeComponents();
         AndesKernelBoot.startMessaging();
         AndesKernelBoot.createSuperTenantDLC();
+        AndesKernelBoot.registerMBeans();
     }
 
     /**
