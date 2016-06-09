@@ -19,14 +19,14 @@
 package org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message;
 
 import io.netty.channel.Channel;
-import org.wso2.andes.kernel.AndesContent;
-import org.wso2.andes.kernel.AndesEncodingUtil;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.AndesMessage;
-import org.wso2.andes.kernel.AndesMessageMetadata;
-import org.wso2.andes.kernel.AndesMessagePart;
-import org.wso2.andes.kernel.AndesUtils;
-import org.wso2.andes.kernel.ProtocolType;
+import org.wso2.carbon.andes.core.AndesContent;
+import org.wso2.carbon.andes.core.AndesEncodingUtil;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.AndesMessage;
+import org.wso2.carbon.andes.core.AndesMessageMetadata;
+import org.wso2.carbon.andes.core.AndesMessagePart;
+import org.wso2.carbon.andes.core.AndesUtils;
+import org.wso2.carbon.andes.core.ProtocolType;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
 import org.wso2.carbon.andes.transports.mqtt.broker.PublisherAcknowledgementProcessor;
@@ -224,7 +224,6 @@ public class MqttMessageContext {
     public AndesMessage toAndesMessage() {
 
         AndesMessageMetadata andesMetadata = new AndesMessageMetadata(getTopic(), protocolType);
-        andesMetadata.setTopic(true);
         andesMetadata.setPersistent(true);
         andesMetadata.setRetain(isRetain());
         andesMetadata.setStorageDestination(getTopic());

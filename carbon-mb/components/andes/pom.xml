@@ -31,7 +31,7 @@
     <packaging>bundle</packaging>
     <name>WSO2 Message Broker - Andes Component</name>
     <description>
-        This is the implementation for the Andes Carbon Component which initiates the Qpid broker and registers Qpid
+        This is the implementation for the Carbon Component which initiates the Andes broker and registers Andes
         OSGi service.
     </description>
     <url>http://wso2.com</url>
@@ -48,10 +48,6 @@
         <dependency>
             <groupId>org.wso2.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
-            <artifactId>qpid</artifactId>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
@@ -104,6 +100,18 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.goldmansachs</groupId>
+            <artifactId>gs-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.jpountz.lz4</groupId>
+            <artifactId>lz4</artifactId>
         </dependency>
 
         <!-- Testing dependencies -->
@@ -178,6 +186,7 @@
                             <suppressionsLocation>
                                 https://raw.githubusercontent.com/wso2/code-quality-tools/master/checkstyle/suppressions.xml
                             </suppressionsLocation>
+                            <excludes>org/wso2/carbon/andes/core/internal/thrift/slot/gen/*</excludes>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
@@ -240,13 +249,12 @@
         <private.package>org.wso2.carbon.andes.internal</private.package>
         <export.package>
             !org.wso2.carbon.andes.internal,
-            org.wso2.carbon.andes.*;version="${andes.package.export.version.range}"
+            org.wso2.carbon.andes.core.*;version="${andes.package.export.version.range}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             com.hazelcast.*;version="${com.hazelcast.package.import.version.range}",
-            org.wso2.andes.*;version="${andes.package.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.carbon.datasource.core.*;version="${carbon.datasources.import.version.range}",
             org.wso2.carbon.metrics.core.*,
@@ -255,7 +263,7 @@
         <!--Refer to https://wso2.org/jira/browse/MB-1681-->
         <dynamic.import.package>*</dynamic.import.package>
         <carbon.component>
-            osgi.service; objectClass="org.wso2.andes.kernel.Andes"
+            osgi.service; objectClass="org.wso2.carbon.andes.core.Andes"
         </carbon.component>
     </properties>
 

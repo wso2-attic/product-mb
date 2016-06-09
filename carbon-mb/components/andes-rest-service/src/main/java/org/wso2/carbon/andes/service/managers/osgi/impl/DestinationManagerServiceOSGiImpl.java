@@ -16,11 +16,11 @@
 
 package org.wso2.carbon.andes.service.managers.osgi.impl;
 
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.AndesQueue;
-import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolType;
-import org.wso2.andes.server.resource.manager.AndesResourceManager;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.AndesQueue;
+import org.wso2.carbon.andes.core.DestinationType;
+import org.wso2.carbon.andes.core.ProtocolType;
+import org.wso2.carbon.andes.core.resource.manager.AndesResourceManager;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.internal.AndesRESTComponentDataHolder;
 import org.wso2.carbon.andes.service.managers.DestinationManagerService;

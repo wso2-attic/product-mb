@@ -17,7 +17,7 @@
 package org.wso2.carbon.andes.service.managers.osgi.impl;
 
 import com.google.common.primitives.Longs;
-import org.wso2.andes.server.resource.manager.AndesResourceManager;
+import org.wso2.carbon.andes.core.resource.manager.AndesResourceManager;
 import org.wso2.carbon.andes.service.internal.AndesRESTComponentDataHolder;
 import org.wso2.carbon.andes.service.managers.DLCManagerService;
 

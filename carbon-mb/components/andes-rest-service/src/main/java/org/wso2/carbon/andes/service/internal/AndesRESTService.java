@@ -38,12 +38,12 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.andes.kernel.Andes;
-import org.wso2.andes.kernel.AndesConstants;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolType;
-import org.wso2.andes.server.queue.DLCQueueUtils;
+import org.wso2.carbon.andes.core.Andes;
+import org.wso2.carbon.andes.core.AndesConstants;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.DestinationType;
+import org.wso2.carbon.andes.core.ProtocolType;
+import org.wso2.carbon.andes.core.util.DLCQueueUtils;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
@@ -244,8 +244,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v http://127.0.0.1:9090/mb/api/amqp-0-91/destination-type/queue?name=MyQueue&offset=5&limit=3
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination as {@link DestinationType}.
      * @param destinationName The name of the destination. If "*", all destinations are returned, else destinations that
      *                        <strong>contains</strong> the value will be returned.
      * @param offset          The starting index of the return destination list for pagination. Default value is 0.
@@ -305,8 +305,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination as {@link DestinationType}.
      * @return No response body. <p>
      * <ul>
      *     <li>{@link javax.ws.rs.core.Response.Status#OK} - Destinations were successfully deleted.</li>
@@ -349,8 +349,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination as {@link DestinationType}.
      * @param destinationName The name of the destination.
      * @return A JSON representation of {@link Destination}. <p>
      * <ul>
@@ -403,8 +403,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v -X POST http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination as {@link DestinationType}.
      *                        "durable_topic" is considered as a topic.
      * @param destination     The destination object. {@link Destination#destinationName} is required.
      * @return A JSON representation of the newly created {@link Destination}. <p>
@@ -458,8 +458,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v -X DELETE http://127.0.0.1:9090/mb/api/mqtt-default/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination a {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination a {@link DestinationType}.
      *                        "durable_topic" is considered as a topic.
      * @param destinationName The name of the destination to delete.
      * @return No response body. <p>
@@ -507,8 +507,8 @@ public class AndesRESTService implements Microservice {
      *  curl -v http://127.0.0.1:9090/mb/api/mqtt-default/permissions/destination-type/topic/name/MyMQTTTopic
      * </pre>
      *
-     * @param protocol        The protocol type of the destination as {@link org.wso2.andes.kernel.ProtocolType}.
-     * @param destinationType The destination type of the destination as {@link org.wso2.andes.kernel.DestinationType}.
+     * @param protocol        The protocol type of the destination as {@link ProtocolType}.
+     * @param destinationType The destination type of the destination as {@link DestinationType}.
      *                        "durable_topic" is considered as a topic.
      * @param destinationName The name of the destination.
      * @return Return a collection of {@link DestinationRolePermission}. <p>
@@ -560,9 +560,9 @@ public class AndesRESTService implements Microservice {
      * </pre>
      *
      * @param protocol                      The protocol type of the destination as
-     *                                      {@link org.wso2.andes.kernel.ProtocolType}.
+     *                                      {@link ProtocolType}.
      * @param destinationType               The destination type of the destination as
-     *                                      {@link org.wso2.andes.kernel.DestinationType}. "durable_topic" is considered
+     *                                      {@link DestinationType}. "durable_topic" is considered
      *                                      as a topic.
      * @param destinationName               The name of the destination.
      * @param newDestinationRolePermissions The new permission assigned to the role.
@@ -619,9 +619,9 @@ public class AndesRESTService implements Microservice {
      * </pre>
      *
      * @param protocol                          The protocol type of the destination as
-     *                                          {@link org.wso2.andes.kernel.ProtocolType}.
+     *                                          {@link ProtocolType}.
      * @param destinationType                   The destination type of the destination as
-     *                                          {@link org.wso2.andes.kernel.DestinationType}. "durable_topic" is
+     *                                          {@link DestinationType}. "durable_topic" is
      *                                          considered as a topic.
      * @param destinationName                   The name of the destination.
      * @param updatedDestinationRolePermissions The updates permission assigned to the role.

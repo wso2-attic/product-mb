@@ -18,10 +18,10 @@ package org.wso2.carbon.andes.service.utils;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.wso2.andes.configuration.AndesConfigurationManager;
-import org.wso2.andes.configuration.enums.AndesConfiguration;
-import org.wso2.andes.configuration.modules.JKSStore;
-import org.wso2.andes.kernel.AndesConstants;
+import org.wso2.carbon.andes.core.AndesConstants;
+import org.wso2.carbon.andes.core.internal.configuration.AndesConfigurationManager;
+import org.wso2.carbon.andes.core.internal.configuration.enums.AndesConfiguration;
+import org.wso2.carbon.andes.core.internal.configuration.modules.JKSStore;
 import org.wso2.carbon.andes.service.types.Subscription;
 
 import java.io.FileNotFoundException;
@@ -57,8 +57,8 @@ public class Utils {
     /**
      * Maximum size a message will be displayed on UI
      */
-    public static final Integer MESSAGE_DISPLAY_LENGTH_MAX = AndesConfigurationManager.readValue(AndesConfiguration
-                    .MANAGEMENT_CONSOLE_MAX_DISPLAY_LENGTH_FOR_MESSAGE_CONTENT);
+    public static final Integer MESSAGE_DISPLAY_LENGTH_MAX = AndesConfigurationManager.readValue(
+            AndesConfiguration.MANAGEMENT_CONSOLE_MAX_DISPLAY_LENGTH_FOR_MESSAGE_CONTENT);
 
     /**
      * Shown to user has a indication that the particular message has more content than shown in UI

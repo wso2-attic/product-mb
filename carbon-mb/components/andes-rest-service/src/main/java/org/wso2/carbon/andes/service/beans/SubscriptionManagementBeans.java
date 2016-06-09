@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.andes.service.beans;
 
-import org.wso2.andes.server.util.CompositeDataHelper;
+import org.wso2.carbon.andes.core.util.CompositeDataHelper;
 import org.wso2.carbon.andes.service.exceptions.SubscriptionManagerException;
 import org.wso2.carbon.andes.service.managers.bean.utils.SubscriptionManagementConstants;
 import org.wso2.carbon.andes.service.types.Subscription;

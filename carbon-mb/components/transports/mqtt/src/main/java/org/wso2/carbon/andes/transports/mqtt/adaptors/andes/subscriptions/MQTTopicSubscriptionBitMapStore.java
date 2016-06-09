@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions;
 
-import org.wso2.andes.subscription.TopicSubscriptionBitMapStore;
+import org.wso2.carbon.andes.core.subscription.TopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 
 /**

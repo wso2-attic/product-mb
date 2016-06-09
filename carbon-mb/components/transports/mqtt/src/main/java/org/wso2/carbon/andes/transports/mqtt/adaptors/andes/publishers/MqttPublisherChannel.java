@@ -18,8 +18,8 @@
 package org.wso2.carbon.andes.transports.mqtt.adaptors.andes.publishers;
 
 import io.netty.channel.Channel;
-import org.wso2.andes.kernel.AndesChannel;
-import org.wso2.andes.kernel.FlowControlListener;
+import org.wso2.carbon.andes.core.AndesChannel;
+import org.wso2.carbon.andes.core.internal.inbound.FlowControlListener;
 
 import java.util.UUID;
 

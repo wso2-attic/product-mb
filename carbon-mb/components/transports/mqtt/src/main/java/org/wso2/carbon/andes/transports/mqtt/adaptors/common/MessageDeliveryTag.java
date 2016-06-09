@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.andes.transports.mqtt.adaptors.common;
 
-import org.wso2.andes.kernel.DeliverableAndesMetadata;
+import org.wso2.carbon.andes.core.DeliverableAndesMetadata;
 
 /**
  * Contains the delivery tag which will be generated to sent to subscribers

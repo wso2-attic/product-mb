@@ -19,8 +19,8 @@
 package org.wso2.carbon.andes.transports.mqtt.broker;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.ProtocolType;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.ProtocolType;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTagMap;
 import org.wso2.carbon.andes.transports.mqtt.internal.MqttTransport;

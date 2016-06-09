@@ -18,9 +18,9 @@ package org.wso2.carbon.andes.service.types;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolType;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.DestinationType;
+import org.wso2.carbon.andes.core.ProtocolType;
 
 import java.util.Date;
 

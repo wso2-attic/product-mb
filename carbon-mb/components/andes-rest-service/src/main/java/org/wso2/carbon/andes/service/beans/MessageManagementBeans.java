@@ -17,7 +17,7 @@
 package org.wso2.carbon.andes.service.beans;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.wso2.andes.server.util.CompositeDataHelper;
+import org.wso2.carbon.andes.core.util.CompositeDataHelper;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.exceptions.MessageManagerException;
 import org.wso2.carbon.andes.service.managers.bean.utils.MessageManagementConstants;
