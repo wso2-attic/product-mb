@@ -52,7 +52,7 @@
         <!--Components-->
         <module>carbon-mb/components/andes</module>
         <module>carbon-mb/components/andes-rest-service</module>
-        <!--<module>carbon-mb/components/ui</module>-->
+        <module>carbon-mb/components/ui</module>
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
