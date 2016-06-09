@@ -63,7 +63,7 @@ public class Disconnect {
 
                 messageStore.storeDisconnectMessage(topicName, channel.getProperty(MqttConstants
                         .CLIENT_ID_PROPERTY_NAME), isCleanSession, QOSLevel
-                        .getQoSFromValue(qos), subscriptionId);
+                        .getQoSFromValue(qos), subscriptionId, channel);
             }
         } catch (AdaptorException e) {
             String error = "Error while disconnecting the subscription";

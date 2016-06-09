@@ -116,7 +116,8 @@ public class AMQPMessageDecoder implements MessageDecoder {
             //content is constructing
             final int bodySize = (int) amqMessage.getSize();
 
-            AndesMessagePart constructedContent = constructContent(bodySize, amqMessage);
+            AndesMessagePart constructedContent = constructContent(bodySize, amqMessage,
+                    andesMessage.getMetadata().isCompressed());
             byte[] messageContent = constructedContent.getData();
             int position = constructedContent.getOffset();
 
@@ -136,14 +137,16 @@ public class AMQPMessageDecoder implements MessageDecoder {
      *
      * @param bodySize   Original content size of the message
      * @param amqMessage AMQMessage
+     * @param compressed isCompressed
      * @return Message content and last position of written data as an AndesMessagePart
      * @throws MBeanException
      */
-    private AndesMessagePart constructContent(int bodySize, AMQMessage amqMessage) throws MBeanException {
+    private AndesMessagePart constructContent(int bodySize, AMQMessage amqMessage, boolean compressed)
+            throws MBeanException {
 
         AndesMessagePart andesMessagePart;
 
-        if (amqMessage.getMessageMetaData().isCompressed()) {
+        if (compressed) {
             /* If the current message was compressed by the server, decompress the message content and, get it as an
              * AndesMessagePart
              */

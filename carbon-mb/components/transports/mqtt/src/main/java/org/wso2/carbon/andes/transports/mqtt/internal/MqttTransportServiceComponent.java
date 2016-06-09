@@ -42,9 +42,13 @@ import org.wso2.carbon.andes.transports.mqtt.MqttSSLServer;
 import org.wso2.carbon.andes.transports.mqtt.MqttServer;
 import org.wso2.carbon.andes.transports.mqtt.Util;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
+import org.wso2.carbon.andes.transports.mqtt.broker.BrokerVersion;
 import org.wso2.carbon.andes.transports.server.Server;
 import org.wso2.carbon.kernel.CarbonRuntime;
 import org.wso2.carbon.kernel.transports.CarbonTransport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -69,12 +73,6 @@ public class MqttTransportServiceComponent {
     private static final Log log = LogFactory.getLog(MqttTransportServiceComponent.class);
 
     /**
-     * Provides the name of the protocol addressed by the transport
-     */
-    private static final String PROTOCOL = "MQTT";
-
-
-    /**
      * Processors configuration to adhere to config changes provided by carbon
      *
      * @param ctx server context which holds server initialization information
@@ -96,7 +94,7 @@ public class MqttTransportServiceComponent {
     @Activate
     protected void start(BundleContext bundleContext) throws Exception {
 
-        MqttTransportDataHolder.getInstance().getAndesInstance().registerProtocolType(createProtocolInformation());
+        registerProtocolVersions();
 
         MqttTransportConfiguration mqttTransportConfiguration = YAMLTransportConfigurationBuilder.readConfiguration();
 
@@ -104,14 +102,14 @@ public class MqttTransportServiceComponent {
         //Default MQTT transport
         MqttTransportProperties mqttTransportProperties = mqttTransportConfiguration.getMqttTransportProperties();
         processConfiguration(mqttTransportProperties);
-        mqttTransportProperties.setProtocol(PROTOCOL);
+        mqttTransportProperties.setProtocol(MqttTransport.PROTOCOL_NAME);
         Server mqttServer = new MqttServer();
 
         //Secured transport properties
         MqttSecuredTransportProperties mqttSecuredTransportProperties = mqttTransportConfiguration
                 .getMqttSecuredTransportProperties();
         processConfiguration(mqttSecuredTransportProperties);
-        mqttSecuredTransportProperties.setProtocol(PROTOCOL);
+        mqttSecuredTransportProperties.setProtocol(MqttTransport.PROTOCOL_NAME);
 
         MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
 
@@ -126,6 +124,17 @@ public class MqttTransportServiceComponent {
         log.info("MQTT Server Component Activated");
     }
 
+    /**
+     * Register supported MQTT protocol versions to Andes core
+     * @throws AndesException
+     */
+    private void registerProtocolVersions() throws AndesException {
+        List<ProtocolInfo> protocolInfoList = createProtocolInformation();
+        for (ProtocolInfo protocolInfo: protocolInfoList) {
+            MqttTransportDataHolder.getInstance().getAndesInstance().registerProtocolType(protocolInfo);
+        }
+    }
+
 
     /**
      * Create protocol information for MQTT.
@@ -133,16 +142,22 @@ public class MqttTransportServiceComponent {
      * @return The protocol information object.
      * @throws AndesException
      */
-    private ProtocolInfo createProtocolInformation() throws AndesException {
-        ProtocolInfo protocolInfo = new ProtocolInfo("MQTT", "default");
+    private List<ProtocolInfo> createProtocolInformation() throws AndesException {
 
-        protocolInfo.addClusterSubscriptionStore(DestinationType.TOPIC, new MQTTopicSubscriptionBitMapStore());
-        protocolInfo.addClusterSubscriptionStore(DestinationType.DURABLE_TOPIC, new MQTTopicSubscriptionBitMapStore());
+        List<ProtocolInfo> supportedProtocols = new ArrayList<>(BrokerVersion.values().length);
+        for (BrokerVersion brokerVersion: BrokerVersion.values()) {
+            ProtocolInfo protocolInfo = new ProtocolInfo(MqttTransport.PROTOCOL_NAME, brokerVersion.toString());
 
-        protocolInfo.addLocalSubscriptionStore(DestinationType.TOPIC, new QueueSubscriptionStore());
-        protocolInfo.addLocalSubscriptionStore(DestinationType.DURABLE_TOPIC, new LocalDurableTopicSubscriptionStore());
+            protocolInfo.addClusterSubscriptionStore(DestinationType.TOPIC, new MQTTopicSubscriptionBitMapStore());
+            protocolInfo.addClusterSubscriptionStore(
+                    DestinationType.DURABLE_TOPIC, new MQTTopicSubscriptionBitMapStore());
 
-        return protocolInfo;
+            protocolInfo.addLocalSubscriptionStore(DestinationType.TOPIC, new QueueSubscriptionStore());
+            protocolInfo.addLocalSubscriptionStore(
+                    DestinationType.DURABLE_TOPIC, new LocalDurableTopicSubscriptionStore());
+            supportedProtocols.add(protocolInfo);
+        }
+        return supportedProtocols;
     }
 
     /**
@@ -154,10 +169,22 @@ public class MqttTransportServiceComponent {
     @Deactivate
     protected void stop() throws Exception {
 
-        MqttTransportDataHolder.getInstance().getAndesInstance().unregisterProtocolType(createProtocolInformation());
+        unregisterProtocolVersions();
 
         if (log.isDebugEnabled()) {
             log.debug("Stopping MqttTransportServiceComponent");
+        }
+    }
+
+    /**
+     * Remove registered MQTT protocol versions from Andes core
+     * @throws AndesException
+     */
+    private void unregisterProtocolVersions() throws AndesException {
+        List<ProtocolInfo> protocolInfoList = createProtocolInformation();
+        for (ProtocolInfo protocolInfo : protocolInfoList) {
+            MqttTransportDataHolder.getInstance().getAndesInstance().unregisterProtocolType(protocolInfo);
+
         }
     }
 

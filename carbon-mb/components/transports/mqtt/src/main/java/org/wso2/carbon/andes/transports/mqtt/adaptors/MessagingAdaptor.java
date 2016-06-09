@@ -59,6 +59,7 @@ public interface MessagingAdaptor {
      * @param username       carbon username of logged user
      * @param isCleanSession should the connection be durable
      * @param qos            the subscriber specific qos this can be either 0,1 or 2
+     * @param mqttChannel    the channel the request coming from
      * @throws AdaptorException
      */
     void storeSubscriptions(String topic, String clientId, String username, boolean isCleanSession, QOSLevel
@@ -83,10 +84,11 @@ public interface MessagingAdaptor {
      * @param isCleanSession durability of the subscription
      * @param qosLevel       the quality of service level subscribed to
      * @param subscriptionId id of the subscriber the disconnection should be initiated
+     * @param channel        Mqtt channel the disconnect request coming from
      * @throws AdaptorException
      */
     void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel, String
-            subscriptionId) throws AdaptorException;
+            subscriptionId, MqttChannel channel) throws AdaptorException;
 
     /**
      * <p>Notifies the store on an un subscription made by the client</p>
@@ -105,10 +107,11 @@ public interface MessagingAdaptor {
      * @param isCleanSession  durability of the subscription
      * @param qosLevel        the quality of service level subscribed to
      * @param subscriptionId  id of the subscriber the disconnection should be initiated
+     * @param channel         mqtt channel the request is coming from
      * @throws AdaptorException
      */
     void storeUnsubscribeMessage(String subscribedTopic, String username, String clientId, boolean
-            isCleanSession, QOSLevel qosLevel, String subscriptionId) throws AdaptorException;
+            isCleanSession, QOSLevel qosLevel, String subscriptionId, MqttChannel channel) throws AdaptorException;
 
 
     /**
