@@ -1,0 +1,36 @@
+{{layout "org.wso2.uuf.base.main"}}
+
+{{#fillZone "content"}}
+    {{headJs "js/subscriptions-queue.js"}}
+    <h1>Queue Subscriptions</h1>
+    <hr/>
+    <form class="form-horizontal" id="new-queue-form">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <label class="control-label">Protocol</label>
+                <select id="queue-subscription-protocols" class="form-control">
+                </select>
+            </div>
+        </div>
+    </form>
+    <table class="table table-responsive table-striped" id="queue-list-table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Number of Messages</th>
+            <th>Number of Subscribers</th>
+            <th>Owner</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        var protocols = {{{protocols}}};
+        $.each(protocols, function(index, value) {
+            $('#queue-subscription-protocols').append($('<option>').text(value).attr('value', index));
+        });
+    </script>
+{{/fillZone}}

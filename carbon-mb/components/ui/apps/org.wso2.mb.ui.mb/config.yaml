@@ -1,4 +1,4 @@
-appName : WSO2 MB
+appName : WSO2 Message Broker
 elementsPerPage: 10
 lifecycle:
     - state: adopted
