@@ -40,7 +40,7 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
     /**
      * TCP channel of the publisher
      */
-    private ChannelHandlerContext channel;
+    ChannelHandlerContext channel;
 
     /**
      * <p>
@@ -106,6 +106,16 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
     }
 
     /**
+     * Adds the publisher key which is messageId + clientId
+     *
+     * @param messageId the id of the message
+     * @param clientId  the id of the client
+     */
+    public void addPublisherKey(Integer messageId, String clientId) {
+        publishedKeys.add(messageId + clientId);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -115,8 +125,11 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
         Integer messageId = (Integer) metadata.getTemporaryProperty(MqttUtils.MESSAGE_ID);
 
         if (qos == AbstractMessage.QOSType.EXACTLY_ONCE.ordinal()) {
-            String publisherKey = messageId + clientId;
-            publishedKeys.add(publisherKey);
+          /*  PubCompMessage pubCompMessage = new PubCompMessage();
+            pubCompMessage.setMessageID(messageId);*/
+     /*       String publisherKey = messageId + clientId;
+            publishedKeys.add(publisherKey);*/
+            addPublisherKey(messageId, clientId);
             PubRecMessage pubRecMessage = new PubRecMessage();
             pubRecMessage.setMessageID(messageId);
             if (log.isDebugEnabled()) {

@@ -17,8 +17,6 @@
 package org.wso2.carbon.transport.tests.mqtt.broker.v311;
 
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
@@ -27,8 +25,6 @@ import org.wso2.carbon.andes.transports.mqtt.broker.v311.MqttBroker;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnAckMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.DisconnectMessage;
-import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRecMessage;
-import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRelMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PublishMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubAckMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.SubscribeMessage;
@@ -47,15 +43,6 @@ import java.util.List;
  * Tests Mqtt broker command messages
  */
 public class MqttBrokerTest {
-    @BeforeMethod
-    public void setUp() throws Exception {
-
-    }
-
-    @AfterMethod
-    public void tearDown() throws Exception {
-
-    }
 
     /**
      * Will create a broker instance and get the relevant response for the command message
@@ -70,6 +57,12 @@ public class MqttBrokerTest {
         return clientMessageReceiver.getResponseMessage();
     }
 
+    /**
+     * Tests MQTT connect message command
+     *
+     * @param connection the connection information which includes connection flags
+     * @throws Exception
+     */
     @Test(dataProvider = "ConnectMessage", dataProviderClass = MqttBrokerDataProvider.class)
     public void testConnect(Message connection) throws Exception {
         AbstractMessage responseMessage = createBrokerAndGetResponse(connection);
@@ -83,6 +76,12 @@ public class MqttBrokerTest {
         }
     }
 
+    /**
+     * Tests MQTT disconnection message command
+     *
+     * @param disconnection the disconnection information
+     * @throws Exception
+     */
     @Test(dataProvider = "DisconnectMessage", dataProviderClass = MqttBrokerDataProvider.class)
     public void testDisconnect(Message disconnection) throws Exception {
         //We need to declare a message adopter, message adopter would be responsible to maintain the state
@@ -97,6 +96,8 @@ public class MqttBrokerTest {
         int qos = Integer.parseInt(disconnection.getMessageProperty("qosLevel"));
         QOSLevel qosLevel = QOSLevel.getQoSFromValue(qos);
         boolean session = Boolean.parseBoolean(disconnection.getMessageProperty("session"));
+
+
         MqttChannel mqttChannel = clientMessageReceiver.getMqttChannel();
         adopter.storeSubscriptions(topicFilter, clientId, userName, session, qosLevel, mqttChannel);
         //We need to reflect those subscriptions in the channel
@@ -112,6 +113,12 @@ public class MqttBrokerTest {
 
     }
 
+    /**
+     * Test subscription command messages
+     *
+     * @param subscribe holds the commands releated to the subscription
+     * @throws Exception
+     */
     @Test(dataProvider = "SubscribeMessage", dataProviderClass = MqttBrokerDataProvider.class)
     public void testSubscribe(Message subscribe) throws Exception {
         MqttBroker broker = new MqttBroker();
@@ -136,6 +143,12 @@ public class MqttBrokerTest {
     }
 
 
+    /**
+     * Test un subscription command message
+     *
+     * @param unSubscribe holds the un-subscription command message information
+     * @throws Exception
+     */
     @Test(dataProvider = "unSubscribeMessage", dataProviderClass = MqttBrokerDataProvider.class)
     public void testUnSubscribe(Message unSubscribe) throws Exception {
         MqttBroker broker = new MqttBroker();
@@ -165,6 +178,12 @@ public class MqttBrokerTest {
 
     }
 
+    /**
+     * Test message publish command
+     *
+     * @param publishMessage the information related to the published message
+     * @throws Exception
+     */
     @Test(dataProvider = "PublishMessage", dataProviderClass = MqttBrokerDataProvider.class)
     public void testPublish(Message publishMessage) throws Exception {
         MqttBroker broker = new MqttBroker();
@@ -182,24 +201,4 @@ public class MqttBrokerTest {
         }
     }
 
-    @Test(dataProvider = "PublisherAckMessage", dataProviderClass = MqttBrokerDataProvider.class)
-    public void testPubAck(Message pubAckMessage) throws Exception {
-        MqttBroker broker = new MqttBroker();
-        PubRelMessage message = (PubRelMessage) pubAckMessage.getMessage();
-        //PRE-REQUESTS - this message is sent by the publisher to the broker for QoS 2 messages
-        // The message should receive the PUBREC from the publisher
-        PubRecMessage pubRecMessage = new PubRecMessage();
-        //Need to check whether the state didn't invary
-        //broker.pubAck();
-    }
-
-    @Test
-    public void testSubAck() throws Exception {
-
-    }
-
-    @Test
-    public void testNack() throws Exception {
-
-    }
 }

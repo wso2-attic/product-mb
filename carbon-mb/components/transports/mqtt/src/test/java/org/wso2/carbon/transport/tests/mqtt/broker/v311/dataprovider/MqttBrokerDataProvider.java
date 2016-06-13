@@ -36,9 +36,9 @@ import java.nio.ByteBuffer;
 public class MqttBrokerDataProvider {
 
     /**
-     * Message information, holds tests relevant for creating a connection
+     * Holds different combinations of connection commands which will be injected to the tests
      *
-     * @return the list of test cases to create connection
+     * @return the list of connect messages
      */
     @DataProvider(name = "ConnectMessage")
     public static Object[][] getConnectionInformation() {
@@ -55,9 +55,9 @@ public class MqttBrokerDataProvider {
 
 
     /**
-     * Disconnection information, holds information to create tests for disconnection
+     * Holds different combinations of disconnection commands
      *
-     * @return the list of test cases to create disconnection
+     * @return list of disconnection messages
      */
     @DataProvider(name = "DisconnectMessage")
     public static Object[][] getDisconnectionInformation() {
@@ -66,6 +66,11 @@ public class MqttBrokerDataProvider {
         return mockDisconnectionObjects;
     }
 
+    /**
+     * Holds different combinations of subscription message commands
+     *
+     * @return list of subscription messages
+     */
     @DataProvider(name = "SubscribeMessage")
     public static Object[][] getSubscriptionInformation() {
         Message subscribeMessage = createSubscribeMessage();
@@ -73,6 +78,11 @@ public class MqttBrokerDataProvider {
         return mockSubscription;
     }
 
+    /**
+     * Holds different combinations of un-subscription message commands
+     *
+     * @return list of un subscription messages
+     */
     @DataProvider(name = "unSubscribeMessage")
     public static Object[][] getUnsubscriptionInformation() {
         Message unSubscribeMessage = createUnsubscribeMessage();
@@ -80,6 +90,11 @@ public class MqttBrokerDataProvider {
         return unSubscribe;
     }
 
+    /**
+     * Holds different combinations of publish messages
+     *
+     * @return list of publish messages
+     */
     @DataProvider(name = "PublishMessage")
     public static Object[][] getPublishInformation() {
         Message publishMessage = createPublishMessage();
@@ -87,6 +102,11 @@ public class MqttBrokerDataProvider {
         return publishMessageInformation;
     }
 
+    /**
+     * Creates publish message
+     *
+     * @return mock publish message
+     */
     private static Message createPublishMessage() {
         PublishMessage message = new PublishMessage();
         message.setPayload(ByteBuffer.wrap("TestMessage".getBytes()));
