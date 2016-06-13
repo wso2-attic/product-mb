@@ -31,6 +31,7 @@ import org.wso2.andes.kernel.DestinationType;
 import org.wso2.andes.kernel.ProtocolMessage;
 import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.andes.subscription.OutboundSubscription;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message.MqttMessageContext;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTagMap;
@@ -39,7 +40,6 @@ import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PublishMessage;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 
@@ -164,7 +164,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
         this.wildcardDestination = wildCardDestination;
         this.isDurable = isDurable;
         this.channel = mqttChannel;
-        this.protocolType = new ProtocolType("MQTT", "default");
+        this.protocolType = mqttChannel.getProtocolType();
     }
 
     public void messageAck(long messageID, UUID channelID)
@@ -223,8 +223,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
             recordRetainedMessage(messageMetadata.getMessageID());
         }
 
-        //Should get the message from the list
-        ByteBuffer message = MqttUtils.getContentFromMetaInformation(content);
+        MqttMessageContext mqttMessageContext = new MqttMessageContext(messageMetadata, content);
         //Will publish the message to the respective queue
         if (null != channel) {
 
@@ -236,15 +235,17 @@ public class MqttLocalSubscription implements OutboundSubscription {
             PublishMessage pubMessage = new PublishMessage();
             pubMessage.setRetainFlag(messageMetadata.isRetain());
             pubMessage.setTopicName(wildcardDestination);
-            pubMessage.setPayload(message);
+
             //We're ready for the data to be written back to the channel
             //Re initialize the position
-            message.flip();
+            mqttMessageContext.getPayload().flip();
+            pubMessage.setPayload(mqttMessageContext.getPayload());
+
 
             //We will indicate the ack to the kernel at this stage
             //For MQTT QOS 0 we do not get ack from subscriber, hence will be implicitly creating an ack
             if (QOSLevel.AT_MOST_ONCE.getValue() == getSubscriberQOS() ||
-                    QOSLevel.AT_MOST_ONCE.getValue() == messageMetadata.getQosLevel()) {
+                    QOSLevel.AT_MOST_ONCE == mqttMessageContext.getQosLevel()) {
                 //We generate a mock acknowledgment to inform andes-core to release the persistent message
                 //For QOS 0 publishes the client will not send the ack
                 messageAck(messageMetadata.getMessageID(), getChannelID());
@@ -264,8 +265,8 @@ public class MqttLocalSubscription implements OutboundSubscription {
                 pubMessage.setMessageID(messageDeliveryTag.getMessageId());
                 //We need to get the highest QoS
                 AbstractMessage.QOSType validateQoS = AbstractMessage.QOSType.valueOf(getSubscriberQOS() >
-                        messageMetadata.getQosLevel() ?
-                        messageMetadata.getQosLevel() : getSubscriberQOS());
+                        mqttMessageContext.getQosLevel().getValue() ?
+                        mqttMessageContext.getQosLevel().getValue() : getSubscriberQOS());
                 pubMessage.setQos(validateQoS);
             }
 

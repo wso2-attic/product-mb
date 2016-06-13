@@ -63,7 +63,7 @@ public class UnSubscribe {
 
             try {
                 messageStore.storeUnsubscribeMessage(topic, username, clientId, isCleanSession, QOSLevel
-                        .getQoSFromValue(channel.getTopic(topic)), subscriptionId);
+                        .getQoSFromValue(channel.getTopic(topic)), subscriptionId, channel);
                 channel.removeTopic(topic);
             } catch (AdaptorException e) {
                 String error = "Error while disconnecting the subscription";

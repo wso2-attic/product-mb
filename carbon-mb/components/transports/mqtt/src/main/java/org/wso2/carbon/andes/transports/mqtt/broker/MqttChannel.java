@@ -19,8 +19,11 @@
 package org.wso2.carbon.andes.transports.mqtt.broker;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.wso2.andes.kernel.AndesException;
+import org.wso2.andes.kernel.ProtocolType;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTagMap;
+import org.wso2.carbon.andes.transports.mqtt.internal.MqttTransport;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 
 import java.util.HashMap;
@@ -64,6 +67,11 @@ public class MqttChannel {
      * Contains the protocol version
      */
     private BrokerVersion version;
+
+    /**
+     * Andes core protocol type.
+     */
+    private ProtocolType protocolType;
 
     /**
      * Handles publisher side acknowledgments relevant for the channel
@@ -123,7 +131,6 @@ public class MqttChannel {
         topicQoSLevels.put(topic, qos);
     }
 
-
     /**
      * Gets the qos of the topic
      *
@@ -143,6 +150,7 @@ public class MqttChannel {
     public void removeTopic(String topic) {
         topicQoSLevels.remove(topic);
     }
+
 
     /**
      * List of topics a channel is bound to
@@ -202,9 +210,16 @@ public class MqttChannel {
         return version;
     }
 
-    public void setVersion(BrokerVersion version) {
+    public void setVersion(BrokerVersion version) throws AndesException {
         this.version = version;
+        protocolType = new ProtocolType(MqttTransport.PROTOCOL_NAME, version.toString());
     }
 
-
+    /**
+     * Return the {@link ProtocolType} of the MQTT connection
+     * @return ProtocolType
+     */
+    public ProtocolType getProtocolType() {
+        return protocolType;
+    }
 }

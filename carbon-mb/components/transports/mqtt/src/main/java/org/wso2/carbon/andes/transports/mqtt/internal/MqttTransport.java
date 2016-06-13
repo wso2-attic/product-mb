@@ -37,6 +37,11 @@ public class MqttTransport extends CarbonTransport {
     private Server server = null;
 
     /**
+     * Provides the name of the protocol addressed by the transport
+     */
+    public static final String PROTOCOL_NAME = "MQTT";
+
+    /**
      * Holds the configuration which provides information related to bootstrapping the transport
      */
     private MqttTransportProperties mqttTransportConfiguration;

@@ -76,12 +76,12 @@ public class MemoryConnector implements MessagingAdaptor {
                 PublishMessage pubMessage = new PublishMessage();
                 pubMessage.setRetainFlag(false);
                 pubMessage.setTopicName(messageContext.getTopic());
-                pubMessage.setPayload(messageContext.getMessage());
+                pubMessage.setPayload(messageContext.getPayload());
                 pubMessage.setMessageID(1);
                 pubMessage.setQos(AbstractMessage.QOSType.MOST_ONE);
                 //We're ready for the data to be written back to the channel
                 //Re initialize the position
-                messageContext.getMessage().flip();
+                messageContext.getPayload().flip();
                 channel.write(pubMessage);
             }
         }
@@ -91,7 +91,7 @@ public class MemoryConnector implements MessagingAdaptor {
 
     @Override
     public void storeDisconnectMessage(String topicName, String clientId, boolean isCleanSession, QOSLevel qosLevel,
-                                       String subscriptionId)
+                                       String subscriptionId, MqttChannel channel)
             throws AdaptorException {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(topicName);
         stringMqttChannelMap.remove(clientId);
@@ -99,7 +99,7 @@ public class MemoryConnector implements MessagingAdaptor {
 
     @Override
     public void storeUnsubscribeMessage(String subscribedTopic, String username, String clientId, boolean
-            isCleanSession, QOSLevel qosLevel, String subscriptionId) throws AdaptorException {
+            isCleanSession, QOSLevel qosLevel, String subscriptionId, MqttChannel channel) throws AdaptorException {
         Map<String, MqttChannel> stringMqttChannelMap = subscriptions.get(subscribedTopic);
         stringMqttChannelMap.remove(clientId);
 

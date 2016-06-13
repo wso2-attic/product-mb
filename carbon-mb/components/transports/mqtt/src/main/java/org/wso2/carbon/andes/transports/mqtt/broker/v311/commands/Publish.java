@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.andes.transports.mqtt.MqttConstants;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message.MqttMessageContext;
-import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.exceptions.AdaptorException;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
@@ -51,7 +50,6 @@ public class Publish {
     public static boolean notifyStore(MessagingAdaptor messageStore, PublishMessage message, MqttChannel channel)
             throws
             BrokerException {
-
         String topic = message.getTopicName();
         int qosLevel = message.getQos().getValue();
         ByteBuffer msgPayload = message.getPayload();
@@ -63,16 +61,9 @@ public class Publish {
         Channel link = channel.getChannel().channel();
         PublisherAcknowledgementProcessor publisherAckWriter = channel.getPublisherAckWriter();
 
-        //Will create a message context
-        MqttMessageContext messageContext = MqttUtils.createMessageContext(topic, QOSLevel.getQoSFromValue(qosLevel),
-                msgPayload, retain, mqttLocalMessageID, clientId, publisherAckWriter, link);
-
-
+        MqttMessageContext messageContext = new MqttMessageContext(topic, QOSLevel.getQoSFromValue(qosLevel),
+                msgPayload, retain, mqttLocalMessageID, clientId, publisherAckWriter, channel.getProtocolType(), link);
         try {
-      /*      if (qosLevel >= QOSLevel.AT_LEAST_ONCE.getValue()) {
-                //We need to register the publisher and make it ready to receive the ack
-                publisherAckWriter.addPublisherChannel(clientId, channel);
-            }*/
             if (qosLevel != QOSLevel.EXACTLY_ONCE.getValue()) {
                 //QoS 1 and 2 messages will be stored
                 messageStore.storePublishedMessage(messageContext);

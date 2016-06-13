@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions;
 
-import org.wso2.andes.mqtt.MQTTUtils;
 import org.wso2.andes.subscription.TopicSubscriptionBitMapStore;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 
 /**
  * The bitmap subscription store implementation of the MQTT protocol.
@@ -30,7 +30,7 @@ public class MQTTopicSubscriptionBitMapStore extends TopicSubscriptionBitMapStor
      * Initialize the bitmap store with MQTT specific properties.
      */
     public MQTTopicSubscriptionBitMapStore() {
-        super(MQTTUtils.MULTI_LEVEL_WILDCARD, MQTTUtils.SINGLE_LEVEL_WILDCARD, "/");
+        super(MqttUtils.MULTI_LEVEL_WILDCARD, MqttUtils.SINGLE_LEVEL_WILDCARD, "/");
     }
 
     /**
@@ -42,6 +42,6 @@ public class MQTTopicSubscriptionBitMapStore extends TopicSubscriptionBitMapStor
      */
     @Override
     protected boolean isMatchForProtocolType(String wildcardDestination, String nonWildcardDestination) {
-        return MQTTUtils.isTargetQueueBoundByMatchingToRoutingKey(wildcardDestination, nonWildcardDestination);
+        return MqttUtils.isTargetQueueBoundByMatchingToRoutingKey(wildcardDestination, nonWildcardDestination);
     }
 }
