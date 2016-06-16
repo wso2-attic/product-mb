@@ -176,7 +176,16 @@ public class MqttLocalSubscription implements OutboundSubscription {
             retainMessageIdSet.remove(messageID + channelID.toString());
         } else {*/
         //TODO need to add the retain message logic here
-        Andes.getInstance().ackReceived(andesAckData);
+        Andes instance = Andes.getInstance();
+        if (null != instance) {
+            try {
+                instance.ackReceived(andesAckData);
+            } catch (Exception e) {
+                log.error("Error occurred while connecting to andes ", e);
+            }
+        } else {
+            log.warn("Error occurred when calling the andes API");
+        }
 
         // }
     }

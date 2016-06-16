@@ -21,19 +21,15 @@ package org.wso2.carbon.andes.transports.mqtt.broker;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.andes.kernel.AndesMessageMetadata;
-import org.wso2.andes.kernel.disruptor.inbound.PubAckHandler;
-import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
-import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubAckMessage;
-import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.PubRecMessage;
+
 
 import java.util.TreeSet;
 
 /**
  * Performs operations which involves writing acknowledgments to a given channel for a published message
  */
-public class PublisherAcknowledgementProcessor implements PubAckHandler {
+public class PublisherAcknowledgementProcessor {
 
     private static Log log = LogFactory.getLog(PublisherAcknowledgementProcessor.class);
 
@@ -115,9 +111,9 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
         publishedKeys.add(messageId + clientId);
     }
 
-    /**
+/*    *//**
      * {@inheritDoc}
-     */
+     *//*
     @Override
     public void ack(AndesMessageMetadata metadata) {
         int qos = (Integer) metadata.getTemporaryProperty(MqttUtils.QOSLEVEL);
@@ -125,10 +121,10 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
         Integer messageId = (Integer) metadata.getTemporaryProperty(MqttUtils.MESSAGE_ID);
 
         if (qos == AbstractMessage.QOSType.EXACTLY_ONCE.ordinal()) {
-          /*  PubCompMessage pubCompMessage = new PubCompMessage();
-            pubCompMessage.setMessageID(messageId);*/
-     /*       String publisherKey = messageId + clientId;
-            publishedKeys.add(publisherKey);*/
+          *//*  PubCompMessage pubCompMessage = new PubCompMessage();
+            pubCompMessage.setMessageID(messageId);*//*
+     *//*       String publisherKey = messageId + clientId;
+            publishedKeys.add(publisherKey);*//*
             addPublisherKey(messageId, clientId);
             PubRecMessage pubRecMessage = new PubRecMessage();
             pubRecMessage.setMessageID(messageId);
@@ -152,5 +148,5 @@ public class PublisherAcknowledgementProcessor implements PubAckHandler {
     @Override
     public void nack(AndesMessageMetadata metadata) {
 
-    }
+    }*/
 }

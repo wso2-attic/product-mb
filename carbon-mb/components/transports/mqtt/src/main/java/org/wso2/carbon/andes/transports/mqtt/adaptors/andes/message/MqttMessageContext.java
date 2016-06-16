@@ -27,7 +27,6 @@ import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.andes.kernel.AndesMessagePart;
 import org.wso2.andes.kernel.AndesUtils;
 import org.wso2.andes.kernel.ProtocolType;
-import org.wso2.andes.kernel.disruptor.inbound.PubAckHandler;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
 import org.wso2.carbon.andes.transports.mqtt.broker.PublisherAcknowledgementProcessor;
@@ -70,7 +69,7 @@ public class MqttMessageContext {
     /**
      * The ack handler that will ack for QoS 1 and 2 messages
      */
-    private PubAckHandler pubAckHandler;
+    private PublisherAcknowledgementProcessor pubAckHandler;
     /**
      * The channel used to communicate with the publisher
      */
@@ -198,11 +197,11 @@ public class MqttMessageContext {
         this.publisherID = publisherID;
     }
 
-    public PubAckHandler getPubAckHandler() {
+    public PublisherAcknowledgementProcessor getPubAckHandler() {
         return pubAckHandler;
     }
 
-    public void setPubAckHandler(PubAckHandler pubAckHandler) {
+    public void setPubAckHandler(PublisherAcknowledgementProcessor pubAckHandler) {
         this.pubAckHandler = pubAckHandler;
     }
 

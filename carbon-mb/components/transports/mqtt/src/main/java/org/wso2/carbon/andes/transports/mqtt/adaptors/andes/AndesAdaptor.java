@@ -44,6 +44,7 @@ import org.wso2.carbon.andes.transports.mqtt.adaptors.common.MessageDeliveryTag;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.common.QOSLevel;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.exceptions.AdaptorException;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
+import org.wso2.carbon.andes.transports.mqtt.broker.PublisherAcknowledgementProcessor;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnectMessage;
 
 import java.util.HashMap;
@@ -171,8 +172,12 @@ public class AndesAdaptor implements MessagingAdaptor {
                 publisher.setChannel(publisherChannel);
             }
 
+            PublisherAcknowledgementProcessor pubAckHandler = messageContext.getPubAckHandler();
+            AndesPublisherAcknowledgementProcessor andesPubAckProcessor = new AndesPublisherAcknowledgementProcessor
+                    (pubAckHandler);
+            //We need to wrap the puback handler with the andes implementation
             Andes.getInstance().messageReceived(messageContext.toAndesMessage(),
-                                                publisher.getChannel(), messageContext.getPubAckHandler());
+                                                publisher.getChannel(), andesPubAckProcessor);
             if (log.isDebugEnabled()) {
                 log.debug(" Message added " + messageContext);
             }
