@@ -19,6 +19,8 @@
 package org.wso2.carbon.andes.transports.mqtt.broker.v311.commands;
 
 
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,8 @@ import org.wso2.carbon.andes.transports.mqtt.netty.protocol.Utils;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnAckMessage;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.ConnectMessage;
 import org.wso2.carbon.andes.transports.server.BrokerException;
+
+import java.util.List;
 
 /**
  * Defines the set of phases the connection should go through, implemented based on interface influence
@@ -124,13 +128,18 @@ public class Connect {
         //Then we re-fresh the handlers with the new keep alive values
         int keepAliveValue = message.getKeepAlive();
         int roundKeepAliveValue = Math.round(keepAliveValue * 1.5f);
-        channel.getChannel().pipeline().addFirst("idleStateMQTTHandler",
-                new IdleStateHandler(0, 0, roundKeepAliveValue));
-        //TODO check if its neccessary to do this step and reinit the Event handler
-        channel.getChannel().pipeline().addAfter("idleStateMQTTHandler", "idleStateMQTTEventHandler",
-                new IdleStateEventMqttHandler());
+        ChannelHandlerContext channelCtx = channel.getChannel();
+        ChannelPipeline pipeline = channelCtx.pipeline();
 
-        success = true;
+        if (null != pipeline) {
+            pipeline.addFirst("idleStateMQTTHandler",
+                    new IdleStateHandler(0, 0, roundKeepAliveValue));
+            pipeline.addAfter("idleStateMQTTHandler", "idleStateMQTTEventHandler",
+                    new IdleStateEventMqttHandler());
+            success = true;
+        } else {
+            success = false;
+        }
 
         return success;
     }
@@ -198,11 +207,20 @@ public class Connect {
     /**
      * Removes a given handler by looking it up from the pipeline
      *
-     * @param name the name of the handler defined when server is initialized
+     * @param name    the name of the handler defined when server is initialized
+     * @param channel the TCP link representation between the server and the client
      */
     private static void removeHandler(String name, MqttChannel channel) {
-        if (channel.getChannel().pipeline().names().contains(name)) {
-            channel.getChannel().pipeline().remove(name);
+        ChannelHandlerContext channelCtx = channel.getChannel();
+        ChannelPipeline pipeline = channelCtx.pipeline();
+
+        if (null != pipeline) {
+            List<String> names = pipeline.names();
+            if (names.contains(name)) {
+                channel.getChannel().pipeline().remove(name);
+            }
+        } else {
+            log.warn("MQTT handler with name " + name + " cannot be found for removal");
         }
     }
 

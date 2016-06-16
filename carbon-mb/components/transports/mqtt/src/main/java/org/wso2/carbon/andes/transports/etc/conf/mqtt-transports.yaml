@@ -21,6 +21,14 @@ mqttTransportProperties:
  acceptanceThreads: 0
  workerThreads: 0
  id: mqtt
+
+mqttWebsocketTransportProperties:
+  host: localhost
+  port: 9773
+  acceptanceThreads: 0
+  workerThreads: 0
+  id: mqttWebSocket
+
 mqttSecuredTransportProperties:
 
  host: localhost

@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.broker.BrokerVersion;
 import org.wso2.carbon.andes.transports.mqtt.broker.Command;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
@@ -83,7 +84,8 @@ public class MqttMessagingHandler extends ChannelInboundHandlerAdapter {
 
         //Will identify where the message should flow
         Broker broker = channel.getVersion().getBroker();
-        Command.getCommand(mqttMessage.getMessageType()).process(broker, mqttMessage, channel);
+        MessagingAdaptor adaptor = channel.getVersion().getAdaptor();
+        Command.getCommand(mqttMessage.getMessageType()).process(broker, mqttMessage, channel, adaptor);
 
     }
 
@@ -98,7 +100,8 @@ public class MqttMessagingHandler extends ChannelInboundHandlerAdapter {
         log.info("Netty Channel " + ctx.name() + " got inactive");
         // MqttChannel channel = channelManager.removeChannel(ctx);
         if (null != channel) {
-            channel.getVersion().getBroker().disconnect(null, channel);
+            MessagingAdaptor adaptor = channel.getVersion().getAdaptor();
+            channel.getVersion().getBroker().disconnect(null, channel, adaptor);
             //brokerFactory.getBroker(channel.getVersion()).disconnect(null, channel);
         } else {
             if (log.isDebugEnabled()) {

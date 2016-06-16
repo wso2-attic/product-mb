@@ -37,10 +37,10 @@ import org.wso2.andes.subscription.QueueSubscriptionStore;
 import org.wso2.carbon.andes.transports.config.MqttSecuredTransportProperties;
 import org.wso2.carbon.andes.transports.config.MqttTransportConfiguration;
 import org.wso2.carbon.andes.transports.config.MqttTransportProperties;
+import org.wso2.carbon.andes.transports.config.MqttWebsocketTransportProperties;
 import org.wso2.carbon.andes.transports.config.YAMLTransportConfigurationBuilder;
-import org.wso2.carbon.andes.transports.mqtt.MqttSSLServer;
 import org.wso2.carbon.andes.transports.mqtt.MqttServer;
-import org.wso2.carbon.andes.transports.mqtt.Util;
+import org.wso2.carbon.andes.transports.mqtt.MqttWebSocketServer;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.subscriptions.MQTTopicSubscriptionBitMapStore;
 import org.wso2.carbon.andes.transports.mqtt.broker.BrokerVersion;
 import org.wso2.carbon.andes.transports.server.Server;
@@ -71,6 +71,17 @@ import java.util.List;
 public class MqttTransportServiceComponent {
 
     private static final Log log = LogFactory.getLog(MqttTransportServiceComponent.class);
+
+    /**
+     * Provides the name of the protocol addressed by the transport
+     */
+    private static final String PROTOCOL = "MQTT";
+
+    /**
+     * Holds the number of transports which will be initialized through the service component
+     */
+    private static final int TRANSPORT_COUNT = 3;
+
 
     /**
      * Processors configuration to adhere to config changes provided by carbon
@@ -104,6 +115,7 @@ public class MqttTransportServiceComponent {
         processConfiguration(mqttTransportProperties);
         mqttTransportProperties.setProtocol(MqttTransport.PROTOCOL_NAME);
         Server mqttServer = new MqttServer();
+        //Server mqttServer = new MqttWebSocketServer();
 
         //Secured transport properties
         MqttSecuredTransportProperties mqttSecuredTransportProperties = mqttTransportConfiguration
@@ -111,15 +123,25 @@ public class MqttTransportServiceComponent {
         processConfiguration(mqttSecuredTransportProperties);
         mqttSecuredTransportProperties.setProtocol(MqttTransport.PROTOCOL_NAME);
 
-        MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
+   //     MqttSSLServer securedMqttServer = new MqttSSLServer(Util.getSSLConfig(mqttSecuredTransportProperties));
+
+        MqttWebsocketTransportProperties websocketTransportProperties = mqttTransportConfiguration
+                .getMqttWebsocketTransportProperties();
+        processConfiguration(websocketTransportProperties);
+        websocketTransportProperties.setProtocol("WEBSOCKET");
+
+        MqttWebSocketServer webSocketServer = new MqttWebSocketServer();
+
 
         //Creates a transport from the given configuration
         MqttTransport transport = new MqttTransport(mqttTransportProperties, mqttServer);
-        MqttTransport securedTransport = new MqttTransport(mqttSecuredTransportProperties, securedMqttServer);
+//        MqttTransport securedTransport = new MqttTransport(mqttSecuredTransportProperties, securedMqttServer);
+        MqttTransport webSocketTransport = new MqttTransport(websocketTransportProperties, webSocketServer);
 
 
         bundleContext.registerService(CarbonTransport.class, transport, null);
-        bundleContext.registerService(CarbonTransport.class, securedTransport, null);
+      //  bundleContext.registerService(CarbonTransport.class, securedTransport, null);
+        bundleContext.registerService(CarbonTransport.class, webSocketTransport, null);
 
         log.info("MQTT Server Component Activated");
     }

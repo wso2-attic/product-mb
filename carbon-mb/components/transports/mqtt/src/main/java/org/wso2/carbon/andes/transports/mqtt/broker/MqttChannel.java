@@ -80,7 +80,6 @@ public class MqttChannel {
 
     /**
      * Handles subscriber side acknowledgements
-
      */
     private SubscriberAcknowledgementProcessor subscriberAck = new SubscriberAcknowledgementProcessor();
 
@@ -95,7 +94,7 @@ public class MqttChannel {
 
         Queue<MessageDeliveryTag> messageIdList = new ConcurrentLinkedQueue<>();
 
-        //TODO this algorithm should change
+        //TODO this algorithm should change, also we need to add a static initializer here
         //We start the message id with 2, message id 1 will be sent to qos 0 messages
         for (int messageCount = 2; messageCount != Short.MAX_VALUE; messageCount++) {
             MessageDeliveryTag messageDeliveryTag = new MessageDeliveryTag(messageCount);
@@ -107,10 +106,8 @@ public class MqttChannel {
             return o1.compareTo(o2);
         });
 
-        this.deliveryTagMap =  new MessageDeliveryTagMap<>(messageIdList, messageDeliveryTag);
+        this.deliveryTagMap = new MessageDeliveryTagMap<>(messageIdList, messageDeliveryTag);
 
-        //Gets the message delivery tag
-       // this.deliveryTagMap = deliveryTagMqttFactory.getMessageDeliveryTagMap();
     }
 
     public SubscriberAcknowledgementProcessor getSubscriberAck() {
@@ -140,7 +137,6 @@ public class MqttChannel {
     public Integer getTopic(String topic) {
         return topicQoSLevels.get(topic);
     }
-
 
     /**
      * Removes a topic off the list during disconnection/un-subscription

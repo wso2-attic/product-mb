@@ -20,6 +20,8 @@ package org.wso2.carbon.andes.transports.mqtt.broker;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
+import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.AndesAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.broker.v311.MqttBroker;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.Utils;
 import org.wso2.carbon.andes.transports.server.Broker;
@@ -46,12 +48,19 @@ public enum BrokerVersion {
     private transient Broker broker;
 
     /**
+     * The interface broker would connect to handle storage/distribution
+     */
+    private transient MessagingAdaptor adaptor;
+
+    /**
      * Initializes the version of the broker
      *
      * @param broker the instance of the broker which corresponds to its version
      */
     BrokerVersion(Broker broker) {
         this.broker = broker;
+        //We could get these value based on the configuration
+        this.adaptor = new AndesAdaptor();
     }
 
     /**
@@ -63,6 +72,14 @@ public enum BrokerVersion {
      */
     public Broker getBroker() throws IllegalAccessException, InstantiationException {
         return broker;
+    }
+
+    /**
+     * Gets the message adopter implementation
+     * @return MessagingAdaptor
+     */
+    public MessagingAdaptor getAdaptor() {
+        return adaptor;
     }
 
     /**

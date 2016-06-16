@@ -45,14 +45,10 @@ public class Disconnect {
      * @return Subscribe
      */
     public static boolean notifyStore(MessagingAdaptor messageStore, MqttChannel channel)
-            throws
-            BrokerException {
-
-        //  String mqttClientChannelID = channel.getProperty(MqttConstants.CLIENT_ID_PROPERTY_NAME);
+            throws BrokerException {
 
         try {
             //We need to also consider publisher disconnections here and clear the state
-            // publisherAckReceiver.disconnectionPublisher(mqttClientChannelID);
             boolean isCleanSession = Boolean.parseBoolean(channel.getProperty(MqttConstants
                     .SESSION_DURABILITY_PROPERTY_NAME));
             String subscriptionId = channel.getProperty(MqttUtils.CLUSTER_SUB_ID_PROPERTY_NAME);

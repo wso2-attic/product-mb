@@ -18,17 +18,16 @@
 
 package org.wso2.carbon.andes.transports.server;
 
+import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.broker.MqttChannel;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;
 
 /**
- * The abstraction between the protocol layer and the brokering
- * The following defines a set of services common to all the brokering transports
- * The following should be implemented to connect with the underlying brokering engine
- * Through this we could abstract the decoding with protocol semantics i.e having different semantics between different
- * versions
+ * Handles polymorphic behaviour represented through each version of the MQTT protocol
+ *
+ * @param <K> defines the message adopter the broker will be connecting
  */
-public interface Broker {
+public interface Broker<K extends MessagingAdaptor> {
     /**
      * Triggers the connectivity with the broker
      *
@@ -41,61 +40,68 @@ public interface Broker {
     /**
      * Triggers when disconnected with the broker
      *
-     * @param msg     the details of the message which holds the disconnection
-     * @param channel provides the details of the client connection which should be disconnected
+     * @param msg            the details of the message which holds the disconnection
+     * @param channel        provides the details of the client connection which should be disconnected
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void disconnect(AbstractMessage msg, MqttChannel channel) throws BrokerException;
+    void disconnect(AbstractMessage msg, MqttChannel channel, K messageAdaptor) throws BrokerException;
 
     /**
-     * Triggers when callback is bound
+     * Triggers when a client sends a subscriber message
      *
-     * @param msg      the details of the message which holds the un-callback
-     * @param callback internal channel used to send the SUBACK and message
+     * @param msg            the details of the message which holds the un-callback
+     * @param callback       internal channel used to send the SUBACK and message
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void subscribe(AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    void subscribe(AbstractMessage msg, MqttChannel callback, K messageAdaptor) throws BrokerException;
 
     /**
      * Triggers when un-subscribed from the broker
      *
-     * @param msg      the details of the message when un-subscribed
-     * @param callback used to send the UNSUBACK
+     * @param msg            the details of the message when un-subscribed
+     * @param callback       used to send the UNSUBACK
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void unSubscribe(AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    void unSubscribe(AbstractMessage msg, MqttChannel callback, K messageAdaptor) throws BrokerException;
 
     /**
      * Triggers when a message is published
      *
-     * @param msg      the details of the message when a message is published
-     * @param callback used to send the PUBACK, this will be the most immediate ack
+     * @param msg            the details of the message when a message is published
+     * @param callback       used to send the PUBACK, this will be the most immediate ack
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void publish(AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    void publish(AbstractMessage msg, MqttChannel callback, K messageAdaptor) throws BrokerException;
 
     /**
      * Triggers each time when a publisher acknowledgment is received
      *
-     * @param msg      details of the message when publisher acknowledges
-     * @param callback will be used to send the acknowledgment to the sender
+     * @param msg            details of the message when publisher acknowledges
+     * @param callback       will be used to send the acknowledgment to the sender
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void pubAck(AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    void pubAck(AbstractMessage msg, MqttChannel callback, K messageAdaptor) throws BrokerException;
 
     /**
-     * @param msg      the message which contains the subscription acknowledgments
-     * @param callback the channel which will allow the server to add correspondence
+     * @param msg            the message which contains the subscription acknowledgments
+     * @param callback       the channel which will allow the server to add correspondence
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void subAck(AbstractMessage msg, MqttChannel callback) throws BrokerException;
+    void subAck(AbstractMessage msg, MqttChannel callback, K messageAdaptor) throws BrokerException;
 
     /**
      * Negative acknowledgment or specifying to process un acknowledged messages
      *
-     * @param callback specifies the channel information
+     * @param callback       specifies the channel information
+     * @param messageAdaptor the underlying broker store/distribution layer
      * @throws BrokerException
      */
-    void nack(MqttChannel callback) throws BrokerException;
+    void nack(MqttChannel callback, K messageAdaptor) throws BrokerException;
 
 }

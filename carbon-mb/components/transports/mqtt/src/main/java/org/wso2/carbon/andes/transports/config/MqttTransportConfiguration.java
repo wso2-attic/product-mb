@@ -42,6 +42,12 @@ public class MqttTransportConfiguration {
     @XmlElement(name = "mqttSSL")
     private MqttSecuredTransportProperties mqttSecuredTransportProperties;
 
+    /**
+     * Holds the websocket related properties
+     */
+    @XmlElement(name = "mqttWebsocket")
+    private MqttWebsocketTransportProperties mqttWebsocketTransportProperties;
+
 
     public MqttTransportProperties getMqttTransportProperties() {
         return mqttTransportProperties;
@@ -57,5 +63,13 @@ public class MqttTransportConfiguration {
 
     public void setMqttSecuredTransportProperties(MqttSecuredTransportProperties mqttSecuredTransportProperties) {
         this.mqttSecuredTransportProperties = mqttSecuredTransportProperties;
+    }
+
+    public MqttWebsocketTransportProperties getMqttWebsocketTransportProperties() {
+        return mqttWebsocketTransportProperties;
+    }
+
+    public void setMqttWebsocketTransportProperties(MqttWebsocketTransportProperties mqttWebsocketTransportProperties) {
+        this.mqttWebsocketTransportProperties = mqttWebsocketTransportProperties;
     }
 }
