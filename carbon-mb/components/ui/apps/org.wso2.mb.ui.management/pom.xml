@@ -33,7 +33,8 @@
 
     <properties>
         <import.package>
-            org.wso2.carbon.*
+            org.wso2.carbon.*,
+            org.wso2.andes.*
         </import.package>
     </properties>
 
