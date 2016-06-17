@@ -26,7 +26,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.mb.ui.management</artifactId>
+    <artifactId>org.wso2.mb.ui.mb</artifactId>
 
     <name>WSO2 Message Broker - UI - Management Console App</name>
     <url>http://wso2.org</url>
