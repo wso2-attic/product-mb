@@ -314,6 +314,12 @@
                 <type>zip</type>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.mb</groupId>
+                <artifactId>org.wso2.mb.ui.management.feature</artifactId>
+                <version>${carbon.mb.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.msf4j</groupId>
                 <artifactId>org.wso2.msf4j.feature</artifactId>
                 <version>${msf4j.version}</version>
@@ -357,7 +363,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>ui</artifactId>
+                <artifactId>org.wso2.mb.ui.management</artifactId>
                 <version>${carbon.mb.version}</version>
             </dependency>
             <dependency>

@@ -92,6 +92,18 @@
             <fileMode>644</fileMode>
         </fileSet>
 
+        <fileSet>
+            <directory>../mb</directory>
+            <outputDirectory>deployment/uufapps</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+                <exclude>**/*.ipr</exclude>
+                <exclude>**/*.iwr</exclude>
+                <exclude>**/*.eclipse</exclude>
+            </excludes>
+        </fileSet>
+
     </fileSets>
     <files>
 

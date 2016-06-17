@@ -26,15 +26,14 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.mb.ui.mb</artifactId>
+    <artifactId>org.wso2.mb.ui.management</artifactId>
 
     <name>WSO2 Message Broker - UI - Management Console App</name>
     <url>http://wso2.org</url>
 
     <properties>
         <import.package>
-            org.wso2.carbon.*,
-            org.wso2.andes.*
+            org.wso2.carbon.*
         </import.package>
     </properties>
 
@@ -62,10 +61,6 @@
             <artifactId>org.wso2.mb.ui.common</artifactId>
             <version>${carbon.mb.version}</version>
             <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.andes.wso2</groupId>
-            <artifactId>qpid</artifactId>
         </dependency>
     </dependencies>
 

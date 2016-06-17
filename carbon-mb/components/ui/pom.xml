@@ -35,7 +35,8 @@
 
     <modules>
         <module>components/org.wso2.mb.ui.common</module>
-        <module>apps/org.wso2.mb.ui.mb</module>
+        <module>apps/org.wso2.mb.ui.management</module>
+        <module>p2-features/org.wso2.mb.ui.management.feature</module>
     </modules>
 
 </project>
