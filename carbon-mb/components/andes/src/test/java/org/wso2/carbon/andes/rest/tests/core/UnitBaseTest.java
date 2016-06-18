@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.andes.tests.core;
+package org.wso2.carbon.andes.rest.tests.core;
 
 /**
  * Base class for unit testing.
