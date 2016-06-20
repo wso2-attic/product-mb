@@ -513,32 +513,31 @@ public class SubscriptionEngine {
      * Gauge will return total number of queue subscriptions for current node
      */
     private class QueueSubscriberGauge implements Gauge<Integer> {
-        private final ProtocolType protocolType;
-
-        public QueueSubscriberGauge(ProtocolType protocolType) {
-            this.protocolType = protocolType;
-        }
-
         public Integer getValue() {
-            return localSubscriptionProcessor.getAllSubscriptionsForDestinationType(protocolType,
-                                                                                    DestinationType.QUEUE).size();
-
+            Set<ProtocolType> protocols = AndesContext.getInstance().getAndesContextStore().getProtocols();
+            int queueSubscriberCount = 0;
+            for (ProtocolType protocolType : protocols) {
+                if (!protocolType.getProtocolName().startsWith("MQTT")) {
+                    queueSubscriberCount = queueSubscriberCount + localSubscriptionProcessor
+                            .getAllSubscriptionsForDestinationType(protocolType, DestinationType.QUEUE).size();
+                }
+            }
+            return queueSubscriberCount;
         }
     }
 
     /**
      * Gauge will return total number of topic subscriptions current node
      */
-    private class TopicSubscriberGauge implements Gauge {
-        private final ProtocolType protocolType;
-
-        public TopicSubscriberGauge(ProtocolType protocolType) {
-            this.protocolType = protocolType;
-        }
-
+    private class TopicSubscriberGauge implements Gauge<Integer> {
         public Integer getValue() {
-            return localSubscriptionProcessor.getAllSubscriptionsForDestinationType(protocolType,
-                                                                                    DestinationType.TOPIC).size();
+            Set<ProtocolType> protocols = AndesContext.getInstance().getAndesContextStore().getProtocols();
+            int topicSubscriberCount = 0;
+            for (ProtocolType protocolType : protocols) {
+                topicSubscriberCount = topicSubscriberCount + localSubscriptionProcessor
+                        .getAllSubscriptionsForDestinationType(protocolType, DestinationType.TOPIC).size();
+            }
+            return topicSubscriberCount;
         }
     }
 
@@ -547,15 +546,15 @@ public class SubscriptionEngine {
      *
      * @param protocolInfo The protocol information containing the subscription store information
      */
-    public void addSubscriptionHandlersForProtocol(ProtocolInfo protocolInfo) {
+    public void addSubscriptionHandlersForProtocol(ProtocolInfo protocolInfo) throws AndesException {
         final ProtocolType protocolType = protocolInfo.getProtocolType();
 
         //Add subscribers gauge to metrics manager
-        AndesContext.getInstance().getMetricService().gauge(MetricsConstants.QUEUE_SUBSCRIBERS, Level.INFO, new
-                QueueSubscriberGauge(protocolType));
+        AndesContext.getInstance().getMetricService().gauge(MetricsConstants.QUEUE_SUBSCRIBERS, Level.INFO,
+                new QueueSubscriberGauge());
         //Add topic gauge to metrics manager
-        AndesContext.getInstance().getMetricService().gauge(MetricsConstants.TOPIC_SUBSCRIBERS, Level.INFO, new
-                TopicSubscriberGauge(protocolType));
+        AndesContext.getInstance().getMetricService().gauge(MetricsConstants.TOPIC_SUBSCRIBERS, Level.INFO,
+                new TopicSubscriberGauge());
 
         protocolInfo.getClusterSubscriptionStores().entrySet().stream().forEach(
                 entry -> clusterSubscriptionProcessor.addHandler(protocolType, entry.getKey(), entry.getValue()));
