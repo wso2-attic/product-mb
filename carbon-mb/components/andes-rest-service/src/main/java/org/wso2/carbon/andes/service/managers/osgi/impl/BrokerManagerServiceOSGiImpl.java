@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.andes.service.managers.osgi.impl;
 
-import org.wso2.andes.kernel.Andes;
+import org.wso2.carbon.andes.core.Andes;
 import org.wso2.carbon.andes.service.exceptions.BrokerManagerException;
 import org.wso2.carbon.andes.service.internal.AndesRESTComponentDataHolder;
 import org.wso2.carbon.andes.service.managers.BrokerManagerService;

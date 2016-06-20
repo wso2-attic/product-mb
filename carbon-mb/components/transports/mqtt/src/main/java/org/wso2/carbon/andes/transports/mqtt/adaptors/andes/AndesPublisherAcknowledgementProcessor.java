@@ -20,8 +20,8 @@ package org.wso2.carbon.andes.transports.mqtt.adaptors.andes;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.andes.kernel.AndesMessageMetadata;
-import org.wso2.andes.kernel.disruptor.inbound.PubAckHandler;
+import org.wso2.carbon.andes.core.AndesMessageMetadata;
+import org.wso2.carbon.andes.core.internal.inbound.PubAckHandler;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.utils.MqttUtils;
 import org.wso2.carbon.andes.transports.mqtt.broker.PublisherAcknowledgementProcessor;
 import org.wso2.carbon.andes.transports.mqtt.netty.protocol.messages.AbstractMessage;

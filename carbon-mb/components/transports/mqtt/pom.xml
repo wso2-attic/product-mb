@@ -130,9 +130,9 @@
             org.wso2.carbon.andes.transports.*;version="${mqtt.transport.package.export.version}"
         </export.package>
         <import.package>
-            org.wso2.andes.*,
-            org.osgi.framework.*;version="[1.8.0, 2.0.0)",
-            org.wso2.carbon.kernel.*;version="[5.0.0, 6.0.0)",
+            org.wso2.carbon.andes.core.*;version="${andes.package.import.version.range}",
+            org.osgi.framework.*;version="${osgi.framework.import.version.range}",
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.apache.commons.logging;version="[1.1.1, 1.2.0]",
             com.google.common.util.concurrent;version="[19.0.0, 20.0.0]",
             io.netty.*;version="[4.0.23.wso2v1, 4.1.0]",

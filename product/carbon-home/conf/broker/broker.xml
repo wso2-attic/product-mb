@@ -152,7 +152,7 @@ This file is ciphertool compliant. Refer PRODUCT_HOME/repository/conf/security/c
 
         <!-- RDBMS MB Store Configuration -->
 
-        <messageStore class="org.wso2.andes.store.rdbms.RDBMSMessageStoreImpl">
+        <messageStore class="org.wso2.carbon.andes.core.store.rdbms.RDBMSMessageStoreImpl">
             <property name="dataSource">java:comp/env/WSO2MBStoreDB</property>
             <property name="storeUnavailableSQLStateClasses">08</property>
             <property name="integrityViolationSQLStateClasses">23,27,44</property>
@@ -160,7 +160,7 @@ This file is ciphertool compliant. Refer PRODUCT_HOME/repository/conf/security/c
             <property name="transactionRollbackSQLStateClasses">40</property>
         </messageStore>
 
-        <contextStore class="org.wso2.andes.store.rdbms.RDBMSAndesContextStoreImpl">
+        <contextStore class="org.wso2.carbon.andes.core.store.rdbms.RDBMSAndesContextStoreImpl">
             <property name="dataSource">java:comp/env/WSO2MBStoreDB</property>
             <property name="storeUnavailableSQLStateClasses">08</property>
             <property name="integrityViolationSQLStateClasses">23,27,44</property>
@@ -194,7 +194,7 @@ This file is ciphertool compliant. Refer PRODUCT_HOME/repository/conf/security/c
         org.wso2.andes.server.cluster.coordination.MessageIdGenerator
 
         NOTE: This is NOT used in MB to generate message IDs. -->
-        <idGenerator>org.wso2.andes.server.cluster.coordination.TimeStampBasedMessageIdGenerator</idGenerator>
+        <idGenerator>org.wso2.carbon.andes.core.internal.cluster.TimeStampBasedMessageIdGenerator</idGenerator>
 
         <!-- This is the Task interval (in SECONDS) to check whether communication 
         is healthy between message store (/Database) and this server instance. -->

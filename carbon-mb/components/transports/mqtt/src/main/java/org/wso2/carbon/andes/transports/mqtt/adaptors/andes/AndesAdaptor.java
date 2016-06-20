@@ -21,19 +21,18 @@ package org.wso2.carbon.andes.transports.mqtt.adaptors.andes;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.andes.amqp.AMQPUtils;
-import org.wso2.andes.kernel.Andes;
-import org.wso2.andes.kernel.AndesAckData;
-import org.wso2.andes.kernel.AndesChannel;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.AndesUtils;
-import org.wso2.andes.kernel.DeliverableAndesMetadata;
-import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.SubscriptionAlreadyExistsException;
-import org.wso2.andes.kernel.disruptor.inbound.InboundQueueEvent;
-import org.wso2.andes.kernel.disruptor.inbound.InboundSubscriptionEvent;
-import org.wso2.andes.server.ClusterResourceHolder;
-import org.wso2.andes.subscription.LocalSubscription;
+import org.wso2.carbon.andes.core.Andes;
+import org.wso2.carbon.andes.core.AndesAckData;
+import org.wso2.carbon.andes.core.AndesChannel;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.AndesUtils;
+import org.wso2.carbon.andes.core.DeliverableAndesMetadata;
+import org.wso2.carbon.andes.core.DestinationType;
+import org.wso2.carbon.andes.core.SubscriptionAlreadyExistsException;
+import org.wso2.carbon.andes.core.internal.cluster.ClusterResourceHolder;
+import org.wso2.carbon.andes.core.internal.inbound.InboundQueueEvent;
+import org.wso2.carbon.andes.core.internal.inbound.InboundSubscriptionEvent;
+import org.wso2.carbon.andes.core.subscription.LocalSubscription;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.MessagingAdaptor;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.exception.MQTTException;
 import org.wso2.carbon.andes.transports.mqtt.adaptors.andes.message.MqttMessageContext;
@@ -350,13 +349,13 @@ public class AndesAdaptor implements MessagingAdaptor {
         if (isDurable) {
             //For subscription that are durable we need to provide the queue name for the queue identifier
             targetQueue = queueIdentifier;
-            targetQueueBoundExchange = AMQPUtils.DIRECT_EXCHANGE_NAME;
+            targetQueueBoundExchange = AndesUtils.QUEUE_DELIVERY_STRATEGY;
             isTargetQueueBoundAutoDeletable = 0;
             destinationType = DestinationType.DURABLE_TOPIC;
         } else {
             //create a andes core LocalSubscription without giving queue names
             targetQueue = topic;
-            targetQueueBoundExchange = AMQPUtils.TOPIC_EXCHANGE_NAME;
+            targetQueueBoundExchange = AndesUtils.TOPIC_DELIVERY_STRATEGY;
             isTargetQueueBoundAutoDeletable = 1;
             destinationType = DestinationType.TOPIC;
         }

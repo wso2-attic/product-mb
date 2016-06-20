@@ -20,7 +20,7 @@ package org.wso2.carbon.andes.transports.mqtt.internal;
 
 
 import org.osgi.framework.BundleContext;
-import org.wso2.andes.kernel.Andes;
+import org.wso2.carbon.andes.core.Andes;
 import org.wso2.carbon.kernel.CarbonRuntime;
 
 

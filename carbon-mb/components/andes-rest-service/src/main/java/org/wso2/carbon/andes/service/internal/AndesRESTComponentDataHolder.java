@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.andes.service.internal;
 
-import org.wso2.andes.kernel.Andes;
+import org.wso2.carbon.andes.core.Andes;
 
 /**
  * Data Holder for Andes rest service

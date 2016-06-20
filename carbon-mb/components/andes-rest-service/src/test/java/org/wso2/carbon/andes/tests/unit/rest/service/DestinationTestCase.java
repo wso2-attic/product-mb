@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.andes.kernel.AndesException;
+import org.wso2.carbon.andes.core.AndesException;
 import org.wso2.carbon.andes.service.beans.DestinationManagementBeans;
 import org.wso2.carbon.andes.service.exceptions.DestinationManagerException;
 import org.wso2.carbon.andes.service.internal.AndesRESTService;

@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package org.wso2.carbon.andes.amqp.internal;
@@ -25,20 +27,25 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.andes.framing.ProtocolVersion;
-import org.wso2.andes.kernel.Andes;
-import org.wso2.andes.kernel.AndesException;
-import org.wso2.andes.kernel.DestinationType;
-import org.wso2.andes.kernel.ProtocolInfo;
-import org.wso2.andes.server.resource.manager.ResourceHandler;
-import org.wso2.andes.subscription.LocalDurableTopicSubscriptionStore;
-import org.wso2.andes.subscription.QueueSubscriptionStore;
+import org.wso2.andes.server.BrokerOptions;
+import org.wso2.andes.server.Main;
+import org.wso2.andes.server.registry.ApplicationRegistry;
 import org.wso2.carbon.andes.amqp.AMQPTransport;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPDurableTopicResourceHandler;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPMessageDecoder;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPQueueResourceHandler;
 import org.wso2.carbon.andes.amqp.resource.manager.AMQPTopicResourceHandler;
 import org.wso2.carbon.andes.amqp.subscription.AMQPTopicSubscriptionBitMapStore;
+import org.wso2.carbon.andes.core.Andes;
+import org.wso2.carbon.andes.core.AndesException;
+import org.wso2.carbon.andes.core.DestinationType;
+import org.wso2.carbon.andes.core.ProtocolInfo;
+import org.wso2.carbon.andes.core.internal.config.QpidServiceImpl;
+import org.wso2.carbon.andes.core.resource.manager.ResourceHandler;
+import org.wso2.carbon.andes.core.subscription.LocalDurableTopicSubscriptionStore;
+import org.wso2.carbon.andes.core.subscription.QueueSubscriptionStore;
 import org.wso2.carbon.kernel.CarbonRuntime;
+import org.wso2.carbon.kernel.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +85,14 @@ public class AMQPTransportServiceComponent {
         }
 
         registerResourceHandlers();
+        //Load qpid specific configurations
+        QpidServiceImpl qpidServiceImpl = new QpidServiceImpl("carbon");
+        qpidServiceImpl.loadConfigurations();
 
+        System.setProperty(BrokerOptions.ANDES_HOME, Utils.getCarbonConfigHome() + "/qpid/");
+        String[] args = {"-p" + qpidServiceImpl.getAMQPPort(), "-s" + qpidServiceImpl.getAMQPSSLPort()};
+        Main.main(args);
+        Runtime.getRuntime().removeShutdownHook(ApplicationRegistry.getShutdownHook());
 
         serviceRegistration = bundleContext.registerService(AMQPTransport.class.getName(), new AMQPTransport(), null);
         logger.info("AMQP Service Component is activated");
@@ -217,6 +231,7 @@ public class AMQPTransportServiceComponent {
      */
     @SuppressWarnings("unused")
     protected void unsetAndesInstance(Andes andesInstance) {
+        ApplicationRegistry.remove();
         AMQPComponentDataHolder.getInstance().setAndesInstance(null);
     }
 

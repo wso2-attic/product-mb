@@ -202,7 +202,7 @@
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.apache.commons.lang;version="${org.apache.commons.lang.package.import.version.range}",
-            org.wso2.andes.*;version="${andes.package.import.version.range}",
+            org.wso2.carbon.andes.core.*;version="${andes.package.import.version.range}",
             org.wso2.msf4j.*;version="${msf4j.import.version.range}",
             org.slf4j.*;version="${slf4j.import.version.range}",
             io.netty.*;version="${netty.version.range}",
