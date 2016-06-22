@@ -33,7 +33,7 @@
 
     <properties>
         <import.package>
-            org.wso2.andes
+            org.wso2.carbon.andes.core
         </import.package>
     </properties>
 

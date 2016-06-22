@@ -1,6 +1,6 @@
 var onRequest = function (context) {
     //Getting supported protocols
-    var protocols = callOSGiService("org.wso2.andes.kernel.Andes", "getSupportedProtocols", []);
+    var protocols = callOSGiService("org.wso2.carbon.andes.core.Andes", "getSupportedProtocols", []);
     var protocolStrings = [];
     for each (var item in protocols) {
         protocolStrings.push(item.toString());
@@ -12,10 +12,10 @@ var onRequest = function (context) {
     if (queryParamProtocol != null && queryParamProtocol != "") {
         //getSubscriptions(ProtocolType protocol, DestinationType destinationType, String subscriptionName, String destinationName, boolean active, int offset, int limit)
 
-        var andesResourceManager = callOSGiService("org.wso2.andes.kernel.Andes", "getAndesResourceManager", []);
-        var protocolClass = Java.type("org.wso2.andes.kernel.ProtocolType");
+        var andesResourceManager = callOSGiService("org.wso2.carbon.andes.core.Andes", "getAndesResourceManager", []);
+        var protocolClass = Java.type("org.wso2.carbon.andes.core.ProtocolType");
         var protocolInstance = new protocolClass(queryParamProtocol);
-        var destinationTypeEnum = Java.type("org.wso2.andes.kernel.DestinationType");
+        var destinationTypeEnum = Java.type("org.wso2.carbon.andes.core.DestinationType");
         var subscriptions = andesResourceManager.getSubscriptions(protocolInstance, destinationTypeEnum.QUEUE, "*", "*", "*", 0, 1000);
         print("Subscriptions : " + subscriptions);
     }

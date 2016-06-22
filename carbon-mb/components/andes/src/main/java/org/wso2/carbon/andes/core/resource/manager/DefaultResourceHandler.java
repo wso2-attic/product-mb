@@ -94,14 +94,11 @@ public abstract class DefaultResourceHandler implements ResourceHandler {
                 .getSubscriptionEngine().getAllClusterSubscriptionsForDestinationType(protocolType, destinationType);
 
         return allClusterSubscriptions.stream()
-                .filter(s -> s.getProtocolType() == protocolType)
-                .filter(s -> s.isDurable() == ((destinationType == DestinationType.QUEUE)
-                        || (destinationType == DestinationType.DURABLE_TOPIC)))
                 .filter(s -> s.hasExternalSubscriptions() == active)
-                .filter(s -> null != subscriptionName && !ALL_WILDCARD.equals(subscriptionName)
-                        && s.getSubscriptionID().contains(subscriptionName))
-                .filter(s -> null != destinationName && !ALL_WILDCARD.equals(destinationName)
-                        && s.getSubscribedDestination().equals(destinationName))
+                .filter(s -> null != subscriptionName && (ALL_WILDCARD.equals(subscriptionName)
+                        || s.getSubscriptionID().contains(subscriptionName)))
+                .filter(s -> null != destinationName && (ALL_WILDCARD.equals(destinationName)
+                        || s.getSubscribedDestination().equals(destinationName)))
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
