@@ -50,16 +50,10 @@
 
     <modules>
         <!--Components-->
-        <module>carbon-mb/components/andes</module>
-        <module>carbon-mb/components/andes-rest-service</module>
-        <!--<module>carbon-mb/components/ui</module>-->
         <module>carbon-mb/components/transports/amqp</module>
         <module>carbon-mb/components/transports/mqtt</module>
 
         <!--Features-->
-        <module>carbon-mb/features/org.wso2.carbon.andes.feature</module>
-        <module>carbon-mb/features/org.wso2.carbon.andes.rest.service.feature</module>
-        <!--<module>carbon-mb/features/org.wso2.carbon.mb.ui.feature</module>-->
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.amqp.feature</module>
         <module>carbon-mb/features/transports/org.wso2.carbon.mb.mqtt.feature</module>
 
