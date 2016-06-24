@@ -72,6 +72,7 @@
             org.osgi.framework.*;version="${osgi.framework.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version.range}",
             org.wso2.carbon.andes.core.*;version="${andes.package.import.version.range}",
+            org.apache.commons.lang.*;version="${org.apache.commons.lang.package.import.version.range}",
             org.wso2.andes.*
         </import.package>
     </properties>
