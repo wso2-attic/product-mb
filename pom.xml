@@ -346,16 +346,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>andes.rest.service</artifactId>
-                <version>${andes.dependency.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
-                <artifactId>ui</artifactId>
-                <version>${carbon.mb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>amqp</artifactId>
                 <version>${carbon.mb.version}</version>
             </dependency>
@@ -368,11 +358,6 @@
                 <groupId>org.wso2.carbon.mb</groupId>
                 <artifactId>carbon-mb-osgi-tests-util</artifactId>
                 <version>${carbon.mb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.msf4j</groupId>
-                <artifactId>msf4j-core</artifactId>
-                <version>${msf4j.version}</version>
             </dependency>
             <!-- END of Message Broker Dependencies-->
 
@@ -410,11 +395,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>org.jacoco.ant</artifactId>
                 <version>${jacoco.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.transaction</groupId>
-                <artifactId>jta</artifactId>
-                <version>${jta.version}}</version>
             </dependency>
             <dependency>
                 <groupId>javax.inject</groupId>
@@ -585,7 +565,6 @@
         <maven.paxexam.plugin.version>1.2.4</maven.paxexam.plugin.version>
 
         <!-- Unit Test dependency versions-->
-        <jta.version>1.1</jta.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
         <maven.paxexam.plugin.version>1.2.4</maven.paxexam.plugin.version>
         <mockito.version>1.9.5</mockito.version>
