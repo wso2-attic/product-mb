@@ -82,6 +82,11 @@ public class AMQPDurableTopicResourceHandler extends DefaultResourceHandler {
 
     }
 
+    @Override
+    public List<String> getDestinationNames(String s) {
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
