@@ -80,6 +80,11 @@ public class AMQPTopicResourceHandler extends DefaultResourceHandler {
     public void deleteMessages(String s) throws AndesException {
     }
 
+    @Override
+    public List<String> getDestinationNames(String s) {
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -28,6 +28,7 @@ import org.wso2.carbon.andes.core.internal.inbound.InboundQueueEvent;
 import org.wso2.carbon.andes.core.resource.manager.DefaultResourceHandler;
 
 import java.lang.management.ManagementFactory;
+import java.util.List;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -96,5 +97,10 @@ public class AMQPQueueResourceHandler extends DefaultResourceHandler {
      */
     @Override
     public void deleteMessages(String destinationName) throws AndesException {
+    }
+
+    @Override
+    public List<String> getDestinationNames(String s) {
+        return null;
     }
 }
