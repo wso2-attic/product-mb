@@ -35,6 +35,7 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConsta
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+import org.wso2.mb.integration.common.clients.operations.utils.JMSMessageType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -42,8 +43,10 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileReader;
 
@@ -174,6 +177,61 @@ public class MessageContentTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(consumerClient
                                     .getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
         Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+    }
+
+    /**
+     * Test if Map messages containing multiple entries with 250K String sizes can be sent and received.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AndesClientException
+     */
+    @Test(groups = "wso2.mb", description = "Message content validation test case")
+    public void performLargeStringMapMessageSendReceiveTestCase()
+            throws AndesClientConfigurationException, IOException, JMSException, NamingException,
+            AndesClientException, XPathExpressionException {
+
+        String queueName = "LargeMapMessageQueue";
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
+        consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
+
+        publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
+        publisherConfig.setJMSMessageType(JMSMessageType.MAP);
+
+        //Write large map message to input file
+        BufferedWriter br = new BufferedWriter(new FileWriter(new File((AndesClientConstants
+                .MAP_MESSAGE_CONTENT_INPUT_FILE_PATH))));
+        for (int i = 0; i < 3; i++) {
+            StringBuilder builder = new StringBuilder("");
+            for (int j = 0; j < 250000; j++) {
+                builder.append("a");
+            }
+            br.write(builder.toString());
+            br.newLine();
+        }
+        br.close();
+
+        // message content will be read from this path and published
+        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants.MAP_MESSAGE_CONTENT_INPUT_FILE_PATH);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
     }
 
     /**
