@@ -31,6 +31,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
@@ -209,7 +210,12 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
                 } else if (JMSMessageType.MAP == this.publisherConfig.getJMSMessageType()) {
-                    message = this.session.createMapMessage();
+                    MapMessage mapMessage = this.session.createMapMessage();
+                    String[] entries = this.messageContentFromFile.split(System.getProperty("line.separator"));
+                    for (int i = 0; i < entries.length; i++) {
+                        mapMessage.setString("key" + i, entries[i]);
+                    }
+                    message = mapMessage;
                 } else if (JMSMessageType.OBJECT == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createObjectMessage();
                 } else if (JMSMessageType.STREAM == this.publisherConfig.getJMSMessageType()) {
