@@ -211,9 +211,11 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     message = this.session.createBytesMessage();
                 } else if (JMSMessageType.MAP == this.publisherConfig.getJMSMessageType()) {
                     MapMessage mapMessage = this.session.createMapMessage();
-                    String[] entries = this.messageContentFromFile.split(System.getProperty("line.separator"));
-                    for (int i = 0; i < entries.length; i++) {
-                        mapMessage.setString("key" + i, entries[i]);
+                    if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
+                        String[] entries = this.messageContentFromFile.split(System.getProperty("line.separator"));
+                        for (int i = 0; i < entries.length; i++) {
+                            mapMessage.setString("key" + i, entries[i]);
+                        }
                     }
                     message = mapMessage;
                 } else if (JMSMessageType.OBJECT == this.publisherConfig.getJMSMessageType()) {
