@@ -133,4 +133,9 @@ public class AndesClientConstants {
      */
     public static final String ANDES_ACK_WAIT_TIMEOUT_PROPERTY = "AndesAckWaitTimeOut";
 
+    /**
+     * System property name of andes redelivery delay
+     */
+    public static final String ANDES_REDELIVERY_DELAY_PROPERTY = "AndesRedeliveryDelay";
+
 }

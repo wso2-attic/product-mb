@@ -539,8 +539,8 @@ public class AndesJMSConsumer extends AndesJMSBase
      *
      * @return The received message count.
      */
-    public long getReceivedMessageCount() {
-        return this.receivedMessageCount.get();
+    public AtomicLong getReceivedMessageCount() {
+        return this.receivedMessageCount;
     }
 
     /**

@@ -54,12 +54,12 @@ public class AndesClient {
     /**
      * The consumers that are started concurrently
      */
-    List<AndesJMSConsumer> consumers = new ArrayList<AndesJMSConsumer>();
+    List<AndesJMSConsumer> consumers = new ArrayList<>();
 
     /**
      * The publishers that are started concurrently
      */
-    List<AndesJMSPublisher> publishers = new ArrayList<AndesJMSPublisher>();
+    List<AndesJMSPublisher> publishers = new ArrayList<>();
 
     /**
      * Creates a single consumer or publisher based on the configuration passed
@@ -165,7 +165,7 @@ public class AndesClient {
     public long getReceivedMessageCount() {
         long allReceivedMessageCount = 0L;
         for (AndesJMSConsumer consumer : consumers) {
-            allReceivedMessageCount = allReceivedMessageCount + consumer.getReceivedMessageCount();
+            allReceivedMessageCount = allReceivedMessageCount + consumer.getReceivedMessageCount().get();
         }
         return allReceivedMessageCount;
     }
