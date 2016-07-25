@@ -36,7 +36,7 @@
                         <property>
                             <name>carbon.zip</name>
                             <value>
-                                ${basedir}/../../distribution/target/wso2mb-${product.mb.version}.zip
+                                /Users/hemikakodikara/support/mb/FOITTDEV-46/wso2mb-3.1.0.zip
                             </value>
                         </property>
                         <property>
@@ -247,7 +247,7 @@
     </dependencies>
 
     <properties>
-        <skipUiTests>true</skipUiTests>
+        <skipUiTests>false</skipUiTests>
     </properties>
 
 </project>

@@ -39,7 +39,12 @@ public enum JMSAcknowledgeMode {
     /**
      * @see <a href="http://docs.oracle.com/javaee/7/api/javax/jms/Session.html#DUPS_OK_ACKNOWLEDGE">DUPS_OK_ACKNOWLEDGE</a>
      */
-    DUPS_OK_ACKNOWLEDGE(3);
+    DUPS_OK_ACKNOWLEDGE(3),
+
+    /**
+     * Per message acknowledgement.
+     */
+    PER_MESSAGE_ACKNOWLEDGE(259);
 
     private int type;
 
