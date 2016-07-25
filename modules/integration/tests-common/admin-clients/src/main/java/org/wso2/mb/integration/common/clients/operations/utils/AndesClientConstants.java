@@ -129,6 +129,16 @@ public class AndesClientConstants {
             "sample_1KB_msg.xml";
 
     /**
+     * The JMS property which stores routing key.
+     */
+    public static final String JMS_ANDES_ROUTING_KEY_MESSAGE_PROPERTY = "JMS_ANDES_ROUTING_KEY";
+
+    /**
+     * JMS Property allowing to append routing key for messages.
+     */
+    public static final String ANDES_SET_ROUTING_KEY = "AndesSetRoutingKey";
+
+    /**
      * System property name of andes acknowledgement wait timeout
      */
     public static final String ANDES_ACK_WAIT_TIMEOUT_PROPERTY = "AndesAckWaitTimeOut";

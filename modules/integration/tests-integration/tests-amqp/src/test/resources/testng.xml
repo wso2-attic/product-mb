@@ -45,6 +45,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageSequentialAndDuplicateTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicMessageSequentialAndDuplicateTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TransactionalPublishingTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.JMSRoutingKeyPropertyTestCase"/>
         </classes>
     </test>
 
