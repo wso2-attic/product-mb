@@ -98,7 +98,6 @@
             <fileMode>644</fileMode>
             <directoryMode>775</directoryMode>
         </fileSet>
-
         <fileSet>
             <directory>../../modules/samples/product/JmsTopicClient</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/JmsTopicClient</outputDirectory>
@@ -170,6 +169,18 @@
         <fileSet>
             <directory>../../modules/samples/product/TransactionalPublisher</directory>
             <outputDirectory>wso2mb-${pom.version}/samples/TransactionalPublisher</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>../../modules/samples/product/PerMessageAcknowledgeSample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/PerMessageAcknowledgeSample</outputDirectory>
+            <fileMode>644</fileMode>
+            <directoryMode>775</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>../../modules/samples/product/RedeliveryDelaySample</directory>
+            <outputDirectory>wso2mb-${pom.version}/samples/RedeliveryDelaySample</outputDirectory>
             <fileMode>644</fileMode>
             <directoryMode>775</directoryMode>
         </fileSet>
