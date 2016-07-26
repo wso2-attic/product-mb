@@ -47,11 +47,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMod
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -60,6 +55,11 @@ import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Following test cases are related to redelivery delay feature for rejected messages.
@@ -127,13 +127,15 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstMessageInvalidOnlyQueue");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstMessageInvalidOnlyQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstMessageInvalidOnlyQueue");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstMessageInvalidOnlyQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -143,6 +145,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         MessageConsumer receiver = andesJMSConsumer.getReceiver();
         receiver.setMessageListener(new MessageListener() {
             private boolean receivedFirstMessage = false;
+
             @Override
             public void onMessage(Message message) {
                 try {
@@ -173,13 +176,94 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         for (int i = 0; i < sendCount; i++) {
             Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
         }
 
         validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
 
         Assert.assertEquals(receivedMessages.size(), sendCount + 1, "Message receiving failed.");
     }
+
+
+    /**
+     * This test publishes 10 messages and the subscriber rejects the first message and then wait for the redelivered
+     * message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void firstMessageInvalidOnlyQueueMessageReceiverTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        long sendCount = 10;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstMessageInvalidOnlyReceiverQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstMessageInvalidOnlyReceiverQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            private boolean receivedFirstMessage = false;
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (!receivedFirstMessage && "#0".equals(textMessage.getText())) {
+                            receivedFirstMessage = true;
+                        } else {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+        for (int i = 0; i < sendCount; i++) {
+            Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
+        }
+
+        validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
+
+        Assert.assertEquals(receivedMessages.size(), sendCount + 1, "Message receiving failed.");
+
+    }
+
 
     /**
      * This test publishes 10 messages and the subscriber rejects all message and then wait for the redelivered
@@ -204,13 +288,15 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleUnacknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "multipleUnacknowledgeQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleUnacknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "multipleUnacknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -247,15 +333,97 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         for (int i = 0; i < sendCount * 2; i++) {
             if (i < sendCount) {
                 Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                        "Invalid messages received. #" + Integer.toString(i) + " expected.");
             } else {
                 validateMessageContentAndDelay(receivedMessages, i - sendCount, i,
-                                                                                "#" + Integer.toString(i - sendCount));
+                        "#" + Integer.toString(i - sendCount));
             }
         }
 
         Assert.assertEquals(receivedMessages.size(), sendCount * 2, "Message receiving failed.");
     }
+
+
+    /**
+     * This test publishes 10 messages and the subscriber rejects all message and then wait for the redelivered
+     * message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void allUnacknowledgeMessageReceiverTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        int sendCount = 10;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "multipleUnacknowledgeReceiverQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "multipleUnacknowledgeReceiverQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (getMessageList(receivedMessages).contains(textMessage.getText())) {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+
+        for (int i = 0; i < sendCount * 2; i++) {
+            if (i < sendCount) {
+                Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                        "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            } else {
+                validateMessageContentAndDelay(receivedMessages, i - sendCount, i,
+                        "#" + Integer.toString(i - sendCount));
+            }
+        }
+
+        Assert.assertEquals(receivedMessages.size(), sendCount * 2, "Message receiving failed.");
+    }
+
 
     /**
      * This test publishes 10 messages and the subscriber rejects a message after each 3 received messages and then wait
@@ -280,13 +448,15 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "oneByOneUnacknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "oneByOneUnacknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -299,7 +469,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
                 try {
                     TextMessage textMessage = (TextMessage) message;
                     if (Integer.parseInt(textMessage.getText().split("#")[1]) % 3 != 0 ||
-                                                    getMessageList(receivedMessages).contains(textMessage.getText())) {
+                        getMessageList(receivedMessages).contains(textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
@@ -323,7 +493,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         for (int i = 0; i < sendCount; i++) {
             Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
         }
 
         validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
@@ -333,6 +503,89 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(receivedMessages.size(), sendCount + 4, "Message receiving failed.");
     }
+
+
+    /**
+     * This test publishes 10 messages and the subscriber rejects a message after each 3 received messages and then wait
+     * for the redelivered message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void oneByOneUnacknowledgeMessageReceiverTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        long sendCount = 10;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeReceiverQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeReceiverQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (Integer.parseInt(textMessage.getText().split("#")[1]) % 3 != 0 ||
+                            getMessageList(receivedMessages).contains(textMessage.getText())) {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+
+        for (int i = 0; i < sendCount; i++) {
+            Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
+        }
+
+        validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
+        validateMessageContentAndDelay(receivedMessages, 1, 11, "#3");
+        validateMessageContentAndDelay(receivedMessages, 2, 12, "#6");
+        validateMessageContentAndDelay(receivedMessages, 3, 13, "#9");
+
+        Assert.assertEquals(receivedMessages.size(), sendCount + 4, "Message receiving failed.");
+    }
+
 
     /**
      * This test publishes 10 messages and the subscriber rejects first 4 messages and then wait for the redelivered
@@ -357,13 +610,15 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstFewUnacknowledgeQueue");
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstFewUnacknowledgeQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstFewUnacknowledgeQueue");
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstFewUnacknowledgeQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -376,7 +631,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
                 try {
                     TextMessage textMessage = (TextMessage) message;
                     if (Integer.parseInt(textMessage.getText().split("#")[1]) >= 4 ||
-                                                    getMessageList(receivedMessages).contains(textMessage.getText())) {
+                        getMessageList(receivedMessages).contains(textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
@@ -400,7 +655,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         for (int i = 0; i < sendCount; i++) {
             Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
         }
 
         validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
@@ -410,6 +665,89 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         Assert.assertEquals(receivedMessages.size(), sendCount + 4, "Message receiving failed.");
     }
+
+
+    /**
+     * This test publishes 10 messages and the subscriber rejects first 4 messages and then wait for the redelivered
+     * message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void firstFewUnacknowledgeMessageReceiverTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        long sendCount = 10;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstFewUnacknowledgeReceiverQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "firstFewUnacknowledgeReceiverQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (Integer.parseInt(textMessage.getText().split("#")[1]) >= 4 ||
+                            getMessageList(receivedMessages).contains(textMessage.getText())) {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+
+        for (int i = 0; i < sendCount; i++) {
+            Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
+        }
+
+        validateMessageContentAndDelay(receivedMessages, 0, 10, "#0");
+        validateMessageContentAndDelay(receivedMessages, 1, 11, "#1");
+        validateMessageContentAndDelay(receivedMessages, 2, 12, "#2");
+        validateMessageContentAndDelay(receivedMessages, 3, 13, "#3");
+
+        Assert.assertEquals(receivedMessages.size(), sendCount + 4, "Message receiving failed.");
+    }
+
 
     /**
      * This test publishes 10 messages and the subscriber rejects the 8th message and then wait for the redelivered
@@ -434,13 +772,13 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                                                                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
+                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                                                                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
+                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -453,7 +791,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
                 try {
                     TextMessage textMessage = (TextMessage) message;
                     if (!textMessage.getText().equals("#7") ||
-                                                    getMessageList(receivedMessages).contains(textMessage.getText())) {
+                        getMessageList(receivedMessages).contains(textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
@@ -485,6 +823,84 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(receivedMessages.size(), sendCount + 1, "Message receiving failed.");
     }
 
+
+    /**
+     * This test publishes 10 messages and the subscriber rejects the 8th message and then wait for the redelivered
+     * message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void unacknowledgeMiddleMessageMessageReceiverTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        long sendCount = 10;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "unacknowledgeMiddleMessageReceiverQueue");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "unacknowledgeMiddleMessageReceiverQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (!textMessage.getText().equals("#7") ||
+                            getMessageList(receivedMessages).contains(textMessage.getText())) {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+
+        for (int i = 0; i < sendCount; i++) {
+            Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
+        }
+
+        validateMessageContentAndDelay(receivedMessages, 6, 10, "#7");
+
+        Assert.assertEquals(receivedMessages.size(), sendCount + 1, "Message receiving failed.");
+    }
+
+
     /**
      * This test publishes 1000 messages and the subscriber reject each 100th message and then wait for the redelivered
      * message.
@@ -509,14 +925,14 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
-                                                                    "oneByOneUnacknowledgeMessageListenerForMultiple");
+                        "oneByOneUnacknowledgeMessageListenerForMultiple");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
-                                                                    "oneByOneUnacknowledgeMessageListenerForMultiple");
+                        "oneByOneUnacknowledgeMessageListenerForMultiple");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -529,7 +945,7 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
                 try {
                     TextMessage textMessage = (TextMessage) message;
                     if (Integer.parseInt(textMessage.getText().split("#")[1]) % 100 != 0 ||
-                                                    getMessageList(receivedMessages).contains(textMessage.getText())) {
+                        getMessageList(receivedMessages).contains(textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
@@ -553,7 +969,95 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         for (int i = 0; i < sendCount; i++) {
             Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
+        }
+
+        validateMessageContentAndDelay(receivedMessages, 0, 1000, "#0");
+        validateMessageContentAndDelay(receivedMessages, 99, 1001, "#100");
+        validateMessageContentAndDelay(receivedMessages, 199, 1002, "#200");
+        validateMessageContentAndDelay(receivedMessages, 299, 1003, "#300");
+        validateMessageContentAndDelay(receivedMessages, 399, 1004, "#400");
+        validateMessageContentAndDelay(receivedMessages, 499, 1005, "#500");
+        validateMessageContentAndDelay(receivedMessages, 599, 1006, "#600");
+        validateMessageContentAndDelay(receivedMessages, 699, 1007, "#700");
+        validateMessageContentAndDelay(receivedMessages, 799, 1008, "#800");
+        validateMessageContentAndDelay(receivedMessages, 899, 1009, "#900");
+
+        Assert.assertEquals(receivedMessages.size(), sendCount + 10, "Message receiving failed.");
+    }
+
+
+    /**
+     * This test publishes 1000 messages and the subscriber reject each 100th message and then wait for the redelivered
+     * message.
+     * <p/>
+     * The redelivered message is tested against the same message content with the original message and the timestamps
+     * are also checked against the original message timestamp to make sure that the message was delayed.
+     * Here message receive method is used instead of the message listener to receive messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws NamingException
+     */
+    @Test(groups = {"wso2.mb", "queue"})
+    public void oneByOneUnacknowledgeMessageReceiverForMultipleMessagesTestCase()
+            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+            AndesClientException, NamingException {
+        long sendCount = 1000;
+        final List<ImmutablePair<String, Calendar>> receivedMessages = new ArrayList<>();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeMessageReceiverForMultiple");
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
+                        "oneByOneUnacknowledgeMessageReceiverForMultiple");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        final AndesJMSConsumer andesJMSConsumer = consumerClient.getConsumers().get(0);
+        final MessageConsumer receiver = andesJMSConsumer.getReceiver();
+        Thread messageReceivingThread = new Thread() {
+            public void run() {
+                while (receiver != null) {
+                    try {
+                        TextMessage textMessage = (TextMessage) receiver.receive();
+                        if (Integer.parseInt(textMessage.getText().split("#")[1]) % 100 != 0 ||
+                            getMessageList(receivedMessages).contains(textMessage.getText())) {
+                            textMessage.acknowledge();
+                        }
+                        receivedMessages.add(ImmutablePair.of(textMessage.getText(), Calendar.getInstance()));
+                        andesJMSConsumer.getReceivedMessageCount().incrementAndGet();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Exception occurred when receiving messages.", e);
+                    }
+                }
+            }
+        };
+        messageReceivingThread.start();
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        AndesJMSPublisher andesJMSPublisher = publisherClient.getPublishers().get(0);
+        MessageProducer sender = andesJMSPublisher.getSender();
+        for (int i = 0; i < sendCount; i++) {
+            TextMessage textMessage = andesJMSPublisher.getSession().createTextMessage("#" + Integer.toString(i));
+            sender.send(textMessage);
+        }
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME * 2);
+        log.info("Received Messages : " + getMessageList(receivedMessages));
+
+        for (int i = 0; i < sendCount; i++) {
+            Assert.assertEquals(receivedMessages.get(i).getLeft(), "#" + Integer.toString(i),
+                    "Invalid messages received. #" + Integer.toString(i) + " expected.");
         }
 
         validateMessageContentAndDelay(receivedMessages, 0, 1000, "#0");
@@ -630,20 +1134,20 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
             String expectedMessageContent) {
         // Validate message content
         String messageContent = receivedMessages.get(redeliveredMessageIndex).getLeft();
-        Assert.assertEquals(messageContent,  expectedMessageContent, "Invalid messages received.");
+        Assert.assertEquals(messageContent, expectedMessageContent, "Invalid messages received.");
 
         // Validate delay
         Calendar originalMessageCalendar = receivedMessages.get(originalMessageIndex).getRight();
         log.info("Original message timestamp for " + messageContent + " : " +
-                                                                            originalMessageCalendar.getTimeInMillis());
+                 originalMessageCalendar.getTimeInMillis());
         originalMessageCalendar.add(Calendar.SECOND, 10);
         log.info("Minimum redelivered timestamp for " + messageContent + " : " +
-                                                                            originalMessageCalendar.getTimeInMillis());
+                 originalMessageCalendar.getTimeInMillis());
         Calendar redeliveredMessageCalendar = receivedMessages.get(redeliveredMessageIndex).getRight();
         log.info("Timestamp of redelivered for " + messageContent + " message : " +
-                                                                        redeliveredMessageCalendar.getTimeInMillis());
+                 redeliveredMessageCalendar.getTimeInMillis());
         Assert.assertTrue(originalMessageCalendar.compareTo(redeliveredMessageCalendar) <= 0,
-                                                                        "Message received before the redelivery delay");
+                "Message received before the redelivery delay");
     }
 
     /**
