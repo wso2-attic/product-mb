@@ -93,7 +93,7 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
 
         // Setting system property "AndesAckWaitTimeOut" for andes
-        System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "50");
+        System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "3000");
     }
 
     /**
