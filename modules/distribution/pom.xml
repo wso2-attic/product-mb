@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>3.5.0-SNAPSHOT</version>
+        <version>3.2.0-M1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -176,7 +176,7 @@
                                 <zip destfile="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/org.wso2.carbon.user.mgt.ui_${carbon.identity.version}.jar" basedir="${tempdir2}" />
 
                                 <!--Moving "User Stores" menu to Configure Tab-->
-                                <delete dir="${tempdir2}"/>
+                                <delete dir="${tempdir2}" />
                                 <mkdir dir="${tempdir2}" />
                                 <unzip src="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/org.wso2.carbon.identity.user.store.configuration.ui_${carbon.identity.version}.jar" dest="${tempdir2}" />
 
@@ -184,7 +184,7 @@
                                 <zip destfile="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/org.wso2.carbon.identity.user.store.configuration.ui_${carbon.identity.version}.jar" basedir="${tempdir2}" />
 
                                 <!--Moving "Keystores" menu to Configure Tab-->
-                                <delete dir="${tempdir2}"/>
+                                <delete dir="${tempdir2}" />
                                 <mkdir dir="${tempdir2}" />
                                 <unzip src="target/wso2carbon-core-${carbon.kernel.version}/repository/components/plugins/org.wso2.carbon.security.mgt.ui_${carbon.identity.version}.jar" dest="${tempdir2}" />
 
