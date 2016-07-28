@@ -1012,14 +1012,14 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
-                        "oneByOneUnacknowledgeMessageReceiverForMultiple");
+                        "oneByOneUnacknowledgeMessageReceiverForMultipleQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE,
-                        "oneByOneUnacknowledgeMessageReceiverForMultiple");
+                        "oneByOneUnacknowledgeMessageReceiverForMultipleQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -1106,12 +1106,17 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
         AndesAdminClient andesAdminClient = new AndesAdminClient(super.backendURL, sessionCookie);
 
         andesAdminClient.deleteQueue("firstMessageInvalidOnlyQueue");
+        andesAdminClient.deleteQueue("firstMessageInvalidOnlyReceiverQueue");
         andesAdminClient.deleteQueue("multipleUnacknowledgeQueue");
+        andesAdminClient.deleteQueue("multipleUnacknowledgeReceiverQueue");
         andesAdminClient.deleteQueue("oneByOneUnacknowledgeQueue");
+        andesAdminClient.deleteQueue("oneByOneUnacknowledgeReceiverQueue");
         andesAdminClient.deleteQueue("firstFewUnacknowledgeQueue");
+        andesAdminClient.deleteQueue("firstFewUnacknowledgeReceiverQueue");
         andesAdminClient.deleteQueue("unacknowledgeMiddleMessageQueue");
-        andesAdminClient.deleteQueue("oneByOneUnacknowledgeQueueMultiple");
-        andesAdminClient.deleteQueue("allAcknowledgeMultipleQueue");
+        andesAdminClient.deleteQueue("unacknowledgeMiddleMessageReceiverQueue");
+        andesAdminClient.deleteQueue("oneByOneUnacknowledgeMessageListenerForMultiple");
+        andesAdminClient.deleteQueue("oneByOneUnacknowledgeMessageReceiverForMultipleQueue");
         loginLogoutClientForAdmin.logout();
 
         //Revert back to original configuration.

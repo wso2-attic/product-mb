@@ -108,21 +108,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void firstMessageInvalidOnlyQueueMessageListenerTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void firstMessageInvalidOnlyPerAckQueueMessageListenerTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 10;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstMessageInvalidOnlyQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "firstMessageInvalidOnlyPerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstMessageInvalidOnlyQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "firstMessageInvalidOnlyPerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
 
@@ -132,6 +131,7 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         MessageConsumer receiver = andesJMSConsumer.getReceiver();
         receiver.setMessageListener(new MessageListener() {
             private boolean receivedFirstMessage = false;
+
             @Override
             public void onMessage(Message message) {
                 try {
@@ -152,8 +152,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -161,8 +161,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.get(10), "#0", "Invalid messages received. #0 expected.");
@@ -182,21 +182,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void allUnacknowledgeMessageListenerTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void allUnacknowledgeMessageListenerPerAckTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 10;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleUnacknowledgeQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "allUnacknowledgePerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "multipleUnacknowledgeQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "allUnacknowledgePerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -222,8 +221,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -232,11 +231,14 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         for (int i = 0; i < sendCount * 2; i++) {
             if (i < sendCount) {
-                Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+                Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. " +
+                                                                                        "#" + Integer.toString(i) + "" +
+                                                                                        " expected.");
             } else {
-                Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i - 10),
-                                            "Invalid messages received. #" + Integer.toString(i - 10) + " expected.");
+                Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i - 10), "Invalid messages " +
+                                                                                             "received. #" + Integer
+                                                                                                     .toString(i - 10) +
+                                                                                             " expected.");
             }
         }
 
@@ -255,21 +257,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void oneByOneUnacknowledgeMessageListenerTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void oneByOneUnacknowledgeMessageListenerPerAckTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 10;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "oneByOneUnacknowledgeQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "oneByOneUnacknowledgePerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "oneByOneUnacknowledgeQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "oneByOneUnacknowledgePerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -281,8 +282,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
             public void onMessage(Message message) {
                 try {
                     TextMessage textMessage = (TextMessage) message;
-                    if (Integer.parseInt(textMessage.getText().split("#")[1]) % 3 != 0 ||
-                                                                    receivedMessages.contains(textMessage.getText())) {
+                    if (Integer.parseInt(textMessage.getText().split("#")[1]) % 3 != 0 || receivedMessages.contains
+                            (textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(textMessage.getText());
@@ -296,8 +297,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -305,8 +306,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.get(10), "#0", "Invalid messages received. #0 expected.");
@@ -329,21 +330,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void firstFewUnacknowledgeMessageListenerTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void firstFewUnacknowledgeMessageListenerPerAckTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 10;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstFewUnacknowledgeQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "firstFewUnacknowledgePerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "firstFewUnacknowledgeQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "firstFewUnacknowledgePerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -355,8 +355,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
             public void onMessage(Message message) {
                 try {
                     TextMessage textMessage = (TextMessage) message;
-                    if (Integer.parseInt(textMessage.getText().split("#")[1]) >= 4 ||
-                                                                receivedMessages.contains(textMessage.getText())) {
+                    if (Integer.parseInt(textMessage.getText().split("#")[1]) >= 4 || receivedMessages.contains
+                            (textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(textMessage.getText());
@@ -370,8 +370,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -379,8 +379,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.get(10), "#0", "Invalid messages received. #0 expected.");
@@ -394,6 +394,7 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
     /**
      * This test publishes 10 messages and the subscriber rejects the 8th message and then wait for the redelivered
      * message.
+     *
      * @throws AndesClientConfigurationException
      * @throws XPathExpressionException
      * @throws IOException
@@ -402,21 +403,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void unacknowledgeMiddleMessageMessageListenerTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void unacknowledgeMiddleMessageMessageListenerPerAckTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 10;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                                                                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
+                ExchangeType.QUEUE, "unacknowledgeMiddleMessagePerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                                                                ExchangeType.QUEUE, "unacknowledgeMiddleMessageQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "unacknowledgeMiddleMessagePerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -442,8 +442,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -451,8 +451,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.get(10), "#7", "Invalid messages received. #7 expected.");
@@ -472,21 +472,21 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void oneByOneUnacknowledgeMessageListenerForMultipleMessagesTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
+    public void oneByOneUnacknowledgeMessageListenerForMultipleMessagesPerAckTestCase() throws
+            AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
             AndesClientException, NamingException {
         long sendCount = 1000;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
-                                                            ExchangeType.QUEUE, "oneByOneUnacknowledgeQueueMultiple");
+                ExchangeType.QUEUE, "oneByOneUnacknowledgeQueuePerAckMultiple");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
-                                                            ExchangeType.QUEUE, "oneByOneUnacknowledgeQueueMultiple");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "oneByOneUnacknowledgeQueuePerAckMultiple");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -498,8 +498,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
             public void onMessage(Message message) {
                 try {
                     TextMessage textMessage = (TextMessage) message;
-                    if (Integer.parseInt(textMessage.getText().split("#")[1]) % 100 != 0 ||
-                                                                    receivedMessages.contains(textMessage.getText())) {
+                    if (Integer.parseInt(textMessage.getText().split("#")[1]) % 100 != 0 || receivedMessages.contains
+                            (textMessage.getText())) {
                         message.acknowledge();
                     }
                     receivedMessages.add(textMessage.getText());
@@ -513,8 +513,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -522,8 +522,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.get(1000), "#0", "Invalid messages received.");
@@ -552,21 +552,20 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws NamingException
      */
     @Test(groups = {"wso2.mb", "queue"})
-    public void allAcknowledgeMessageListenerForMultipleMessagesTestCase()
-            throws AndesClientConfigurationException, XPathExpressionException, IOException, JMSException,
-            AndesClientException, NamingException {
+    public void allAcknowledgeMessageListenerForMultipleMessagesTestCase() throws AndesClientConfigurationException,
+            XPathExpressionException, IOException, JMSException, AndesClientException, NamingException {
         long sendCount = 1000;
         final List<String> receivedMessages = new ArrayList<>();
 
         // Creating a consumer client configuration
-        AndesJMSConsumerClientConfiguration consumerConfig =
-            new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "allAcknowledgeMultipleQueue");
+        AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, "allAcknowledgeMultiplePerAckQueue");
         consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.PER_MESSAGE_ACKNOWLEDGE);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
-        AndesJMSPublisherClientConfiguration publisherConfig =
-            new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "allAcknowledgeMultipleQueue");
+        AndesJMSPublisherClientConfiguration publisherConfig = new AndesJMSPublisherClientConfiguration(getAMQPPort()
+                , ExchangeType.QUEUE, "allAcknowledgeMultiplePerAckQueue");
         publisherConfig.setNumberOfMessagesToSend(sendCount);
 
         // Creating clients
@@ -590,8 +589,8 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         MessageProducer sender = publisherClient.getPublishers().get(0).getSender();
         for (int i = 0; i < sendCount; i++) {
-            TextMessage textMessage =
-                    publisherClient.getPublishers().get(0).getSession().createTextMessage("#" + Integer.toString(i));
+            TextMessage textMessage = publisherClient.getPublishers().get(0).getSession().createTextMessage("#" +
+                                                                                                Integer.toString(i));
             sender.send(textMessage);
         }
 
@@ -599,19 +598,17 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
         log.info("Received Messages : " + receivedMessages);
 
         for (int i = 0; i < sendCount; i++) {
-            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i),
-                                                "Invalid messages received. #" + Integer.toString(i) + " expected.");
+            Assert.assertEquals(receivedMessages.get(i), "#" + Integer.toString(i), "Invalid messages received. #" +
+                                                                                    Integer.toString(i) + " expected.");
         }
 
         Assert.assertEquals(receivedMessages.size(), sendCount, "Message receiving failed.");
     }
 
     /**
-     * This method will restore all the configurations back.
-     * Following configurations will be restored.
-     * 1. AndesAckWaitTimeOut system property.
-     * 2. Delete all destination created in the test case.
-     * 3. Restore default broker.xml and restart server.
+     * This method will restore all the configurations back. Following configurations will be restored. 1.
+     * AndesAckWaitTimeOut system property. 2. Delete all destination created in the test case. 3. Restore default
+     * broker.xml and restart server.
      *
      * @throws IOException
      * @throws AutomationUtilException
@@ -619,8 +616,7 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
      * @throws LogoutAuthenticationExceptionException
      */
     @AfterClass()
-    public void tearDown()
-            throws IOException, AutomationUtilException, AndesAdminServiceBrokerManagerAdminException,
+    public void tearDown() throws IOException, AutomationUtilException, AndesAdminServiceBrokerManagerAdminException,
             LogoutAuthenticationExceptionException {
         if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
             System.clearProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
@@ -630,16 +626,15 @@ public class PerMessageAcknowledgementsTestCase extends MBIntegrationBaseTest {
 
         LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
         String sessionCookie = loginLogoutClientForAdmin.login();
-        AndesAdminClient andesAdminClient =
-                new AndesAdminClient(super.backendURL, sessionCookie);
+        AndesAdminClient andesAdminClient = new AndesAdminClient(super.backendURL, sessionCookie);
 
-        andesAdminClient.deleteQueue("firstMessageInvalidOnlyQueue");
-        andesAdminClient.deleteQueue("multipleUnacknowledgeQueue");
-        andesAdminClient.deleteQueue("oneByOneUnacknowledgeQueue");
-        andesAdminClient.deleteQueue("firstFewUnacknowledgeQueue");
-        andesAdminClient.deleteQueue("unacknowledgeMiddleMessageQueue");
-        andesAdminClient.deleteQueue("oneByOneUnacknowledgeQueueMultiple");
-        andesAdminClient.deleteQueue("allAcknowledgeMultipleQueue");
+        andesAdminClient.deleteQueue("firstMessageInvalidOnlyPerAckQueue");
+        andesAdminClient.deleteQueue("allUnacknowledgePerAckQueue");
+        andesAdminClient.deleteQueue("oneByOneUnacknowledgePerAckQueue");
+        andesAdminClient.deleteQueue("firstFewUnacknowledgePerAckQueue");
+        andesAdminClient.deleteQueue("unacknowledgeMiddleMessagePerAckQueue");
+        andesAdminClient.deleteQueue("oneByOneUnacknowledgeQueuePerAckMultiple");
+        andesAdminClient.deleteQueue("allAcknowledgeMultiplePerAckQueue");
         loginLogoutClientForAdmin.logout();
 
         //Revert back to original configuration.
