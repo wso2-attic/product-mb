@@ -33,6 +33,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.carbon.deployment</groupId>
+            <artifactId>org.wso2.carbon.deployment.engine.feature</artifactId>
+            <version>${carbon.deployment.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.deployment</groupId>
+            <artifactId>org.wso2.carbon.deployment.notifier.feature</artifactId>
+            <version>${carbon.deployment.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
@@ -100,11 +112,11 @@
             <artifactId>org.wso2.carbon.andes.rest.service.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon.mb</groupId>-->
-            <!--<artifactId>org.wso2.carbon.mb.ui.feature</artifactId>-->
-            <!--<type>zip</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2.carbon.mb</groupId>
+            <artifactId>org.wso2.carbon.mb.ui.feature</artifactId>
+            <type>zip</type>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.mb</groupId>
             <artifactId>org.wso2.carbon.mb.amqp.feature</artifactId>
@@ -120,16 +132,27 @@
             <artifactId>org.wso2.msf4j.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.uuf</groupId>-->
-            <!--<artifactId>org.wso2.uuf.core.feature</artifactId>-->
-            <!--<type>zip</type>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.uuf</groupId>-->
-            <!--<artifactId>org.wso2.uuf.handlebars.feature</artifactId>-->
-            <!--<type>zip</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2.carbon.uuf</groupId>
+            <artifactId>org.wso2.carbon.uuf.core.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.uuf</groupId>
+            <artifactId>org.wso2.carbon.uuf.renderablecreator.hbs.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.uuf</groupId>
+            <artifactId>org.wso2.carbon.uuf.httpconnector.msf4j.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.uuf</groupId>
+            <artifactId>org.wso2.carbon.uuf.renderablecreator.html.feature</artifactId>
+            <version>${uuf.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -158,7 +181,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                    <!--<execution>
+                    <execution>
                         <id>2-unpack-samples</id>
                         <phase>test</phase>
                         <goals>
@@ -176,7 +199,7 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>-->
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -193,6 +216,14 @@
                         <configuration>
                             <targetRepository>file:${basedir}/target/p2-repo</targetRepository>
                             <features>
+                                <feature>
+                                    <id>org.wso2.carbon.deployment.engine.feature</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.deployment.notifier.feature</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.kernel.feature</id>
                                     <version>${carbon.kernel.version}</version>
@@ -241,10 +272,10 @@
                                     <id>org.wso2.carbon.andes.rest.service.feature</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.mb.ui.feature</id>-->
-                                    <!--<version>${carbon.mb.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.mb.ui.feature</id>
+                                    <version>${carbon.mb.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.mb.amqp.feature</id>
                                     <version>${carbon.mb.version}</version>
@@ -257,14 +288,22 @@
                                     <id>org.wso2.msf4j.feature</id>
                                     <version>${msf4j.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.uuf.core.feature</id>-->
-                                    <!--<version>${uuf.version}</version>-->
-                                <!--</feature>-->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.uuf.handlebars.feature</id>-->
-                                    <!--<version>${uuf.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.core.feature</id>
+                                    <version>${uuf.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.renderablecreator.hbs.feature</id>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.httpconnector.msf4j.feature</id>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.renderablecreator.html.feature</id>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -314,6 +353,14 @@
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
                                 <feature>
+                                    <id>org.wso2.carbon.deployment.engine.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.deployment.notifier.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.kernel.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
@@ -357,10 +404,10 @@
                                     <id>org.wso2.carbon.andes.rest.service.feature.group</id>
                                     <version>${carbon.mb.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.mb.ui.feature.group</id>-->
-                                    <!--<version>${carbon.mb.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.mb.ui.feature.group</id>
+                                    <version>${carbon.mb.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.mb.amqp.feature.group</id>
                                     <version>${carbon.mb.version}</version>
@@ -373,14 +420,22 @@
                                     <id>org.wso2.msf4j.feature.group</id>
                                     <version>${msf4j.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.uuf.core.feature.group</id>-->
-                                    <!--<version>${uuf.version}</version>-->
-                                <!--</feature>-->
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.uuf.handlebars.feature.group</id>-->
-                                    <!--<version>${uuf.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.core.feature.group</id>
+                                    <version>${uuf.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.renderablecreator.hbs.feature.group</id>
+                                    <version>${uuf.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.httpconnector.msf4j.feature.group</id>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.uuf.renderablecreator.html.feature.group</id>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
