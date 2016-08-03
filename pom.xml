@@ -230,6 +230,7 @@
                 <version>${carbon.metrics.version}</version>
             </dependency>
 
+
             <!--End Carbon Dependencies-->
 
             <!--Dependent Features-->
@@ -563,6 +564,7 @@
         <msf4j.import.version.range>[2.0.0, 3.0.0)</msf4j.import.version.range>
         <msf4j.version>2.0.0</msf4j.version>
         <uuf.version>1.0.0-SNAPSHOT</uuf.version>
+        <carbon.security.version>1.0.0-SNAPSHOT</carbon.security.version>
         <carbon.metrics.version>2.0.0</carbon.metrics.version>
 
         <!--Transport Related Configrations -->
