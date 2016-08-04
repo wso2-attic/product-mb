@@ -171,6 +171,9 @@
                                 <featureArtifactDef>
                                     org.wso2.ciphertool:org.wso2.ciphertool.feature:${cipher.tool.version}
                                 </featureArtifactDef>
+                                <featureArtifactDef>
+                                    org.wso2.carbon.analytics.shared:org.wso2.carbon.analytics.shared.data.agents.log4j.feature:${analytics.shared.version}
+                                </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -314,6 +317,10 @@
                                 <feature>
                                     <id>org.wso2.ciphertool.feature.group</id>
                                     <version>${cipher.tool.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.analytics.shared.data.agents.log4j.feature.group</id>
+                                    <version>${analytics.shared.version}</version>
                                 </feature>
                             </features>
                         </configuration>
