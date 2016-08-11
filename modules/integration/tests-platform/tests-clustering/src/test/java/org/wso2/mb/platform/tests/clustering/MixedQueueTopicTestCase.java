@@ -597,7 +597,7 @@ public class MixedQueueTopicTestCase extends MBPlatformBaseTest {
             AndesClientUtils.waitForMessagesAndShutdown(subscriber, AndesClientConstants.DEFAULT_RUN_TIME);
 
             for (AndesJMSConsumer consumer : subscriber.getConsumers()) {
-                Assert.assertEquals(consumer.getReceivedMessageCount(), topic1SendCount, "Did not receive expected "
+                Assert.assertEquals(consumer.getReceivedMessageCount().get(), topic1SendCount, "Did not receive expected "
                         + "count for topic " + topicName1 + " for subscriber "
                         + consumer.getConfig().getSubscriptionID());
             }
@@ -610,7 +610,7 @@ public class MixedQueueTopicTestCase extends MBPlatformBaseTest {
             AndesClientUtils.waitForMessagesAndShutdown(subscriber, AndesClientConstants.DEFAULT_RUN_TIME);
 
             for (AndesJMSConsumer consumer : subscriber.getConsumers()) {
-                Assert.assertEquals(consumer.getReceivedMessageCount(), topic2SendCount, "Did not receive expected "
+                Assert.assertEquals(consumer.getReceivedMessageCount().get(), topic2SendCount, "Did not receive expected "
                         + "count for topic " + topicName2 + " for subscriber "
                         + consumer.getConfig().getSubscriptionID());
             }
