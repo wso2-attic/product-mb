@@ -27,12 +27,12 @@ import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientOutputParser;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 
 /**
  * This class represents the Andes Client which is used to publish/consume JMS messages. The JMS
@@ -165,7 +165,7 @@ public class AndesClient {
     public long getReceivedMessageCount() {
         long allReceivedMessageCount = 0L;
         for (AndesJMSConsumer consumer : consumers) {
-            allReceivedMessageCount = allReceivedMessageCount + consumer.getReceivedMessageCount().get();
+            allReceivedMessageCount = allReceivedMessageCount + consumer.getReceivedMessageCount();
         }
         return allReceivedMessageCount;
     }

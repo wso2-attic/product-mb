@@ -37,37 +37,37 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.platform.common.utils.MBPlatformBaseTest;
 import org.xml.sax.SAXException;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * Perform tests with all possible AMQP types and large number of messages.
  */
 public class MixedQueueTopicTestCase extends MBPlatformBaseTest {
 
-    final long printPerMessageCount = 1000;
+    private final long printPerMessageCount = 1000;
 
-    String queueName1 = "mixedQueue1";
-    String queueName2 = "mixedQueue2";
+    private String queueName1 = "mixedQueue1";
+    private String queueName2 = "mixedQueue2";
 
-    String topicName1 = "mixedTopic1";
-    String topicName2 = "mixedTopic2";
+    private String topicName1 = "mixedTopic1";
+    private String topicName2 = "mixedTopic2";
 
-    HostAndPort broker1;
-    HostAndPort broker2;
+    private HostAndPort broker1;
+    private HostAndPort broker2;
 
-    Map<String, Set<AndesClient>> publishers = new HashMap<>();
-    Map<String, Set<AndesClient>> subscribers = new HashMap<>();
+    private Map<String, Set<AndesClient>> publishers = new HashMap<>();
+    private Map<String, Set<AndesClient>> subscribers = new HashMap<>();
 
-    Map<String, Long> sendCounts = new HashMap<>();
+    private Map<String, Long> sendCounts = new HashMap<>();
 
 
     /**
