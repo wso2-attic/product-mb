@@ -47,12 +47,12 @@ and  Message Queuing Telemetry Transport Protocol (MQTT) v 3.1.1.
 </ol>
 
 For more details see
-    https://docs.wso2.com/display/MB310/Installation+Prerequisites
+    https://docs.wso2.com/display/MB320/Installation+Prerequisites
 
 <h2>Installation & Running</h2>
 
 <ol>
-<li> Extract the wso2mb-3.1.0.zip and go to the extracted directory </li>
+<li> Extract the wso2mb-3.2.0.zip and go to the extracted directory </li>
 <li> Run the wso2server.sh or wso2server.bat as appropriate </li>
 <li> Point your favourite browser to
 
@@ -65,7 +65,7 @@ For more details see
 </li>
 </ol>
 
-<h2>WSO2 MB 3.1.0 distribution directory structure</h2>
+<h2>WSO2 MB 3.2.0 distribution directory structure</h2>
 
 	CARBON_HOME
 		|-- bin <folder>
