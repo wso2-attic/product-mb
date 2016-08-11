@@ -25,8 +25,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSDeliveryStatus;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -45,6 +43,8 @@ import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The JMS message consumer used for creating a consumer, reading messages synchronously and also
@@ -539,8 +539,8 @@ public class AndesJMSConsumer extends AndesJMSBase
      *
      * @return The received message count.
      */
-    public long getReceivedMessageCount() {
-        return this.receivedMessageCount.get();
+    public AtomicLong getReceivedMessageCount() {
+        return this.receivedMessageCount;
     }
 
     /**
