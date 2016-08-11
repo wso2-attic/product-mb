@@ -166,12 +166,14 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
         String topic = "singleTopic2";
 
         topicAdminClientForMB2.addTopic(topic);
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
         TopicNode topicNode = topicAdminClientForMB3.getTopicByName(topic);
 
         assertTrue(topicNode != null && topicNode.getTopicName().equalsIgnoreCase(topic),
                    "Topic created in MB node 1 not replicated in MB node 2");
 
         topicAdminClientForMB3.removeTopic(topic);
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
         topicNode = topicAdminClientForMB3.getTopicByName(topic);
 
         assertTrue(topicNode == null,
@@ -219,6 +221,8 @@ public class TopicClusterTestCase extends MBPlatformBaseTest {
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         TopicNode topic = topicAdminClientForMB2.getTopicByName(destinationName);
         assertTrue(topic.getTopicName().equalsIgnoreCase(destinationName), "Topic created in MB node 1 not exist");

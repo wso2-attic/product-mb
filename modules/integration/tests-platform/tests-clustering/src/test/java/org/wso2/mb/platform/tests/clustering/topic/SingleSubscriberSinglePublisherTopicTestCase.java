@@ -106,7 +106,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1", messageCount);
+                automationContextForMB2, automationContextForMB2, 0L, 0L, "singleTopic1", messageCount, true);
     }
 
     /**
@@ -127,7 +127,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2", messageCount);
+                        automationContextForMB2, automationContextForMB2, 10L, 0L, "singleTopic2", messageCount, true);
     }
 
     /**
@@ -149,7 +149,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3", messageCount);
+                        automationContextForMB2, automationContextForMB2, 0L, 10L, "singleTopic3", messageCount, true);
     }
 
     /**
@@ -171,7 +171,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                        automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8", messageCount);
+                        automationContextForMB2, automationContextForMB2, 10L, 10L, "singleTopic8", messageCount, true);
     }
 
     /**
@@ -192,7 +192,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10", messageCount);
+                            automationContextForMB2, automationContext2, 0L, 0L, "singleTopic10", messageCount, false);
     }
 
     /**
@@ -214,7 +214,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5", messageCount);
+                            automationContextForMB2, automationContext2, 10L, 0L, "singleTopic5", messageCount, false);
     }
 
     /**
@@ -236,7 +236,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6", messageCount);
+                            automationContextForMB2, automationContext2, 0L, 10L, "singleTopic6", messageCount, false);
     }
 
     /**
@@ -258,7 +258,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
                    XPathExpressionException, NamingException, JMSException, IOException, AndesClientException,
                    DataAccessUtilException {
         this.runSingleSubscriberSinglePublisherTopicTestCase(
-                            automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7", messageCount);
+                            automationContextForMB2, automationContext2, 10L, 10L, "singleTopic7", messageCount, false);
     }
 
     /**
@@ -290,6 +290,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
      * @param consumerDelay       Message reading delay for consumer.
      * @param publisherDelay      Message publishing delay for publisher.
      * @param destinationName     Destination for publisher and consumer.
+     * @param isSameNode
      * @throws AndesClientConfigurationException
      * @throws NamingException
      * @throws JMSException
@@ -301,7 +302,7 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
     private void runSingleSubscriberSinglePublisherTopicTestCase(
             AutomationContext contextForConsumer,
             AutomationContext contextForPublisher, long consumerDelay,
-            long publisherDelay, String destinationName, long messageCount)
+            long publisherDelay, String destinationName, long messageCount, boolean isSameNode)
             throws AndesClientConfigurationException, NamingException, JMSException, IOException,
                    XPathExpressionException, AndesEventAdminServiceEventAdminException, AndesClientException,
                    DataAccessUtilException {
@@ -327,6 +328,10 @@ public class SingleSubscriberSinglePublisherTopicTestCase extends MBPlatformBase
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
+
+        if (!isSameNode) {
+            AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+        }
 
         // Check if topic is created
         TopicNode topic = topicAdminClient1.getTopicByName(destinationName);

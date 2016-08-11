@@ -117,6 +117,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
         consumerClient.startClient();
 
         randomInstanceKey = getRandomMBInstance();
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_RUN_TIME);
         Queue queue = getAndesAdminClientWithKey(randomInstanceKey).getQueueByName(queueName);
         assertTrue(queue.getQueueName().equalsIgnoreCase(queueName), "Queue created in MB node 1 not exist");
 
@@ -133,7 +135,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
         // Wait until consumers are closed
-        Thread.sleep(AndesClientConstants.DEFAULT_RUN_TIME);
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_RUN_TIME);
 
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
@@ -167,6 +169,7 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         randomInstanceKey = getRandomMBInstance();
         tempAndesAdminClient = getAndesAdminClientWithKey(randomInstanceKey);
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_RUN_TIME);
         Queue queue = tempAndesAdminClient.getQueueByName(queueName);
 
         assertTrue(queue != null && queue.getQueueName().equalsIgnoreCase(queueName),
@@ -231,6 +234,8 @@ public class QueueClusterTestCase extends MBPlatformBaseTest {
 
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_RUN_TIME);
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
