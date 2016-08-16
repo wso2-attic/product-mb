@@ -37,6 +37,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.SlowestSubscriptionRateMsgDeliveryStrategyTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.LZ4CompressionTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.SubTopicUserAuthorizationTestCase"/>
 
 
             <!-- This classes are added here since verification is done by writing to file and multiple subscribers
