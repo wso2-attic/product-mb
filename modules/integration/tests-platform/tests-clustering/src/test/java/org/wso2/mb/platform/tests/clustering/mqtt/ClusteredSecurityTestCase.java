@@ -41,6 +41,8 @@ import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
 import org.wso2.mb.integration.common.clients.operations.mqtt.blocking.MQTTBlockingPublisherClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 
 
 /**
@@ -149,6 +151,8 @@ public class ClusteredSecurityTestCase extends MQTTPlatformBaseTest {
         //create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, QualityOfService.LEAST_ONCE, noOfSubscribers, saveMessages,
                 ClientMode.BLOCKING, configuration);
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         mqttClientEngine.createPublisherConnection(topic, QualityOfService.LEAST_ONCE,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,

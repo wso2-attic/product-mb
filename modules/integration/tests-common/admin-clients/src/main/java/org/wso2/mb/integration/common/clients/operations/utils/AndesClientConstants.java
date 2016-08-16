@@ -75,6 +75,11 @@ public class AndesClientConstants {
     public static final long DEFAULT_RUN_TIME = 10000L;
 
     /**
+     * Default waiting time that is used to check whether the consumer has received messages.
+     */
+    public static final long DEFAULT_CLUSTER_SYNC_TIME = 1000;
+
+    /**
      * Admin user name for AMQP connection string
      */
     public static final String DEFAULT_USERNAME = "admin";

@@ -125,6 +125,8 @@ public class MixedQueueTopicTestCase extends MBPlatformBaseTest {
             }
         }
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+
         // Create all the publishers
 
         createQueue1Publishers();

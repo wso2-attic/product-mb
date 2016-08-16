@@ -189,6 +189,8 @@ public class OrderGuaranteeTestCase extends MBPlatformBaseTest {
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_RUN_TIME);
+
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 

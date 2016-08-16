@@ -192,6 +192,8 @@ public class SubscriptionDisconnectingTestCase extends MBPlatformBaseTest {
         AndesClient consumerClient1 = new AndesClient(consumerConfig, true);
         consumerClient1.startClient();
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 

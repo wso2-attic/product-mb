@@ -41,6 +41,8 @@ import org.wso2.mb.integration.common.clients.MQTTClientConnectionConfiguration;
 import org.wso2.mb.integration.common.clients.MQTTClientEngine;
 import org.wso2.mb.integration.common.clients.MQTTConstants;
 import org.wso2.mb.integration.common.clients.QualityOfService;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.tests.clustering.mqtt.DataProvider.QualityOfServiceDataProvider;
 import org.xml.sax.SAXException;
 
@@ -107,6 +109,8 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
         // create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, saveMessages,
                 ClientMode.BLOCKING, clientConnectionConfigurationForNode2);
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         mqttClientEngine.createPublisherConnection(topic, qualityOfService,
                 MQTTConstants.TEMPLATE_PAYLOAD, noOfPublishers,
@@ -199,7 +203,7 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
 
     
     /**
-     * Send 100 mqtt message on all QOS levels and receive them from a single node.
+     * Send 100 mqtt message on all QOS levels and receive them from different nodes.
      *
      * @throws MqttException
      * @throws XPathExpressionException 
@@ -224,6 +228,8 @@ public class MQTTClusterTestCase extends MQTTPlatformBaseTest {
         // create the subscribers
         mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, saveMessages,
                                                     ClientMode.BLOCKING, clientConnectionConfigurationForNode2);
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         // create the publishers and start publish
         mqttClientEngine.createPublisherConnection(topic, qualityOfService,

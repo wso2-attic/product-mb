@@ -219,6 +219,8 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
         consumerClient4.startClient();
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+
         AndesClient publisherClient1 = new AndesClient(publisherConfig1, true);
         publisherClient1.startClient();
 
@@ -348,6 +350,8 @@ public class MultipleSubscriberMultiplePublisherTestCase extends MBPlatformBaseT
         consumerConfig4.setPort(randomAMQPBrokerAddress.getPort());
         AndesClient consumerClient4 = new AndesClient(consumerConfig4, true);
         consumerClient4.startClient();
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         AndesClient publisherClient1 = new AndesClient(publisherConfig, true);
         publisherClient1.startClient();
