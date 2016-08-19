@@ -47,13 +47,13 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * This class contains the test cases related to user authorization and sub topics
@@ -143,7 +143,7 @@ public class SubTopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientConfigurationException
      */
     @Test(groups = {"wso2.mb"})
-    public void performSubTopicPermissionTestCase()
+    public void performSubTopicPermissionWithAuthorizedUserTestCase()
             throws IOException, UserAdminUserAdminException, XPathExpressionException,
             NamingException, JMSException, AndesClientException,
             AndesClientConfigurationException {
@@ -164,7 +164,7 @@ public class SubTopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
      * @throws AndesClientConfigurationException
      */
     @Test(groups = {"wso2.mb"})
-    public void performSubTopicPermissionTestCase1()
+    public void performSubTopicPermissionWithDifferentAuthorizedUserTestCase()
             throws IOException, UserAdminUserAdminException, XPathExpressionException,
             NamingException, JMSException, AndesClientException,
             AndesClientConfigurationException {
