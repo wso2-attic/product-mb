@@ -266,6 +266,39 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
     }
 
     /**
+     * Admin add subscription to topic and subscribe.
+     * Admin unsubscribe from topic after receiving expected message count
+     * Delete topic admin created
+     * User1 create topic with the same name
+     *
+     * Expected results - User1 must be able to successfully create and subscribe to topic
+     *
+     * @throws AndesClientConfigurationException
+     * @throws NamingException
+     * @throws JMSException
+     * @throws AndesClientException
+     * @throws XPathExpressionException
+     * @throws IOException
+     */
+    @Test(groups = {"wso2.mb", "topic"})
+    public void performTopicPermissionWithAdminCreateAndUnscribe()
+            throws AndesClientConfigurationException, NamingException, JMSException, AndesClientException,
+            XPathExpressionException, IOException, AutomationUtilException, AndesEventAdminServiceEventAdminException {
+        // "superAdmin" refers to the admin
+        this.createPublishSubscribeAndUnsubscribeFromUser("superAdmin", "authTopic10");
+
+        // delete topic admin created
+        LoginLogoutClient loginLogoutClientForUser = new LoginLogoutClient(this.automationContext);
+        String sessionCookie = loginLogoutClientForUser.login();
+        TopicAdminClient topicAdminClient =
+                new TopicAdminClient(this.backendURL, sessionCookie);
+        topicAdminClient.removeTopic("authTopic10");
+
+        // user1 subscribe with same topic name where previously created, unsubscribe and deleted by admin
+        this.createPublishSubscribeAndUnsubscribeFromUser("authUser1", "authTopic10");
+    }
+
+    /**
      * User1 is in Role1 where there is topic  creating permissions.
      * User5 is in Role2 where there are no create topic  permissions.
      * User1 creates a topic  and then publishes and consumes messages.
@@ -545,6 +578,63 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
                                       "failed for user : " + contextUser.getUserNameWithoutDomain());
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message " +
                             "receiving failed for user : " + contextUser.getUserNameWithoutDomain());
+    }
+
+    /**
+     * Runs a test case where a consumer and publisher is created and published with a given user
+     * key from the automation.xml. Subscriber get unsubscribe after receiving expected message count.
+     *
+     * @param userKey         The user key mentioned in the automation.xml for a specific user.
+     * @param destinationName The destination name of the topic.
+     * @throws XPathExpressionException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException
+     * @throws IOException
+     * @throws javax.jms.JMSException
+     * @throws org.wso2.mb.integration.common.clients.exceptions.AndesClientException
+     * @throws javax.naming.NamingException
+     */
+    private void createPublishSubscribeAndUnsubscribeFromUser(String userKey, String destinationName)
+            throws XPathExpressionException, AndesClientConfigurationException, IOException,
+            JMSException, AndesClientException, NamingException {
+        long sendCount = 10L;
+        long expectedCount = 10L;
+
+        AutomationContext userAutomationContext =
+                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY, userKey);
+        User contextUser = userAutomationContext.getContextTenant().getContextUser();
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration
+                consumerConfig =
+                new AndesJMSConsumerClientConfiguration( getAMQPPort(),
+                        contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                        ExchangeType.TOPIC, destinationName);
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setUnSubscribeAfterEachMessageCount(expectedCount);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration( getAMQPPort(),
+                        contextUser.getUserNameWithoutDomain(), contextUser.getPassword(),
+                        ExchangeType.TOPIC, destinationName);
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils
+                .waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending " +
+                "failed for user : " + contextUser.getUserNameWithoutDomain());
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message " +
+                "receiving failed for user : " + contextUser.getUserNameWithoutDomain());
     }
 
     /**
