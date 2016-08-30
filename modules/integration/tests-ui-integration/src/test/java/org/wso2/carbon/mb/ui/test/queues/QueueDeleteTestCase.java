@@ -79,9 +79,9 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
+        AndesClientUtils.sleepForInterval(3000);
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
 
-        AndesClientUtils.sleepForInterval(3000);
 
         Assert.assertEquals(queuesBrowsePage.deleteQueue(qName), true);
 
@@ -124,7 +124,7 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         // Publishing messages
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
-
+        AndesClientUtils.sleepForInterval(3000);
         // Delete queue
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
         Assert.assertEquals(queuesBrowsePage.deleteQueue(queueName), true);
