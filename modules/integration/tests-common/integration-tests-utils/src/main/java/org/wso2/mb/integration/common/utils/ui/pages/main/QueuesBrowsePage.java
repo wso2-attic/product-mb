@@ -18,15 +18,15 @@
 
 package org.wso2.mb.integration.common.utils.ui.pages.main;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * This page represents 'Queue-> Browse' page in MB management console.
@@ -73,12 +73,25 @@ public class QueuesBrowsePage {
         deleteButton.click();
 
         // handle delete confirmation popup
+        String confirmation = driver.getWindowHandle();
+        driver.switchTo().window(confirmation);
+
+        // find yes button in confirmation dialog and click it
+        List<WebElement> confirmationButtonList = driver.findElements(By.tagName("button"));
+        for (WebElement yesButton : confirmationButtonList) {
+            if (yesButton.getText().compareToIgnoreCase("yes") == 0) {
+                yesButton.click();
+                break;
+            }
+        }
+
+        // handle delete dialog popup
         String dialog = driver.getWindowHandle();
         driver.switchTo().window(dialog);
 
         // find ok button in popup dialog and click it
-        List<WebElement> buttonList = driver.findElements(By.tagName("button"));
-        for (WebElement okButton : buttonList) {
+        List<WebElement> dialogButtonList = driver.findElements(By.tagName("button"));
+        for (WebElement okButton : dialogButtonList) {
             if (okButton.getText().compareToIgnoreCase("ok") == 0) {
                 okButton.click();
                 isSuccessful = !isQueuePresent(queueName);  // if Queue present failure
