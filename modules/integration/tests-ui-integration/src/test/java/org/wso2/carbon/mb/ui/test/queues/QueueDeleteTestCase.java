@@ -27,7 +27,6 @@ import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
-import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationUiBaseTest;
 import org.wso2.mb.integration.common.utils.ui.pages.login.LoginPage;
@@ -79,11 +78,12 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
 
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
         Assert.assertEquals(queueAddPage.addQueue(qName), true);
-        AndesClientUtils.sleepForInterval(3000);
+
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
+        queuesBrowsePage.deleteQueue(qName);
+        queuesBrowsePage = homePage.getQueuesBrowsePage();
 
-
-        Assert.assertEquals(queuesBrowsePage.deleteQueue(qName), true);
+        Assert.assertTrue(!queuesBrowsePage.isQueuePresent(qName));
 
         logout();
     }
@@ -101,7 +101,7 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
      * @throws AndesClientException
      * @throws AndesClientConfigurationException
      */
-    @Test(groups = {"wso2.mb", "queue"})
+    @Test()
     public void performPublishDeleteCheck() throws XPathExpressionException, IOException, JMSException,
             NamingException, AndesClientException, AndesClientConfigurationException {
         String queueName = "Delete-queue-ui";
@@ -124,14 +124,13 @@ public class QueueDeleteTestCase extends MBIntegrationUiBaseTest {
         // Publishing messages
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
-        AndesClientUtils.sleepForInterval(3000);
+
         // Delete queue
         QueuesBrowsePage queuesBrowsePage = homePage.getQueuesBrowsePage();
-        Assert.assertEquals(queuesBrowsePage.deleteQueue(queueName), true);
+        queuesBrowsePage.deleteQueue(queueName);
+        queuesBrowsePage = homePage.getQueuesBrowsePage();
 
-        // Check if queue is deleted
-        queuesBrowsePage.isQueuePresent(queueName);
-
+        Assert.assertTrue(!queuesBrowsePage.isQueuePresent(queueName));
         // Logout
         logout();
     }
