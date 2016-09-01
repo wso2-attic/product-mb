@@ -25,6 +25,7 @@
     <test name="tests-transports" preserve-order="true" parallel="false">
 
         <classes>
+            <class name="org.wso2.mb.platform.tests.clustering.MessageExpirationTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>
             <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>

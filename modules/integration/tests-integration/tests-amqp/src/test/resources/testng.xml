@@ -25,6 +25,7 @@
     <test name="tests-amqp-sequential" preserve-order="true" parallel="false">
         <classes>
             <!-- Test with server restarts and test with @BeforeMethod or @AfterMethod code are added here -->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.DLCMessageExpiryTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.RedeliveryDelayTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.PerMessageAcknowledgementsTestCase"/>
