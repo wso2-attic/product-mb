@@ -229,7 +229,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
         DeliverableAndesMetadata messageMetadata = protocolMessage.getMessage();
 
         if (messageMetadata.isRetain()) {
-            recordRetainedMessage(messageMetadata.getMessageID());
+            recordRetainedMessage(messageMetadata.getMessageId());
         }
 
         MqttMessageContext mqttMessageContext = new MqttMessageContext(messageMetadata, content);
@@ -238,7 +238,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
 
             //TODO:review - instead of getSubscribedDestination() used message destination
                /* mqqtServerChannel.distributeMessageToSubscriber(wildcardDestination, message,
-                        messageMetadata.getMessageID(), messageMetadata.getQosLevel(),
+                        messageMetadata.getMessageId(), messageMetadata.getQosLevel(),
                         messageMetadata.isPersistent(), getMqttSubscriptionID(),
                         getSubscriberQOS(), messageMetadata);*/
             PublishMessage pubMessage = new PublishMessage();
@@ -257,7 +257,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
                     QOSLevel.AT_MOST_ONCE == mqttMessageContext.getQosLevel()) {
                 //We generate a mock acknowledgment to inform andes-core to release the persistent message
                 //For QOS 0 publishes the client will not send the ack
-                messageAck(messageMetadata.getMessageID(), getChannelID());
+                messageAck(messageMetadata.getMessageId(), getChannelID());
                 //Since it would be a QoS 0 message we do not worry to track state, since we do not expect an ack
                 pubMessage.setMessageID(1);
                 pubMessage.setQos(AbstractMessage.QOSType.MOST_ONE);
@@ -268,7 +268,7 @@ public class MqttLocalSubscription implements OutboundSubscription {
                 MessageDeliveryTagMap<MessageDeliveryTag, Long> messageDeliveryTagGenerator = channel
                         .getMessageDeliveryTagMap();
                 MessageDeliveryTag messageDeliveryTag = messageDeliveryTagGenerator.
-                        getMessageDeliveryTag(messageMetadata.getMessageID());
+                        getMessageDeliveryTag(messageMetadata.getMessageId());
                 //We also need to add the message meta information to the delivery tag
                 messageDeliveryTag.setMessageMetaInformation(messageMetadata);
                 pubMessage.setMessageID(messageDeliveryTag.getMessageId());
