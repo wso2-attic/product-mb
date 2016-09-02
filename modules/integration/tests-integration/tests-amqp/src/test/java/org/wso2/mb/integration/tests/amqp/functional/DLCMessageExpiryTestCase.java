@@ -18,9 +18,11 @@ package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
+import org.wso2.andes.server.queue.DLCQueueUtils;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
@@ -174,6 +176,20 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
         AndesAdminClient andesAdminClient = new AndesAdminClient(backendURL, sessionCookie);
         long messageCount = andesAdminClient.getDlcQueue().getMessageCount();
         return messageCount;
+    }
+
+    /**
+     * Revert changed configurations
+     *
+     * @throws AutomationUtilException
+     * @throws IOException
+     */
+    @AfterClass()
+    public void cleanup() throws AutomationUtilException, IOException {
+
+        //Revert back to original configuration.
+        super.serverManager.restoreToLastConfiguration(true);
+
     }
 
 
