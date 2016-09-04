@@ -186,8 +186,7 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
 
         //testing if DLC queue is created
-        Assert.assertNotNull(admin.getQueueByName(DLCQueueUtils.identifyTenantInformationAndGenerateDLCString
-                (TEST_QUEUE_PURGE)), "DLC queue not created");
+        Assert.assertNotNull(admin.getDlcQueue(), "DLC queue not created");
 
         //Testing if 100 messages are moved to DLC
         Message[] messagesInDLC = admin.browseQueue(DLCQueueUtils.identifyTenantInformationAndGenerateDLCString
