@@ -95,7 +95,7 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
             AndesClientException, IOException, InterruptedException, DataAccessUtilException,
             CloneNotSupportedException {
 
-        long sendCount = 4000L;
+        long sendCount = 1000L;
         String queueName = "clusterExpiryCheckQueue1";
 
         String randomInstanceKey = getRandomMBInstance();
@@ -121,14 +121,8 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
 
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
-        //Make sure the periodic task should run in every 1 minute.
-        //2 minute wait to make sure the expired messages got deleted from db by periodic expiry message deletion task
-        Thread.sleep(120000);
-
-        //Evaluate messages left in database
-        //3000 messages should be there as it is defined as the safe zone region
-        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 3000, "Make sure the periodic deletion"
-                + "task interval in broker.xml is 60 seconds");
+        //2 seconds wait for all messages got expired
+        Thread.sleep(2000);
 
         //Creating a consumer
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
@@ -141,12 +135,11 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
         //since all the messages get expired in 1 sec and caught at Message flusher. So there should not be any messages
         // to deliver
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), 0,"Message receiving failed.");
-        //2 minute sleep for pre delivery expiry message deletion task  to delete the messages captured at flusher
-        Thread.sleep(120000);
+        //30 seconds sleep for pre delivery expiry message deletion task  to delete the messages captured at flusher
+        Thread.sleep(30000);
 
         //Evaluate messages left in database
-        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Make sure the pre-delivery deletion"
-                + "task interval in broker.xml is 60 seconds");
+        Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Expired message deletion failed.");
 
     }
 
