@@ -75,7 +75,7 @@ public class CarbonTestServerManager extends TestServerManager {
      * @throws IOException
      * @throws AutomationFrameworkException
      */
-    public String startServer() throws IOException, AutomationFrameworkException {
+    public String startServer() throws IOException, AutomationFrameworkException, XPathExpressionException {
         carbonHome = super.startServer();
         return carbonHome;
     }
