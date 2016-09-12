@@ -17,12 +17,12 @@
 package org.wso2.mb.integration.tests.amqp.functional;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
-import org.wso2.andes.server.queue.DLCQueueUtils;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
@@ -36,6 +36,7 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
@@ -60,6 +61,11 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
      * Test queue name
      */
     private static final String TEST_QUEUE_DLC_EXPIRY = "DLCTestQueue";
+
+    /**
+     * The default andes acknowledgement wait timeout.
+     */
+    private String defaultAndesAckWaitTimeOut = null;
 
      /**
      * Initializes test case
@@ -104,6 +110,12 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
         configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_AMQP_MAXIMUM_REDELIVERY_ATTEMPTS, "1");
         
         configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
+
+        // Get current "AndesAckWaitTimeOut" system property.
+        defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+
+        // Setting system property "AndesAckWaitTimeOut" for andes
+        System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "3000");
     }
 
     /**
@@ -186,6 +198,12 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
      */
     @AfterClass()
     public void cleanup() throws AutomationUtilException, IOException {
+
+        if (StringUtils.isBlank(defaultAndesAckWaitTimeOut)) {
+            System.clearProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
+        } else {
+            System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, defaultAndesAckWaitTimeOut);
+        }
 
         //Revert back to original configuration.
         super.serverManager.restoreToLastConfiguration(true);
