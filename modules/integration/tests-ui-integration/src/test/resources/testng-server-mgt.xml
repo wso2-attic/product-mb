@@ -30,7 +30,7 @@
     <test name="InitializedAndSetupServer" preserve-order="true" parallel="false">
         <classes>
             <class name="org.wso2.carbon.mb.ui.test.login.LoginTestCase"/>
-            <!--<class name="org.wso2.carbon.mb.ui.test.subscriptions.SubscriptionDeleteTestCase"/>-->
+            <class name="org.wso2.carbon.mb.ui.test.subscriptions.SubscriptionDeleteTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.BrowseQueueContentTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCQueueTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.dlc.DLCDurableTopicTestCase"/>
@@ -48,7 +48,7 @@
             <class name="org.wso2.carbon.mb.ui.test.permissions.QueuePermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.permissions.TopicPermissionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.queues.QueueDeleteWithSubscriber"/>
-            <!--<class name="org.wso2.carbon.mb.ui.test.topic.SharedDurableSubscriptionTestCase"/>-->
+            <class name="org.wso2.carbon.mb.ui.test.topic.SharedDurableSubscriptionTestCase"/>
             <class name="org.wso2.carbon.mb.ui.test.topic.TopicTenantTestCase"/>
         </classes>
     </test>
