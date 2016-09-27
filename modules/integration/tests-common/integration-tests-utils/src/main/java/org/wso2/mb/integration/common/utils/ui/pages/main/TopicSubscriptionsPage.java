@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import org.wso2.mb.integration.common.utils.ui.UIElementMapper;
 import org.wso2.mb.integration.common.utils.ui.pages.MBPage;
 
@@ -55,15 +56,51 @@ public class TopicSubscriptionsPage extends MBPage {
      * @return The number of subscriptions.
      */
     public int getDurableActiveSubscriptionsCount() {
+        int numberOfSubscribers = 0;
         List<WebElement> tempDurableActiveTables = driver.findElements(By.xpath(UIElementMapper.getInstance()
-                                        .getElement("mb.subscriptions.topics.page.durable.active.table.xpath")));
+                .getElement("mb.subscriptions.topics.page.durable.active.table.xpath")));
         // Checks whether the table exists.
         if (0 < tempDurableActiveTables.size()) {
-            return tempDurableActiveTables.get(0).findElement(By.tagName("tbody")).findElements(By.tagName("tr")).size();
-        } else {
-            log.warn("Durable Active Subscriptions table does not exists.");
-            return 0;
+            for (WebElement tempDurableActiveTable : tempDurableActiveTables) {
+                if ("table".equals(tempDurableActiveTable.getTagName())) {
+                    numberOfSubscribers = tempDurableActiveTable.findElement(By.tagName("tbody")).findElements(By
+                            .tagName("tr")).size();
+
+                }
+            }
+
         }
+
+        if (numberOfSubscribers == 0) {
+            log.warn("Durable Active Subscriptions table does not exists.");
+        }
+        return numberOfSubscribers;
+    }
+
+    /**
+     * Gets the number of temporary active subscriptions.
+     *
+     * @return The number of subscriptions.
+     */
+    public int getNonDurableSubscriptionsCount() {
+        int numberOfSubscribers = 0;
+        List<WebElement> tempNonDurableActiveTables = driver.findElements(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.subscriptions.topics.page.temporary.table.xpath")));
+        // Checks whether the table exists.
+        if (0 < tempNonDurableActiveTables.size()) {
+            for (WebElement tempNonDurableActiveTable : tempNonDurableActiveTables) {
+                if ("table".equals(tempNonDurableActiveTable.getTagName())) {
+                    numberOfSubscribers = tempNonDurableActiveTable.findElement(By.tagName("tbody")).findElements(By
+                            .tagName("tr")).size();
+                }
+            }
+
+        }
+
+        if (numberOfSubscribers == 0) {
+            log.warn("Durable Active Subscriptions table does not exists.");
+        }
+        return numberOfSubscribers;
     }
 
     /**
@@ -72,15 +109,24 @@ public class TopicSubscriptionsPage extends MBPage {
      * @return The number of subscriptions.
      */
     public int getDurableInActiveSubscriptionsCount() {
+        int numberOfSubscribers = 0;
         List<WebElement> tempDurableInActiveTables = driver.findElements(By.xpath(UIElementMapper.getInstance()
                 .getElement("mb.subscriptions.topics.page.durable.inactive.table.xpath")));
         // Checks whether the table exists.
         if (0 < tempDurableInActiveTables.size()) {
-            return tempDurableInActiveTables.get(0).findElement(By.tagName("tbody")).findElements(By.tagName("tr")).size();
-        } else {
-            log.warn("Durable In-Active Subscriptions table does not exists.");
-            return 0;
+            for (WebElement tempDurableInActiveTable : tempDurableInActiveTables) {
+                if ("table".equals(tempDurableInActiveTable.getTagName())) {
+                    numberOfSubscribers = tempDurableInActiveTable.findElement(By.tagName("tbody")).findElements(By
+                            .tagName("tr")).size();
+                }
+            }
+
         }
+
+        if (numberOfSubscribers == 0) {
+            log.warn("Durable In-Active Subscriptions table does not exists.");
+        }
+        return numberOfSubscribers;
     }
 
     /**
@@ -155,4 +201,57 @@ public class TopicSubscriptionsPage extends MBPage {
 
         return queueSubscriptionSuccessfullyRemoved;
     }
+
+    /**
+     * Search topic subscriptions according to the search criteria
+     * @param queueNamePattern string pattern of the topic name (* for all)
+     * @param identifierPattern string pattern of the identifier (* for all)
+     * @param ownNodeIdIndex index of the node Id in the dropdown the subscriptions belong to
+     * @return number of subscriptions listed under search result
+     */
+    public void searchTopicSubscriptions(String queueNamePattern, String identifierPattern, int
+            ownNodeIdIndex, boolean isNameExactMatch, boolean isIdentifierExactMatch) {
+
+        WebElement queueNamePatternField = driver.findElement(By.name(UIElementMapper.getInstance()
+                .getElement("mb.search.topic.name.pattern.tag.name")));
+        queueNamePatternField.clear();
+        queueNamePatternField.sendKeys(queueNamePattern);
+
+        WebElement queueIdentifierPatternField = driver.findElement(By.name(UIElementMapper.getInstance()
+                .getElement("mb.search.topic.identifier.pattern.tag.name")));
+        queueIdentifierPatternField.clear();
+        queueIdentifierPatternField.sendKeys(identifierPattern);
+
+        //Check/ uncheck the Topic Name exact match check box
+        WebElement topicNameExactMatchField = driver.findElement(
+                By.name(UIElementMapper.getInstance().getElement("mb.search.topic.name.exactmatch.tag.name")));
+
+        if (isNameExactMatch && !topicNameExactMatchField.isSelected()) {
+            topicNameExactMatchField.click();
+        }
+        if (!isNameExactMatch && topicNameExactMatchField.isSelected()) {
+            topicNameExactMatchField.click();
+        }
+
+        //Check/ uncheck the Topic Identifier exact match check box
+        WebElement topicIdentifierExactMatchField = driver.findElement(
+                By.name(UIElementMapper.getInstance().getElement("mb.search.topic.identifier.exactmatch.tag.name")));
+
+        if (isIdentifierExactMatch && !topicIdentifierExactMatchField.isSelected()) {
+            topicIdentifierExactMatchField.click();
+        }
+        if (!isIdentifierExactMatch && topicIdentifierExactMatchField.isSelected()) {
+            topicIdentifierExactMatchField.click();
+        }
+
+        Select ownNodeIdDropdown = new Select(driver.findElement(By.id(UIElementMapper.getInstance()
+                .getElement("mb.search.topic.own.node.id.element.id"))));
+        ownNodeIdDropdown.selectByIndex(ownNodeIdIndex);
+
+        driver.findElement(By.xpath(UIElementMapper.getInstance()
+                .getElement("mb.search.topic.search.button.xpath"))).click();
+
+    }
+
+
 }
