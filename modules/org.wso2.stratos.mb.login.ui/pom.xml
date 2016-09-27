@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.mb</groupId>
         <artifactId>mb-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
+        <version>3.2.0-ALPHA</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
