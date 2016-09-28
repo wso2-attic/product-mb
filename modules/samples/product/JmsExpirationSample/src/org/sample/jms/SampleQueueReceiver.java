@@ -86,7 +86,8 @@ public class SampleQueueReceiver {
     }
 
     /**
-     * Close the connections at the end of operation
+     * Close the connections at the end of operation.
+     *
      * @param consumer The message consumer object of the subscriber.
      * @throws JMSException
      */

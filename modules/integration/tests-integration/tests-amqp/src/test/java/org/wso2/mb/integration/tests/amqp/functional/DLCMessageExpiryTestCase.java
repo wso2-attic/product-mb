@@ -98,22 +98,15 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
         String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
                 File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
-
         configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_EXPIRE_MESSAGES_IN_DLC, "true");
-
         configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_PRE_DELIVERY_EXPIRY_DELETION_INTERVAL,
                 "60");
-
         configurationEditor.updateProperty(AndesConfiguration
                 .PERFORMANCE_TUNING_PERIODIC_EXPIRY_MESSAGE_DELETION_INTERVAL, "60");
-
         configurationEditor.updateProperty(AndesConfiguration.TRANSPORTS_AMQP_MAXIMUM_REDELIVERY_ATTEMPTS, "1");
-        
         configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
-
         // Get current "AndesAckWaitTimeOut" system property.
         defaultAndesAckWaitTimeOut = System.getProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY);
-
         // Setting system property "AndesAckWaitTimeOut" for andes
         System.setProperty(AndesClientConstants.ANDES_ACK_WAIT_TIMEOUT_PROPERTY, "3000");
     }
