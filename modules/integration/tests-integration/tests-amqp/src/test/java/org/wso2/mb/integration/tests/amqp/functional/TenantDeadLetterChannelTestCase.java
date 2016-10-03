@@ -113,7 +113,7 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
 
 
     /**
-     * This test case will test functionality of tenant dead letter channel.
+     * This test case will test functionality of tenant dead letter channel in a queue scenario.
      * 1. Publish 1 queue message to tenant.
      * 2. Add consumer for the queue message.
      * 3. Consumer do not acknowledge for the queue message.
@@ -134,8 +134,8 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
      * @throws LogoutAuthenticationExceptionException
      * @throws XMLStreamException
      */
-    @Test(groups = "wso2.mb", description = "Tenant dead letter channel test case")
-    public void performTenantDeadLetterChannelTestCase()
+    @Test(groups = "wso2.mb", description = "Tenant dead letter channel test case for queues")
+    public void performTenantDeadLetterChannelQueueTestCase()
             throws JMSException, IOException, NamingException, AndesClientConfigurationException,
             AndesClientException, LoginAuthenticationExceptionException,
             XPathExpressionException,
@@ -227,5 +227,109 @@ public class TenantDeadLetterChannelTestCase extends MBIntegrationBaseTest {
                             "failure on super tenant dlc queue path");
     }
 
+    /**
+     * This test case will test the functionality of messages being moved to tenant dead letter channel in a durable
+     * topic subscription scenario.
+     * 1. Add a durable subscription for a topic in tenant.
+     * 1. Publish 1 message to the topic.
+     * 3. Consumer do not acknowledge for the message.
+     * 4. Message will put into tenant dlc after retry sending queue message 10 times.
+     * 5. Number of messages in tenant dlc should be equal to 1.
+     * 6. Number of messages in super tenant dlc should be equal to 0.
+     *
+     * @throws JMSException
+     * @throws IOException
+     * @throws NamingException
+     * @throws AndesClientConfigurationException
+     * @throws AndesClientException
+     * @throws LoginAuthenticationExceptionException
+     * @throws XPathExpressionException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     * @throws URISyntaxException
+     * @throws SAXException
+     * @throws LogoutAuthenticationExceptionException
+     * @throws XMLStreamException
+     */
+    @Test(groups = "wso2.mb", description = "Tenant dead letter channel test case for durable subscriptions")
+    public void performTenantDeadLetterChannelDurableTopicSubscriptionTestCase()
+            throws JMSException, IOException, NamingException, AndesClientConfigurationException,
+            AndesClientException, LoginAuthenticationExceptionException,
+            XPathExpressionException,
+            AndesAdminServiceBrokerManagerAdminException, URISyntaxException, SAXException,
+            LogoutAuthenticationExceptionException, XMLStreamException, AutomationUtilException {
+
+        int sendMessageCount = 1;
+        String topicName = "dlctenant1.com/tenantTopic";
+        String subscriptionId = "dlctenant1.com/tenantSub";
+
+        // Get the automation context for the dlctenant1
+        AutomationContext tenantContext = new AutomationContext("MB", "mb001", "dlctenant1", "dlctenantuser1");
+
+        LoginLogoutClient loginLogoutClient = new LoginLogoutClient(tenantContext);
+        String sessionCookie = loginLogoutClient.login();
+        AndesAdminClient andesClient = new AndesAdminClient(super.backendURL, sessionCookie);
+        loginLogoutClient.logout();
+
+        // purge if there are any dlc messages in dlctenant1 user
+        andesClient.purgeQueue(tenantDlcQueueName);
+
+        // Get the automation context for the superTenant
+        AutomationContext superTenantContext =
+                new AutomationContext("MB", "mb001", FrameworkConstants.SUPER_TENANT_KEY,
+                        FrameworkConstants.SUPER_TENANT_ADMIN);
+
+        LoginLogoutClient loginLogoutSuperTenant = new LoginLogoutClient(superTenantContext);
+        String SuperTenantSessionCookie = loginLogoutSuperTenant.login();
+        AndesAdminClient andesAdminClient = new AndesAdminClient(super.backendURL, SuperTenantSessionCookie);
+        loginLogoutSuperTenant.logout();
+
+        // purge if there are any dlc messages in super tenant admin
+        andesClient.purgeQueue(superTenantDlcQueueName);
+
+
+        // Create a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), "dlctenantuser1!dlctenant1.com",
+                        "dlctenantuser1", ExchangeType.TOPIC, topicName);
+        // Add manual client acknowledgement in configuration
+        consumerConfig.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
+        consumerConfig.setDurable(true, subscriptionId);
+        consumerConfig.setSubscriptionID(subscriptionId);
+        // Acknowledge a message only after 200 messages are received
+        consumerConfig.setAcknowledgeAfterEachMessageCount(200L);
+        consumerConfig.setPrintsPerMessageCount(sendMessageCount);
+        consumerConfig.setAsync(false);
+
+        // Create consumer client with given consumerConfig
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        // Start consumer client
+        consumerClient.startClient();
+
+        // Create a publisher client configuration
+        AndesJMSPublisherClientConfiguration tenantPublisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), "dlctenantuser1!dlctenant1.com",
+                        "dlctenantuser1", ExchangeType.TOPIC, topicName);
+        tenantPublisherConfig.setNumberOfMessagesToSend(sendMessageCount);
+        tenantPublisherConfig.setPrintsPerMessageCount(sendMessageCount);
+
+        // Create a publisher client with given configuration
+        AndesClient tenantPublisherClient = new AndesClient(tenantPublisherConfig, true);
+        // Start publisher client
+        tenantPublisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Get tenant's dlc queue
+        Queue tenantUserDlcQueue = andesClient.getDlcQueue();
+
+        // Get super tenant dlc queue
+        Queue superAdminDlcQueue = andesAdminClient.getDlcQueue();
+
+        // Evaluating
+        Assert.assertEquals(tenantUserDlcQueue.getMessageCount(), sendMessageCount,
+                "failure on tenant dlc durable topic subscription path");
+        Assert.assertEquals(superAdminDlcQueue.getMessageCount(), 0,
+                "failure on super tenant dlc durable topic subscription path");
+    }
 
 }
