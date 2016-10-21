@@ -71,7 +71,6 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
         super.initAndesAdminClients();
     }
 
-
     /**
      * Publish 4000 messages when there is no subscription. Default safe slot buffer count is 3 and slot window size
      * is 1000. So 3000 (3*1000) messages should not be interpreted by the periodic deletion task as those can be
@@ -94,36 +93,28 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
             throws XPathExpressionException, AndesClientConfigurationException, NamingException, JMSException,
             AndesClientException, IOException, InterruptedException, DataAccessUtilException,
             CloneNotSupportedException {
-
         long sendCount = 1000L;
         String queueName = "clusterExpiryCheckQueue1";
-
         String randomInstanceKey = getRandomMBInstance();
-
         AutomationContext tempContext = getAutomationContextWithKey(randomInstanceKey);
-
         AndesJMSConsumerClientConfiguration consumerConfig =
                 new AndesJMSConsumerClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
                         ExchangeType.QUEUE, queueName);
-
         //To create the queue, start the subscription and disconnect it.
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-
         AndesJMSPublisherClientConfiguration publisherConfig =
                 new AndesJMSPublisherClientConfiguration(tempContext.getInstance().getHosts().get("default"),
                         Integer.parseInt(tempContext.getInstance().getPorts().get("amqp")),
                         ExchangeType.QUEUE, queueName);
         publisherConfig.setNumberOfMessagesToSend(sendCount);
         publisherConfig.setJMSMessageExpiryTime(1000);
-
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
         //2 seconds wait for all messages got expired
         Thread.sleep(2000);
-
         //Creating a consumer
         AndesJMSConsumerClientConfiguration consumerConfig2 = consumerConfig.clone();
         HostAndPort randomAMQPBrokerAddress = getRandomAMQPBrokerAddress();
@@ -131,16 +122,12 @@ public class MessageExpirationTestCase extends MBPlatformBaseTest{
         consumerConfig2.setPort(randomAMQPBrokerAddress.getPort());
         AndesClient consumerClient2 = new AndesClient(consumerConfig2, true);
         consumerClient2.startClient();
-
         //since all the messages get expired in 1 sec and caught at Message flusher. So there should not be any messages
         // to deliver
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), 0,"Message receiving failed.");
         //30 seconds sleep for pre delivery expiry message deletion task  to delete the messages captured at flusher
         Thread.sleep(30000);
-
         //Evaluate messages left in database
         Assert.assertEquals(dataAccessUtil.getMessageCountForQueue(queueName), 0, "Expired message deletion failed.");
-
     }
-
 }
