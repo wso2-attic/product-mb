@@ -237,7 +237,7 @@ public class AndesJMSConsumer extends AndesJMSBase
         /**
          * Using a separate thread as stopping the consumer on "onMessage" thread is not allowed.
          */
-        new Thread(new Runnable() {
+        Thread stopThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (null != connection && null != session && null != receiver) {
@@ -288,7 +288,15 @@ public class AndesJMSConsumer extends AndesJMSBase
                     }
                 }
             }
-        }).start();
+        });
+
+        stopThread.start();
+
+        try {
+            stopThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Error waiting for subscriber to stop", e);
+        }
     }
 
     public void stopClientSync(){
@@ -351,7 +359,7 @@ public class AndesJMSConsumer extends AndesJMSBase
         /**
          * Using a separate thread as un-subscribing the consumer on "onMessage" thread is not allowed.
          */
-        new Thread(new Runnable() {
+        Thread unsubscribeThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (null != connection && null != session && null != receiver) {
@@ -374,7 +382,15 @@ public class AndesJMSConsumer extends AndesJMSBase
                     throw new RuntimeException("The connection, session and message receiver is not assigned.", andesClientException);
                 }
             }
-        }).start();
+        });
+
+        unsubscribeThread.start();
+
+        try {
+            unsubscribeThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Error waiting for consumer to unsubscribe", e);
+        }
     }
 
     /**
