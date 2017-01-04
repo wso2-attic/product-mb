@@ -93,6 +93,11 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
 
+            <!-- Distributed Transactions -->
+
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.RollbackTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.CommitTestCase" />
+
             <!-- load test cases-->
 
             <!-- Queue -->
