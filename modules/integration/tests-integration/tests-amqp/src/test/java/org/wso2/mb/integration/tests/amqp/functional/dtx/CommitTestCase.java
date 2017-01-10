@@ -20,7 +20,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
-import org.wso2.mb.integration.common.utils.TestXidImpl;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
 import javax.jms.Connection;
@@ -84,7 +83,7 @@ public class CommitTestCase extends MBIntegrationBaseTest {
         session.createQueue(queueName);
         MessageProducer producer = session.createProducer(xaTestQueue);
 
-        Xid xid = new TestXidImpl(100, new byte[] { 0x01 }, new byte[] { 0x04 });
+        Xid xid = JMSClientHelper.getNewXid();
 
         xaResource.start(xid, XAResource.TMNOFLAGS);
         producer.send(session.createTextMessage("Test 1"));
@@ -153,7 +152,7 @@ public class CommitTestCase extends MBIntegrationBaseTest {
 
         MessageConsumer xaConsumer = session.createConsumer(xaTestQueue);
 
-        Xid xid = new TestXidImpl(100, new byte[] { 0x01 }, new byte[] { 0x05 });
+        Xid xid = JMSClientHelper.getNewXid();
 
         xaResource.start(xid, XAResource.TMNOFLAGS);
         Message receivedMessage = xaConsumer.receive(5000);
