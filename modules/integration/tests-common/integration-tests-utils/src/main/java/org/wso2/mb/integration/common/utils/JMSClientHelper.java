@@ -15,10 +15,14 @@
 
 package org.wso2.mb.integration.common.utils;
 
+import com.google.common.primitives.Longs;
+
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.xa.Xid;
 
 /**
  * Util class with common helper methods when writing client code
@@ -33,6 +37,17 @@ public class JMSClientHelper {
      * Topic connection factory name used
      */
     static final String TOPIC_CONNECTION_FACTORY = "andesTopicConnectionfactory";
+
+    public static AtomicLong GLOBAL_ID_GENERATOR =  new AtomicLong();
+
+    /**
+     * Return a different Xid each time this method is invoked
+     *
+     * @return Xid
+     */
+    public static Xid getNewXid() {
+        return new TestXidImpl(100, Longs.toByteArray(GLOBAL_ID_GENERATOR.incrementAndGet()), new byte[] { 0x01 });
+    }
 
     public static InitialContextBuilder createInitialContextBuilder(String username, String password, String brokerHost,
             int brokerPort) {
