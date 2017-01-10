@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,14 +41,14 @@ import javax.transaction.xa.Xid;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * Test prepare->rollback scenarios with message publishing and acking
+ * Test dtx.start related error scenarios
  */
-public class RollbackTestCase extends MBIntegrationBaseTest {
+public class DtxStartTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
      *
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if the test initialization fails
      */
     @BeforeClass
     public void prepare() throws XPathExpressionException {
@@ -56,18 +56,18 @@ public class RollbackTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if rolling back a published message works correctly.Steps are,
-     *    1. Using a distributed transaction a message is published to a queue and rolled back
-     *    2. Subscribe to the published queue and see if any message is received.
+     * Tests if joining a new XID will throw an exception
      */
-    @Test(groups = { "wso2.mb", "dtx" })
-    public void performClientQueuePublishTestCase()
+    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
+          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
+    public void joinANonExistingDtxBranch()
             throws NamingException, JMSException, XAException, XPathExpressionException {
         String queueName = "RollbackTestCasePerformClientQueuePublishTestCase";
 
-        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
-                getAMQPPort())
-                                                       .withQueue(queueName).build();
+        InitialContext initialContext = JMSClientHelper
+                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
+                .withQueue(queueName)
+                .build();
 
         // Publish to queue and rollback
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
@@ -85,7 +85,9 @@ public class RollbackTestCase extends MBIntegrationBaseTest {
 
         Xid xid = JMSClientHelper.getNewXid();
 
-        xaResource.start(xid, XAResource.TMNOFLAGS);
+        xaResource.start(xid, XAResource.TMJOIN);
+
+        // Below this line should not execute
         producer.send(session.createTextMessage("Test 1"));
         xaResource.end(xid, XAResource.TMSUCCESS);
 
@@ -111,32 +113,18 @@ public class RollbackTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if rolling back a message acknowledgement works correctly.Steps are,
-     *    1. Publish a message to a queue
-     *    2. Using a distributed transacted session receive the message and roll back
-     *    3. Subscribe again using a normal session and see if the message is received
+     * Tests if resuming a new XID will throw an exception
      */
-    @Test(groups = { "wso2.mb", "dtx" })
-    public void performClientQueueAcknowledgeTestCase()
+    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
+          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
+    public void resumeANonExistingDtxBranch()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "RollbackTestCasePerformClientQueueAcknowledgeTestCase";
+        String queueName = "RollbackTestCasePerformClientQueuePublishTestCase";
 
-        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
-                getAMQPPort())
-                                                       .withQueue(queueName).build();
-        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
-
-        // Publish message to queue
-        ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
-        Connection queueConnection = queueConnectionFactory.createConnection();
-        Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        queueSession.createQueue(queueName);
-        MessageProducer messageProducer = queueSession.createProducer(xaTestQueue);
-
-        messageProducer.send(queueSession.createTextMessage("Test message"));
-
-        messageProducer.close();
+        InitialContext initialContext = JMSClientHelper
+                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
+                .withQueue(queueName)
+                .build();
 
         // Publish to queue and rollback
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
@@ -148,15 +136,17 @@ public class RollbackTestCase extends MBIntegrationBaseTest {
         XAResource xaResource = xaSession.getXAResource();
         Session session = xaSession.getSession();
 
-        MessageConsumer xaConsumer = session.createConsumer(xaTestQueue);
+        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
+        session.createQueue(queueName);
+        MessageProducer producer = session.createProducer(xaTestQueue);
 
         Xid xid = JMSClientHelper.getNewXid();
 
-        xaResource.start(xid, XAResource.TMNOFLAGS);
-        Message receivedMessage = xaConsumer.receive(5000);
-        xaResource.end(xid, XAResource.TMSUCCESS);
+        xaResource.start(xid, XAResource.TMRESUME);
 
-        Assert.assertNotNull(receivedMessage, "No message received");
+        // Below this line should not execute
+        producer.send(session.createTextMessage("Test 1"));
+        xaResource.end(xid, XAResource.TMSUCCESS);
 
         xaResource.prepare(xid);
 
@@ -166,11 +156,83 @@ public class RollbackTestCase extends MBIntegrationBaseTest {
         xaConnection.close();
 
         // subscribe and see if the message is received
+        ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+        Connection queueConnection = queueConnectionFactory.createConnection();
+        Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
 
         // wait 5 seconds
-        Message receivedMessageFromNormalConnection = messageConsumer.receive(5000);
-        Assert.assertNotNull(receivedMessageFromNormalConnection, "No message received. Roll back might have failed");
+        Message receive = messageConsumer.receive(5000);
+        Assert.assertNull(receive, "Message received. Message was not rolled back");
+
+        queueConnection.close();
+    }
+
+    /**
+     * Tests if resuming a new XID will throw an exception
+     */
+    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
+          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
+    public void startAnAlreadyStartedDtxBranch()
+            throws NamingException, JMSException, XAException, XPathExpressionException {
+        String queueName = "RollbackTestCasePerformClientQueuePublishTestCase";
+
+        InitialContext initialContext = JMSClientHelper
+                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
+                .withQueue(queueName)
+                .build();
+
+        // Publish to queue and rollback
+        XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+
+        XAConnection xaConnection = connectionFactory.createXAConnection();
+        XASession xaSession = xaConnection.createXASession();
+
+        XAResource xaResource = xaSession.getXAResource();
+        Session session = xaSession.getSession();
+
+        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
+        session.createQueue(queueName);
+        MessageProducer producer = session.createProducer(xaTestQueue);
+
+        Xid xid = JMSClientHelper.getNewXid();
+
+        xaResource.start(xid, XAResource.TMNOFLAGS);
+
+        //
+        XAConnection xaConnectionDuplicate = connectionFactory.createXAConnection();
+        XASession xaSessionDuplicate = xaConnectionDuplicate.createXASession();
+
+        XAResource xaResourceDuplicate = xaSessionDuplicate.getXAResource();
+        Session sessionDuplicate = xaSessionDuplicate.getSession();
+
+        MessageProducer producerDuplicate = sessionDuplicate.createProducer(xaTestQueue);
+
+        xaResourceDuplicate.start(xid, XAResource.TMNOFLAGS);
+
+        // Below this line should not execute
+        producer.send(session.createTextMessage("Test 1"));
+        xaResource.end(xid, XAResource.TMSUCCESS);
+
+        xaResource.prepare(xid);
+
+        xaResource.rollback(xid);
+
+        session.close();
+        xaConnection.close();
+
+        // subscribe and see if the message is received
+        ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+        Connection queueConnection = queueConnectionFactory.createConnection();
+        Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
+
+        // wait 5 seconds
+        Message receive = messageConsumer.receive(5000);
+        Assert.assertNull(receive, "Message received. Message was not rolled back");
 
         queueConnection.close();
     }
