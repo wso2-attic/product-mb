@@ -101,6 +101,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxEndTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxPrepareTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitTestCase" />
 
             <!-- load test cases-->
 
