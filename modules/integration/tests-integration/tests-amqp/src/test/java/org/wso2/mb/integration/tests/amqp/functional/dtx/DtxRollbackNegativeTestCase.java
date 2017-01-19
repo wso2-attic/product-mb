@@ -36,9 +36,9 @@ import javax.transaction.xa.Xid;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * Test dtx.end related error scenarios
+ * Test dtx.rollback related error scenarios
  */
-public class DtxEndTestCase extends MBIntegrationBaseTest {
+public class DtxRollbackNegativeTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
@@ -51,13 +51,13 @@ public class DtxEndTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if ending DTX branch without starting it throws an exception
+     * Tests if rolling back a DTX branch without starting it throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while ending dtx session.*")
-    public void endDtxBranchWithoutStarting()
+          expectedExceptionsMessageRegExp = ".*Error while rolling back dtx session.*")
+    public void rollbackDtxBranchWithoutStarting()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxEndTestCaseEndDtxBranchWithoutStarting";
+        String queueName = "DtxRollbackTestCaseRollbackDtxBranchWithoutStarting";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -81,12 +81,11 @@ public class DtxEndTestCase extends MBIntegrationBaseTest {
          Xid xid = JMSClientHelper.getNewXid();
 
         // We are not starting the dtx branch
-        // xaResource.start(xid, XAResource.TMJOIN);
+        //  xaResource.start(xid, XAResource.TMNOFLAGS);
+        //  producer.send(session.createTextMessage("Test 1"));
+        //  xaResource.end(xid, XAResource.TMSUCCESS);
 
-        producer.send(session.createTextMessage("Test 1"));
-        xaResource.end(xid, XAResource.TMSUCCESS);
-
-        xaResource.prepare(xid);
+        //  xaResource.prepare(xid);
 
         xaResource.rollback(xid);
 
@@ -95,13 +94,13 @@ public class DtxEndTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if ending a dtx branch started in a different session throws an exception
+     * Tests if rolling back a DTX branch without starting it throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while ending dtx session.*")
-    public void endDtxBranchBelongToADifferentSession()
+          expectedExceptionsMessageRegExp = ".*Error while rolling back dtx session.*")
+    public void rollbackDtxBranchWithoutEnding()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxEndTestCaseEndDtxBranchBelongToADifferentSession";
+        String queueName = "DtxRollbackTestCaseRollbackDtxBranchWithoutEnding";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -124,24 +123,16 @@ public class DtxEndTestCase extends MBIntegrationBaseTest {
 
         Xid xid = JMSClientHelper.getNewXid();
 
-         // We are not starting the dtx branch
-         xaResource.start(xid, XAResource.TMNOFLAGS);
-
-        XAConnection secondXaConnection = connectionFactory.createXAConnection();
-        XASession secondXaSession = secondXaConnection.createXASession();
-
-        XAResource secondXaResource = secondXaSession.getXAResource();
-
-
+        // We are not starting the dtx branch
+        xaResource.start(xid, XAResource.TMNOFLAGS);
         producer.send(session.createTextMessage("Test 1"));
-        secondXaResource.end(xid, XAResource.TMSUCCESS);
+        // xaResource.end(xid, XAResource.TMFAIL);
 
-        xaResource.prepare(xid);
+        // xaResource.prepare(xid);
 
         xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
     }
-
 }
