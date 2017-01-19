@@ -94,14 +94,19 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
 
             <!-- Distributed Transactions -->
+            <!-- Positive test cases -->
 
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.RollbackTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.CommitTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxStartTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxEndTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxPrepareTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackTestCase" />
-            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackPositiveTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitPositiveTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxStartPositiveTestCase" />
+
+            <!-- Negative test cases -->
+
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxStartNegativeTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxEndNegativeTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxPrepareNegativeTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackNegativeTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitNegativeTestCase" />
 
             <!-- load test cases-->
 

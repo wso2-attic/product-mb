@@ -36,9 +36,9 @@ import javax.transaction.xa.Xid;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * Test dtx.commit related error scenarios
+ * Test dtx.prepare related error scenarios
  */
-public class DtxCommitTestCase extends MBIntegrationBaseTest {
+public class DtxPrepareNegativeTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
@@ -51,13 +51,13 @@ public class DtxCommitTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if committing a DTX branch without starting it throws an exception
+     * Tests if preparing a DTX branch without starting it throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while committing dtx session.*")
-    public void commitDtxBranchWithoutStarting()
+          expectedExceptionsMessageRegExp = ".*Error while preparing dtx session.*")
+    public void prepareDtxBranchWithoutStarting()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxCommitTestCaseCommitDtxBranchWithoutStarting";
+        String queueName = "DtxPrepareTestCasePrepareDtxBranchWithoutStarting";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -85,22 +85,21 @@ public class DtxCommitTestCase extends MBIntegrationBaseTest {
         //  producer.send(session.createTextMessage("Test 1"));
         //  xaResource.end(xid, XAResource.TMSUCCESS);
 
-        //  xaResource.prepare(xid);
+        xaResource.prepare(xid);
 
-        xaResource.commit(xid, false);
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
     }
 
     /**
-     * Tests if committing a DTX branch without starting it throws an exception
+     * Tests if preparing a DTX branch after setting fail flag in dtx.end throws an exception
      */
-    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while committing dtx session.*")
-    public void commitDtxBranchWithoutEnding()
+    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class)
+    public void prepareDtxBranchAfterEndFails()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxCommitTestCaseCommitDtxBranchWithoutEnding";
+        String queueName = "DtxPrepareTestCasePrepareDtxBranchAfterEndFails";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -123,69 +122,28 @@ public class DtxCommitTestCase extends MBIntegrationBaseTest {
 
         Xid xid = JMSClientHelper.getNewXid();
 
+        // We are not starting the dtx branch
         xaResource.start(xid, XAResource.TMNOFLAGS);
         producer.send(session.createTextMessage("Test 1"));
-        // xaResource.end(xid, XAResource.TMSUCCESS);
-
-        // xaResource.prepare(xid);
-
-        xaResource.commit(xid, false);
-
-        session.close();
-        xaConnection.close();
-    }
-
-    /**
-     * Tests if committing a prepared branch with onephase throws an exception
-     */
-    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while committing dtx session.*")
-    public void commitDtxBranchWithOnephaseAfterPrepare()
-            throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxCommitTestCaseCmmitDtxBranchWithOnephaseAfterPrepare";
-
-        InitialContext initialContext = JMSClientHelper
-                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
-                .withQueue(queueName)
-                .build();
-
-        // Publish to queue and rollback
-        XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
-
-        XAConnection xaConnection = connectionFactory.createXAConnection();
-        XASession xaSession = xaConnection.createXASession();
-
-        XAResource xaResource = xaSession.getXAResource();
-        Session session = xaSession.getSession();
-
-        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
-        session.createQueue(queueName);
-        MessageProducer producer = session.createProducer(xaTestQueue);
-
-        Xid xid = JMSClientHelper.getNewXid();
-
-        xaResource.start(xid, XAResource.TMNOFLAGS);
-        producer.send(session.createTextMessage("Test 1"));
-        xaResource.end(xid, XAResource.TMSUCCESS);
+        xaResource.end(xid, XAResource.TMFAIL);
 
         xaResource.prepare(xid);
 
-        // one phase should be false
-        xaResource.commit(xid, true);
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
     }
 
+
     /**
-     * Tests if committing a branch without preparing throws an exception
+     * Tests if preparing a DTX branch without starting it throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while committing dtx session.*")
-    public void commitDtxBranchWithoutPrepare()
+          expectedExceptionsMessageRegExp = ".*Error while preparing dtx session.*")
+    public void prepareDtxBranchWithoutEnding()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxCommitTestCaseCommitDtxBranchWithoutEnding";
+        String queueName = "DtxPrepareTestCasePrepareDtxBranchWithoutEnding";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -208,14 +166,14 @@ public class DtxCommitTestCase extends MBIntegrationBaseTest {
 
         Xid xid = JMSClientHelper.getNewXid();
 
+        // We are not starting the dtx branch
         xaResource.start(xid, XAResource.TMNOFLAGS);
         producer.send(session.createTextMessage("Test 1"));
-        xaResource.end(xid, XAResource.TMSUCCESS);
+        // xaResource.end(xid, XAResource.TMFAIL);
 
-        // Should prepare before commit
-        // xaResource.prepare(xid);
+        xaResource.prepare(xid);
 
-        xaResource.commit(xid, false);
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();

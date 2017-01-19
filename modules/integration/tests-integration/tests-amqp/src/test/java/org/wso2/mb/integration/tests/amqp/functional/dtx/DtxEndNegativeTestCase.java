@@ -36,9 +36,9 @@ import javax.transaction.xa.Xid;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * Test dtx.start related error scenarios
+ * Test dtx.end related error scenarios
  */
-public class DtxStartTestCase extends MBIntegrationBaseTest {
+public class DtxEndNegativeTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
@@ -51,13 +51,13 @@ public class DtxStartTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if joining a new XID will throw an exception
+     * Tests if ending DTX branch without starting it throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
-    public void joinANonExistingDtxBranch()
+          expectedExceptionsMessageRegExp = ".*Error while ending dtx session.*")
+    public void endDtxBranchWithoutStarting()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxStartTestCaseJoinANonExistingDtxBranch";
+        String queueName = "DtxEndTestCaseEndDtxBranchWithoutStarting";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -78,11 +78,11 @@ public class DtxStartTestCase extends MBIntegrationBaseTest {
         session.createQueue(queueName);
         MessageProducer producer = session.createProducer(xaTestQueue);
 
-        Xid xid = JMSClientHelper.getNewXid();
+         Xid xid = JMSClientHelper.getNewXid();
 
-        xaResource.start(xid, XAResource.TMJOIN);
+        // We are not starting the dtx branch
+        // xaResource.start(xid, XAResource.TMJOIN);
 
-        // Below this line should not execute
         producer.send(session.createTextMessage("Test 1"));
         xaResource.end(xid, XAResource.TMSUCCESS);
 
@@ -95,13 +95,13 @@ public class DtxStartTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if resuming a new XID will throw an exception
+     * Tests if ending a dtx branch started in a different session throws an exception
      */
     @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
-    public void resumeANonExistingDtxBranch()
+          expectedExceptionsMessageRegExp = ".*Error while ending dtx session.*")
+    public void endDtxBranchBelongToADifferentSession()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxStartTestCaseResumeANonExistingDtxBranch";
+        String queueName = "DtxEndTestCaseEndDtxBranchBelongToADifferentSession";
 
         InitialContext initialContext = JMSClientHelper
                 .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
@@ -124,11 +124,17 @@ public class DtxStartTestCase extends MBIntegrationBaseTest {
 
         Xid xid = JMSClientHelper.getNewXid();
 
-        xaResource.start(xid, XAResource.TMRESUME);
+         // We are not starting the dtx branch
+         xaResource.start(xid, XAResource.TMNOFLAGS);
 
-        // Below this line should not execute
+        XAConnection secondXaConnection = connectionFactory.createXAConnection();
+        XASession secondXaSession = secondXaConnection.createXASession();
+
+        XAResource secondXaResource = secondXaSession.getXAResource();
+
+
         producer.send(session.createTextMessage("Test 1"));
-        xaResource.end(xid, XAResource.TMSUCCESS);
+        secondXaResource.end(xid, XAResource.TMSUCCESS);
 
         xaResource.prepare(xid);
 
@@ -138,58 +144,4 @@ public class DtxStartTestCase extends MBIntegrationBaseTest {
         xaConnection.close();
     }
 
-    /**
-     * Tests if resuming a new XID will throw an exception
-     */
-    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class,
-          expectedExceptionsMessageRegExp = ".*Error while starting dtx session.*")
-    public void startAnAlreadyStartedDtxBranch()
-            throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "DtxStartTestCaseStartAnAlreadyStartedDtxBranch";
-
-        InitialContext initialContext = JMSClientHelper
-                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
-                .withQueue(queueName)
-                .build();
-
-        // Publish to queue and rollback
-        XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
-
-        XAConnection xaConnection = connectionFactory.createXAConnection();
-        XASession xaSession = xaConnection.createXASession();
-
-        XAResource xaResource = xaSession.getXAResource();
-        Session session = xaSession.getSession();
-
-        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
-        session.createQueue(queueName);
-        MessageProducer producer = session.createProducer(xaTestQueue);
-
-        Xid xid = JMSClientHelper.getNewXid();
-
-        xaResource.start(xid, XAResource.TMNOFLAGS);
-
-        //
-        XAConnection xaConnectionDuplicate = connectionFactory.createXAConnection();
-        XASession xaSessionDuplicate = xaConnectionDuplicate.createXASession();
-
-        XAResource xaResourceDuplicate = xaSessionDuplicate.getXAResource();
-        Session sessionDuplicate = xaSessionDuplicate.getSession();
-
-        MessageProducer producerDuplicate = sessionDuplicate.createProducer(xaTestQueue);
-
-        xaResourceDuplicate.start(xid, XAResource.TMNOFLAGS);
-
-        // Below this line should not execute
-        producer.send(session.createTextMessage("Test 1"));
-        xaResource.end(xid, XAResource.TMSUCCESS);
-
-        xaResource.prepare(xid);
-
-        xaResource.rollback(xid);
-
-        session.close();
-        xaConnection.close();
-    }
 }
