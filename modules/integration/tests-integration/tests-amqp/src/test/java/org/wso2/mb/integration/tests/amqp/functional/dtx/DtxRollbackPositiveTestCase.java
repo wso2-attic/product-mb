@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ import javax.xml.xpath.XPathExpressionException;
 /**
  * Test prepare->rollback scenarios with message publishing and acking
  */
-public class CommitTestCase extends MBIntegrationBaseTest {
+public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
@@ -56,14 +56,14 @@ public class CommitTestCase extends MBIntegrationBaseTest {
     }
 
     /**
-     * Tests if committing a published message works correctly.Steps are,
-     *    1. Using a distributed transaction a message is published to a queue and committed
-     *    2. Subscribe to the published queue and see if the message is received.
+     * Tests if rolling back a published message works correctly.Steps are,
+     *    1. Using a distributed transaction a message is published to a queue and rolled back
+     *    2. Subscribe to the published queue and see if any message is received.
      */
     @Test(groups = { "wso2.mb", "dtx" })
     public void performClientQueuePublishTestCase()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "CommitTestCasePerformClientQueuePublishTestCase";
+        String queueName = "RollbackTestCasePerformClientQueuePublishTestCase";
 
         InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
                 getAMQPPort())
@@ -89,10 +89,9 @@ public class CommitTestCase extends MBIntegrationBaseTest {
         producer.send(session.createTextMessage("Test 1"));
         xaResource.end(xid, XAResource.TMSUCCESS);
 
-        int ret = xaResource.prepare(xid);
-        Assert.assertEquals(ret, XAResource.XA_OK, "Dtx.prepare was not successful.");
+        xaResource.prepare(xid);
 
-        xaResource.commit(xid, false);
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
@@ -106,21 +105,21 @@ public class CommitTestCase extends MBIntegrationBaseTest {
 
         // wait 5 seconds
         Message receive = messageConsumer.receive(5000);
-        Assert.assertNotNull(receive, "Message was not received.");
+        Assert.assertNull(receive, "Message received. Message was not rolled back");
 
         queueConnection.close();
     }
 
     /**
-     * Tests if rolling back a message acknowledgement works correctly. Steps are,
+     * Tests if rolling back a message acknowledgement works correctly.Steps are,
      *    1. Publish a message to a queue
-     *    2. Using a distributed transacted session receive the message and commit
-     *    3. Subscribe again using a normal session and see if any message is received
+     *    2. Using a distributed transacted session receive the message and roll back
+     *    3. Subscribe again using a normal session and see if the message is received
      */
     @Test(groups = { "wso2.mb", "dtx" })
     public void performClientQueueAcknowledgeTestCase()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "CommitTestCasePerformClientQueueAcknowledgeTestCase";
+        String queueName = "RollbackTestCasePerformClientQueueAcknowledgeTestCase";
 
         InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
                 getAMQPPort())
@@ -132,7 +131,6 @@ public class CommitTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
         queueSession.createQueue(queueName);
         MessageProducer messageProducer = queueSession.createProducer(xaTestQueue);
 
@@ -160,11 +158,9 @@ public class CommitTestCase extends MBIntegrationBaseTest {
 
         Assert.assertNotNull(receivedMessage, "No message received");
 
+        xaResource.prepare(xid);
 
-        int ret = xaResource.prepare(xid);
-        Assert.assertEquals(ret, XAResource.XA_OK, "Dtx.prepare was not successful.");
-
-        xaResource.commit(xid, false);
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
@@ -174,7 +170,7 @@ public class CommitTestCase extends MBIntegrationBaseTest {
 
         // wait 5 seconds
         Message receivedMessageFromNormalConnection = messageConsumer.receive(5000);
-        Assert.assertNull(receivedMessageFromNormalConnection, "Message received. Commit might have failed");
+        Assert.assertNotNull(receivedMessageFromNormalConnection, "No message received. Roll back might have failed");
 
         queueConnection.close();
     }
