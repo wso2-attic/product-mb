@@ -15,9 +15,11 @@
 
 package org.wso2.mb.integration.tests.amqp.functional.dtx;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
@@ -76,14 +78,14 @@ public class DtxPrepareNegativeTestCase extends MBIntegrationBaseTest {
 
         Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
         session.createQueue(queueName);
-        MessageProducer producer = session.createProducer(xaTestQueue);
+        // MessageProducer producer = session.createProducer(xaTestQueue);
 
          Xid xid = JMSClientHelper.getNewXid();
 
         // We are not starting the dtx branch
-        //  xaResource.start(xid, XAResource.TMNOFLAGS);
-        //  producer.send(session.createTextMessage("Test 1"));
-        //  xaResource.end(xid, XAResource.TMSUCCESS);
+        // xaResource.start(xid, XAResource.TMNOFLAGS);
+        // producer.send(session.createTextMessage("Test 1"));
+        // xaResource.end(xid, XAResource.TMSUCCESS);
 
         xaResource.prepare(xid);
 
@@ -135,7 +137,6 @@ public class DtxPrepareNegativeTestCase extends MBIntegrationBaseTest {
         xaConnection.close();
     }
 
-
     /**
      * Tests if preparing a DTX branch without starting it throws an exception
      */
@@ -174,6 +175,51 @@ public class DtxPrepareNegativeTestCase extends MBIntegrationBaseTest {
         xaResource.prepare(xid);
 
         xaResource.rollback(xid);
+
+        session.close();
+        xaConnection.close();
+    }
+
+    /**
+     * Tests if preparing a DTX branch with publishing permission issues throws an error
+     */
+    @Test(groups = { "wso2.mb", "dtx" }, expectedExceptions = XAException.class)
+    public void prepareDtxBranchWithNoRoutesIssue()
+            throws NamingException, JMSException, XAException, XPathExpressionException {
+        String queueName = "DtxPrepareTestCasePrepareDtxBranchWithNoRoutesIssues";
+
+        User adminUser = getSuperTenantAdminUser();
+        InitialContext adminInitialContext
+                = JMSClientHelper.createInitialContextBuilder(adminUser.getUserNameWithoutDomain(),
+                                                              adminUser.getPassword(),
+                                                              getBrokerHost(),
+                                                              getAMQPPort()).withQueue(queueName).build();
+
+        // Publish to queue and rollback
+        XAConnectionFactory connectionFactory
+                = (XAConnectionFactory) adminInitialContext.lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+
+        XAConnection xaConnection = connectionFactory.createXAConnection();
+        XASession xaSession = xaConnection.createXASession();
+
+        XAResource xaResource = xaSession.getXAResource();
+        Session session = xaSession.getSession();
+
+        Destination testQueue = (Destination) adminInitialContext.lookup(queueName);
+        MessageProducer producer = session.createProducer(testQueue);
+
+        Xid xid = JMSClientHelper.getNewXid();
+
+        xaResource.start(xid, XAResource.TMNOFLAGS);
+        producer.send(session.createTextMessage("Test 1"));
+        xaResource.end(xid, XAResource.TMSUCCESS);
+
+        // Test should fail at prepare stage due to no route issue
+        int prepareResponseCode = xaResource.prepare(xid);
+
+        Assert.assertNotEquals(prepareResponseCode, XAResource.XA_OK, "Prepare should fail due to no route issue");
+
+        xaResource.commit(xid, false);
 
         session.close();
         xaConnection.close();
