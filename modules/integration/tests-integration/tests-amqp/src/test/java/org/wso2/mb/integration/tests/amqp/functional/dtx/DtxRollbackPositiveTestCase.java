@@ -93,9 +93,6 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
 
         xaResource.rollback(xid);
 
-        session.close();
-        xaConnection.close();
-
         // subscribe and see if the message is received
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
@@ -107,6 +104,8 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
         Message receive = messageConsumer.receive(5000);
         Assert.assertNull(receive, "Message received. Message was not rolled back");
 
+        session.close();
+        xaConnection.close();
         queueConnection.close();
     }
 
@@ -162,9 +161,6 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
 
         xaResource.rollback(xid);
 
-        session.close();
-        xaConnection.close();
-
         // subscribe and see if the message is received
         MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
 
@@ -172,6 +168,8 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
         Message receivedMessageFromNormalConnection = messageConsumer.receive(5000);
         Assert.assertNotNull(receivedMessageFromNormalConnection, "No message received. Roll back might have failed");
 
+        session.close();
+        xaConnection.close();
         queueConnection.close();
     }
 }

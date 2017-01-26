@@ -107,6 +107,8 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxPrepareNegativeTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackNegativeTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitNegativeTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.MultipleXidTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.WorkDoneOutsideTransactionTestCase" />
 
             <!-- load test cases-->
 
