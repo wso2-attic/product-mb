@@ -161,12 +161,16 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
 
         xaResource.rollback(xid);
 
-        // subscribe and see if the message is received
-        MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
 
-        // wait 5 seconds
-        Message receivedMessageFromNormalConnection = messageConsumer.receive(5000);
-        Assert.assertNotNull(receivedMessageFromNormalConnection, "No message received. Roll back might have failed");
+        xaResource.start(xid, XAResource.TMNOFLAGS);
+        receivedMessage = xaConsumer.receive(5000);
+        xaResource.end(xid, XAResource.TMSUCCESS);
+
+        Assert.assertNotNull(receivedMessage, "No message received. Roll back might have failed");
+
+        xaResource.prepare(xid);
+
+        xaResource.rollback(xid);
 
         session.close();
         xaConnection.close();
