@@ -15,12 +15,14 @@
 
 package org.wso2.mb.integration.tests.amqp.functional.dtx;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import java.util.concurrent.TimeUnit;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -188,6 +190,63 @@ public class DtxStartNegativeTestCase extends MBIntegrationBaseTest {
         xaResource.prepare(xid);
 
         xaResource.rollback(xid);
+
+        session.close();
+        xaConnection.close();
+    }
+
+    /**
+     * Tests if transaction expiration throws an exception
+     */
+    @Test(groups = { "wso2.mb", "dtx" })
+    public void startDtxBranchWithShortDtxTimeout()
+            throws NamingException, JMSException, XAException, XPathExpressionException, InterruptedException {
+        String queueName = "DtxStartTestCaseStartDtxBranchWithShortDtxTimeout";
+
+        InitialContext initialContext = JMSClientHelper
+                .createInitialContextBuilder("admin", "admin", "localhost", getAMQPPort())
+                .withQueue(queueName)
+                .build();
+
+        XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+
+        XAConnection xaConnection = connectionFactory.createXAConnection();
+        XASession xaSession = xaConnection.createXASession();
+
+        XAResource xaResource = xaSession.getXAResource();
+        Session session = xaSession.getSession();
+
+        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
+        session.createQueue(queueName);
+        MessageProducer producer = session.createProducer(xaTestQueue);
+
+        Xid xid = JMSClientHelper.getNewXid();
+
+        xaResource.start(xid, XAResource.TMNOFLAGS);
+        // Set timeout to 2 seconds
+        xaResource.setTransactionTimeout(2);
+
+        producer.send(session.createTextMessage("Test 1"));
+
+        TimeUnit.SECONDS.sleep(3);
+        int errorCode = 0;
+        try {
+            xaResource.end(xid, XAResource.TMSUCCESS);
+        } catch (XAException e) {
+            errorCode = e.errorCode;
+        }
+
+        Assert.assertEquals(errorCode, XAException.XA_RBTIMEOUT, "xaResource.end should fail with XA_RBTIMEOUT");
+
+        errorCode = 0;
+        try {
+            xaResource.rollback(xid);
+        } catch (XAException e) {
+            errorCode = e.errorCode;
+        }
+
+        Assert.assertEquals(errorCode, XAException.XA_RBTIMEOUT, "xaResource.rollback should get with XA_RBTIMEOUT");
 
         session.close();
         xaConnection.close();
