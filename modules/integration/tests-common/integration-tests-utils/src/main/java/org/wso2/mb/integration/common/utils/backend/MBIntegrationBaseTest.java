@@ -20,19 +20,14 @@ package org.wso2.mb.integration.common.utils.backend;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.automation.engine.context.beans.User;
 import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
-import org.xml.sax.SAXException;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * Base class of all MB integration tests
@@ -106,6 +101,27 @@ public class MBIntegrationBaseTest {
     protected Integer getAMQPPort() throws XPathExpressionException {
         return Integer.parseInt(automationContext.getInstance().getPorts().get("amqp"));
 
+    }
+
+    /**
+     * Returns broker hostname based on automation.xml configurations
+     *
+     * @return broker hostname
+     * @throws XPathExpressionException if initialization error
+     */
+    protected String getBrokerHost() throws XPathExpressionException {
+        return automationContext.getInstance().getHosts().get("default");
+
+    }
+
+    /**
+     * Return super admin {@link User} object
+     *
+     * @return super admin user
+     * @throws XPathExpressionException if error occurred while reading values
+     */
+    protected User getSuperTenantAdminUser() throws XPathExpressionException {
+        return automationContext.getSuperTenant().getTenantAdmin();
     }
 
     /**
