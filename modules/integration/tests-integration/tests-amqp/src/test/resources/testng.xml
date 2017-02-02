@@ -99,6 +99,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRollbackPositiveTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxCommitPositiveTestCase" />
             <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxStartPositiveTestCase" />
+            <class name="org.wso2.mb.integration.tests.amqp.functional.dtx.DtxRecoverPositiveTestCase" />
 
             <!-- Negative test cases -->
 

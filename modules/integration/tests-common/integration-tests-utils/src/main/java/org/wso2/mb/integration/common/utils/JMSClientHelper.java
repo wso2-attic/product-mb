@@ -49,6 +49,25 @@ public class JMSClientHelper {
         return new TestXidImpl(100, Longs.toByteArray(GLOBAL_ID_GENERATOR.incrementAndGet()), new byte[] { 0x01 });
     }
 
+    /**
+     * Compare two byte arrays
+     *
+     * @param a byte array
+     * @param b byte array
+     * @return True if contents of byte buffers are similar, false otherwise
+     */
+    public static boolean compareBytes(byte[] a, byte[] b) {
+        if (a.length != b.length) {
+            return false;
+        }
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static InitialContextBuilder createInitialContextBuilder(String username, String password, String brokerHost,
             int brokerPort) {
         return new InitialContextBuilder(username, password, brokerHost, brokerPort);
