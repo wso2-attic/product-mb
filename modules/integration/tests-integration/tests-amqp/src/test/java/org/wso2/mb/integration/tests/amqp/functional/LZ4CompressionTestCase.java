@@ -41,10 +41,9 @@ import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This class contains tests for AMQP message content validity, with compression.
@@ -115,19 +114,13 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
     public void performQueueContentSendCompressQueueReceiveTestCase() throws AndesClientConfigurationException, IOException,
             JMSException, NamingException, AndesClientException, XPathExpressionException {
 
-        // Reading message content
-        char[] inputContent = new char[SIZE_TO_READ];
-
-        BufferedReader inputFileReader = new BufferedReader(
-                new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB));
-        inputFileReader.read(inputContent);
+        // Generating message content
+        String inputContentAsString = AndesClientUtils.createRandomString(SIZE_TO_READ, 100);
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                 ExchangeType.QUEUE, "QueueContentSendCompressReceive");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
-        // writing received messages.
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
@@ -135,9 +128,8 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
                 , ExchangeType.QUEUE, "QueueContentSendCompressReceive");
 
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        // message content will be read from this path and published
-        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants
-                .MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB);
+        // Set message content to publish
+        publisherConfig.setMessagesContentOfConfiguration(inputContentAsString);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -149,16 +141,12 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Reading received message content
-        char[] outputContent = new char[SIZE_TO_READ];
-
-        BufferedReader outFileReader =
-                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-        outFileReader.read(outputContent);
+        List<String> receivedMessage = consumerClient.getReceivedMessages();
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+        Assert.assertEquals(receivedMessage.get(0), inputContentAsString, "Message content has been modified");
     }
 
 
@@ -176,12 +164,8 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
     public void performQueueContentSendCompressDurableTopicReceiveTestCase() throws AndesClientConfigurationException, IOException,
             JMSException, NamingException, AndesClientException, XPathExpressionException {
 
-        // Reading message content
-        char[] inputContent = new char[SIZE_TO_READ];
-
-        BufferedReader inputFileReader = new BufferedReader(
-                new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB));
-        inputFileReader.read(inputContent);
+        // Generating message content
+        String inputContentAsString = AndesClientUtils.createRandomString(SIZE_TO_READ, 100);
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
@@ -189,7 +173,6 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
         consumerConfig.setDurable(true, "compression-new1");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // writing received messages.
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
@@ -197,9 +180,9 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
                 , ExchangeType.TOPIC, "DurableTopicContentSendCompressReceive");
 
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        // message content will be read from this path and published
-        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants
-                .MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB);
+
+        // Set message content to publish
+        publisherConfig.setMessagesContentOfConfiguration(inputContentAsString);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -211,16 +194,12 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Reading received message content
-        char[] outputContent = new char[SIZE_TO_READ];
-
-        BufferedReader outFileReader =
-                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-        outFileReader.read(outputContent);
+        List<String> receivedMessage = consumerClient.getReceivedMessages();
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+        Assert.assertEquals(receivedMessage.get(0), inputContentAsString, "Message content has been modified.");
     }
 
 
@@ -240,19 +219,14 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
     public void performQueueContentSendCompressTopicReceiveTestCase() throws AndesClientConfigurationException, IOException,
             JMSException, NamingException, AndesClientException, XPathExpressionException {
 
-        // Reading message content
-        char[] inputContent = new char[SIZE_TO_READ];
-
-        BufferedReader inputFileReader = new BufferedReader(
-                new FileReader(AndesClientConstants.MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB));
-        inputFileReader.read(inputContent);
+        // Generating message content
+        String inputContentAsString = AndesClientUtils.createRandomString(SIZE_TO_READ, 100);
 
         // Creating a consumer client configuration
         AndesJMSConsumerClientConfiguration consumerConfig = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
                 ExchangeType.TOPIC, "TopicContentSendCompressReceive");
         consumerConfig.setMaximumMessagesToReceived(EXPECTED_COUNT);
         // writing received messages.
-        consumerConfig.setFilePathToWriteReceivedMessages(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES);
         consumerConfig.setAsync(false);
 
         // Creating a publisher client configuration
@@ -260,9 +234,9 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
                 , ExchangeType.TOPIC, "TopicContentSendCompressReceive");
 
         publisherConfig.setNumberOfMessagesToSend(SEND_COUNT);
-        // message content will be read from this path and published
-        publisherConfig.setReadMessagesFromFilePath(AndesClientConstants
-                .MESSAGE_CONTENT_INPUT_FILE_PATH_WITHOUT_REPETITIONS_256KB);
+
+        // Set message content to publish
+        publisherConfig.setMessagesContentOfConfiguration(inputContentAsString);
 
         // Creating clients
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
@@ -274,18 +248,13 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
         AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Reading received message content
-        char[] outputContent = new char[SIZE_TO_READ];
-
-        BufferedReader outFileReader =
-                new BufferedReader(new FileReader(AndesClientConstants.FILE_PATH_TO_WRITE_RECEIVED_MESSAGES));
-        outFileReader.read(outputContent);
+        List<String> receivedMessage = consumerClient.getReceivedMessages();
 
         // Evaluating
         Assert.assertEquals(publisherClient.getSentMessageCount(), SEND_COUNT, "Message sending failed.");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), EXPECTED_COUNT, "Message receiving failed.");
-        Assert.assertEquals(new String(outputContent), new String(inputContent), "Message content has been modified.");
+        Assert.assertEquals(receivedMessage.get(0), inputContentAsString, "Message content has been modified.");
     }
-
 
     /**
      * Restore to the previous configurations when the message content compression test is complete.

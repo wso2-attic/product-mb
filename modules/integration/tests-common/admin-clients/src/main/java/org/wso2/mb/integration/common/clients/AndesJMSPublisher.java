@@ -90,7 +90,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
     /**
      * Message content which is needed to be published. The value will depend on the configuration.
      */
-    private String messageContentFromFile = null;
+    private String messageContent = null;
 
     /**
      * Creates a new JMS publisher with a given configuration.
@@ -106,6 +106,10 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
         // Sets the configuration
         this.publisherConfig = config;
+
+        if (null != config.getMessagesContentToSet()) {
+            this.messageContent = config.getMessagesContentToSet();
+        }
 
         // Creates a JMS connection, sessions and sender
         if (createPublisher) {
@@ -183,7 +187,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
 
                 // Remove the last appended next line since there is no next line.
                 sb.replace(sb.length() - 1, sb.length() + 1, "");
-                messageContentFromFile = sb.toString();
+                messageContent = sb.toString();
             } finally {
                 br.close();
             }
@@ -201,18 +205,18 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
             while (this.sentMessageCount < this.publisherConfig.getNumberOfMessagesToSend()) {
                 // Creating a JMS message
                 if (JMSMessageType.TEXT == this.publisherConfig.getJMSMessageType()) {
-                    if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
-                        message = this.session.createTextMessage(this.messageContentFromFile);
+                    if ((null != this.publisherConfig.getReadMessagesFromFilePath()) || (null != this.messageContent)) {
+                        message = this.session.createTextMessage(this.messageContent);
                     } else {
                         message = this.session.createTextMessage(MessageFormat
-                             .format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
+                                .format(AndesClientConstants.PUBLISH_MESSAGE_FORMAT, this.sentMessageCount, threadID));
                     }
                 } else if (JMSMessageType.BYTE == this.publisherConfig.getJMSMessageType()) {
                     message = this.session.createBytesMessage();
                 } else if (JMSMessageType.MAP == this.publisherConfig.getJMSMessageType()) {
                     MapMessage mapMessage = this.session.createMapMessage();
                     if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
-                        String[] entries = this.messageContentFromFile.split(System.getProperty("line.separator"));
+                        String[] entries = this.messageContent.split(System.getProperty("line.separator"));
                         for (int i = 0; i < entries.length; i++) {
                             mapMessage.setString("key" + i, entries[i]);
                         }
@@ -254,8 +258,7 @@ public class AndesJMSPublisher extends AndesJMSBase implements Runnable {
                     }
 
                     this.lastMessagePublishTimestamp = currentTimeStamp;
-                    if (0 == this.sentMessageCount % this.publisherConfig
-                                                                .getPrintsPerMessageCount()) {
+                    if (0 == this.sentMessageCount % this.publisherConfig.getPrintsPerMessageCount()) {
                         // Logging the sent message details.
                         if (null != this.publisherConfig.getReadMessagesFromFilePath()) {
                             log.info("[SEND]" + " (FROM FILE) ThreadID:" +

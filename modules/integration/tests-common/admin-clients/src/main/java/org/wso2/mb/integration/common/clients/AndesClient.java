@@ -94,12 +94,14 @@ public class AndesClient {
                        boolean createConsumersAndProducers)
             throws IOException, JMSException, NamingException, AndesClientException {
         if (0 < numberOfThreads) {
-            if (config instanceof AndesJMSConsumerClientConfiguration) {
+            if ((config instanceof AndesJMSConsumerClientConfiguration) &&
+                    (null !=(((AndesJMSConsumerClientConfiguration) config).getFilePathToWriteReceivedMessages()))) {
                 AndesClientUtils.initializeReceivedMessagesPrintWriter(((AndesJMSConsumerClientConfiguration) config)
                                                                        .getFilePathToWriteReceivedMessages());
             }
 
-            if (config instanceof AndesJMSPublisherClientConfiguration) {
+            if ((config instanceof AndesJMSPublisherClientConfiguration) &&
+                    (null !=(((AndesJMSPublisherClientConfiguration) config).getFilePathToWritePublishedMessages()))) {
                 AndesClientUtils.initializePublishedPrintWriter(((AndesJMSPublisherClientConfiguration) config).getFilePathToWritePublishedMessages());
             }
 
@@ -348,5 +350,15 @@ public class AndesClient {
      */
     public List<AndesJMSPublisher> getPublishers() {
         return publishers;
+    }
+
+    /**
+     * This method returns received messages for a single consumer. This is not valid when it comes to multiple
+     * consumers and, not valid when writing to files before compare message contents.
+     *
+     * @return Received message contents.
+     */
+    public List<String> getReceivedMessages() {
+        return consumers.get(0).getConfig().getReceivedMessages();
     }
 }
