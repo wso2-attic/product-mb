@@ -2,7 +2,7 @@
                         WSO2 Message Broker Server 3.2.0
 ================================================================================
 
-Welcome to the WSO2 MB 3.1.0 release
+Welcome to the WSO2 MB 3.2.0 release
 
 WSO2 MB is a lightweight and easy-to-use Open Source Distributed Message Brokering
 Server (MB) which is available under the Apache Software License v2.0.
@@ -20,18 +20,44 @@ can be used as standalone message broker or as a distributed message brokering s
 WSO2 Message Broker compatible with Advanced Message Queuing Protocol (AMQP)(0-91)) 
 and  Message Queuing Telemetry Transport Protocol (MQTT) v 3.1.1. 
 
-• JMS Queuing support
-• JMS Pub/Sub mechanism for topics
-• Hierarchical Topics Subscriptions
-• Queue Message browsing with added UI support 
-• Message Re-Delivery Tries Configuration
-• Message Re delivery Header Field support
-• Sample text message sender tool in UI
-• Queue purging support
-• Simple clustering machanism based on carbon clustering
-• Ability to view details of the cluster using Management Console
-• Message delivery fine tuning capabilities
-• Relational databases as a storage machanism
+Manage Queues
+
+    • JMS Queuing support
+    • Queue Message browsing with added UI support
+    • Queue purging support
+    • Sample text message sender tool in UI
+    • Manage publish/subscribe permission to topics
+
+Manage Topics
+
+    • JMS Pub/Sub mechanism for topics
+    • Hierarchical Topics Subscriptions
+    • View all topics in a tree
+    • Manage publish/subscribe permission to topics
+
+Manage Subscriptions
+
+    • View subscriptions to queues
+    • View subscriptions to topics
+    • Shared durable topic subscriptions across nodes
+    • Comprehensive search of subscriptions by Node/ID/queue or topic name etc
+    • View pending number of messages to subscriptions
+    • Forcibly close subscriptions from console
+
+Clustering (HA/Scaling)
+    • Simple clustering mechanism based on carbon clustering
+    • Active/active cluster of MB nodes. Messages published to node x can be received by node y
+    • Ability to view details of the cluster using Management Console
+
+Configurations and other
+
+    • Message Re-Delivery Tries Configuration
+    • Message delivery fine tuning capabilities
+
+Message store
+
+    • Relational databases as a storage mechanism
+
 
 System Requirements
 =======================
@@ -45,7 +71,7 @@ System Requirements
 5. To compile and run the sample clients, an Ant version is required. Ant 1.7.0
    version is recommended
 6. To build WSO2 MB from the Source distribution, it is necessary that you have
-   JDK 7  and Maven 3.0.4 or later
+   JDK 7  or higher and Maven 3.0.4 or later
 
 
 For more details see
@@ -67,7 +93,7 @@ Installation & Running
 
    
 
-WSO2 MB 3.1.0 distribution directory structure
+WSO2 MB 3.2.0 distribution directory structure
 =============================================
 
 	CARBON_HOME
@@ -167,8 +193,6 @@ Known Issues
 ==================================
 
 https://wso2.org/jira/issues/?filter=12509
-
- WSO2 Message Broker is compatible with AMQP 0-91 version only.
 
 Crypto Notice
 ==================================

@@ -77,7 +77,7 @@
             </ol>
 
 
-            <h2>New Features of WSO2 MB 3.1.0</h2>
+            <h2>New Features of WSO2 MB 3.2.0</h2>
 
             <p>This release of Message Broker comes with a horde of new features and bug fixes. </p>
 
@@ -155,7 +155,7 @@
             </p>
             <ul>
                 <li><a href="https://wso2.org/jira/issues/?filter=12509">
-                    WSO2 MB 3.1.0 component issues</a></li>
+                    WSO2 MB 3.2.0 component issues</a></li>
             </ul>
 
 

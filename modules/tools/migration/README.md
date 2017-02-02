@@ -1,6 +1,10 @@
-#Migration tool for WSO2 Message Broker Server 3.1.0
+#Migration tool for WSO2 Message Broker Server 3.2.0
 
-Welcome to the WSO2 MB 3.1.0 release
+Welcome to the WSO2 MB 3.2.0 release
+
+================================================================================
+                        Migration - From WSO2 MB 3.0.0 to WSO2 MB 3.1.0
+================================================================================
 
 WSO2 MB 3.1.0 comes with several modifications to the database compared to WSO2 MB 3.0.0 in terms of the
 format of data that is stored in. This tool is written for you to upgrade the existing records created by
