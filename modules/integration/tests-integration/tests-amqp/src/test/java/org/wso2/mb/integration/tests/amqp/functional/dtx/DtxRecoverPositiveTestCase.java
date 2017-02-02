@@ -62,7 +62,7 @@ public class DtxRecoverPositiveTestCase extends MBIntegrationBaseTest {
     @Test(groups = { "wso2.mb", "dtx" })
     public void performDtxRecoverWithPublishTestCase()
             throws NamingException, JMSException, XAException, XPathExpressionException {
-        String queueName = "CommitTestCasePerformClientQueuePublishTestCase";
+        String queueName = "DtxRecoverPositiveTestCasePerformDtxRecoverWithPublishTestCase";
 
         InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
                 getAMQPPort()).withQueue(queueName).build();
