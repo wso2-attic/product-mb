@@ -48,8 +48,9 @@ public class DtxRecoverPositiveTestCase extends MBIntegrationBaseTest {
      * @throws XPathExpressionException if internal error
      */
     @BeforeClass
-    public void prepare() throws XPathExpressionException {
+    public void prepare() throws Exception {
         super.init(TestUserMode.SUPER_TENANT_USER);
+        super.restartServer();
     }
 
     /**
