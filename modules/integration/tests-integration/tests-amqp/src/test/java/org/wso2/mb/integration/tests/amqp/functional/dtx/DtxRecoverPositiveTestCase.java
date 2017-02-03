@@ -22,6 +22,7 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import java.util.Arrays;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -108,8 +109,8 @@ public class DtxRecoverPositiveTestCase extends MBIntegrationBaseTest {
         byte[] receivedBranchQualifier = recoveredTransactions[0].getBranchQualifier();
         byte[] receivedGlobalTransactionId = recoveredTransactions[0].getGlobalTransactionId();
 
-        boolean matching = JMSClientHelper.compareBytes(originalBranchQualifier, receivedBranchQualifier) &&
-                JMSClientHelper.compareBytes(originalGlobalTransactionId, receivedGlobalTransactionId);
+        boolean matching = Arrays.equals(originalBranchQualifier, receivedBranchQualifier) &&
+                Arrays.equals(originalGlobalTransactionId, receivedGlobalTransactionId);
 
         Assert.assertTrue(matching, "Received xid does not match the original xid" );
 
