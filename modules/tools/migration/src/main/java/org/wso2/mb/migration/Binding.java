@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c)2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -24,35 +24,40 @@ package org.wso2.mb.migration;
 public class Binding {
 
     /**
-     * The queue name for which the binding is bound to
+     * The queue name for which the binding is bound to.
      */
     private String queueName;
 
     /**
-     * The exchange for which the binding is bound
-     */
-    private String exchangeName;
-
-    /**
-     * String representing the details of the binding
+     * String representing the details of the binding.
      */
     private String bindingDetails;
 
-    public Binding(String queue, String exchange, String details){
-        queueName =queue;
-        exchangeName = exchange;
+    /**
+     * Message router to which the queue is bound.
+     */
+    private String messageRouter;
+
+    public Binding(String queue, String details) {
+        queueName = queue;
         bindingDetails = details;
     }
 
-    public String getExchangeName() {
-        return exchangeName;
+    public Binding(String router, String queue, String details) {
+        queueName = queue;
+        bindingDetails = details;
+        messageRouter = router;
     }
 
-    public String getBindingDetails() {
+    String getMessageRouter() {
+        return messageRouter;
+    }
+
+    String getBindingDetails() {
         return bindingDetails;
     }
 
-    public void setBindingDetails(String bindingDetails) {
+    void setBindingDetails(String bindingDetails) {
         this.bindingDetails = bindingDetails;
     }
 
