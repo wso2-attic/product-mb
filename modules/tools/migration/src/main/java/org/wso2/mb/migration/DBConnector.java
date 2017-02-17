@@ -117,7 +117,6 @@ public class DBConnector {
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(UPDATE_BINDING);
             for (Binding binding : bindings) {
-                System.out.println(binding.getBindingDetails());
                 preparedStatement.setString(1, binding.getBindingDetails());
                 preparedStatement.setString(2, binding.getQueueName());
                 preparedStatement.addBatch();
@@ -142,7 +141,6 @@ public class DBConnector {
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(INSERT_BINDING);
             for (Binding binding : bindings) {
-                System.out.println(binding.getBindingDetails());
                 preparedStatement.setString(1, binding.getMessageRouter());
                 preparedStatement.setString(2, binding.getQueueName());
                 preparedStatement.setString(3, binding.getBindingDetails());
