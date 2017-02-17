@@ -10,9 +10,10 @@ In order to migrate from WSO2 MB 3.1.0 to WSO2 MB 3.2.0 follow the below steps.
 
 1. Disconnect all the subscribers and publishers for WSO2 MB 3.1.0.
 2. Shut down the server.
-3. Run the tool.
-4. Start WSO2 MB 3.2.0.
-5. Reconnect all the publishers and subscribers.
+3. DB scripts for migration are located inside <MB_HOME>/dbscripts/mb-store/migration-3.1.0_to_3.2.0/. Run the relevant db script to create/modify tables.
+4. Run the tool.
+5. Start WSO2 MB 3.2.0.
+6. Reconnect all the publishers and subscribers.
   
 Follow the below steps to run the tool
 

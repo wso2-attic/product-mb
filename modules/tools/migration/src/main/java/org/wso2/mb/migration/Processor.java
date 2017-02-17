@@ -110,7 +110,6 @@ public class Processor {
             for (Binding binding : bindings) {
                 try {
                     binding.setBindingDetails(modifier.modifyBinding(binding.getBindingDetails()));
-                    System.out.println(binding.getBindingDetails());
                 } catch (Exception e) {
                     System.out.println("Error modifying binding for queue: " + binding.getQueueName()
                                        + ". Incorrect binding info format: " + binding.getBindingDetails());
