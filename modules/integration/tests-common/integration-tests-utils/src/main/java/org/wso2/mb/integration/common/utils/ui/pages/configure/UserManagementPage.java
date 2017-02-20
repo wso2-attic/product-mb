@@ -37,7 +37,7 @@ public class UserManagementPage {
         this.driver = driver;
 
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
-                .getElement("configure.user.mgt.header.xpath"))).getText().contains("User Management")) {
+                .getElement("configure.user.mgt.header.xpath"))).getText().contains("Add Users and Roles")) {
 
             throw new IllegalStateException("This is not the User Management page");
         }
@@ -48,10 +48,9 @@ public class UserManagementPage {
      *
      * @return The roles page.
      */
-    public RolesPage getRolesPage() {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.roles.link.xpath")))
-                .click();
-        return new RolesPage(driver);
+    public AddRoleStep1Page getAddRolePage() {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.roles.link.xpath"))).click();
+        return new AddRoleStep1Page(driver);
     }
 
     /**
@@ -59,9 +58,8 @@ public class UserManagementPage {
      *
      * @return The users page.
      */
-    public UsersPage getUsersPage() {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.users.link.xpath")))
-                .click();
-        return new UsersPage(driver);
+    public AddUserStep1Page getAddNewUserPage() {
+        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("configure.usr.mgt.users.link.xpath"))).click();
+        return new AddUserStep1Page(driver);
     }
 }

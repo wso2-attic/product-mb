@@ -234,16 +234,16 @@ public class SubscriptionSearchTestCase extends MBIntegrationUiBaseTest {
 
         topicSubscriptionsPage.searchTopicSubscriptions("SearchDurable", "", 0, false, false);
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
-        Assert.assertEquals(result, 3);
+        Assert.assertEquals(result, 3, "SearchDurable active subscription count is wrong!");
 
         // test exact match of topic name.
         topicSubscriptionsPage.searchTopicSubscriptions("subSearchDurable3", "", 0, true, false);
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
-        Assert.assertEquals(result, 1);
+        Assert.assertEquals(result, 1, "subSearchDurable3 active subscription count is wrong!");
 
         topicSubscriptionsPage.searchTopicSubscriptions("", "carbon:subSearchDurable", 0, false, false);
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
-        Assert.assertEquals(result, 3);
+        Assert.assertEquals(result, 3, "carbon:subSearchDurable subscription count is wrong!");
 
         //Stop the clients
         consumerClient1.stopClient();
@@ -255,12 +255,9 @@ public class SubscriptionSearchTestCase extends MBIntegrationUiBaseTest {
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
         Assert.assertEquals(result, 0);
 
-        result = topicSubscriptionsPage.getDurableInActiveSubscriptionsCount();
-        Assert.assertEquals(result, 3);
-
         topicSubscriptionsPage.searchTopicSubscriptions("subSearchDurable", "", 0, false, false);
         result = topicSubscriptionsPage.getDurableInActiveSubscriptionsCount();
-        Assert.assertEquals(result, 3);
+        Assert.assertEquals(result, 3, "subSearchDurable topic inactive subscription count is wrong!");
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
         Assert.assertEquals(result, 0);
 

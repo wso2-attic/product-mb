@@ -63,14 +63,4 @@ public class AddRoleStep3Page {
         return isSuccessful;
     }
 
-    public void selectUsers(List<String> userXpathList) {
-        for(String userXpath: userXpathList){
-            driver.findElement(By.xpath(userXpath)).click();
-        }
-    }
-
-    public RolesPage cancel() {
-        driver.findElement(By.xpath(UIElementMapper.getInstance().getElement("usr.mgt.add.role.step3.cancel.button.xpath"))).click();
-        return new RolesPage(driver);
-    }
 }

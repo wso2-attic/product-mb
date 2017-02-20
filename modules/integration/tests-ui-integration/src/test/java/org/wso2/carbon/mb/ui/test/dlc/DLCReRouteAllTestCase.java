@@ -133,7 +133,7 @@ public class DLCReRouteAllTestCase extends MBIntegrationUiBaseTest {
     @BeforeMethod(dependsOnMethods = {"cleanDeadLetterChannel"})
     public void createReRouteQueue() throws IOException {
         QueueAddPage queueAddPage = homePage.getQueueAddPage();
-        queueAddPage.addQueue(REREOUTE_QUEUE_NAME);
+        Assert.assertEquals(queueAddPage.addQueue(REREOUTE_QUEUE_NAME), true);
     }
 
     /**
