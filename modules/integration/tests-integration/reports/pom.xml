@@ -21,7 +21,7 @@
     <parent>
         <artifactId>org.wso2.mb.integration.tests</artifactId>
         <groupId>org.wso2.mb</groupId>
-        <version>3.1.0</version>
+        <version>3.1.x-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
