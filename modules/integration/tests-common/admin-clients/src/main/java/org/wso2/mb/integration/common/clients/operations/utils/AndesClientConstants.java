@@ -75,7 +75,9 @@ public class AndesClientConstants {
     public static final long DEFAULT_RUN_TIME = 10000L;
 
     /**
-     * Default waiting time that is used to check whether the consumer has received messages.
+     * Default waiting time that is used to check whether the consumer has received messages. Should be used when
+     * messages are being published to a different node from the on e from which messages are being consumed since it
+     * could take this much time for the subscription notification to get synced throughout the cluster.
      */
     public static final long DEFAULT_CLUSTER_SYNC_TIME = 1000;
 
