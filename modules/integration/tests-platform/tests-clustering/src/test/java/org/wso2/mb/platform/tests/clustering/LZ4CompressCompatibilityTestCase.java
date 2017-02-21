@@ -142,6 +142,8 @@ public class LZ4CompressCompatibilityTestCase extends MBPlatformBaseTest {
         AndesClient consumerClient = new AndesClient(consumerConfig, true);
         consumerClient.startClient();
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
 
