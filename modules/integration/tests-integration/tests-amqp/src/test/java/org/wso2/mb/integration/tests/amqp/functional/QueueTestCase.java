@@ -205,4 +205,51 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(msgCountFromClient1 + msgCountFromClient2, expectedCount,
                             "Did not received expected message count");
     }
+
+    /**
+     * 1. Subscribe to a queue named "CASEInsensitiveQueue".
+     * 2. Publish 1000 messages to 'caseINSENSITIVEQueue'.
+     * 3. Consumer should receive 1000 messages.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
+    @Test(groups = "wso2.mb", description = "Single queue send-receive test case for queue names in different cases")
+    public void performDifferentCasesQueueSendReceiveTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+            AndesClientException, XPathExpressionException {
+
+        long sendCount = 1000L;
+        long expectedCount = 1000L;
+
+        // Creating a consumer client configuration
+        AndesJMSConsumerClientConfiguration consumerConfig =
+                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "CASEInsensitiveQueue");
+        consumerConfig.setMaximumMessagesToReceived(expectedCount);
+        consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+        consumerConfig.setAsync(false);
+
+        // Creating a publisher client configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, "caseINSENSITIVEQueue");
+        publisherConfig.setNumberOfMessagesToSend(sendCount);
+        publisherConfig.setPrintsPerMessageCount(sendCount / 10L);
+
+        // Creating clients
+        AndesClient consumerClient = new AndesClient(consumerConfig, true);
+        consumerClient.startClient();
+
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+
+        AndesClientUtils.waitForMessagesAndShutdown(consumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+
+        // Evaluating
+        Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
+        Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
+
+    }
 }
