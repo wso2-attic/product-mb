@@ -345,10 +345,9 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic5");
 
         // Removing authUser1 from create_pub_sub_topic_role and Internal/T_authTopic5
-        userManagementClient
-                .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE},
-                                      new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic5"});
-        log.info("Removing authUser1 from " + CREATE_PUB_SUB_TOPIC_ROLE + " and Internal/T_authTopic5");
+        userManagementClient.addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE},
+                                      new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authtopic5"});
+        log.info("Removing authUser1 from " + CREATE_PUB_SUB_TOPIC_ROLE + " and Internal/T_authtopic5");
 
         this.createPublishAndSubscribeFromUser("authUser1", "authTopic5");
     }
@@ -396,7 +395,7 @@ public class TopicUserAuthorizationTestCase extends MBIntegrationBaseTest {
         // Removing authUser1 from create_pub_sub_topic_role and Internal/T_authTopic6
         userManagementClient
                 .addRemoveRolesOfUser("authUser1", new String[]{NO_PERMISSION_TOPIC_ROLE},
-                                  new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authTopic6"});
+                                  new String[]{CREATE_PUB_SUB_TOPIC_ROLE, "Internal/T_authtopic6"});
 
         this.createPublishAndSubscribeFromUser("authUser2", "authTopic6");
 
