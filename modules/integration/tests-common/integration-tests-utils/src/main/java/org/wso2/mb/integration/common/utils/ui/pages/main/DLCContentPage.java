@@ -25,10 +25,11 @@ public class DLCContentPage {
      */
     public DLCContentPage(WebDriver driver) throws IOException {
         this.driver = driver;
+        String deadLetterChannelQueueName = "deadletterchannel";
         // Check that we're on the right page.
         if (!driver.findElement(By.xpath(UIElementMapper.getInstance()
                                                  .getElement("mb.dlc.queue.content"))).getText()
-                .contains("Queue Content: DeadLetterChannel")) {
+                .contains("Queue Content: " + deadLetterChannelQueueName)) {
             throw new IllegalStateException("This is not the DLC Queue Content page");
         }
     }
@@ -117,7 +118,7 @@ public class DLCContentPage {
         List<WebElement> options = select.findElements(By.tagName(UIElementMapper.getInstance()
                                                                           .getElement("mb.dlc.browse.table.reroute.queue.option")));
         for (WebElement option : options) {
-            if (option.getText().equals(qName)) {
+            if (option.getText().equals(qName.toLowerCase())) {
                 option.click();
                 break;
             }
@@ -148,7 +149,7 @@ public class DLCContentPage {
         List<WebElement> sourceDestinationOptions = sourceDestinationDropDown.findElements(By.tagName(UIElementMapper.getInstance()
                 .getElement("mb.dlc.browse.table.reroute.queue.option")));
         for (WebElement option : sourceDestinationOptions) {
-            if (option.getText().equals(sourceDestination)) {
+            if (option.getText().equals(sourceDestination.toLowerCase())) {
                 option.click();
                 break;
             }
@@ -160,7 +161,7 @@ public class DLCContentPage {
         List<WebElement> targetDestinationOptions = targetDestinationDropDown.findElements(By.tagName(UIElementMapper.getInstance()
                 .getElement("mb.dlc.browse.table.reroute.queue.option")));
         for (WebElement option : targetDestinationOptions) {
-            if (option.getText().equals(targetDestination)) {
+            if (option.getText().equals(targetDestination.toLowerCase())) {
                 option.click();
                 break;
             }
