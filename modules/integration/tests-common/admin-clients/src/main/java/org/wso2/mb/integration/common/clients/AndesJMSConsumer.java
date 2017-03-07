@@ -526,6 +526,12 @@ public class AndesJMSConsumer extends AndesJMSBase
                 // Roll-backing session
                 session.rollback();
                 log.info("Roll-backed session");
+            } else if (0 == this.receivedMessageCount.get() % consumerConfig
+                    .getRecoverAfterEachMessageCount()) {
+                // recover the session
+                log.info("Recovering session");
+                session.recover();
+
             }
 
             if (this.receivedMessageCount.get() >= consumerConfig
