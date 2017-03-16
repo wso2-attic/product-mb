@@ -690,15 +690,6 @@
         </parameter>
 
         <!--
-        Following parameters will load custom Hazelcast data serializers.
-        -->
-        <parameter name="hazelcastSerializers">
-            <serializer typeClass="org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.wrapper.TreeSetLongWrapper">org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.TreeSetLongWrapperSerializer</serializer>
-            <serializer typeClass="org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.wrapper.TreeSetSlotWrapper">org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.TreeSetSlotWrapperSerializer</serializer>
-            <serializer typeClass="org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.wrapper.HashmapStringTreeSetWrapper">org.wso2.andes.server.cluster.coordination.hazelcast.custom.serializer.HashMapStringTreeSetWrapperSerializer</serializer>
-        </parameter>
-
-        <!--
            The list of static or well-known members. These entries will only be valid if the
            "membershipScheme" above is set to "wka"
         -->
