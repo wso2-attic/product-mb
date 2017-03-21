@@ -41,7 +41,7 @@ import java.io.IOException;
  * This class includes unit tests to verify that messages with JMS expiration are properly removed when delivering to
  * non-durable topics.
  */
-public class MixedTopicTestCase extends MBIntegrationBaseTest {
+public class TopicMessageExpiryTestCase extends MBIntegrationBaseTest {
 
     /**
      * Total message count sent
