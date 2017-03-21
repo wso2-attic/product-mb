@@ -40,7 +40,7 @@ import java.io.IOException;
 /**
  * Unit tests to ensure jms expiration works as expected with durable topics.
  */
-public class MixedDurableTopicTestCase extends MBIntegrationBaseTest {
+public class DurableTopicMessageExpiryTestCase extends MBIntegrationBaseTest {
 
     /**
      * Total message amount published

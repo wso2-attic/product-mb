@@ -40,7 +40,7 @@ import java.io.IOException;
 /**
  * This class includes unit tests to verify that messages with JMS expiration are properly removed when delivering to queues.
  */
-public class MixedQueueTestCase extends MBIntegrationBaseTest {
+public class QueueMessageExpireTestCase extends MBIntegrationBaseTest {
 
     /**
      * Initializing test case
@@ -185,8 +185,11 @@ public class MixedQueueTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed for publisher without expiration.");
         Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed for publisher with expiration");
 
-        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed for client 1.");
-        Assert.assertEquals(secondaryConsumerClient.getReceivedMessageCount(), expectedCountByOneSubscriber, "Message receiving failed for client 2.");
-        Assert.assertEquals(initialConsumerClient.getReceivedMessageCount() + secondaryConsumerClient.getReceivedMessageCount(), sendCountWithoutExpiration, "Message receiving failed.");
+        long consumer1MsgCount = initialConsumerClient.getReceivedMessageCount();
+        long consumer2MsgCount = secondaryConsumerClient.getReceivedMessageCount();
+
+        Assert.assertEquals((consumer1MsgCount + consumer2MsgCount) , sendCountWithoutExpiration,
+                "Message receiving failed. Expected " + sendCountWithoutExpiration + " but received "
+                        + (consumer1MsgCount + consumer2MsgCount));
     }
 }
