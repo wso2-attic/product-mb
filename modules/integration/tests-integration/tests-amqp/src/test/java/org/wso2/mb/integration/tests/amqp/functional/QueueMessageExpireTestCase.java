@@ -179,7 +179,7 @@ public class QueueMessageExpireTestCase extends MBIntegrationBaseTest {
         publisherClientWithExpiration.startClient();
 
         AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.shutdownClient(secondaryConsumerClient);
+        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
 
         // Evaluating
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed for publisher without expiration.");
