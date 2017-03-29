@@ -47,6 +47,11 @@
             <excludes>
                 <exclude>**/wso2server.sh</exclude>
                 <exclude>**/wso2server.bat</exclude>
+                <exclude>**/java2wsdl.bat</exclude>
+                <exclude>**/java2wsdl.sh</exclude>
+                <exclude>**/tcpmon.bat</exclude>
+                <exclude>**/tcpmon.sh</exclude>
+                <exclude>**/wsdl2java.sh</exclude>
             </excludes>
             <includes>
                 <include>**/*.sh</include>
