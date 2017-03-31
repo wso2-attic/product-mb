@@ -71,6 +71,7 @@ public class DtxStartNegativeTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -115,6 +116,7 @@ public class DtxStartNegativeTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -159,6 +161,7 @@ public class DtxStartNegativeTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -174,6 +177,7 @@ public class DtxStartNegativeTestCase extends MBIntegrationBaseTest {
 
         //
         XAConnection xaConnectionDuplicate = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSessionDuplicate = xaConnectionDuplicate.createXASession();
 
         XAResource xaResourceDuplicate = xaSessionDuplicate.getXAResource();
