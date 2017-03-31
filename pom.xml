@@ -29,7 +29,7 @@
     <groupId>org.wso2.mb</groupId>
     <artifactId>mb-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.0-BETA</version>
+    <version>3.2.2-SNAPSHOT</version>
     <name>WSO2 MB</name>
     <url>http://wso2.org/projects/mb/java</url>
     <description>WSO2 Message Broker Server</description>
@@ -45,7 +45,7 @@
         <url>https://github.com/wso2/product-mb.git</url>
         <developerConnection>scm:git:https://github.com/wso2/product-mb.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/product-mb.git</connection>
-        <tag>v3.2.0-BETA</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
@@ -459,7 +459,7 @@
         <andes.version>3.2.6</andes.version>
         <analytics.shared.version>1.0.1</analytics.shared.version>
         <!--product version-->
-        <product.mb.version>3.2.0-BETA</product.mb.version>
+        <product.mb.version>3.2.2-SNAPSHOT</product.mb.version>
         <!--automation and tests-->
         <carbon.testautomation.version>4.4.2</carbon.testautomation.version>
         <carbon.integration.version>4.4.0</carbon.integration.version>
