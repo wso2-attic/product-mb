@@ -67,7 +67,7 @@ public class TopicsBrowsePage extends MBPage {
             for (WebElement liNode : liList) {
                 // Gets the element which has the topic name
                 WebElement topicNameNode = liNode.findElement(By.className("treeNode"));
-                if (topicName.equals(topicNameNode.getText())) {
+                if (topicName.toLowerCase().equals(topicNameNode.getText())) {
                     isTopicPresent = true;
                 }
             }

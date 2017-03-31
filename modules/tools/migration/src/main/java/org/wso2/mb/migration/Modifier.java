@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c)2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,223 +18,68 @@
 
 package org.wso2.mb.migration;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class Modifier {
-
-    /**
-     * Properties of a subscription.
-     */
-    private Map<String, String> subscriptionProperties;
+/**
+ * Modifier accepts string such as binding details and message router details that were stored in WSO2MB 3.1.0 and
+ * modifies them to the format that is accepted by WSO2MB 3.2.0.
+ */
+class Modifier {
 
     /**
-     * The storage queue of the last read subscription.
-     */
-    private String storageQueueName;
-
-    /**
-     * Method to modify a subscription.
-     * <p/>
-     * Removes the subscriptionType and isBoundToTopic properties and inserts destination type and the protocol type
+     * Modify binding info to be compatible with MB 3.2.0. Extracts the queue name, message router name and the
+     * routing key and simply adds that as binding details.
      *
-     * @param oldSubscription subscription String to be modified
-     * @return String representing the modified subscription
+     * @param bindingInfo binding information as stored in WSO2MB 3.1.0 to be modified
+     * @return modified binding info that is compatible with WSO2MB 3.2.0
      */
-    public String modifySubscription(String oldSubscription) {
-        String newSubscription;
+    String modifyBinding(String bindingInfo) throws Exception {
 
-        String[] subscriptionProperties = oldSubscription.split(",");
-
-        this.subscriptionProperties = new HashMap<>();
-
-        for (String entry : subscriptionProperties){
-            if (entry.trim().length() > 0) {
-                entry = entry.trim();
-                String[] keyValuePairs = entry.split("=");
-                this.subscriptionProperties.put(keyValuePairs[0], keyValuePairs[1]);
-            }
-
-        }
-        storageQueueName = this.subscriptionProperties.get("storageQueueName");
-        newSubscription = encodeAsStr();
-        return newSubscription;
-    }
-
-    /**
-     * Method to derive the new destination type given the old destination type.
-     * <p/>
-     * E.g., topic.topic1 is modified to DURABLE_TOPIC.topic1
-     *
-     * @param oldDest destination type to be modifed
-     * @return destination after modification
-     */
-    public String modifyDestinationType(String oldDest){
-        String newDest = oldDest;
-        if (oldDest.startsWith("topic.")){
-            newDest=oldDest.substring(6, oldDest.length());
-            newDest= "DURABLE_TOPIC." + newDest;
-        }
-        return newDest;
-    }
-
-    /**
-     * The destination type.
-     *
-     * Indicates if it is bound to queue or topic and the durability
-     */
-    private String destinationType = "";
-
-    /**
-     * Indicates the protocol type of the queue, binding,, subscription, etc. Will be either "AMQP" or "MQTT"
-     */
-    private String protocolType = "";
-
-    /**
-     * Create new string representing the subscription using the subscription properties
-     *
-     * @return String representing the new subscriptions
-     */
-    private String encodeAsStr() {
-
-        if ("true".equals(subscriptionProperties.get("isBoundToTopic"))) {
-            if ("true".equals(subscriptionProperties.get("isDurable"))) {
-                destinationType = "DURABLE_TOPIC";
-            } else {
-                destinationType = "TOPIC";
-            }
-        } else {
-            destinationType = "QUEUE";
-        }
-
-        if ("AMQP".equals(subscriptionProperties.get("subscriptionType"))) {
-            protocolType = "AMQP";
-
-        } else {
-            protocolType = "MQTT";
-        }
-
-        // Append all the properties to get the subscription details
-        StringBuilder builder = new StringBuilder();
-        builder.append("subscriptionID=").append(subscriptionProperties.get("subscriptionID"))
-                .append(",destination=").append(subscriptionProperties.get("destination"))
-                .append(",isExclusive=").append(subscriptionProperties.get("isExclusive"))
-                .append(",isDurable=").append(subscriptionProperties.get("isDurable"))
-                .append(",targetQueue=").append(subscriptionProperties.get("targetQueue"))
-                .append(",targetQueueOwner=")
-                .append(subscriptionProperties.get("targetQueueOwner"))
-                .append(",targetQueueBoundExchange=")
-                .append(subscriptionProperties.get("targetQueueBoundExchange"))
-                .append(",targetQueueBoundExchangeType=")
-                .append(subscriptionProperties.get("targetQueueBoundExchangeType"))
-                .append(",isTargetQueueBoundExchangeAutoDeletable=")
-                .append(subscriptionProperties.get("isTargetQueueBoundExchangeAutoDeletable"))
-                .append(",subscribedNode=").append(subscriptionProperties.get("subscribedNode"))
-                .append(",subscribedTime=").append(subscriptionProperties.get("subscribedTime"))
-                .append(",hasExternalSubscriptions=").append(subscriptionProperties.get("hasExternalSubscriptions"))
-                .append(",storageQueueName=").append(subscriptionProperties.get("storageQueueName"))
-                .append(",destinationType=").append(destinationType)
-                .append(",protocolType=").append(protocolType);
-
-        return builder.toString();
-    }
-
-    /**
-     * Modify queue info to be compatible with MB 3.1.0. Adds the protocol type and the destination type.
-     *
-     * @param queueInfo queue information to be modified
-     * @return modified queue info
-     */
-    public String modifyQueue(String queueInfo){
-        if (null != queueInfo) {
-            if ("MQTT".equals(protocolType)){
-                destinationType = "TOPIC";
-            }
-            else{
-                destinationType = "QUEUE";
-            }
-            StringBuilder builder = new StringBuilder();
-            builder.append(queueInfo).append(",protocolType=").append(protocolType).append(",destinationType=").append(destinationType);
-
-            return builder.toString();
-        }
-        else {
-            throw new RuntimeException("Queue info cannot be null");
-        }
-    }
-
-    /**
-     * Modify queue info to be compatible with MB 3.1.0. Adds the protocol type and the destination type.
-     *
-     * @param queueInfo string representing the queue details to be modified
-     * @return String representing modified queue details
-     */
-    public String modifyDefaultQueue(String queueInfo){
-        if (null != queueInfo) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(queueInfo).append(",protocolType=").append("AMQP").append(",destinationType=").append("QUEUE");
-            return builder.toString();
-        }
-        else {
-            throw new RuntimeException("Queue info cannot be empty");
-        }
-    }
-
-    /**
-     * Modify binding info to be compatible with MB 3.1.0. Adds the protocol type and the destination type.
-     *
-     * @param bindingInfo binding information to be modified
-     * @return modified queue info
-     */
-    public String modifyBinding(String bindingInfo){
+        String boundMessageRouter;
+        String boundQueueName;
+        String bindingKey;
 
         if (null != bindingInfo) {
             String[] parts = bindingInfo.split("\\|");
-            StringBuilder builder = new StringBuilder();
-            builder.append(parts[0].trim())
-                    .append("|")
-                    .append(parts[1].trim())
-                    .append(",protocolType=")
-                    .append(protocolType)
-                    .append(",destinationType=QUEUE")
-                    .append("|")
-                    .append(parts[2]);
+            if (parts.length != 3) {
+                throw new Exception("Cannot recognize binging info: " + bindingInfo);
+            }
 
-            return builder.toString();
-        }
-        else{
-            throw new RuntimeException("Binding cannot be null");
+            /* Create binding details in the format of
+             "boundMessageRouter=amq.direct, boundQueueName=queue_name,bindingKey=routing_key"*/
+            boundMessageRouter = parts[0].split("&")[1];
+            String[] boundQueueInfo = parts[1].split(",");
+            boundQueueName = boundQueueInfo[0].split("=")[1];
+            bindingKey = parts[2].split("&")[1];
+            return "boundMessageRouter=" + boundMessageRouter + ",boundQueueName=" + boundQueueName
+                   + ",bindingKey=" + bindingKey;
+        } else {
+            throw new Exception("Binding cannot be null");
         }
     }
 
     /**
-     * Method to modify bindings that have no subscriptions
+     * Given the queue name and the message router to be bound, this method creates the binding details to be
+     * compatible with WSO2MB 3.2.0.
      *
-     * @param bindingInfo binding information to be modified
-     * @return String representing binding information after modification
+     * @param queueName  the queue name to be bound to
+     * @param routerName the message router to which the queue is bound
+     * @return modified queue info
      */
-    public String modifyDefaultBinding(String bindingInfo){
-
-        if (null != bindingInfo) {
-            String[] parts = bindingInfo.split("\\|");
-            StringBuilder builder = new StringBuilder();
-            builder.append(parts[0].trim())
-                    .append("|")
-                    .append(parts[1].trim())
-                    .append(",protocolType=")
-                    .append("AMQP")
-                    .append(",destinationType=QUEUE")
-                    .append("|")
-                    .append(parts[2]);
-
-            return builder.toString();
-        }
-        else{
-            throw new RuntimeException("Binding cannot be null");
-        }
+    String createBindingDetails(String queueName, String routerName) {
+        return "boundMessageRouter=" + routerName + ",boundQueueName=" + queueName
+               + ",bindingKey=" + queueName;
     }
 
-    public String getStorageQueueName() {
-        return storageQueueName;
+    /**
+     * Given the router name, the type of the router and the auto delete mode, this
+     * method creates the message router(exchange) details to be compatible with WSO2MB 3.2.0.
+     *
+     * @param routerName the name of the message router
+     * @param type       the type of the message router
+     * @param autoDelete defines if auto deletion is enabled or disabled
+     * @return modified message router details
+     */
+    String createExchangeDetails(String routerName, String type, String autoDelete) {
+        return "messageRouterName=" + routerName + ",type=" + type
+               + ",autoDeletefalse=" + autoDelete;
     }
 }

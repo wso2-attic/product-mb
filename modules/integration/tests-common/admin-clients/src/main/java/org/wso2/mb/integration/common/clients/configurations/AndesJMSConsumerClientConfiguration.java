@@ -49,6 +49,11 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     private long rollbackAfterEachMessageCount = Long.MAX_VALUE;
 
     /**
+     * Message count at which the session is recovered.
+     */
+    private long recoverAfterEachMessageCount = Long.MAX_VALUE;
+
+    /**
      * Message count at which the session is committed.
      */
     private long commitAfterEachMessageCount = Long.MAX_VALUE;
@@ -211,6 +216,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
 
             this.unSubscribeAfterEachMessageCount = config.getLong("base.consumer.unSubscribeAfterEachMessageCount", Long.MAX_VALUE);
             this.rollbackAfterEachMessageCount = config.getLong("base.consumer.rollbackAfterEachMessageCount", Long.MAX_VALUE);
+            this.recoverAfterEachMessageCount = config.getLong("base.consumer.recoverAfterEachMessageCount", Long.MAX_VALUE);
             this.commitAfterEachMessageCount = config.getLong("base.consumer.commitAfterEachMessageCount", Long.MAX_VALUE);
             this.acknowledgeAfterEachMessageCount = config.getLong("base.consumer.acknowledgeAfterEachMessageCount", Long.MAX_VALUE);
             this.filePathToWriteReceivedMessages = config.getString("base.consumer.filePathToWriteReceivedMessages", null);
@@ -299,6 +305,15 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
     }
 
     /**
+     * Gets the message count at which the session should be recovered.
+     *
+     * @return The message count at which the session should be recovered.
+     */
+    public long getRecoverAfterEachMessageCount() {
+        return recoverAfterEachMessageCount;
+    }
+
+    /**
      * Sets message count at which the session should be rolled-back.
      *
      * @param rollbackAfterEachMessageCount The message count at which the session should be
@@ -309,6 +324,21 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
             throws AndesClientConfigurationException {
         if (0 < rollbackAfterEachMessageCount) {
             this.rollbackAfterEachMessageCount = rollbackAfterEachMessageCount;
+        } else {
+            throw new AndesClientConfigurationException("Value cannot be less than 0");
+        }
+    }
+
+    /**
+     * Sets message count at which the session should be recovered.
+     *
+     * @param recoverAfterEachMessageCount The message count at which the session should be recovered.
+     * @throws AndesClientConfigurationException on in-applicable value passed
+     */
+    public void setRecoverAfterEachMessageCount(long recoverAfterEachMessageCount)
+            throws AndesClientConfigurationException {
+        if(0 < recoverAfterEachMessageCount) {
+            this.recoverAfterEachMessageCount = recoverAfterEachMessageCount;
         } else {
             throw new AndesClientConfigurationException("Value cannot be less than 0");
         }
@@ -556,6 +586,7 @@ public class AndesJMSConsumerClientConfiguration extends AndesJMSClientConfigura
         return super.toString() +
                "UnSubscribeAfterEachMessageCount=" + this.unSubscribeAfterEachMessageCount + "\n" +
                "RollbackAfterEachMessageCount=" + this.rollbackAfterEachMessageCount + "\n" +
+                "RecoverAfterEachMessageCount=" + this.recoverAfterEachMessageCount + "\n" +
                "CommitAfterEachMessageCount=" + this.commitAfterEachMessageCount + "\n" +
                "AcknowledgeAfterEachMessageCount=" + this.acknowledgeAfterEachMessageCount + "\n" +
                "FilePathToWriteReceivedMessages=" + this.filePathToWriteReceivedMessages + "\n" +

@@ -169,7 +169,7 @@ public class QueuesBrowsePage {
         for (WebElement row : rowElementList) {
             List<WebElement> columnList = row.findElements(By.tagName("td"));
             // Assumption: there are six columns. Delete buttons are in the sixth column
-            if ((columnList.size() == 6) && columnList.get(0).getText().equals(queueName)) {
+            if ((columnList.size() == 6) && columnList.get(0).getText().equals(queueName.toLowerCase())) {
                 return row;
             }
         }

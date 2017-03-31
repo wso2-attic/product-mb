@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c)2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,7 +21,13 @@ package org.wso2.mb.migration;
 public class Main {
     public static void main(String[] args) {
 
-       Processor processor =  new Processor();
-        processor.modifyTables();
+        //Create new processor to read, modify and write data into the database
+        Processor processor = new Processor();
+
+        //Create DLC message router since it was not present in WSO2MB 3.1.0
+        processor.creteDlcMessageRouter();
+
+        //Modify bindings since the format of the binding details string is different in WSO2MB 3.1.0 and WSO2MB 3.2.0
+        processor.modifyBindings();
     }
 }

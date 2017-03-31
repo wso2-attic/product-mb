@@ -29,6 +29,8 @@ import org.wso2.carbon.automation.engine.context.AutomationContext;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.*;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
+import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.platform.tests.clustering.mqtt.DataProvider.QualityOfServiceDataProvider;
 import org.xml.sax.SAXException;
 
@@ -106,6 +108,8 @@ public class LZ4CompressCompatibilityMQTTClusterTestCase extends MQTTPlatformBas
         mqttClientEngine.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, true,
                 ClientMode.BLOCKING, clientConnectionConfigurationForNode2);
 
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
+
         // Create the publisher
         mqttClientEngine.createPublisherConnection(topic, qualityOfService, payload, noOfPublishers, noOfMessages,
                 ClientMode.BLOCKING, clientConnectionConfigurationForNode3);
@@ -127,6 +131,8 @@ public class LZ4CompressCompatibilityMQTTClusterTestCase extends MQTTPlatformBas
         // Create the subscriber
         mqttClientEngine2.createSubscriberConnection(topic, qualityOfService, noOfSubscribers, true,
                 ClientMode.BLOCKING, clientConnectionConfigurationForNode5);
+
+        AndesClientUtils.sleepForInterval(AndesClientConstants.DEFAULT_CLUSTER_SYNC_TIME);
 
         // Create the publisher
         mqttClientEngine2.createPublisherConnection(topic, qualityOfService, payload, noOfPublishers, noOfMessages,

@@ -39,6 +39,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.LZ4CompressionTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.SubTopicUserAuthorizationTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.AMQPSessionRecoverTestCase"/>
 
 
             <!-- This classes are added here since verification is done by writing to file and multiple subscribers
@@ -63,7 +64,7 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.AutoAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.ClientAcknowledgementsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DuplicatesOkAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.MixedQueueTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueMessageExpireTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleQueueSendReceiveTestCase"/>
             <!-- performMultipleQueueSendReceiveTestCase has been disabled in above test class until the issue is resolved.
             Its an intermittent failure. -->
@@ -84,8 +85,8 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableMultipleTopicSubscriberTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.MixedDurableTopicTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.MixedTopicTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicMessageExpiryTestCase"/>
+            <class name="org.wso2.mb.integration.tests.amqp.functional.TopicMessageExpiryTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultipleTopicPublishSubscribeTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantDurableTopicTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MultiTenantTopicTestCase"/>

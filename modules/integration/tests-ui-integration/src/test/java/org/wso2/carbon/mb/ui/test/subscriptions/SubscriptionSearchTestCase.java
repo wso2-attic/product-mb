@@ -247,10 +247,6 @@ public class SubscriptionSearchTestCase extends MBIntegrationUiBaseTest {
         result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
         Assert.assertEquals(result, 1);
 
-        topicSubscriptionsPage.searchTopicSubscriptions("", "carbon:subSearchDurable", 0, false, false);
-        result = topicSubscriptionsPage.getDurableActiveSubscriptionsCount();
-        Assert.assertEquals(result, 3);
-
         //Stop the clients
         consumerClient1.stopClient();
         consumerClient2.stopClient();
