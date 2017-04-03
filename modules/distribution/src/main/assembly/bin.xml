@@ -301,6 +301,10 @@
                 <include>log4j:log4j:jar</include>
                 <include>org.wso2.securevault:org.wso2.securevault:jar</include>
                 <include>org.wso2.carbon:org.wso2.carbon.logging:jar</include>
+                <include>org.apache.axis:axis:jar</include>
+                <include>commons-discovery:commons-discovery:jar</include>
+                <include>javax.xml:jaxrpc-api:jar</include>
+                <include>org.apache.axis:axis-ant:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
