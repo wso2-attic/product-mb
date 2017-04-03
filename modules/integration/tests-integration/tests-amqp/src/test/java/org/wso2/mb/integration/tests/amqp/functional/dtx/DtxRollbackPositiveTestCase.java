@@ -74,6 +74,7 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -142,6 +143,7 @@ public class DtxRollbackPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();

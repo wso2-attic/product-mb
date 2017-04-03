@@ -87,6 +87,7 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -160,6 +161,7 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
                 (XAConnectionFactory) initialContext.lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -232,6 +234,8 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
 
         XAConnection xaConnection1 = connectionFactory.createXAConnection();
         XAConnection xaConnection2 = connectionFactory.createXAConnection();
+        xaConnection1.start();
+        xaConnection2.start();
         XASession xaSession1 = xaConnection1.createXASession();
         XASession xaSession2 = xaConnection2.createXASession();
 

@@ -81,6 +81,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -100,6 +101,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
+        queueConnection.start();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
 
@@ -149,6 +151,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
+        queueConnection.start();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         queueSession.createQueue(queueName);
@@ -161,6 +164,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -225,6 +229,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Create XA resource one
         XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();
+        xaConnectionOne.start();
         XASession xaSessionOne = xaConnectionOne.createXASession();
 
         XAResource xaResourceOne = xaSessionOne.getXAResource();
@@ -236,6 +241,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Create XA resource two
         XAConnection xaConnectionTwo = xaConnectionFactory.createXAConnection();
+        xaConnectionTwo.start();
         XASession xaSessionTwo = xaConnectionTwo.createXASession();
 
         XAResource xaResourceTwo = xaSessionTwo.getXAResource();
@@ -262,6 +268,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory nonXaConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection nonXaQueueConnection = nonXaConnectionFactory.createConnection();
+        nonXaQueueConnection.start();
         Session nonXaQueueSession = nonXaQueueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer messageConsumer = nonXaQueueSession.createConsumer(xaTestQueue);
 
@@ -325,6 +332,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory nonXaConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection nonXaQueueConnection = nonXaConnectionFactory.createConnection();
+        nonXaQueueConnection.start();
         Session nonXaQueueSessionOne = nonXaQueueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         Destination xaTestQueueOne = nonXaQueueSessionOne.createQueue(queueNameOne);
@@ -344,6 +352,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Create XA resource one
         XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();
+        xaConnectionOne.start();
         XASession xaSessionOne = xaConnectionOne.createXASession();
 
         XAResource xaResourceOne = xaSessionOne.getXAResource();
@@ -353,6 +362,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Create XA resource two
         XAConnection xaConnectionTwo = xaConnectionFactory.createXAConnection();
+        xaConnectionTwo.start();
         XASession xaSessionTwo = xaConnectionTwo.createXASession();
 
         XAResource xaResourceTwo = xaSessionTwo.getXAResource();
