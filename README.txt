@@ -225,5 +225,5 @@ Crypto Notice
    Bouncycastle     : http://www.bouncycastle.org/
 
 --------------------------------------------------------------------------------
-(c) Copyright 2015 WSO2 Inc.
+(c) Copyright 2017 WSO2 Inc.
 
