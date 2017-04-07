@@ -74,6 +74,7 @@ public class DtxCommitPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
@@ -101,6 +102,7 @@ public class DtxCommitPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
+        queueConnection.start();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer messageConsumer = queueSession.createConsumer(xaTestQueue);
 
@@ -131,6 +133,7 @@ public class DtxCommitPositiveTestCase extends MBIntegrationBaseTest {
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
+        queueConnection.start();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         queueSession.createQueue(queueName);
@@ -145,6 +148,7 @@ public class DtxCommitPositiveTestCase extends MBIntegrationBaseTest {
                 .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
+        xaConnection.start();
         XASession xaSession = xaConnection.createXASession();
 
         XAResource xaResource = xaSession.getXAResource();
