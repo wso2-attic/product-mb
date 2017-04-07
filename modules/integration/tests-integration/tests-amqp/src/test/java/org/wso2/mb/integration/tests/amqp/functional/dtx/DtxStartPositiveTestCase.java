@@ -18,15 +18,16 @@ package org.wso2.mb.integration.tests.amqp.functional.dtx;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
 import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import java.rmi.RemoteException;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -44,7 +45,6 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 import javax.xml.xpath.XPathExpressionException;
-import java.rmi.RemoteException;
 
 /**
  * Test dtx.start positive scenarios with message publishing and acking
@@ -281,6 +281,106 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         xaConnectionOne.close();
         xaConnectionTwo.close();
+
+        //This is only added to find out the reason for the intermittent failure of this test method. Should be removed
+        // once the issue is identified.
+        try {
+            // Logging in
+            LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
+            String sessionCookie = loginLogoutClientForAdmin.login();
+            AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
+
+            //Check message count in queue
+            org.wso2.carbon.andes.stub.admin.types.Message[] queueOneMessages
+                    = admin.browseQueue(queueName, 0, 10);
+            Assert.assertEquals(queueOneMessages.length, 2, "Message not published to queue " + queueName);
+
+            //Logging out
+            loginLogoutClientForAdmin.logout();
+
+        } catch (RemoteException | AutomationUtilException | AndesAdminServiceBrokerManagerAdminException
+                | LogoutAuthenticationExceptionException e) {
+            e.printStackTrace();
+        }
+
+        receive = messageConsumer.receive(5000);
+        Assert.assertNotNull(receive, "Message not received");
+
+        receive = messageConsumer.receive(5000);
+        Assert.assertNotNull(receive, "Message not received");
+
+        nonXaQueueConnection.close();
+    }
+    /**
+     * Tests if publishing messages works correctly with session joining. Steps are,
+     * 1. Create two distributed transaction sessions and join one session to other.
+     * 2. Publish messages using two sessions.
+     * 3. Subscribe to the published queue and see if any message is received.
+     * 4. Commit the session
+     * 5. Subscribe to the queue and see if two messages are received
+     */
+    @Test(groups = { "wso2.mb", "dtx" })
+    public void xaMultiSessionPublishTestCase()
+            throws NamingException, JMSException, XAException, XPathExpressionException {
+        String queueName = "DtxStartPositiveTestCaseXaMultiSessionPublishTestCase";
+
+        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
+                                                                                    getAMQPPort()).withQueue(queueName).build();
+
+        XAConnectionFactory xaConnectionFactory = (XAConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+
+        // Create XA resource one
+        XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();
+        xaConnectionOne.start();
+        XASession xaSessionOne = xaConnectionOne.createXASession();
+
+        XAResource xaResourceOne = xaSessionOne.getXAResource();
+        Session sessionOne = xaSessionOne.getSession();
+
+        Destination xaTestQueue = (Destination) initialContext.lookup(queueName);
+        sessionOne.createQueue(queueName);
+        MessageProducer producerOne = sessionOne.createProducer(xaTestQueue);
+
+        // Create XA resource two
+        XASession xaSessionTwo = xaConnectionOne.createXASession();
+
+        XAResource xaResourceTwo = xaSessionTwo.getXAResource();
+        Session sessionTwo = xaSessionTwo.getSession();
+
+        MessageProducer producerTwo = sessionTwo.createProducer(xaTestQueue);
+
+        Xid xid = JMSClientHelper.getNewXid();
+
+        boolean sameRM = xaResourceOne.isSameRM(xaResourceTwo);
+
+        Assert.assertEquals(sameRM, true, "Resource one and resource two are connected to different resource "
+                + "managers");
+
+        xaResourceOne.start(xid, XAResource.TMNOFLAGS);
+        xaResourceTwo.start(xid, XAResource.TMJOIN);
+
+        producerOne.send(sessionOne.createTextMessage("Test 1"));
+        producerTwo.send(sessionTwo.createTextMessage("Test 2"));
+
+        xaResourceOne.end(xid, XAResource.TMSUCCESS);
+
+        // subscribe and see if the message is received
+        ConnectionFactory nonXaConnectionFactory = (ConnectionFactory) initialContext
+                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+        Connection nonXaQueueConnection = nonXaConnectionFactory.createConnection();
+        nonXaQueueConnection.start();
+        Session nonXaQueueSession = nonXaQueueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        MessageConsumer messageConsumer = nonXaQueueSession.createConsumer(xaTestQueue);
+
+        // wait 5 seconds
+        Message receive = messageConsumer.receive(5000);
+        Assert.assertNull(receive, "Message received before committing");
+
+        xaResourceOne.prepare(xid);
+        xaResourceOne.commit(xid, false);
+
+        xaConnectionOne.close();
 
         //This is only added to find out the reason for the intermittent failure of this test method. Should be removed
         // once the issue is identified.
