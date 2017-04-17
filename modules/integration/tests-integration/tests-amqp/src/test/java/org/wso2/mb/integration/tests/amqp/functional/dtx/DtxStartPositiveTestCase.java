@@ -260,7 +260,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         xaResourceTwo.start(xid, XAResource.TMJOIN);
 
         producerOne.send(sessionOne.createTextMessage("Test 1"));
-        producerTwo.send(sessionOne.createTextMessage("Test 2"));
+        producerTwo.send(sessionTwo.createTextMessage("Test 2"));
 
         xaResourceOne.end(xid, XAResource.TMSUCCESS);
 
