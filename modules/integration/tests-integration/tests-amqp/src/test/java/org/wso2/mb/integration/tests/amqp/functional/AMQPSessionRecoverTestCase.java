@@ -65,8 +65,9 @@ import java.net.URISyntaxException;
 public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
 
-    private static final String TEST_SESSION_RECOVER = "recoverTestQueue";
-
+    private final String TEST_SESSION_RECOVER_WITHOUT_ACK = "recoverTestQueueWithoutAck";
+    private final String TEST_SESSION_RECOVER_WITH_ACK = "recoverTestQueueWithAck";
+    private final String TEST_SESSION_RECOVER_AND_DLC = "testRecoverAndDlc";
     /**
      * Initializes test case
      *
@@ -76,8 +77,6 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
     public void init() throws XPathExpressionException, MalformedURLException {
         super.init(TestUserMode.SUPER_TENANT_USER);
     }
-
-
 
     /**
      * Set values TRANSPORTS_AMQP_MAXIMUM_REDELIVERY_ATTEMPTS = 3 and
@@ -104,7 +103,6 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         //We should restart the server with the new configuration values
         configurationEditor.applyUpdatedConfigurationAndRestartServer(serverManager);
     }
-
 
     /**
      * Send 40 messages to a queue. Consume message with client ack set and call session.recover after 20 messages
@@ -138,8 +136,8 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration. Recover session after each message read. Apply a delay between
         // each read.
-        AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_WITHOUT_ACK);
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig1.setMaximumMessagesToReceived(expectedMessageCount);
         consumerConfig1.setRecoverAfterEachMessageCount(20);
@@ -150,9 +148,9 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
         consumerClient1.startClient();
 
-        // Creating publisher configuration with destination queue = 'recoverTestQueue' and message count = 40
-        AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        // Creating publisher configuration with destination queue = 'recoverTestQueueWithoutAck' and message count = 40
+        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_WITHOUT_ACK);
         publisherConfig1.setNumberOfMessagesToSend(sendToRecoverQueueCount);
         publisherConfig1.setPrintsPerMessageCount(sendToRecoverQueueCount / 5L);
 
@@ -168,15 +166,15 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
 
         //make sure remaining message count is 40
-        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER).getMessageCount();
+        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER_WITHOUT_ACK).getMessageCount();
         Assert.assertEquals(remainingMessageCount, 40, "Remaining Message count is not expected");
 
 
 
         //create a AUTO_ACKNOWLEDGE consumer and consume
 
-        AndesJMSConsumerClientConfiguration consumerConfig2 =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        AndesJMSConsumerClientConfiguration consumerConfig2 = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_WITHOUT_ACK);
         consumerConfig2.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
         expectedMessageCount = sendToRecoverQueueCount;
         consumerConfig2.setMaximumMessagesToReceived(expectedMessageCount);
@@ -194,13 +192,14 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
                         + ". Received " + expectedMessageCount);
 
         //make sure message count is 0
-        long remainingMessageCountAfterResubscribe = admin.getQueueByName(TEST_SESSION_RECOVER).getMessageCount();
+        long remainingMessageCountAfterResubscribe =
+                admin.getQueueByName(TEST_SESSION_RECOVER_WITHOUT_ACK).getMessageCount();
         Assert.assertEquals(remainingMessageCountAfterResubscribe, 0,
                 "Remaining Message count is not zero");
 
 
         //Purging 'purgeTestQueue' queue
-        admin.purgeQueue(TEST_SESSION_RECOVER);
+        admin.purgeQueue(TEST_SESSION_RECOVER_WITHOUT_ACK);
 
         //Put a thread sleep so that we can make sure that the queue is deleted before testing its existence
         AndesClientUtils.sleepForInterval(1000);
@@ -243,8 +242,8 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration. Recover session after each message read. Apply a delay between
         // each read.
-        AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_WITH_ACK);
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.AUTO_ACKNOWLEDGE);
         consumerConfig1.setMaximumMessagesToReceived(expectedMessageCount);
         consumerConfig1.setRecoverAfterEachMessageCount(1);
@@ -255,9 +254,9 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
         consumerClient1.startClient();
 
-        // Creating publisher configuration with destination queue = 'recoverTestQueue' and message count = 40
-        AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        // Creating publisher configuration with destination queue = 'recoverTestQueueWithAck' and message count = 40
+        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_WITH_ACK);
         publisherConfig1.setNumberOfMessagesToSend(sendToRecoverQueueCount);
         publisherConfig1.setPrintsPerMessageCount(sendToRecoverQueueCount / 5L);
 
@@ -281,7 +280,7 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
         //Testing if no messages are moved to DLC
         Message[] messagesInDLC = admin.browseQueue(DLCQueueUtils.identifyTenantInformationAndGenerateDLCString
-                (TEST_SESSION_RECOVER), 0, 200);
+                (TEST_SESSION_RECOVER_WITH_ACK), 0, 200);
         Assert.assertNull(messagesInDLC, "Messages have been moved to DLC.");
 
         //make sure no more messages are received
@@ -297,12 +296,12 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
                         + ". Received " + (expectedMessageCount + consumerClient2.getReceivedMessageCount()));
 
         //make sure message count is 0
-        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER).getMessageCount();
+        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER_WITH_ACK).getMessageCount();
         Assert.assertEquals(remainingMessageCount, 0, "Remaining Message count is not zero");
 
 
         //Purging 'purgeTestQueue' queue
-        admin.purgeQueue(TEST_SESSION_RECOVER);
+        admin.purgeQueue(TEST_SESSION_RECOVER_WITH_ACK);
 
         //Put a thread sleep so that we can make sure that the queue is deleted before testing its existence
         AndesClientUtils.sleepForInterval(1000);
@@ -345,8 +344,8 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
         // Creating a consumer client configuration. Recover session after each message read. Apply a delay between
         // each read. Use CLIENT_ACKNOWLEDGE. Never ACK.
-        AndesJMSConsumerClientConfiguration consumerConfig1 =
-                new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        AndesJMSConsumerClientConfiguration consumerConfig1 = new AndesJMSConsumerClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_AND_DLC);
         consumerConfig1.setAcknowledgeMode(JMSAcknowledgeMode.CLIENT_ACKNOWLEDGE);
         consumerConfig1.setMaximumMessagesToReceived(expectedMessageCount);
         consumerConfig1.setRecoverAfterEachMessageCount(1);
@@ -358,9 +357,9 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         AndesClient consumerClient1 = new AndesClient(consumerConfig1, true);
         consumerClient1.startClient();
 
-        // Creating publisher configuration with destination queue = 'recoverTestQueue'
-        AndesJMSPublisherClientConfiguration publisherConfig1 =
-                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, TEST_SESSION_RECOVER);
+        // Creating publisher configuration with destination queue = 'testRecoverAndDlc'
+        AndesJMSPublisherClientConfiguration publisherConfig1 = new AndesJMSPublisherClientConfiguration(getAMQPPort(),
+                ExchangeType.QUEUE, TEST_SESSION_RECOVER_AND_DLC);
         publisherConfig1.setNumberOfMessagesToSend(sendToRecoverQueueCount);
         publisherConfig1.setPrintsPerMessageCount(sendToRecoverQueueCount / 5L);
 
@@ -385,12 +384,12 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
         //Testing if 5 messages are moved to DLC
         Message[] messagesInDLC = admin.browseQueue(DLCQueueUtils.identifyTenantInformationAndGenerateDLCString
-                (TEST_SESSION_RECOVER), 0, 200);
+                (TEST_SESSION_RECOVER_AND_DLC), 0, 200);
         Assert.assertEquals(messagesInDLC.length, 5, "Messages not have been moved to DLC.");
 
 
         //make sure remaining message count is 5
-        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER).getMessageCount();
+        long remainingMessageCount = admin.getQueueByName(TEST_SESSION_RECOVER_AND_DLC).getMessageCount();
         Assert.assertEquals(remainingMessageCount, 5, "Remaining Message count is not expected value");
 
         //start consuming again. Wait for some long to see how many messages are received.
@@ -402,17 +401,17 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
 
 
         //make sure message count is 0
-        long remainingMessageCount2 = admin.getQueueByName(TEST_SESSION_RECOVER).getMessageCount();
+        long remainingMessageCount2 = admin.getQueueByName(TEST_SESSION_RECOVER_AND_DLC).getMessageCount();
         Assert.assertEquals(remainingMessageCount2, 0, "Remaining Message count is not zero");
 
         //make sure DLC has all 10 messages
         Message[] messagesInDLCAfterSecondRound = admin.browseQueue(DLCQueueUtils
                 .identifyTenantInformationAndGenerateDLCString
-                (TEST_SESSION_RECOVER), 0, 200);
+                (TEST_SESSION_RECOVER_AND_DLC), 0, 200);
         Assert.assertEquals(messagesInDLCAfterSecondRound.length, 10, "Unexpected message count in DLC");
 
         //Purging 'purgeTestQueue' queue
-        admin.purgeQueue(TEST_SESSION_RECOVER);
+        admin.purgeQueue(TEST_SESSION_RECOVER_AND_DLC);
 
         //Put a thread sleep so that we can make sure that the queue is deleted before testing its existence
         AndesClientUtils.sleepForInterval(1000);
@@ -434,8 +433,9 @@ public class AMQPSessionRecoverTestCase extends MBIntegrationBaseTest {
         AndesAdminClient andesAdminClient =
                 new AndesAdminClient(super.backendURL, sessionCookie);
 
-        andesAdminClient.deleteQueue(TEST_SESSION_RECOVER);
-        andesAdminClient.deleteQueue(DLCQueueUtils.identifyTenantInformationAndGenerateDLCString(TEST_SESSION_RECOVER));
+        andesAdminClient.deleteQueue(TEST_SESSION_RECOVER_WITHOUT_ACK);
+        andesAdminClient.deleteQueue(TEST_SESSION_RECOVER_WITH_ACK);
+        andesAdminClient.deleteQueue(TEST_SESSION_RECOVER_AND_DLC);
 
         loginLogoutClientForAdmin.logout();
         //Revert back to original configuration.
