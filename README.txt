@@ -75,12 +75,12 @@ System Requirements
 
 
 For more details see
-    https://docs.wso2.com/display/MB310/Installation+Prerequisites
+    https://docs.wso2.com/display/MB320/Installation+Prerequisites
 
 Installation & Running
 ==================================
 
-1. Extract the wso2mb-3.1.0.zip and go to the extracted directory
+1. Extract the wso2mb-3.2.0.zip and go to the extracted directory
 2. Run the wso2server.sh or wso2server.bat as appropriate
 3. Point your favourite browser to
 
