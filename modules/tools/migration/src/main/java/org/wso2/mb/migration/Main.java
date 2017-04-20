@@ -29,5 +29,9 @@ public class Main {
 
         //Modify bindings since the format of the binding details string is different in WSO2MB 3.1.0 and WSO2MB 3.2.0
         processor.modifyBindings();
+
+        //Modify data in multiple tables making queue name references all simple.
+        processor.makeQueueNamesAllSimple();
+
     }
 }
