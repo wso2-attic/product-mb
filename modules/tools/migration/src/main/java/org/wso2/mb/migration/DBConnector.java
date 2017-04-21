@@ -52,6 +52,7 @@ public class DBConnector {
     private static final String MB_QUEUE_MAPPING = "MB_QUEUE_MAPPING";
     private static final String MB_SLOT_MESSAGE_ID = "MB_SLOT_MESSAGE_ID";
     private static final String MB_SLOT = "MB_SLOT";
+    private static final String MB_QUEUE_TO_LAST_ASSIGNED_ID = "MB_QUEUE_TO_LAST_ASSIGNED_ID";
 
     /**
      * String constants representing table columns.
@@ -73,6 +74,8 @@ public class DBConnector {
     private static final String GET_QUEUE_MAPPINGS = "SELECT * FROM " + MB_QUEUE_MAPPING;
     private static final String GET_MB_SLOT_MESSAGE_IDS = "SELECT * FROM " + MB_SLOT_MESSAGE_ID;
     private static final String GET_SLOTS = "SELECT * FROM " + MB_SLOT;
+    private static final String GET_MB_QUEUE_TO_LAST_ASSIGNED_IDS = "SELECT * FROM " + MB_QUEUE_TO_LAST_ASSIGNED_ID;
+
 
 
     /**
@@ -97,6 +100,10 @@ public class DBConnector {
                                                 + " SET " + STORAGE_QUEUE_NAME + " =?"
                                                 + " , " + ASSIGNED_QUEUE_NAME + " =?"
                                                 + " WHERE " + SLOT_ID + " =?";
+
+    private static final String UPDATE_MB_QUEUE_TO_LAST_ASSIGNED_ID = "UPDATE " + MB_QUEUE_TO_LAST_ASSIGNED_ID
+            + " SET " + QUEUE_NAME + " =?"
+            + " WHERE " + QUEUE_NAME + " =?";
 
     private static final String UPDATE_BINDING = "UPDATE " + MB_BINDING
                                                  + " SET " + BINDING_DETAILS + " =?"
@@ -410,6 +417,35 @@ public class DBConnector {
                     updateStatement.setString(2, queueName);
                     updateStatement.executeUpdate();
                 }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+    }
+
+    /**
+     * Make all queue names in MB_QUEUE_TO_LAST_ASSIGNED_ID table all simple
+     *
+     * @throws SQLException in case of executing update
+     */
+    void updateQueueNamesInQueueToLastAssignedIds() throws SQLException {
+        getConnection();
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(GET_MB_QUEUE_TO_LAST_ASSIGNED_IDS);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String queueName = resultSet.getString(QUEUE_NAME);
+                if(queueNameHasCapitals(queueName)) {
+                    String newQueueName = queueName.toLowerCase();
+
+                    PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_QUEUE_TO_LAST_ASSIGNED_ID);
+                    updateStatement.setString(1, newQueueName);
+                    updateStatement.setString(2, queueName);
+                    updateStatement.executeUpdate();
+                }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();

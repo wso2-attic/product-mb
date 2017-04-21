@@ -132,6 +132,7 @@ public class Processor {
             connector.updateQueueNamesInSlots();
             connector.updateQueueNamesInQueueMappings();
             connector.updateQueueNamesInSlotMessageIds();
+            connector.updateQueueNamesInQueueToLastAssignedIds();
         } catch (Exception e) {
             System.out.println("Error while making queue names simple in all places");
             e.printStackTrace();
