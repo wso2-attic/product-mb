@@ -23,13 +23,17 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.andes.client.JMSAMQException;
+import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
+import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.AndesJMSPublisher;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
+import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
@@ -533,5 +537,56 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         } finally {
             publisherClient1.stopClient();
         }
+    }
+
+    /**
+     * Test flow control when publishing more than 1000 messages with transactional session enabled
+     * Related JIRA: https://wso2.org/jira/browse/MB-1928
+     *
+     * @throws XPathExpressionException
+     * @throws AndesClientConfigurationException
+     * @throws IOException
+     * @throws AndesClientException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws AutomationUtilException
+     * @throws AndesAdminServiceBrokerManagerAdminException
+     */
+    @Test(groups = {"wso2.mb", "queue", "transactions"}, description = "Test queue publisher without subscribers")
+    public void queuePublishingWithoutSubscribers()
+            throws XPathExpressionException, AndesClientConfigurationException, IOException, AndesClientException,
+                   JMSException, NamingException, AutomationUtilException,
+                   AndesAdminServiceBrokerManagerAdminException {
+
+        int messageCount = 2000;
+        String queueName = "pubWithoutSubQueue";
+
+        //Logging in
+        LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
+        String sessionCookie = loginLogoutClientForAdmin.login();
+
+        //Creating admin client
+        AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
+
+        //Creating a queue to publish messages
+        admin.createQueue(queueName);
+
+        //Creating publisher configuration
+        AndesJMSPublisherClientConfiguration publisherConfig =
+                new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queueName);
+        publisherConfig.setTransactionalSession(true);
+        publisherConfig.setNumberOfMessagesToSend(messageCount);
+
+        //Creating publisher
+        AndesClient publisherClient = new AndesClient(publisherConfig, true);
+        publisherClient.startClient();
+        AndesClientUtils.sleepForInterval(5000);
+
+        //Getting published messages from the queue
+        org.wso2.carbon.andes.stub.admin.types.Message[] messages = admin.browseQueue(queueName, 0, messageCount);
+
+        //Verifying whether all messages were published to the queue
+        Assert.assertEquals(messages.length, messageCount, "All messages did not get published to the queue.");
+
     }
 }
