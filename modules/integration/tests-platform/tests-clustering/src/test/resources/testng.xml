@@ -25,33 +25,33 @@
     <test name="tests-transports" preserve-order="true" parallel="false">
 
         <classes>
-            <class name="org.wso2.mb.platform.tests.clustering.MessageExpirationTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.LZ4CompressCompatibilityTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>
+            <!--<class name="org.wso2.mb.platform.tests.clustering.MessageExpirationTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.QueueClusterTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.OrderGuaranteeTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.LZ4CompressCompatibilityTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.DifferentRateSubscriberTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.SubscriptionDisconnectingTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.MultipleSubscriberMultiplePublisherTestCase"/>-->
             <!--<class name="org.wso2.mb.platform.tests.clustering.QueueAckMixTestCase"/>-->
             <!--<class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckSubscriberCloseTestCase"/>-->
             <!--<class name="org.wso2.mb.platform.tests.clustering.QueueAutoAckTestCase"/>-->
-            <class name="org.wso2.mb.platform.tests.clustering.topic.SingleSubscriberSinglePublisherTopicTestCase"/>
+            <!--<class name="org.wso2.mb.platform.tests.clustering.topic.SingleSubscriberSinglePublisherTopicTestCase"/>-->
             <!--<class name="org.wso2.mb.platform.tests.clustering.topic.MultipleSubscriberMultiplePublisherTopicTestCase"/>-->
-            <class name="org.wso2.mb.platform.tests.clustering.DifferentAckModeQueueTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentAckModeTopicTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.DifferentMessageTypesQueueTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.topic.DifferentMessageTypesTopicTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.topic.MultipleTopicTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionOnlyTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicMessageDeliveringTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionTestCase"/>
-            <class name="org.wso2.mb.platform.tests.clustering.topic.TopicClusterTestCase"/>
+            <!--<class name="org.wso2.mb.platform.tests.clustering.DifferentAckModeQueueTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.topic.DifferentAckModeTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.DifferentMessageTypesQueueTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.topic.DifferentMessageTypesTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.topic.MultipleTopicTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionOnlyTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicMessageDeliveringTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.durable.topic.DurableTopicSubscriptionTestCase"/>-->
+            <!--<class name="org.wso2.mb.platform.tests.clustering.topic.TopicClusterTestCase"/>-->
 
             <!-- MQTT Test Cases -->
-             <class name="org.wso2.mb.platform.tests.clustering.mqtt.ClusteredSecurityTestCase"/>
-             <class name="org.wso2.mb.platform.tests.clustering.mqtt.MQTTClusterTestCase"/>
-             <class name="org.wso2.mb.platform.tests.clustering.mqtt.LZ4CompressCompatibilityMQTTClusterTestCase"/>
-             <class name="org.wso2.mb.platform.tests.clustering.mqtt.RetainClusterTestCase"/>
+             <!--<class name="org.wso2.mb.platform.tests.clustering.mqtt.ClusteredSecurityTestCase"/>-->
+             <!--<class name="org.wso2.mb.platform.tests.clustering.mqtt.MQTTClusterTestCase"/>-->
+             <!--<class name="org.wso2.mb.platform.tests.clustering.mqtt.LZ4CompressCompatibilityMQTTClusterTestCase"/>-->
+             <!--<class name="org.wso2.mb.platform.tests.clustering.mqtt.RetainClusterTestCase"/>-->
              <class name="org.wso2.mb.platform.tests.clustering.MixedQueueTopicTestCase"/>
              <!--Running the commented cases resulted in OOM-->
         </classes>

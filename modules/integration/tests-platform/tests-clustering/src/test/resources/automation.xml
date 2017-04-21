@@ -62,7 +62,7 @@
     -->
     <datasources>
         <datasource name="mbCluster">
-            <url>jdbc:mysql://localhost/WSO2_MB</url>
+            <url>jdbc:mysql://localhost/</url>
             <username>root</username>
             <password>root</password>
             <driverClassName>com.mysql.jdbc.Driver</driverClassName>
@@ -203,7 +203,7 @@
         <productGroup name="MB_Cluster" clusteringEnabled="false" default="true">
             <instance name="mb002" type="standalone" nonBlockingTransportEnabled="false">
                 <hosts>
-                    <host type="default">127.0.0.1</host>
+                    <host type="default">10.100.0.4</host>
                 </hosts>
                 <ports>
                     <port type="http">9763</port>
@@ -217,7 +217,7 @@
             </instance>
             <instance name="mb003" type="standalone" nonBlockingTransportEnabled="false">
                 <hosts>
-                    <host type="default">127.0.0.1</host>
+                    <host type="default">10.100.0.4</host>
                 </hosts>
                 <ports>
                     <port type="http">9764</port>
