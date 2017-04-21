@@ -580,7 +580,7 @@ public class TransactionalPublishingTestCase extends MBIntegrationBaseTest {
         //Creating publisher
         AndesClient publisherClient = new AndesClient(publisherConfig, true);
         publisherClient.startClient();
-        AndesClientUtils.sleepForInterval(5000);
+        AndesClientUtils.sleepForInterval(121000);
 
         //Getting published messages from the queue
         org.wso2.carbon.andes.stub.admin.types.Message[] messages = admin.browseQueue(queueName, 0, messageCount);
