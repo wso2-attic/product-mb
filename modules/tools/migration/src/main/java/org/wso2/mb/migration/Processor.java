@@ -122,4 +122,20 @@ public class Processor {
         }
         addDlcBindings();
     }
+
+    /**
+     * Read data of tables and modify data making all queue name references all simple.
+     */
+    void makeQueueNamesAllSimple() {
+        try {
+            connector.updateQueueNamesInQueuesAndBindings();
+            connector.updateQueueNamesInSlots();
+            connector.updateQueueNamesInQueueMappings();
+            connector.updateQueueNamesInSlotMessageIds();
+            connector.updateQueueNamesInQueueToLastAssignedIds();
+        } catch (Exception e) {
+            System.out.println("Error while making queue names simple in all places");
+            e.printStackTrace();
+        }
+    }
 }
