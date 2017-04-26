@@ -30,6 +30,8 @@
             <excludes>
                 <exclude>**/*.ipr</exclude>
                 <exclude>**/*.iwr</exclude>
+                <exclude>**/bin/README.txt</exclude>
+                <exclude>**/bin/kernel-version.txt</exclude>
                 <!--<exclude>**/transports/netty-transports.yml</exclude>-->
             </excludes>
         </fileSet>
@@ -79,6 +81,17 @@
     </fileSets>
 
     <files>
-
+        <file>
+            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/README.txt</source>
+            <outputDirectory>./bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/kernel-version.txt</source>
+            <outputDirectory>./bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
     </files>
 </assembly>
