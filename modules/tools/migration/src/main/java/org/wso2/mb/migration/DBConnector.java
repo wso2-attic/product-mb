@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The class which communicates with the database. Performs the operation of reading, inserting and updating bindings
@@ -53,6 +55,22 @@ public class DBConnector {
     private static final String MB_SLOT_MESSAGE_ID = "MB_SLOT_MESSAGE_ID";
     private static final String MB_SLOT = "MB_SLOT";
     private static final String MB_QUEUE_TO_LAST_ASSIGNED_ID = "MB_QUEUE_TO_LAST_ASSIGNED_ID";
+
+    /**
+     * String constants representing patterns used in MB_BINDING table for queue name.
+     */
+    private static final String QUEUE_NAME_PATTERN = "queueName=%s";
+
+    /**
+    *  String constants representing patterns used in MB_BINDING table for bound queue name.
+    */
+    private static final String BOUND_QUEUE_NAME_PATTERN = "boundQueueName=%s";
+
+    /**
+    *  String constants representing patterns used in MB_BINDING table for binding key.
+    */
+    private static final String BINDING_KEY_PATTERN = "bindingKey=%s";
+
 
     /**
      * String constants representing table columns.
@@ -292,17 +310,30 @@ public class DBConnector {
                 String bindingData = bindingsResultSet.getString(BINDING_DETAILS);
                 if (queueNameHasCapitals(queueName)) {
                     String newQueueName = queueName.toLowerCase();
-                    bindingData = bindingData.replaceAll(queueName, newQueueName);
+                    bindingData = bindingData.replaceAll(generateQueueNameString(queueName),
+                            generateQueueNameString(newQueueName));
+                    bindingData = bindingData.replaceAll(generateBoundQueueNameDataString(queueName),
+                            generateBoundQueueNameDataString(newQueueName));
                     queueName = newQueueName;
                 }
 
+                Pattern pattern = Pattern.compile("bindingKey=.*");
+                Matcher matcher = pattern.matcher(bindingData);
+
+                if (matcher.find()) {
+                    String bindingKey = matcher.group(0).split("=")[1];
+
+                    if(bindingKeyHasCapitals(bindingKey)) {
+                        String newBindingKey = bindingKey.toLowerCase();
+                        bindingData = bindingData.replaceAll(generateBindingKeyDataString(bindingKey),
+                                generateBindingKeyDataString(newBindingKey));
+                    }
+                }
                 PreparedStatement addBindingsStatement = conn.prepareStatement(INSERT_BINDING);
                 addBindingsStatement.setString(1, bindingsResultSet.getString(EXCHANGE_NAME));
                 addBindingsStatement.setString(2, queueName);
                 addBindingsStatement.setString(3, bindingData);
-
                 addBindingsStatement.executeUpdate();
-
             }
 
         } catch (SQLException e) {
@@ -326,7 +357,8 @@ public class DBConnector {
             if (queueNameHasCapitals(queueName)) {
                 String newQueueName = queueName.toLowerCase();
                 String queueData = resultSet.getString(QUEUE_DATA);
-                String newQueueData = queueData.replaceAll(queueName, newQueueName);
+                String newQueueData = queueData.replaceAll(generateQueueNameString(queueName),
+                        generateQueueNameString(newQueueName));
 
                 PreparedStatement updateStatement = conn.prepareStatement(UPDATE_QUEUE);
                 updateStatement.setString(1, newQueueName);
@@ -337,6 +369,35 @@ public class DBConnector {
         }
     }
 
+    /**
+     * Generate new queue name to put into database.
+     * @param queueName Name of queue
+     * @return generated data string
+     * @throws SQLException if a database error occurs when closing the connection
+     */
+    private String generateQueueNameString(String queueName) {
+        return String.format(QUEUE_NAME_PATTERN, queueName);
+    }
+
+    /**
+     * Generate new queue name to put into database.
+     * @param bindingKey Name of binding key
+     * @return generated data string
+     * @throws SQLException if a database error occurs when closing the connection
+     */
+    private String generateBindingKeyDataString(String bindingKey) {
+        return String.format(BINDING_KEY_PATTERN, bindingKey);
+    }
+
+    /**
+     * Generate new queue name to put into database.
+     * @param queueName Name of bound queue
+     * @return generated data string
+     * @throws SQLException if a database error occurs when closing the connection
+     */
+    private String generateBoundQueueNameDataString(String queueName) {
+        return String.format(BOUND_QUEUE_NAME_PATTERN, queueName);
+    }
 
     /**
      * Make all queue names in MB_SLOT table all simple
@@ -463,6 +524,16 @@ public class DBConnector {
      */
     private boolean queueNameHasCapitals(String queueName) {
         return !queueName.equals(queueName.toLowerCase());
+    }
+
+    /**
+     * Check if string has any uppercase letter
+     *
+     * @param bindingKey Binding key of queue
+     * @return true if has any upper case letter
+     */
+    private boolean bindingKeyHasCapitals(String bindingKey) {
+        return !bindingKey.equals(bindingKey.toLowerCase());
     }
 }
 
