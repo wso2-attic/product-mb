@@ -47,6 +47,11 @@
     </scm>
 
     <modules>
+        <module>andes</module>
+        <module>andes-client</module>
+        <module>security</module>
+        <module>analytics</module>
+        <module>mb-ui</module>
         <module>product</module>
     </modules>
 
