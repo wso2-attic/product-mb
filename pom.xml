@@ -138,6 +138,13 @@
                 <version>${msf4j.version}</version>
                 <type>zip</type>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.business.messaging</groupId>
+                <artifactId>org.wso2.carbon.business.messaging.core.feature</artifactId>
+                <version>4.0.0-SNAPSHOT</version>
+                <type>zip</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
