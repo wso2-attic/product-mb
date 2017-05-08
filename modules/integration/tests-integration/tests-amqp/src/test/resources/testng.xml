@@ -94,6 +94,9 @@
             <class name="org.wso2.mb.integration.tests.amqp.functional.TemporaryTopicSubscriptionVerificationTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.TopicTestCase"/>
 
+            <!-- Client ID null test case -->
+            <class name="org.wso2.mb.integration.tests.amqp.functional.ClientIDNullTestCase"/>
+
             <!-- Distributed Transactions -->
             <!-- Positive test cases -->
 

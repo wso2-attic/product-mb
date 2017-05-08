@@ -65,6 +65,7 @@ public class JMSClientHelper {
         private final String brokerHost;
         private final int brokerPort;
         private final Properties contextProperties;
+        private boolean useNullClientId = false;
 
         InitialContextBuilder(String username, String password, String brokerHost, int brokerPort) {
             this.username = username;
@@ -81,6 +82,16 @@ public class JMSClientHelper {
             return this;
         }
 
+        public InitialContextBuilder withTopic(String topicName) {
+            contextProperties.put("topic." + topicName, topicName);
+            return this;
+        }
+
+        public InitialContextBuilder withNoClientId() {
+            useNullClientId = true;
+            return this;
+        }
+
         public InitialContext build() throws NamingException {
             String connectionString = getBrokerConnectionString(username, password, brokerHost, brokerPort);
             contextProperties.put("connectionfactory." + QUEUE_CONNECTION_FACTORY, connectionString);
@@ -89,7 +100,9 @@ public class JMSClientHelper {
         }
 
         private String getBrokerConnectionString(String username, String password, String brokerHost, int brokerPort) {
-            return "amqp://" + username + ":" + password + "@clientID/carbon?brokerlist='tcp://"
+            String clientIdString = useNullClientId ? "" : "clientID";
+
+            return "amqp://" + username + ":" + password + "@" + clientIdString + "/carbon?brokerlist='tcp://"
                     + brokerHost + ":" + brokerPort + "'";
         }
     }
