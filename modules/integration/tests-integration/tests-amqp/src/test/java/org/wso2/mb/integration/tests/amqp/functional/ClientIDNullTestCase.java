@@ -66,9 +66,13 @@ public class ClientIDNullTestCase extends MBIntegrationBaseTest {
             throws NamingException, JMSException, XAException, XPathExpressionException {
         String queueName = "ClientIDNullTestCaseDtxPerformClientQueuePublishTestCase";
 
-        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
-                getAMQPPort())
-                                                       .withNoClientId().withQueue(queueName).build();
+        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin",
+                                                                                    "admin",
+                                                                                    "localhost",
+                                                                                    getAMQPPort())
+                                                       .withNoClientId()
+                                                       .withQueue(queueName)
+                                                       .build();
 
         // Publish to queue and rollback
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
@@ -124,9 +128,13 @@ public class ClientIDNullTestCase extends MBIntegrationBaseTest {
             throws NamingException, JMSException, XAException, XPathExpressionException, InterruptedException {
         String queueName = "ClientIDNullTestCasePerformClientQueueTestCase";
 
-        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
+        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin",
+                                                                                    "admin",
+                                                                                    "localhost",
                                                                                     getAMQPPort())
-                                                       .withNoClientId().withQueue(queueName).build();
+                                                       .withNoClientId()
+                                                       .withQueue(queueName)
+                                                       .build();
 
         // Publish to queue and rollback
         ConnectionFactory connectionFactory = (ConnectionFactory) initialContext
@@ -170,9 +178,12 @@ public class ClientIDNullTestCase extends MBIntegrationBaseTest {
             throws NamingException, JMSException, XAException, XPathExpressionException, InterruptedException {
         String topicName = "ClientIDNullTestCasePerformClientTopicTestCase";
 
-        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin", "admin", "localhost",
+        InitialContext initialContext = JMSClientHelper.createInitialContextBuilder("admin",
+                                                                                    "admin",
+                                                                                    "localhost",
                                                                                     getAMQPPort())
-                                                       .withNoClientId().withTopic(topicName).build();
+                                                       .withNoClientId()
+                                                       .withTopic(topicName) .build();
 
         // Publish to queue and rollback
         ConnectionFactory connectionFactory = (ConnectionFactory) initialContext
@@ -184,7 +195,6 @@ public class ClientIDNullTestCase extends MBIntegrationBaseTest {
         subscriberConnection.start();
         Session subscriberSession = subscriberConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         MessageConsumer messageConsumer = subscriberSession.createConsumer(xaTestQueue);
-
 
         Connection publisherConnection = connectionFactory.createConnection();
         publisherConnection.start();
