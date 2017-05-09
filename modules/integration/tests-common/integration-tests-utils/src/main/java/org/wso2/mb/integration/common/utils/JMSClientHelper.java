@@ -65,6 +65,7 @@ public class JMSClientHelper {
         private final String brokerHost;
         private final int brokerPort;
         private final Properties contextProperties;
+        private boolean useNullClientId = false;
 
         InitialContextBuilder(String username, String password, String brokerHost, int brokerPort) {
             this.username = username;
@@ -76,11 +77,42 @@ public class JMSClientHelper {
             contextProperties.put(Context.INITIAL_CONTEXT_FACTORY, ANDES_INITIAL_CONTEXT_FACTORY);
         }
 
+        /**
+         * Add Queue name to initial context
+         *
+         * @return Initial Context builder
+         */
         public InitialContextBuilder withQueue(String queueName) {
             contextProperties.put("queue." + queueName, queueName);
             return this;
         }
 
+        /**
+         * Add Topic name to initial context
+         *
+         * @return Initial Context builder
+         */
+        public InitialContextBuilder withTopic(String topicName) {
+            contextProperties.put("topic." + topicName, topicName);
+            return this;
+        }
+
+        /**
+         * Remove client ID from the broker URL
+         *
+         * @return Initial Context builder
+         */
+        public InitialContextBuilder withNoClientId() {
+            useNullClientId = true;
+            return this;
+        }
+
+        /**
+         * Build the initial context according to builder parameters
+         *
+         * @return Initial context
+         * @throws NamingException if there is an error in builder parameters
+         */
         public InitialContext build() throws NamingException {
             String connectionString = getBrokerConnectionString(username, password, brokerHost, brokerPort);
             contextProperties.put("connectionfactory." + QUEUE_CONNECTION_FACTORY, connectionString);
@@ -88,8 +120,19 @@ public class JMSClientHelper {
             return new InitialContext(contextProperties);
         }
 
+        /**
+         * Generate the broker URL
+         *
+         * @param username   username used to connect
+         * @param password   password used to connect
+         * @param brokerHost hostname of the primary broker
+         * @param brokerPort AMQP port used byy the primary broker
+         * @return broker URL
+         */
         private String getBrokerConnectionString(String username, String password, String brokerHost, int brokerPort) {
-            return "amqp://" + username + ":" + password + "@clientID/carbon?brokerlist='tcp://"
+            String clientIdString = useNullClientId ? "" : "clientID";
+
+            return "amqp://" + username + ":" + password + "@" + clientIdString + "/carbon?brokerlist='tcp://"
                     + brokerHost + ":" + brokerPort + "'";
         }
     }
