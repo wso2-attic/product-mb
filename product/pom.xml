@@ -34,6 +34,14 @@
     <url>http://wso2.org</url>
     <modelVersion>4.0.0</modelVersion>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.business.messaging</groupId>
+            <artifactId>org.wso2.carbon.business.messaging.core.feature</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -88,18 +96,18 @@
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${carbon.cache.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.msf4j.feature</id>
-                                    <version>${msf4j.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.msf4j.feature</id>-->
+                                    <!--<version>${msf4j.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.transport.http.netty.feature</id>
-                                    <version>${carbon.transport.http.netty.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.transport.http.netty.feature</id>-->
+                                    <!--<version>${carbon.transport.http.netty.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.jndi.feature</id>
                                     <version>${carbon.jndi.version}</version>
@@ -120,11 +128,11 @@
                                     <id>org.wso2.carbon.datasource.core.feature</id>
                                     <version>${carbon.datasources.version}</version>
                                 </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.deployment.engine.feature</id>-->
+                                    <!--<version>${carbon.deployment.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
-                                    <id>org.wso2.carbon.deployment.engine.feature</id>
-                                    <version>${carbon.deployment.version}</version>
-                                </feature>
-				<feature>
                                     <id>org.wso2.carbon.business.messaging.core.feature</id>
                                     <version>4.0.0-SNAPSHOT</version>
                                 </feature>
@@ -150,16 +158,15 @@
                         <id>materialize-product</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>generate-profile</goal>
+                            <goal>generate-runtime</goal>
                         </goals>
                         <configuration>
                             <productConfigurationFile>${basedir}/carbon.product
                             </productConfigurationFile>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
                             <targetPath>
-                                file:${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi
-                            </targetPath>
-                            <profile>profiles/default</profile>
+                                file:${basedir}/target/WSO2Carbon/wso2</targetPath>
+                            <runtime>default</runtime>
                         </configuration>
                     </execution>
                     <execution>
@@ -169,33 +176,36 @@
                             <goal>install</goal>
                         </goals>
                         <configuration>
-                            <profile>profiles/default</profile>
+                            <runtime>default</runtime>
                             <repositoryURL>file:${basedir}/target/p2-repo</repositoryURL>
                             <destination>
-                                ${basedir}/target/wso2carbon-kernel-${carbon.kernel.version}/osgi
-                            </destination>
-                            <deleteOldProfileFiles>true</deleteOldProfileFiles>
+                                ${basedir}/target/WSO2Carbon/wso2</destination>
+                            <deleteOldRuntimeFiles>true</deleteOldRuntimeFiles>
                             <features>
                                 <feature>
                                     <id>org.wso2.carbon.kernel.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
+                                    <id>org.wso2.carbon.runtime.feature.group</id>
+                                    <version>${carbon.kernel.version}</version>
+                                </feature>
+                                <feature>
                                     <id>org.wso2.carbon.caching.feature.group</id>
                                     <version>${carbon.cache.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.msf4j.feature.group</id>
-                                    <version>${msf4j.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.msf4j.feature.group</id>-->
+                                    <!--<version>${msf4j.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature.group</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.transport.http.netty.feature.group</id>
-                                    <version>${carbon.transport.http.netty.version}</version>
-                                </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.transport.http.netty.feature.group</id>-->
+                                    <!--<version>${carbon.transport.http.netty.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
                                     <id>org.wso2.carbon.jndi.feature.group</id>
                                     <version>${carbon.jndi.version}</version>
@@ -216,12 +226,12 @@
                                     <id>org.wso2.carbon.datasource.core.feature.group</id>
                                     <version>${carbon.datasources.version}</version>
                                 </feature>
+                                <!--<feature>-->
+                                    <!--<id>org.wso2.carbon.deployment.engine.feature.group</id>-->
+                                    <!--<version>${carbon.deployment.version}</version>-->
+                                <!--</feature>-->
                                 <feature>
-                                    <id>org.wso2.carbon.deployment.engine.feature.group</id>
-                                    <version>${carbon.deployment.version}</version>
-                                </feature>
-				<feature>
-                                    <id>org.wso2.carbon.business.messaging.core.feature.group</id>
+                                    <id>org.wso2.carbon.business.messaging.core.feature</id>
                                     <version>4.0.0-SNAPSHOT</version>
                                 </feature>
                             </features>
@@ -237,7 +247,7 @@
                         <phase>package</phase>
                         <configuration>
                             <tasks>
-                                <replace dir="target/wso2carbon-kernel-${carbon.kernel.version}/osgi" token="false" value="true">
+                                <replace dir="target/WSO2Carbon" token="false" value="true">
                                     <include name="**/bundles.info" />
                                 </replace>
                             </tasks>
@@ -251,14 +261,14 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <delete dir="target/archive-tmp" />
-                                <delete dir="target/dependency-maven-plugin-markers" />
-                                <delete dir="target/org.eclipse.equinox.executable-3.5.0.v20110530-7P7NFUFFLWUl76mart" />
-                                <delete dir="target/p2-repo" />
-                                <delete dir="target/wso2carbon-kernel-${carbon.kernel.version}" />
-                                <delete file="target/tmp" />
-                                <delete dir="target/antrun" />
-                                <delete dir="target/maven-shared-archive-resources" />
+                                <!--<delete dir="target/archive-tmp" />-->
+                                <!--<delete dir="target/dependency-maven-plugin-markers" />-->
+                                <!--<delete dir="target/org.eclipse.equinox.executable-3.5.0.v20110530-7P7NFUFFLWUl76mart" />-->
+                                <!--<delete dir="target/p2-repo" />-->
+                                <!--<delete dir="target/WSO2Carbon" />-->
+                                <!--<delete file="target/tmp" />-->
+                                <!--<delete dir="target/antrun" />-->
+                                <!--<delete dir="target/maven-shared-archive-resources" />-->
                             </target>
                         </configuration>
                         <goals>

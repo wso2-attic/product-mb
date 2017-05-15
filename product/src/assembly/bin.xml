@@ -25,15 +25,25 @@
 
     <fileSets>
         <fileSet>
-            <directory>target/wso2carbon-kernel-${carbon.kernel.version}</directory>
+            <directory>target/WSO2Carbon</directory>
             <outputDirectory>.</outputDirectory>
             <excludes>
+                <exclude>README.txt</exclude>
+                <exclude>LICENSE.txt</exclude>
+                <exclude>release-notes.html</exclude>
                 <exclude>**/*.ipr</exclude>
                 <exclude>**/*.iwr</exclude>
-                <exclude>**/bin/README.txt</exclude>
-                <exclude>**/bin/kernel-version.txt</exclude>
+                <exclude>**/*.eclipse</exclude>
                 <!--<exclude>**/transports/netty-transports.yml</exclude>-->
             </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>..</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+            </includes>
         </fileSet>
         <!--<fileSet>-->
             <!--<directory>..</directory>-->
@@ -81,17 +91,6 @@
     </fileSets>
 
     <files>
-        <file>
-            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/README.txt</source>
-            <outputDirectory>./bin</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
-            <source>target/wso2carbon-kernel-${carbon.kernel.version}/bin/kernel-version.txt</source>
-            <outputDirectory>./bin</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
+
     </files>
 </assembly>
