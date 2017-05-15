@@ -133,8 +133,16 @@
                                     <!--<version>${carbon.deployment.version}</version>-->
                                 <!--</feature>-->
                                 <feature>
+                                    <id>org.wso2.carbon.deployment.engine.feature</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+				                <feature>
                                     <id>org.wso2.carbon.business.messaging.core.feature</id>
-                                    <version>4.0.0-SNAPSHOT</version>
+                                    <version>${carbon.business.messaging.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.business.messaging.admin.services.feature</id>
+                                    <version>${carbon.business.messaging.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -231,8 +239,16 @@
                                     <!--<version>${carbon.deployment.version}</version>-->
                                 <!--</feature>-->
                                 <feature>
-                                    <id>org.wso2.carbon.business.messaging.core.feature</id>
-                                    <version>4.0.0-SNAPSHOT</version>
+                                    <id>org.wso2.carbon.deployment.engine.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
+				                <feature>
+                                    <id>org.wso2.carbon.business.messaging.core.feature.group</id>
+                                    <version>${carbon.business.messaging.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.business.messaging.admin.services.feature.group</id>
+                                    <version>${carbon.business.messaging.version}</version>
                                 </feature>
                             </features>
                         </configuration>
