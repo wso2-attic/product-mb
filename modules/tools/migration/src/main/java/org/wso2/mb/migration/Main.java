@@ -18,20 +18,38 @@
 
 package org.wso2.mb.migration;
 
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+
 public class Main {
+
+    private static final Logger logger = Logger.getLogger(Main.class);
+
     public static void main(String[] args) {
 
-        //Create new processor to read, modify and write data into the database
-        Processor processor = new Processor();
 
-        //Create DLC message router since it was not present in WSO2MB 3.1.0
-        processor.creteDlcMessageRouter();
+        try {
 
-        //Modify bindings since the format of the binding details string is different in WSO2MB 3.1.0 and WSO2MB 3.2.0
-        processor.modifyBindings();
+            //Create new processor to read, modify and write data into the database
+            Processor processor = new Processor();
 
-        //Modify data in multiple tables making queue name references all simple.
-        processor.makeQueueNamesAllSimple();
+            //Create DLC message router since it was not present in WSO2MB 3.1.0
+            processor.creteDlcMessageRouter();
+
+            //Modify bindings since the format of the binding details string is different in WSO2MB 3.1.0 and WSO2MB 3.2.0
+            processor.modifyBindings();
+
+            //Modify data in multiple tables making queue name references all simple.
+            processor.makeQueueNamesAllSimple();
+
+            logger.info("Migration completed successfully");
+
+        } catch (IOException | ClassNotFoundException e) {
+            logger.error("Could not initiate the migration", e);
+        } catch (MigrationException e) {
+            logger.error("Error during migration. Migration will not proceed", e);
+        }
 
     }
 }

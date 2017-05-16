@@ -18,6 +18,8 @@
 
 package org.wso2.mb.migration;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,6 +33,8 @@ import java.util.Properties;
  * database.
  */
 public class Processor {
+
+    private static final Logger logger = Logger.getLogger(DBConnector.class);
 
     /**
      * The instance of the DBConnector which reads and writes queues, bindings and subscriptions
@@ -49,22 +53,20 @@ public class Processor {
 
     /**
      * Initializes the processor with properties given in config.properties file.
+     *
+     * @throws IOException in case of error whilw loading file reader
+     * @throws ClassNotFoundException in case of error while reading file
      */
-    public Processor() {
+    public Processor() throws IOException, ClassNotFoundException {
 
         Properties prop = new Properties();
-        try {
+        // load the properties file
+        File configFile = new File("conf/config.properties");
+        FileReader reader = new FileReader(configFile);
+        prop.load(reader);
+        connector = new DBConnector(prop);
+        modifier = new Modifier();
 
-            // load the properties file
-            File configFile = new File("config.properties");
-            FileReader reader = new FileReader(configFile);
-            prop.load(reader);
-            connector = new DBConnector(prop);
-            modifier = new Modifier();
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
     }
 
     /**
@@ -82,60 +84,68 @@ public class Processor {
             }
             connector.insertBindings(bindings);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn("Error while inserting bindings for DLC queues", e);
         }
     }
 
     /**
      * Adds amq.dlc message router to the database. WSO2MB 3.1.0 does not contain an exchange(message router) named
      * 'amq .dlc' hence it should be added.
+     *
+     * @throws MigrationException in case of error while write message router
      */
-    void creteDlcMessageRouter() {
+    void creteDlcMessageRouter() throws MigrationException {
         try {
             connector.writeMessageRouter(DLC_MESSAGE_ROUTER, modifier.createExchangeDetails(DLC_MESSAGE_ROUTER,
-                                                                                      "DLC", "false"));
+                    "DLC", "false"));
+            logger.info("DLC message router created");
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MigrationException("Error while creating message router", e);
         }
     }
 
     /**
      * Reads all bindings from the database, modifies them from the format in WSO2MB 3.1.0 to WSO2MB 3.2.0 and
-     * updates them. Also adds DLC bindings that were not present in WSO2MB 3.1.0
+     * updates them. Also adds DLC bindings that were not present in WSO2MB 3.1.0.
+     *
+     * @throws MigrationException in case of error while read bindings
      */
-    void modifyBindings() {
-        List<Binding> bindings;
+    void modifyBindings() throws MigrationException {
+
         try {
-            bindings = connector.readBindings();
+            List<Binding> bindings = connector.readBindings();
             for (Binding binding : bindings) {
                 try {
                     binding.setBindingDetails(modifier.modifyBinding(binding.getBindingDetails()));
-                } catch (Exception e) {
-                    System.out.println("Error modifying binding for queue: " + binding.getQueueName()
-                                       + ". Incorrect binding info format: " + binding.getBindingDetails());
-                    e.printStackTrace();
+                    logger.info("Modified binding information in database");
+                } catch (MigrationException e) {
+                    logger.error("Error modifying binding for queue: " + binding.getQueueName() + ". Incorrect "
+                            + "binding info format: " + binding.getBindingDetails(), e);
                 }
             }
             connector.updateBindings(bindings);
+            addDlcBindings();
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MigrationException("Error while modifying bindings in the database", e);
         }
-        addDlcBindings();
     }
 
     /**
      * Read data of tables and modify data making all queue name references all simple.
+     *
+     * @throws MigrationException in case of error while converting queue names to lowercase
      */
-    void makeQueueNamesAllSimple() {
+    void makeQueueNamesAllSimple() throws MigrationException {
         try {
             connector.updateQueueNamesInQueuesAndBindings();
             connector.updateQueueNamesInSlots();
             connector.updateQueueNamesInQueueMappings();
             connector.updateQueueNamesInSlotMessageIds();
             connector.updateQueueNamesInQueueToLastAssignedIds();
-        } catch (Exception e) {
-            System.out.println("Error while making queue names simple in all places");
-            e.printStackTrace();
+            logger.info("Converted queue names into lowercase");
+        } catch (SQLException e) {
+            throw new MigrationException("Error while converting queue names to lowercase", e);
         }
     }
 }

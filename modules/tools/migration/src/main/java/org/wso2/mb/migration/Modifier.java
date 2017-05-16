@@ -30,8 +30,9 @@ class Modifier {
      *
      * @param bindingInfo binding information as stored in WSO2MB 3.1.0 to be modified
      * @return modified binding info that is compatible with WSO2MB 3.2.0
+     * @throws MigrationException when binding information is null
      */
-    String modifyBinding(String bindingInfo) throws Exception {
+    String modifyBinding(String bindingInfo) throws MigrationException {
 
         String boundMessageRouter;
         String boundQueueName;
@@ -40,7 +41,7 @@ class Modifier {
         if (null != bindingInfo) {
             String[] parts = bindingInfo.split("\\|");
             if (parts.length != 3) {
-                throw new Exception("Cannot recognize binging info: " + bindingInfo);
+                throw new MigrationException("Cannot recognize binging info: " + bindingInfo);
             }
 
             /* Create binding details in the format of
@@ -52,7 +53,7 @@ class Modifier {
             return "boundMessageRouter=" + boundMessageRouter + ",boundQueueName=" + boundQueueName
                    + ",bindingKey=" + bindingKey;
         } else {
-            throw new Exception("Binding cannot be null");
+            throw new MigrationException("Binding cannot be null");
         }
     }
 

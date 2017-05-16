@@ -28,22 +28,20 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 
 /**
  * The class which communicates with the database. Performs the operation of reading, inserting and updating bindings
  * and message routers.
  */
-public class DBConnector {
+class DBConnector {
 
-    // variables which hold the database connection parameters
+    /**
+     * variables which hold the database connection parameters
+     */
     private String DB_URL;
     private String USER;
     private String PASSWORD;
-
-    /**
-     * Connection to the database.
-     */
-    private Connection conn;
 
     /**
      * String constants representing tables to be modified.
@@ -138,54 +136,45 @@ public class DBConnector {
                                                   + EXCHANGE_DATA + ") "
                                                   + " VALUES (?,?)";
 
+    private static final Logger logger = Logger.getLogger(DBConnector.class);
 
-    DBConnector(Properties properties) {
-        try {
-            // Initialize the Driver and the connection parameters
-            Class.forName(properties.getProperty("driverclassname"));
-            DB_URL = properties.getProperty("dburl");
-            USER = properties.getProperty("dbuser");
-            PASSWORD = properties.getProperty("dbpassword");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
+
+
+    DBConnector(Properties properties) throws ClassNotFoundException {
+        // Initialize the Driver and the connection parameters
+        Class.forName(properties.getProperty("driverclassname"));
+        DB_URL = properties.getProperty("dburl");
+        USER = properties.getProperty("dbuser");
+        PASSWORD = properties.getProperty("dbpassword");
     }
 
     /**
      * Retrieves the connection object initialized by the provided properties.
      *
      * @return the connection object
+     * @throws SQLException when a database error occurs
      */
-    public Connection getConnection() {
-        try {
-            conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL, USER, PASSWORD);
     }
 
     /**
      * Update Binding details of a list of existing bindings.
      *
      * @param bindings the list of modified bindings to be stored.
-     * @throws SQLException when a database error occurs when closing the connection
+     * @throws SQLException when a database error occurs
      */
     void updateBindings(List<Binding> bindings) throws SQLException {
 
-        getConnection();
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(UPDATE_BINDING);
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(UPDATE_BINDING)) {
             for (Binding binding : bindings) {
                 preparedStatement.setString(1, binding.getBindingDetails());
                 preparedStatement.setString(2, binding.getQueueName());
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
     }
 
@@ -193,13 +182,12 @@ public class DBConnector {
      * Insert bindings to the MB_BINDING table.
      *
      * @param bindings list of bindings to be inserted
-     * @throws SQLException when a database error occurs when closing the connection
      */
     void insertBindings(List<Binding> bindings) throws SQLException {
 
-        getConnection();
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(INSERT_BINDING);
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(INSERT_BINDING)) {
+
             for (Binding binding : bindings) {
                 preparedStatement.setString(1, binding.getMessageRouter());
                 preparedStatement.setString(2, binding.getQueueName());
@@ -207,10 +195,6 @@ public class DBConnector {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
     }
 
@@ -221,20 +205,17 @@ public class DBConnector {
      * @throws SQLException if a database error occurs when closing the connection
      */
     List<Binding> readBindings() throws SQLException {
-        getConnection();
         List<Binding> bindings = new ArrayList<>();
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(GET_BINDINGS);
-            ResultSet resultSet = preparedStatement.executeQuery();
+
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(GET_BINDINGS);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(QUEUE_NAME);
                 String bindingDetails = resultSet.getString(BINDING_DETAILS);
                 bindings.add(new Binding(queueName, bindingDetails));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
         return bindings;
     }
@@ -246,21 +227,18 @@ public class DBConnector {
      * @throws SQLException if a database error occurs when closing the connection
      */
     List<String> readDlcQueues() throws SQLException {
-        getConnection();
+
         List<String> queueNames = new ArrayList<>();
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(GET_QUEUES);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(GET_QUEUES);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(QUEUE_NAME);
                 if (queueName.contains("DeadLetterChannel")) {
                     queueNames.add(queueName);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
         return queueNames;
     }
@@ -273,16 +251,12 @@ public class DBConnector {
      * @throws SQLException if a database error occurs when closing the connection
      */
     void writeMessageRouter(String routerName, String routerData) throws SQLException {
-        getConnection();
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(INSERT_EXCHANGE);
+
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(INSERT_EXCHANGE)) {
             preparedStatement.setString(1, routerName);
             preparedStatement.setString(2, routerData);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
     }
 
@@ -294,16 +268,20 @@ public class DBConnector {
      * @throws SQLException in case of executing updates
      */
     void updateQueueNamesInQueuesAndBindings() throws SQLException {
-        getConnection();
-        try {
-            PreparedStatement getBindingsStatement = conn.prepareStatement(GET_BINDINGS);
-            ResultSet bindingsResultSet = getBindingsStatement.executeQuery();
+
+        try (Connection conn = getConnection();
+             PreparedStatement getBindingsStatement = conn.prepareStatement(GET_BINDINGS);
+             ResultSet bindingsResultSet = getBindingsStatement.executeQuery();
+             PreparedStatement removeBindingsStatement = conn.prepareStatement(DELETE_ALL_BINDINGS);
+             PreparedStatement getQueuesPreparedStatement = conn.prepareStatement(GET_QUEUES);
+             PreparedStatement updatePreparedStatement =  conn.prepareStatement(UPDATE_QUEUE);
+             PreparedStatement addBindingsStatement = conn.prepareStatement(INSERT_BINDING);
+             ResultSet getQueuesResultSet = getQueuesPreparedStatement.executeQuery()) {
+
 
             //delete all bindings to get rid of constraints
-            PreparedStatement removeBindingsStatement = conn.prepareStatement(DELETE_ALL_BINDINGS);
             removeBindingsStatement.executeUpdate();
-
-            updateQueueNamesInQueues();
+            updateQueueNamesInQueues(updatePreparedStatement, getQueuesResultSet);
 
             while (bindingsResultSet.next()) {
                 String queueName = bindingsResultSet.getString(QUEUE_NAME);
@@ -329,17 +307,13 @@ public class DBConnector {
                                 generateBindingKeyDataString(newBindingKey));
                     }
                 }
-                PreparedStatement addBindingsStatement = conn.prepareStatement(INSERT_BINDING);
                 addBindingsStatement.setString(1, bindingsResultSet.getString(EXCHANGE_NAME));
                 addBindingsStatement.setString(2, queueName);
                 addBindingsStatement.setString(3, bindingData);
-                addBindingsStatement.executeUpdate();
+                addBindingsStatement.addBatch();
             }
+            addBindingsStatement.executeBatch();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
     }
 
@@ -348,10 +322,8 @@ public class DBConnector {
      *
      * @throws SQLException in case of executing update
      */
-    private void updateQueueNamesInQueues() throws SQLException {
+    private void updateQueueNamesInQueues(PreparedStatement updateStatement, ResultSet resultSet) throws SQLException {
 
-        PreparedStatement preparedStatement = conn.prepareStatement(GET_QUEUES);
-        ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
             String queueName = resultSet.getString(QUEUE_NAME);
             if (queueNameHasCapitals(queueName)) {
@@ -360,7 +332,6 @@ public class DBConnector {
                 String newQueueData = queueData.replaceAll(generateQueueNameString(queueName),
                         generateQueueNameString(newQueueName));
 
-                PreparedStatement updateStatement = conn.prepareStatement(UPDATE_QUEUE);
                 updateStatement.setString(1, newQueueName);
                 updateStatement.setString(2, newQueueData);
                 updateStatement.setString(3, queueName);
@@ -373,7 +344,6 @@ public class DBConnector {
      * Generate new queue name to put into database.
      * @param queueName Name of queue
      * @return generated data string
-     * @throws SQLException if a database error occurs when closing the connection
      */
     private String generateQueueNameString(String queueName) {
         return String.format(QUEUE_NAME_PATTERN, queueName);
@@ -383,7 +353,6 @@ public class DBConnector {
      * Generate new queue name to put into database.
      * @param bindingKey Name of binding key
      * @return generated data string
-     * @throws SQLException if a database error occurs when closing the connection
      */
     private String generateBindingKeyDataString(String bindingKey) {
         return String.format(BINDING_KEY_PATTERN, bindingKey);
@@ -393,7 +362,6 @@ public class DBConnector {
      * Generate new queue name to put into database.
      * @param queueName Name of bound queue
      * @return generated data string
-     * @throws SQLException if a database error occurs when closing the connection
      */
     private String generateBoundQueueNameDataString(String queueName) {
         return String.format(BOUND_QUEUE_NAME_PATTERN, queueName);
@@ -405,113 +373,100 @@ public class DBConnector {
      * @throws SQLException in case of executing update
      */
     void updateQueueNamesInSlots() throws SQLException {
-        getConnection();
-        try {
+
+        try(Connection conn = getConnection();
+            PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_SLOT);
             PreparedStatement preparedStatement = conn.prepareStatement(GET_SLOTS);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(STORAGE_QUEUE_NAME);
                 if(queueNameHasCapitals(queueName)) {
                     String newQueueName = queueName.toLowerCase();
-
-                    PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_SLOT);
                     updateStatement.setString(1, newQueueName);
                     updateStatement.setString(2, newQueueName);
                     updateStatement.setString(3, resultSet.getString(SLOT_ID));
-                    updateStatement.executeUpdate();
+                    updateStatement.addBatch();
                 }
-
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
+            updateStatement.executeBatch();
+
         }
     }
 
     /**
-     * Make queue names in MB_QUEUE_MAPPING table all simple
+     * Make queue names in MB_QUEUE_MAPPING table all simple.
      *
      * @throws SQLException in case of executing update
      */
     void updateQueueNamesInQueueMappings() throws SQLException {
-        getConnection();
-        try {
+
+        try(Connection conn = getConnection();
+            PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_QUEUE_MAPPING);
             PreparedStatement preparedStatement = conn.prepareStatement(GET_QUEUE_MAPPINGS);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(QUEUE_NAME);
                 if(queueNameHasCapitals(queueName)) {
                     String newQueueName = queueName.toLowerCase();
-
-                    PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_QUEUE_MAPPING);
                     updateStatement.setString(1, newQueueName);
                     updateStatement.setString(2, queueName);
-                    updateStatement.executeUpdate();
+                    updateStatement.addBatch();
                 }
             }
+            updateStatement.executeBatch();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
         }
     }
 
     /**
-     * Make queue names in  MB_SLOT_MESSAGE_ID table all simple
+     * Make queue names in  MB_SLOT_MESSAGE_ID table all simple.
      *
      * @throws SQLException in case of executing update
      */
     void updateQueueNamesInSlotMessageIds() throws SQLException {
-        getConnection();
-        try {
+
+        try(Connection conn = getConnection();
+            PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_SLOT_MESSAGE_ID);
             PreparedStatement preparedStatement = conn.prepareStatement(GET_MB_SLOT_MESSAGE_IDS);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(QUEUE_NAME);
                 if(queueNameHasCapitals(queueName)) {
                     String newQueueName = queueName.toLowerCase();
-
-                    PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_SLOT_MESSAGE_ID);
                     updateStatement.setString(1, newQueueName);
                     updateStatement.setString(2, queueName);
-                    updateStatement.executeUpdate();
+                    updateStatement.addBatch();
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
+            updateStatement.executeBatch();
         }
     }
 
     /**
-     * Make all queue names in MB_QUEUE_TO_LAST_ASSIGNED_ID table all simple
+     * Make all queue names in MB_QUEUE_TO_LAST_ASSIGNED_ID table all simple.
      *
      * @throws SQLException in case of executing update
      */
     void updateQueueNamesInQueueToLastAssignedIds() throws SQLException {
-        getConnection();
-        try {
+
+        try(Connection conn = getConnection();
+            PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_QUEUE_TO_LAST_ASSIGNED_ID);
             PreparedStatement preparedStatement = conn.prepareStatement(GET_MB_QUEUE_TO_LAST_ASSIGNED_IDS);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
             while (resultSet.next()) {
                 String queueName = resultSet.getString(QUEUE_NAME);
                 if(queueNameHasCapitals(queueName)) {
                     String newQueueName = queueName.toLowerCase();
-
-                    PreparedStatement updateStatement = conn.prepareStatement(UPDATE_MB_QUEUE_TO_LAST_ASSIGNED_ID);
                     updateStatement.setString(1, newQueueName);
                     updateStatement.setString(2, queueName);
-                    updateStatement.executeUpdate();
+                    updateStatement.addBatch();
                 }
-
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            conn.close();
+            updateStatement.executeBatch();
         }
     }
 
@@ -535,6 +490,7 @@ public class DBConnector {
     private boolean bindingKeyHasCapitals(String bindingKey) {
         return !bindingKey.equals(bindingKey.toLowerCase());
     }
+
 }
 
 
