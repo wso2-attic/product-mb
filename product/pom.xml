@@ -96,18 +96,22 @@
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${carbon.cache.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.msf4j.feature</id>-->
-                                    <!--<version>${msf4j.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.msf4j.feature</id>
+                                    <version>${msf4j.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.transport.http.netty.feature</id>-->
-                                    <!--<version>${carbon.transport.http.netty.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.connector.framework.feature</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.jndi.feature</id>
                                     <version>${carbon.jndi.version}</version>
@@ -128,10 +132,10 @@
                                     <id>org.wso2.carbon.datasource.core.feature</id>
                                     <version>${carbon.datasources.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.deployment.engine.feature</id>-->
-                                    <!--<version>${carbon.deployment.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.deployment.engine.feature</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.deployment.engine.feature</id>
                                     <version>${carbon.deployment.version}</version>
@@ -202,18 +206,22 @@
                                     <id>org.wso2.carbon.caching.feature.group</id>
                                     <version>${carbon.cache.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.msf4j.feature.group</id>-->
-                                    <!--<version>${msf4j.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.msf4j.feature.group</id>
+                                    <version>${msf4j.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature.group</id>
                                     <version>${carbon.messaging.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.transport.http.netty.feature.group</id>-->
-                                    <!--<version>${carbon.transport.http.netty.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.transport.http.netty.feature.group</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.connector.framework.feature.group</id>
+                                    <version>${carbon.transport.http.netty.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.jndi.feature.group</id>
                                     <version>${carbon.jndi.version}</version>
@@ -234,10 +242,10 @@
                                     <id>org.wso2.carbon.datasource.core.feature.group</id>
                                     <version>${carbon.datasources.version}</version>
                                 </feature>
-                                <!--<feature>-->
-                                    <!--<id>org.wso2.carbon.deployment.engine.feature.group</id>-->
-                                    <!--<version>${carbon.deployment.version}</version>-->
-                                <!--</feature>-->
+                                <feature>
+                                    <id>org.wso2.carbon.deployment.engine.feature.group</id>
+                                    <version>${carbon.deployment.version}</version>
+                                </feature>
                                 <feature>
                                     <id>org.wso2.carbon.deployment.engine.feature.group</id>
                                     <version>${carbon.deployment.version}</version>
