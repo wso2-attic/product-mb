@@ -136,10 +136,6 @@
                                     <id>org.wso2.carbon.deployment.engine.feature</id>
                                     <version>${carbon.deployment.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.engine.feature</id>
-                                    <version>${carbon.deployment.version}</version>
-                                </feature>
 				                <feature>
                                     <id>org.wso2.carbon.business.messaging.core.feature</id>
                                     <version>${carbon.business.messaging.version}</version>
@@ -241,10 +237,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.datasource.core.feature.group</id>
                                     <version>${carbon.datasources.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.deployment.engine.feature.group</id>
-                                    <version>${carbon.deployment.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.deployment.engine.feature.group</id>
