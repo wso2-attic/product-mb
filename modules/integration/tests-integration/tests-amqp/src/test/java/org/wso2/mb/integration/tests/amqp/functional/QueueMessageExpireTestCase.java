@@ -18,6 +18,7 @@
 
 package org.wso2.mb.integration.tests.amqp.functional;
 
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,22 +26,28 @@ import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherClientConfiguration;
+import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
-import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.IOException;
 
 /**
  * This class includes unit tests to verify that messages with JMS expiration are properly removed when delivering to queues.
  */
 public class QueueMessageExpireTestCase extends MBIntegrationBaseTest {
+
+    /**
+     * Logger used for logging information related to the test class
+     */
+    private static Logger log = Logger.getLogger(QueueMessageExpireTestCase.class);
 
     /**
      * Initializing test case
@@ -127,7 +134,7 @@ public class QueueMessageExpireTestCase extends MBIntegrationBaseTest {
     @Test(groups = "wso2.mb", description = "send messages to a queue which has two consumers with jms expiration")
     public void performManyQueueExpirySendReceiveTestCase()
             throws AndesClientConfigurationException, JMSException, NamingException, IOException,
-                   AndesClientException, XPathExpressionException {
+            AndesClientException, XPathExpressionException, InterruptedException {
 
         // Message send count
         long sendCount = 1000L;
@@ -178,15 +185,37 @@ public class QueueMessageExpireTestCase extends MBIntegrationBaseTest {
         AndesClient publisherClientWithExpiration = new AndesClient(publisherConfigWithExpiration, true);
         publisherClientWithExpiration.startClient();
 
-        AndesClientUtils.waitForMessagesAndShutdown(initialConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
-        AndesClientUtils.waitForMessagesAndShutdown(secondaryConsumerClient, AndesClientConstants.DEFAULT_RUN_TIME);
+        long consumer1MsgCount = initialConsumerClient.getReceivedMessageCount();
+        long consumer2MsgCount = secondaryConsumerClient.getReceivedMessageCount();
+        long timeout = 600000L;
+
+        long startTime = System.currentTimeMillis();
+
+        // Wait until total number of messages received by consumers equal or exceed sent message count
+        // without expiration.
+        while(consumer1MsgCount + consumer2MsgCount < sendCountWithoutExpiration) {
+            // wait 10 seconds to consume messages.
+            TimeUnit.SECONDS.sleep(10L);
+
+            consumer1MsgCount = initialConsumerClient.getReceivedMessageCount();
+            consumer2MsgCount = secondaryConsumerClient.getReceivedMessageCount();
+            long elapsedTime = System.currentTimeMillis()-startTime;
+
+            if(elapsedTime > timeout) {
+                // At this point timeout has been reached and test case will not wait for any new messages.
+                // test case will be failed if it reaches timeout.
+                log.error("Expected number of messages didn't receive after " + timeout + " milliseconds. " +
+                          "Therefore, no longer waiting for new messages.");
+                break;
+            }
+        }
+
+        AndesClientUtils.shutdownClient(initialConsumerClient);
+        AndesClientUtils.shutdownClient(secondaryConsumerClient);
 
         // Evaluating
         Assert.assertEquals(publisherClientWithoutExpiration.getSentMessageCount(), sendCountWithoutExpiration, "Message send failed for publisher without expiration.");
         Assert.assertEquals(publisherClientWithExpiration.getSentMessageCount(), sendCountWithExpiration, "Message send failed for publisher with expiration");
-
-        long consumer1MsgCount = initialConsumerClient.getReceivedMessageCount();
-        long consumer2MsgCount = secondaryConsumerClient.getReceivedMessageCount();
 
         Assert.assertEquals((consumer1MsgCount + consumer2MsgCount) , sendCountWithoutExpiration,
                 "Message receiving failed. Expected " + sendCountWithoutExpiration + " but received "
