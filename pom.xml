@@ -461,7 +461,7 @@
         <carbon.metrics.version>1.2.3</carbon.metrics.version>
         <carbon.kernel.version>4.4.16</carbon.kernel.version>
         <carbon.analytics.common.version>5.1.14</carbon.analytics.common.version>
-        <andes.version>3.2.21</andes.version>
+        <andes.version>3.2.20</andes.version>
         <analytics.shared.version>1.0.3</analytics.shared.version>
         <!--product version-->
         <product.mb.version>3.2.0-SNAPSHOT</product.mb.version>
