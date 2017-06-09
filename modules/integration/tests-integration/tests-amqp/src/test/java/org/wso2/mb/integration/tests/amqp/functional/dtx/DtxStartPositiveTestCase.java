@@ -18,16 +18,10 @@ package org.wso2.mb.integration.tests.amqp.functional.dtx;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
-import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
-import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
-import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
-import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
 import org.wso2.mb.integration.common.utils.JMSClientHelper;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import java.rmi.RemoteException;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -282,27 +276,6 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         xaConnectionOne.close();
         xaConnectionTwo.close();
 
-        //This is only added to find out the reason for the intermittent failure of this test method. Should be removed
-        // once the issue is identified.
-        try {
-            // Logging in
-            LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
-            String sessionCookie = loginLogoutClientForAdmin.login();
-            AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
-
-            //Check message count in queue
-            org.wso2.carbon.andes.stub.admin.types.Message[] queueOneMessages
-                    = admin.browseQueue(queueName, 0, 10);
-            Assert.assertEquals(queueOneMessages.length, 2, "Message not published to queue " + queueName);
-
-            //Logging out
-            loginLogoutClientForAdmin.logout();
-
-        } catch (RemoteException | AutomationUtilException | AndesAdminServiceBrokerManagerAdminException
-                | LogoutAuthenticationExceptionException e) {
-            e.printStackTrace();
-        }
-
         receive = messageConsumer.receive(5000);
         Assert.assertNotNull(receive, "Message not received");
 
@@ -381,27 +354,6 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         xaResourceOne.commit(xid, false);
 
         xaConnectionOne.close();
-
-        //This is only added to find out the reason for the intermittent failure of this test method. Should be removed
-        // once the issue is identified.
-        try {
-            // Logging in
-            LoginLogoutClient loginLogoutClientForAdmin = new LoginLogoutClient(super.automationContext);
-            String sessionCookie = loginLogoutClientForAdmin.login();
-            AndesAdminClient admin = new AndesAdminClient(super.backendURL, sessionCookie);
-
-            //Check message count in queue
-            org.wso2.carbon.andes.stub.admin.types.Message[] queueOneMessages
-                    = admin.browseQueue(queueName, 0, 10);
-            Assert.assertEquals(queueOneMessages.length, 2, "Message not published to queue " + queueName);
-
-            //Logging out
-            loginLogoutClientForAdmin.logout();
-
-        } catch (RemoteException | AutomationUtilException | AndesAdminServiceBrokerManagerAdminException
-                | LogoutAuthenticationExceptionException e) {
-            e.printStackTrace();
-        }
 
         receive = messageConsumer.receive(5000);
         Assert.assertNotNull(receive, "Message not received");
