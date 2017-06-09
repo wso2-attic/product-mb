@@ -67,19 +67,8 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
      */
     private String defaultAndesAckWaitTimeOut = null;
 
-     /**
-     * Initializes test case
-     *
-     * @throws XPathExpressionException
-     */
-    @BeforeClass()
-    public void init() throws XPathExpressionException, MalformedURLException {
-        super.init(TestUserMode.SUPER_TENANT_USER);
-    }
-
     /**
-     * Set topicMessageDeliveryStrategy to DISCARD_ALLOWED so that broker will simulate an acknowledgement
-     * if some subscribers are slow to acknowledge the message
+     * Initialize and change the default configurations based on the requirement of the test case.
      *
      * @throws XPathExpressionException
      * @throws IOException
@@ -91,9 +80,10 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
      * @throws AutomationUtilException
      */
     @BeforeClass
-    public void setupConfiguration() throws XPathExpressionException, IOException,
+    public void prepare() throws XPathExpressionException, IOException,
             ConfigurationException, SAXException, XMLStreamException, LoginAuthenticationExceptionException,
             URISyntaxException, AutomationUtilException {
+        super.init(TestUserMode.SUPER_TENANT_USER);
         super.serverManager = new ServerConfigurationManager(automationContext);
         String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
                 File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";

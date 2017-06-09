@@ -70,9 +70,9 @@ public class SampleQueueSender {
         // create the message to send
         TextMessage textMessage = queueSession.createTextMessage("Test Message Content");
         javax.jms.QueueSender queueSender = queueSession.createSender(queue);
-        for(int i = 0; i < noOfMessages; i++){
-	    //send the text message in persistent delivery mode with a time to live value at priority level 4
-            queueSender.send(textMessage, DeliveryMode.PERSISTENT,4,timeToLive);
+        for (int i = 0; i < noOfMessages; i++) {
+            //send the text message in persistent delivery mode with a time to live value at priority level 4
+            queueSender.send(textMessage, DeliveryMode.PERSISTENT, 4, timeToLive);
         }
         queueSender.close();
         queueSession.close();
