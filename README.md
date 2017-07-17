@@ -1,4 +1,7 @@
-#WSO2 Message Broker
+# NOTE
+Since WSO2 MB is included in the WSO2 Integrator(http://wso2.com/integration) Broker profile, we are deprecating this product and moving it to attic.
+
+# WSO2 Message Broker
 
 Welcome to the WSO2 Message broker.
 
