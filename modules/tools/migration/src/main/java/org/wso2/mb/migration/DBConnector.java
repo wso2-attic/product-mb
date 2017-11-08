@@ -182,6 +182,7 @@ class DBConnector {
      * Insert bindings to the MB_BINDING table.
      *
      * @param bindings list of bindings to be inserted
+     * @throws SQLException when a database error occurs when closing the connection
      */
     void insertBindings(List<Binding> bindings) throws SQLException {
 
