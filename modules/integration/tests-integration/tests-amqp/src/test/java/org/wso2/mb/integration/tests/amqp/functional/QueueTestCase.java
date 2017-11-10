@@ -36,6 +36,8 @@ import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test cases for queue related scenarios.
@@ -251,5 +253,68 @@ public class QueueTestCase extends MBIntegrationBaseTest {
         Assert.assertEquals(publisherClient.getSentMessageCount(), sendCount, "Message sending failed");
         Assert.assertEquals(consumerClient.getReceivedMessageCount(), expectedCount, "Message receiving failed.");
 
+    }
+
+    /**
+     * 1. Create 5 consumers for 5 queues.
+     * 2. Publish 1000 message to each queue
+     * 3. 1000 messages should be received by each consumer.
+     *
+     * @throws AndesClientConfigurationException
+     * @throws JMSException
+     * @throws NamingException
+     * @throws IOException
+     * @throws AndesClientException
+     */
+    @Test(groups = "wso2.mb", description = "Send and consume 1000 messages from 5 queues concurrently")
+    public void performManyConsumersManyQueuesTestCase()
+            throws AndesClientConfigurationException, JMSException, NamingException, IOException,
+            AndesClientException, XPathExpressionException {
+
+        int queueCount = 5;
+        long sendCount = 1000;
+        long expectedCount = sendCount;
+
+        List<String> queues = new ArrayList<>(queueCount);
+        List<AndesClient> consumers = new ArrayList<>(queueCount);
+
+        for (int i = 0; i < queueCount; i++) {
+            String queue = "performManyConsumersMayQueuesTestCaseQueue" + i;
+            queues.add(queue);
+            //Create consumer config
+            AndesJMSConsumerClientConfiguration consumerConfig =
+                    new AndesJMSConsumerClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queue);
+            consumerConfig.setMaximumMessagesToReceived(expectedCount);
+            consumerConfig.setPrintsPerMessageCount(expectedCount / 10L);
+            consumerConfig.setAsync(false);
+
+            //Create publisher config
+            AndesJMSPublisherClientConfiguration publisherConfig =
+                    new AndesJMSPublisherClientConfiguration(getAMQPPort(), ExchangeType.QUEUE, queue);
+            publisherConfig.setNumberOfMessagesToSend(sendCount);
+            publisherConfig.setPrintsPerMessageCount(100L);
+
+            //Create consumer client
+            AndesClient consumerClient = new AndesClient(consumerConfig, true);
+            consumers.add(consumerClient);
+            consumerClient.startClient();
+
+            //Create publisher client
+            AndesClient publisherClient = new AndesClient(publisherConfig, true);
+            publisherClient.startClient();
+
+        }
+
+        //Wait until all messages are received
+        AndesClientUtils.waitForMessagesAndShutdown(consumers.get(0), AndesClientConstants.DEFAULT_RUN_TIME);
+        for (int i = 1; i < queueCount; i++) {
+            AndesClientUtils.shutdownClient(consumers.get(i));
+        }
+
+        //Evaluate message count received by all consumers
+        for (int i = 0; i < queueCount; i++) {
+            Assert.assertEquals(consumers.get(i).getReceivedMessageCount(), expectedCount,
+                    "Did not received expected message count for consumer for queue: " + queues.get(i));
+        }
     }
 }
