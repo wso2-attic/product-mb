@@ -38,12 +38,12 @@ import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This class contains tests for AMQP message content validity, with compression.
@@ -89,8 +89,8 @@ public class LZ4CompressionTestCase extends MBIntegrationBaseTest {
             AutomationUtilException {
 
         super.serverManager = new ServerConfigurationManager(automationContext);
-        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
-                File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
+        String defaultMBConfigurationPath = "/home/malaka/MyFolder/Release/wso2ei-6.1.1-update24/wso2/broker" +
+                File.separator + "conf" + File.separator + "broker.xml";
 
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 

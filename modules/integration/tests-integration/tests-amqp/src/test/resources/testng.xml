@@ -26,19 +26,19 @@
         <classes>
             <!-- Test with server restarts and test with @BeforeMethod or @AfterMethod code are added here -->
             <class name="org.wso2.mb.integration.tests.amqp.functional.DLCMessageExpiryTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicServerRestartTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.RedeliveryDelayTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.PerMessageAcknowledgementsTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.TopicUserAuthorizationTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.PurgeMessagesTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DurableTopicSubscriptionWithSameClientIdTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.QueueUserAuthorizationTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.HierarchicalTopicsTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.DiscardAllowedMsgDeliveryStrategyTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.SlowestSubscriptionRateMsgDeliveryStrategyTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.MessageContentTestCase"/>
             <class name="org.wso2.mb.integration.tests.amqp.functional.LZ4CompressionTestCase"/>
-            <class name="org.wso2.mb.integration.tests.amqp.functional.SubTopicUserAuthorizationTestCase"/>
+            <!--<class name="org.wso2.mb.integration.tests.amqp.functional.SubTopicUserAuthorizationTestCase"/>-->
             <class name="org.wso2.mb.integration.tests.amqp.functional.AMQPSessionRecoverTestCase"/>
 
 

@@ -41,14 +41,14 @@ import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.xml.sax.SAXException;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This class bares test cases with "SLOWEST_SUB_RATE" topic message delivery strategy
@@ -86,7 +86,7 @@ public class SlowestSubscriptionRateMsgDeliveryStrategyTestCase extends MBIntegr
 
 		super.serverManager = new ServerConfigurationManager(automationContext);
 		String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
-				File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
+				File.separator + "conf" + File.separator + "broker.xml";
 
 		ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 
