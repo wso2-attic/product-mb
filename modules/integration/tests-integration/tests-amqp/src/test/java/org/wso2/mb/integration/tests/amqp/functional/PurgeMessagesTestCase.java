@@ -21,17 +21,15 @@ package org.wso2.mb.integration.tests.amqp.functional;
 import org.apache.commons.configuration.ConfigurationException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
 import org.wso2.andes.configuration.enums.AndesConfiguration;
 import org.wso2.andes.server.queue.DLCQueueUtils;
 import org.wso2.carbon.andes.stub.AndesAdminServiceBrokerManagerAdminException;
-import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.wso2.carbon.authenticator.stub.LoginAuthenticationExceptionException;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.automation.engine.context.TestUserMode;
 import org.wso2.carbon.integration.common.utils.LoginLogoutClient;
-import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.carbon.integration.common.utils.mgt.ServerConfigurationManager;
 import org.wso2.mb.integration.common.clients.AndesClient;
 import org.wso2.mb.integration.common.clients.configurations.AndesJMSConsumerClientConfiguration;
@@ -39,22 +37,25 @@ import org.wso2.mb.integration.common.clients.configurations.AndesJMSPublisherCl
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientConfigurationException;
 import org.wso2.mb.integration.common.clients.exceptions.AndesClientException;
 import org.wso2.mb.integration.common.clients.operations.clients.AndesAdminClient;
+import org.wso2.carbon.integration.common.utils.exceptions.AutomationUtilException;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientConstants;
 import org.wso2.mb.integration.common.clients.operations.utils.AndesClientUtils;
 import org.wso2.mb.integration.common.clients.operations.utils.ExchangeType;
+
 import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMode;
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
+import org.wso2.carbon.andes.stub.admin.types.Message;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * Testing tasks relevant to queue purging and queue deletion
@@ -87,8 +88,8 @@ public class PurgeMessagesTestCase extends MBIntegrationBaseTest {
         ;
         super.serverManager = new ServerConfigurationManager(automationContext);
 
-        String defaultMBConfigurationPath = "/home/malaka/MyFolder/Release/wso2ei-6.1.1-update24/wso2/broker" +
-                File.separator + "conf" + File.separator + "broker.xml";
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
+                File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
 
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 

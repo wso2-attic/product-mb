@@ -15,8 +15,8 @@
 
     <modules>
         <module>tests-amqp</module>
-        <!--<module>tests-server</module>-->
-        <!--<module>tests-mqtt</module>-->
+        <module>tests-server</module>
+        <module>tests-mqtt</module>
         <module>reports</module>
     </modules>
 

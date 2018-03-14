@@ -47,11 +47,6 @@ import org.wso2.mb.integration.common.clients.operations.utils.JMSAcknowledgeMod
 import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -60,6 +55,11 @@ import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Following test cases are related to redelivery delay feature for rejected messages.
@@ -84,8 +84,8 @@ public class RedeliveryDelayTestCase extends MBIntegrationBaseTest {
 
         // Updating the redelivery attempts to 1 to speed up the test case.
         super.serverManager = new ServerConfigurationManager(automationContext);
-        String defaultMBConfigurationPath = "/home/malaka/MyFolder/Release/wso2ei-6.1.1-update24/wso2/broker" +
-                File.separator + "conf" + File.separator + "broker.xml";
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() + File.separator + "repository" +
+                                            File.separator + "conf" + File.separator + "broker.xml";
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
 
         // Changing "maximumRedeliveryAttempts" value to "1" in broker.xml

@@ -43,15 +43,15 @@ import org.wso2.mb.integration.common.utils.backend.ConfigurationEditor;
 import org.wso2.mb.integration.common.utils.backend.MBIntegrationBaseTest;
 import org.xml.sax.SAXException;
 
+import javax.jms.JMSException;
+import javax.naming.NamingException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import javax.jms.JMSException;
-import javax.naming.NamingException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This class includes test cases to test expired message deletion in DLC
@@ -95,8 +95,8 @@ public class DLCMessageExpiryTestCase extends MBIntegrationBaseTest {
             ConfigurationException, SAXException, XMLStreamException, LoginAuthenticationExceptionException,
             URISyntaxException, AutomationUtilException {
         super.serverManager = new ServerConfigurationManager(automationContext);
-        String defaultMBConfigurationPath = "/home/malaka/MyFolder/Release/wso2ei-6.1.1-update24/wso2/broker" +
-                File.separator + "conf" + File.separator + "broker.xml";
+        String defaultMBConfigurationPath = ServerConfigurationManager.getCarbonHome() +
+                File.separator + "repository" + File.separator + "conf" + File.separator + "broker.xml";
         ConfigurationEditor configurationEditor = new ConfigurationEditor(defaultMBConfigurationPath);
         configurationEditor.updateProperty(AndesConfiguration.PERFORMANCE_TUNING_PRE_DELIVERY_EXPIRY_DELETION_INTERVAL,
                 "60");
