@@ -28,6 +28,17 @@ import javax.transaction.xa.Xid;
  * Util class with common helper methods when writing client code
  */
 public class JMSClientHelper {
+
+
+    /**
+     * Queue connection factory name used
+     */
+    public static final String QUEUE_XA_CONNECTION_FACTORY = "andesQueueXAConnectionfactory";
+
+    /**
+     * Topic connection factory name used
+     */
+    static final String TOPIC_XA_CONNECTION_FACTORY = "andesTopicXAConnectionfactory";
     /**
      * Queue connection factory name used
      */
@@ -117,6 +128,8 @@ public class JMSClientHelper {
             String connectionString = getBrokerConnectionString(username, password, brokerHost, brokerPort);
             contextProperties.put("connectionfactory." + QUEUE_CONNECTION_FACTORY, connectionString);
             contextProperties.put("connectionfactory." + TOPIC_CONNECTION_FACTORY, connectionString);
+            contextProperties.put("xaconnectionfactory." + QUEUE_XA_CONNECTION_FACTORY, connectionString);
+            contextProperties.put("xaconnectionfactory." + TOPIC_XA_CONNECTION_FACTORY, connectionString);
             return new InitialContext(contextProperties);
         }
 

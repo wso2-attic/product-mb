@@ -78,7 +78,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Publish to queue and rollback
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
         xaConnection.start();
@@ -149,7 +149,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Publish message to queue
         ConnectionFactory queueConnectionFactory = (ConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
         Connection queueConnection = queueConnectionFactory.createConnection();
         queueConnection.start();
         Session queueSession = queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -161,7 +161,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
 
         // Publish to queue and rollback
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
         xaConnection.start();
@@ -225,7 +225,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
                 getAMQPPort()).withQueue(queueName).build();
 
         XAConnectionFactory xaConnectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         // Create XA resource one
         XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();
@@ -328,7 +328,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
                                                                                     getAMQPPort()).withQueue(queueName).build();
 
         XAConnectionFactory xaConnectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         // Create XA resource one
         XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();
@@ -448,7 +448,7 @@ public class DtxStartPositiveTestCase extends MBIntegrationBaseTest {
         nonXaQueueSessionProducerTwo.close();
 
         XAConnectionFactory xaConnectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         // Create XA resource one
         XAConnection xaConnectionOne = xaConnectionFactory.createXAConnection();

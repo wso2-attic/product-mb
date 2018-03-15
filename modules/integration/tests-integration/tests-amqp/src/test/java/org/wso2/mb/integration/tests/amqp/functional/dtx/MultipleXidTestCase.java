@@ -84,7 +84,7 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
                                                             getAMQPPort()).withQueue(queueName).build();
 
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
         xaConnection.start();
@@ -158,7 +158,7 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
                                                             getAMQPPort()).withQueue(queueName).build();
 
         XAConnectionFactory connectionFactory =
-                (XAConnectionFactory) initialContext.lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                (XAConnectionFactory) initialContext.lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
         xaConnection.start();
@@ -230,7 +230,7 @@ public class MultipleXidTestCase extends MBIntegrationBaseTest {
                                                             getAMQPPort()).withQueue(queueName).build();
 
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection1 = connectionFactory.createXAConnection();
         XAConnection xaConnection2 = connectionFactory.createXAConnection();

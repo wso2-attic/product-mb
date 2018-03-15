@@ -79,7 +79,7 @@ public class WorkDoneOutsideTransactionTestCase extends MBIntegrationBaseTest {
 
 
         XAConnectionFactory connectionFactory = (XAConnectionFactory) initialContext
-                .lookup(JMSClientHelper.QUEUE_CONNECTION_FACTORY);
+                .lookup(JMSClientHelper.QUEUE_XA_CONNECTION_FACTORY);
 
         XAConnection xaConnection = connectionFactory.createXAConnection();
         xaConnection.start();
