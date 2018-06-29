@@ -148,7 +148,7 @@ public class DataPopulator {
 
             producerExecutor.submit(() -> {
                 try {
-                    jmsQueueSender.send(queue.getName(), sender.getMessageCount());
+                    jmsQueueSender.send(queue.getName(), sender.getMessageCount(), sender.getTps());
                     jmsQueueSender.close();
                 } catch (JMSException | NamingException e) {
                     LOGGER.error("Error sending messages to queue {}", queue.getName(), e);
@@ -172,7 +172,7 @@ public class DataPopulator {
 
             producerExecutor.submit(() -> {
                 try {
-                    jmsTopicPublisher.send(topic.getName(), publisher.getMessageCount());
+                    jmsTopicPublisher.send(topic.getName(), publisher.getMessageCount(), publisher.getTps());
                     jmsTopicPublisher.close();
                 } catch (JMSException | NamingException e) {
                     LOGGER.error("Error publishing messages to topic {}", topic.getName(), e);

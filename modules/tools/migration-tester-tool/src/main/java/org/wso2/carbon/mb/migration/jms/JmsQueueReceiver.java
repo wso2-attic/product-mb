@@ -39,7 +39,6 @@ class JmsQueueReceiver {
     private final QueueConnection connection;
     private final QueueSession session;
     private final QueueReceiver receiver;
-    private int lastReadOffset;
 
     JmsQueueReceiver(JmsConfig config) throws NamingException, JMSException {
         InitialContext ctx = config.getInitialContext();
@@ -51,19 +50,11 @@ class JmsQueueReceiver {
         session = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
         Queue queue = (Queue) ctx.lookup(config.getDestination());
         receiver = session.createReceiver(queue);
-        this.lastReadOffset = 0;
     }
 
     void receive(int timeout, int numberOfMessages) throws JMSException {
         for (int i = 0; i < numberOfMessages; i++) {
-            Message message = receiver.receive(timeout);
-            int offset = Integer.parseInt(message.getJMSCorrelationID());
-            if (offset > lastReadOffset) {
-                lastReadOffset = offset;
-            } else {
-                LOGGER.error("Message received out of order. Current offset: {}. Last read offset: {}",
-                             offset, lastReadOffset);
-            }
+            receiver.receive(timeout);
         }
     }
 

@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.mb.migration.jms;
 
+import com.google.common.util.concurrent.RateLimiter;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -49,14 +51,14 @@ class JmsQueueSender {
         this.config = config;
     }
 
-
-    void send(String queueName, int messageCount) throws NamingException, JMSException {
+    void send(String queueName, int messageCount, int tps) throws NamingException, JMSException {
         // Send message
         Queue queue = (Queue) config.getInitialContext().lookup(queueName);
         // create the message to send
-
+        RateLimiter rateLimiter = RateLimiter.create(tps);
         TextMessage textMessage = session.createTextMessage("Test Message Content");
         for (int i = 0; i < messageCount; i++) {
+            rateLimiter.acquire();
             textMessage.setJMSCorrelationID(String.valueOf(i));
             sender.send(queue, textMessage);
         }

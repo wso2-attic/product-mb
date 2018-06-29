@@ -29,6 +29,8 @@ public class Publisher {
 
     private int messageCount;
 
+    private int tps = 1000;
+
     public String getUser() {
         return user;
     }
@@ -45,5 +47,14 @@ public class Publisher {
     @XmlAttribute(name = "messageCount")
     public void setMessageCount(int messageCount) {
         this.messageCount = messageCount;
+    }
+
+    public int getTps() {
+        return tps;
+    }
+
+    @XmlAttribute(name = "tps")
+    public void setTps(int tps) {
+        this.tps = tps;
     }
 }

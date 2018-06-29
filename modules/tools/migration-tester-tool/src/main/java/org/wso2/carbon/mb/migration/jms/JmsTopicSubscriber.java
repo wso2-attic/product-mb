@@ -64,15 +64,7 @@ class JmsTopicSubscriber {
 
     void receive(int timeout, int numberOfMessages) throws JMSException {
         for (int i = 0; i < numberOfMessages; i++) {
-
-            Message message = subscriber.receive(timeout);
-            int offset = Integer.parseInt(message.getJMSCorrelationID());
-            if (offset > lastReadOffset) {
-                lastReadOffset = offset;
-            } else {
-                LOGGER.error("Message received out of order. Current offset: {}. Last read offset: {}",
-                             offset, lastReadOffset);
-            }
+            subscriber.receive(timeout);
         }
     }
 

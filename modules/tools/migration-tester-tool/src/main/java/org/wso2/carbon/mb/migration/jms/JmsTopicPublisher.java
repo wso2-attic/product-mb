@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.mb.migration.jms;
 
+import com.google.common.util.concurrent.RateLimiter;
+
 import javax.jms.JMSException;
 import javax.jms.QueueSession;
 import javax.jms.TextMessage;
@@ -51,13 +53,14 @@ class JmsTopicPublisher {
         this.config = config;
     }
 
-
-    void send(String topicName, int messageCount) throws NamingException, JMSException {
+    void send(String topicName, int messageCount, int tps) throws NamingException, JMSException {
         // Send message
         Topic topic = (Topic) config.getInitialContext().lookup(topicName);
+        RateLimiter rateLimiter = RateLimiter.create(tps);
         // create the message to send
         TextMessage textMessage = session.createTextMessage("Test Message Content");
         for (int i = 0; i < messageCount; i++) {
+            rateLimiter.acquire();
             textMessage.setJMSCorrelationID(String.valueOf(i));
             publisher.publish(topic, textMessage);
         }

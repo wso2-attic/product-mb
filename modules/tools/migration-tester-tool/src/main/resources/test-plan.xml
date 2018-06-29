@@ -60,7 +60,7 @@
         <queue name="queue1">
             <beforeMigration>
                 <senders>
-                    <sender username="user1" messageCount="100" />
+                    <sender username="user1" messageCount="100" tps="500"/>
                     <sender username="user2" messageCount="120" />
                 </senders>
                 <receivers>
