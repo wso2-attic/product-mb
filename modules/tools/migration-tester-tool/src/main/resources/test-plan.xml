@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  ~
+  -->
+
+<testPlan>
+    <managementConsole>https://localhost:9443</managementConsole>
+    <admin name="admin" password="admin" role="admin"/>
+    <clientTruststore>
+        <filePath>conf/client-truststore.jks</filePath>
+        <password>wso2carbon</password>
+    </clientTruststore>
+    <roles>
+        <role name="role2">
+            <permissions>
+                <permission>/login</permission>
+                <permission>/permission/admin/manage/queue/add</permission>
+                <permission>/permission/admin/manage/queue/delete</permission>
+                <permission>/permission/admin/manage/queue/purge</permission>
+                <permission>/permission/admin/manage/subscriptions</permission>
+            </permissions>
+        </role>
+        <role name="role1">
+            <permissions>
+                <permission>/permission/admin/manage/queue/add</permission>
+                <permission>/permission/admin/manage/queue/delete</permission>
+                <permission>/permission/admin/manage/queue/purge</permission>
+                <permission>/permission/admin/manage/subscriptions</permission>
+            </permissions>
+        </role>
+    </roles>
+    <users>
+        <user name="user1" password="user1">
+            <roles>
+                <role>role1</role>
+            </roles>
+        </user>
+        <user name="user2" password="user2">
+            <roles>
+                <role>role2</role>
+            </roles>
+        </user>
+    </users>
+    <queues>
+        <queue name="queue1">
+            <beforeMigration>
+                <senders>
+                    <sender username="user1" messageCount="100" tps="500"/>
+                    <sender username="user2" messageCount="120" />
+                </senders>
+                <receivers>
+                    <receiver username="user2" messageCount="80" />
+                </receivers>
+            </beforeMigration>
+            <afterMigration>
+                <senders>
+                    <sender username="user2" messageCount="100" />
+                    <sender username="user1" messageCount="120" />
+                </senders>
+                <receivers>
+                    <receiver username="user1" messageCount="80" />
+                </receivers>
+            </afterMigration>
+        </queue>
+    </queues>
+    <topics>
+        <topic name="topic1">
+            <beforeMigration>
+                <publishers>
+                    <publisher username="user2" messageCount="100" />
+                    <publisher username="admin" messageCount="120" />
+                </publishers>
+                <subscribers>
+                    <subscriber username="user1" messageCount="80" subscriptionId="sub1"/>
+                    <subscriber username="user2" messageCount="160" subscriptionId="sub2"/>
+                </subscribers>
+            </beforeMigration>
+            <afterMigration>
+                <publishers>
+                    <publisher username="admin" messageCount="100" />
+                    <publisher username="user1" messageCount="120" />
+                </publishers>
+                <subscribers>
+                    <subscriber username="admin" messageCount="80" subscriptionId="sub3"/>
+                </subscribers>
+            </afterMigration>
+        </topic>
+    </topics>
+</testPlan>
